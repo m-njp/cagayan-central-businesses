@@ -228,12 +228,12 @@ class DoctorCommand extends Command
         return null;
     }
 
-    /** Optional: only the data member re-reads COA reports, and the app never needs Python (D34). */
+    /** Optional for a clean clone; Capitol report uploads need it on the queue worker (D34, D42). */
     private function checkCoaTools(): string
     {
-        return file_exists(base_path('tools/coa/.venv/pyvenv.cfg'))
+        return is_file((string) config('cagayan.finances.uploads.python'))
             ? 'ready'
-            : 'optional, not set up; `composer data:finances:test` creates it';
+            : 'not set up, so report uploads cannot be read; `composer data:finances:test` creates it';
     }
 
     private function checkDatabaseConnection(): string

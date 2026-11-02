@@ -12,7 +12,7 @@ final class ActivityLog
         'signed_in' => 'Signed In', 'signed_out' => 'Signed Out',
         'sign_in_failed' => 'Sign In Failed', 'session_expired' => 'Session Ended',
         'profile_updated' => 'Profile Updated', 'role_assigned_from_console' => 'Role Assigned from Console',
-        'finance_figure_entered' => 'Finance Figure Entered', 'finance_figures_signed_off' => 'Finance Figures Signed Off',
+        'finance_figure_entered' => 'Finance Figure Entered', 'finance_report_uploaded' => 'Finance Report Uploaded', 'finance_report_read' => 'Finance Report Read', 'finance_figures_signed_off' => 'Finance Figures Signed Off',
         'finance_figures_rejected' => 'Finance Figures Rejected',
         'business_category_created' => 'Business Category Created', 'business_category_updated' => 'Business Category Updated',
         'business_type_created' => 'Business Type Created', 'business_type_updated' => 'Business Type Updated',

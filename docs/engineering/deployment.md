@@ -46,6 +46,7 @@ The deploy job uses a GitHub environment named `production`. GitHub creates it o
 - PostgreSQL 17 with PostGIS 3.5, on the same server or managed. Run `CREATE EXTENSION postgis;` once as a superuser if the app user cannot.
 - Git, with read access to this repository (a read-only deploy key on GitHub)
 - A queue worker kept running by Supervisor or systemd: `php artisan queue:work --tries=1`
+- For Capitol report uploads (D42): Python 3 with the parser's venv, `python -m venv tools/coa/.venv` then `tools/coa/.venv/bin/pip install -r tools/coa/requirements.txt`, or set `COA_PYTHON`. `composer doctor` reports whether it is ready.
 - HTTPS, for example with Certbot
 
 Node is not needed on the server. Assets are built on the GitHub runner.

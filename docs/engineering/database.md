@@ -137,7 +137,29 @@ A COA report for one town and fiscal year, or the record that COA had not publis
 | `sha256` | char(64), nullable | Checksum of the file as downloaded |
 | `checked_on` | date | When the file or its absence was checked |
 
-Unique `(municipality_id, fiscal_year, kind)`.
+Unique `(municipality_id, fiscal_year, kind)`. A document read from a Capitol upload has `file` under `finance-uploads/` on the private disk and stays out of the CSV import and export (D42).
+
+#### finance_uploads
+
+A COA report uploaded on Capitol Finances (D42).
+
+| Column | Type | Notes |
+| :- | :- | :- |
+| `id` | id | |
+| `public_id` | uuid | unique |
+| `municipality_id` | foreign key | restrict on delete |
+| `fiscal_year` | smallint | The report year |
+| `kind` | string(20) | A key of `cagayan.finances.uploads.kinds`: `executive_summary`, `fs_workbook`, `annex_workbook` or `archive` |
+| `path` | string(255) | On the private `local` disk under `finance-uploads/` |
+| `original_name` | string(255) | As uploaded |
+| `sha256`, `size` | char(64), bigint | Checksum and bytes |
+| `status` | string(10) | `App\Enums\FinanceUploadStatus`: queued, running, done, failed |
+| `figures` | int | Figures left waiting for sign-off |
+| `issues` | jsonb, nullable | Parser errors and warnings |
+| `message` | string(500), nullable | A short outcome for the page; never an exception |
+| `uploaded_by` | foreign key to `users`, nullable | Null on delete |
+
+Unique `(municipality_id, fiscal_year, kind, sha256)`, so the same file is read once.
 
 #### finance_figures
 

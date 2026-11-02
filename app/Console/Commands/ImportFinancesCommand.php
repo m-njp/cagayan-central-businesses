@@ -178,8 +178,10 @@ final class ImportFinancesCommand extends Command
      */
     private function writeParsed(array $extracted, array $towns, array $documentIds, CarbonInterface $now): array
     {
+        // Figures read from Capitol uploads are not in the CSVs, so the import never treats them as stale.
         $existing = FinanceFigure::query()
             ->where('entry_method', FinanceEntryMethod::Parsed)
+            ->whereDoesntHave('document', fn ($document) => $document->uploaded())
             ->get(['id', 'finance_document_id', 'line_code', 'fiscal_year', 'basis', 'value', 'definition_variant', 'status'])
             ->keyBy(fn (FinanceFigure $figure) => "{$figure->finance_document_id} {$figure->line_code} {$figure->fiscal_year} {$figure->basis->value}");
 
@@ -194,7 +196,7 @@ final class ImportFinancesCommand extends Command
             $details = [
                 'source_label' => $row['source_label'] ?: null, 'location' => $row['location'] ?: null,
                 'extractor_version' => $row['extractor_version'] ?: null,
-                'inputs' => json_decode($row['input_values'] ?: '[]', true, flags: JSON_THROW_ON_ERROR) ?: null,
+                'inputs' => FinanceFigure::cleanInputs(json_decode($row['input_values'] ?: '[]', true, flags: JSON_THROW_ON_ERROR)),
             ];
             $figure = $existing->get($key);
 

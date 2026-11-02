@@ -4,6 +4,7 @@ namespace App\Queries;
 
 use App\Enums\FinanceFigureStatus;
 use App\Models\FinanceFigure;
+use App\Models\FinanceUpload;
 use Illuminate\Support\Collection;
 use stdClass;
 
@@ -32,8 +33,10 @@ final class FinanceEvidenceQuery
                 'page' => $this->page($figure->location),
                 'location' => $figure->location,
                 // Contributing cells and amounts, so a summed figure can be checked against the workbook.
-                'inputs' => $figure->inputs ?? [],
-                'url' => $figure->document?->file === null ? null : route('public.finance-sources.show', $key, absolute: false),
+                'inputs' => FinanceFigure::cleanInputs($figure->inputs) ?? [],
+                // Uploaded reports stay private (D42), so they get no public link.
+                'url' => $figure->document?->file === null || str_starts_with($figure->document->file, FinanceUpload::FOLDER.'/')
+                    ? null : route('public.finance-sources.show', $key, absolute: false),
             ];
             $inputs["{$figure->municipality_id} {$figure->fiscal_year} {$figure->line_code}:{$figure->basis->value}"] = $key;
         }

@@ -3,6 +3,10 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { FinanceEntryForm } from '@/components/capitol/finance-entry-form';
 import { FinanceFiguresTable } from '@/components/capitol/finance-figures-table';
+import {
+    FinanceUploadForm,
+    FinanceUploads,
+} from '@/components/capitol/finance-upload';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,6 +35,7 @@ export default function FinanceReportPage({
 }) {
     const { url } = usePage();
     const [entering, setEntering] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const years = [
         ...new Set([
             report.year,
@@ -170,6 +175,26 @@ export default function FinanceReportPage({
                             />
                         </SheetContent>
                     </Sheet>
+                    <Sheet open={uploading} onOpenChange={setUploading}>
+                        <SheetTrigger asChild>
+                            <Button variant="outline" className="w-full">
+                                Upload a Report
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-full overflow-y-auto sm:max-w-md">
+                            <SheetHeader>
+                                <SheetTitle>Upload a Report</SheetTitle>
+                                <SheetDescription>
+                                    {report.town.label} {report.year}
+                                </SheetDescription>
+                            </SheetHeader>
+                            <FinanceUploadForm
+                                report={report}
+                                onSaved={() => setUploading(false)}
+                            />
+                        </SheetContent>
+                    </Sheet>
+                    <FinanceUploads report={report} />
                 </WorkspaceFilters>
             </div>
         </>

@@ -65,6 +65,17 @@ export type FinanceDocumentLink = {
     sourceUrl: string | null;
 };
 
+export type FinanceUploadRow = {
+    id: string;
+    name: string;
+    kind: string;
+    status: 'queued' | 'running' | 'done' | 'failed';
+    statusLabel: string;
+    figures: number;
+    message: string | null;
+    uploadedAt: string;
+};
+
 export type FinanceReport = {
     town: SelectOption;
     year: number;
@@ -73,6 +84,8 @@ export type FinanceReport = {
     issues: FinanceIssue[];
     documents: FinanceDocumentLink[];
     lines: (SelectOption & { bases: ('actual' | 'budget_final')[] })[];
+    uploads: FinanceUploadRow[];
+    uploadKinds: SelectOption[];
     limits: {
         firstYear: number;
         lastYear: number;
@@ -80,5 +93,6 @@ export type FinanceReport = {
         valueMax: string;
         sourceUrlMax: number;
         reviewBatchMax: number;
+        uploadMaxKb: number;
     };
 };

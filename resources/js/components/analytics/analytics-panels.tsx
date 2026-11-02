@@ -52,16 +52,17 @@ function FigureStrip({
         return metric ? [{ metric, point }] : [];
     });
     return (
-        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-sm border bg-border sm:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-sm border bg-border sm:grid-cols-[auto_repeat(4,minmax(0,1fr))]">
+            <div className="col-span-2 flex items-center bg-card px-3 py-2 sm:col-span-1">
+                <dt className="sr-only">Fiscal Year</dt>
+                <dd className="font-mono type-item tabular-nums">{year}</dd>
+            </div>
             {figures.map(({ metric, point }) => (
                 <div
                     key={metric.id}
                     className="flex min-w-0 flex-col gap-0.5 bg-card px-3 py-2"
                 >
-                    <dt className="type-meta">
-                        {metric.label}{' '}
-                        <span className="font-mono tabular-nums">{year}</span>
-                    </dt>
+                    <dt className="type-meta">{metric.label}</dt>
                     <dd className="flex flex-wrap items-baseline gap-x-2 font-mono type-item tabular-nums">
                         <Figure point={point} metric={metric} alwaysShort />
                         {metric.id !== RESULT_METRIC && (

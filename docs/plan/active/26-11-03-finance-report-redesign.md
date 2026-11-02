@@ -26,7 +26,10 @@ Later steps get their own plans: (2) finance data fixes with one new migration, 
 - [x] Source evidence carries each figure's contributing cells and amounts (`catalog.sources.*.inputs`).
 
 **Run the parser from the Capitol (added "26-11-03")**
-- [ ] Upload a report on Capitol Finances; per-file queued extraction; figures arrive Pending for independent sign-off.
+- [x] Upload a report on Capitol Finances (PDF, XLSX or ZIP); `ExtractFinanceUpload` runs `coa.intake` on that file only; figures arrive Pending credited to the uploader, who cannot sign them off (D42).
+- [x] Same file read once (sha256); a different report already on record is never overwritten; failures show a short message and manual entry stays available.
+- [x] Uploaded documents stay on the private disk and out of the CSV import and export; `composer doctor` reports the parser venv; deployment.md, database.md and decisions.md D42 updated.
+- [x] Tests: 5 Pest upload tests (authorization proven by breaking it once), 5 Python intake tests. A real run on the committed Tuguegarao 2025 workbook read every figure, matched the ledger and kept 4 parser warnings.
 
 **Table (both pages, `components/charts/executive-summary.tsx`)**
 - [x] Executive Summary stays the first view: rows are COA lines, columns are fiscal years, oldest to newest.
@@ -84,5 +87,9 @@ Later steps get their own plans: (2) finance data fixes with one new migration, 
 ## Verification and Handoff
 
 "26-11-03" so far: 83 parser tests passed. Finance Pest files: all pass except two. The committed-data sign-off check waits for a human sign-off. `FinanceReviewTest` expects the old "Government Totals" label and also fails on the untouched baseline (owner to confirm the fix). 17 frontend unit tests passed. `npm run check`, TypeScript and build passed. Browser: Economy at 1280px dark and 375px light, Capitol Analytics at 1280px dark; table, chips, Year, Table or Charts toggle, synced tooltips. Toggle, toggle back and Back made zero application requests. An earlier "full CI passed" claim in this session was wrong: a pipe hid the exit code.
+
+Full CI ("26-11-03", real exit code): frontend format and lint, TypeScript, Pint, PHPStan pass; Pest 332 of 334. The two failures are the owner decisions below. Privacy review: no business data or uploader identity in public responses. Fixed after review: uploads stay private (no public file or link), workbook inputs keep only cell and amount, a re-read never rewrites a signed-off citation, PDF reader exception text is replaced. Upload, economy and source tests rerun: 36 passed. Design check: the strip repeated the year on every label; it now shows once.
+
+Open for the owner: sign off the 12 new figures; approve updating FinanceReviewTest's stale "Government Totals" expectation; decide whether uploaded reports may ever be public; inputs in the review row and an upload rate limit are deferred.
 
 Remaining planned checks: affected Pest and frontend tests, `npm run check`, `npm run types:check`, `npm run build`, `composer ci:check`, `/design-check`, `/privacy-check`, browser at desktop and 375px in both themes with keyboard and touch, Back and Forward with no application requests.

@@ -260,6 +260,8 @@ Approved 26-10-27 by the user for the [Finance Ledger and Analytics Program](../
 
 **26-10-29:** the parser now imports `pypdfium2` directly as a second PDF text engine, for fallback reading and digit confirmation. It was already pinned as a pdfplumber dependency, so no package was added. Python in `tools/coa/` uses camelCase names (user rule). See [the parser hardening plan](../plan/archive/26-10-29-coa-parser-hardening.md).
 
+**26-11-03:** superseded in part by D42. The queue worker now runs the same parser on one uploaded file. A clean clone still works without Python; only report uploads need it.
+
 ## D35. Finance Ledger
 
 Approved 26-10-27. Government finance figures leave `town_facts` and move into one ledger:
@@ -333,3 +335,14 @@ Approved 26-10-29 with [Business Registry Records](../plan/active/26-10-28-busin
 ## D41. Contact Number Formats
 
 Approved 26-10-29. Contact numbers are stored as typed: a mobile number `09XXXXXXXXX` or `+639XXXXXXXXX`, or a landline of digits, spaces, parentheses and a plus sign. The patterns live in `cagayan.registry`.
+
+## D42. Report Uploads Read on the Queue
+
+Approved 26-11-03 by the owner ([finance report redesign plan](../plan/active/26-11-03-finance-report-redesign.md)). Staff upload a COA report on Capitol Finances instead of asking the data member to run `composer data:finances:extract`.
+
+- **One file at a time:** the queue job `ExtractFinanceUpload` runs `python -m coa.intake` from `tools/coa/` on that one file, never the repository-wide extraction. A PDF is an Executive Summary, an XLSX a Financial Statements or General Fund Annex workbook, a ZIP the audit report's workbooks. Size, archive and runtime limits are in `cagayan.finances.uploads`.
+- **Same ledger, same sign-off:** figures arrive as pending, credited to the uploader, so someone else signs them off (D35). A different report already on record is never overwritten.
+- **Private files:** uploads stay on the private `local` disk under `finance-uploads/`. A document read from an upload stays out of the CSV import and export, so `composer data:finances` neither deletes nor exports it.
+- **Runtime:** the worker needs the `tools/coa/.venv` (or `COA_PYTHON`). `composer doctor` reports it. No Docker change and no new package: the parser's pinned dependencies are reused.
+
+**Why:** the owner wants non-technical staff to load a new report year without the command line, while every figure keeps its exact source and independent sign-off.

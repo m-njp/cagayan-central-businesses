@@ -25,6 +25,7 @@ final class ExportFinancesCommand extends Command
             ->with(['municipality:id,psgc_code', 'document:id,fiscal_year,kind'])
             ->where('entry_method', FinanceEntryMethod::Parsed)
             ->where('status', '!=', FinanceFigureStatus::Pending)
+            ->whereDoesntHave('document', fn ($document) => $document->uploaded())
             ->get()
             ->map(fn (FinanceFigure $figure) => [
                 $figure->municipality->psgc_code, $figure->document?->fiscal_year, $figure->document?->kind->value,
@@ -39,6 +40,7 @@ final class ExportFinancesCommand extends Command
         $manual = FinanceFigure::query()
             ->with(['municipality:id,psgc_code', 'document:id,fiscal_year,kind'])
             ->where('entry_method', FinanceEntryMethod::Manual)
+            ->whereDoesntHave('document', fn ($document) => $document->uploaded())
             ->orderBy('public_id')
             ->get()
             ->map(fn (FinanceFigure $figure) => [

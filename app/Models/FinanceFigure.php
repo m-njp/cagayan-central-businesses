@@ -72,14 +72,39 @@ class FinanceFigure extends Model
         return $this->belongsTo(User::class, 'reviewed_by');
     }
 
-    /** The stored COA report behind a signed-off figure, or null when it is pending, entered by hand, or not on disk. */
+    /**
+     * The stored COA report behind a signed-off figure, or null when it is pending, entered by hand, not on disk, or
+     * a Capitol upload, whose file stays private (D42).
+     */
     public function publicFile(): ?string
     {
-        $root = realpath(base_path('data/towns'));
         $file = $this->status === FinanceFigureStatus::Verified ? $this->document?->file : null;
-        $path = $root === false || $file === null ? false : realpath("$root/$file");
+        if ($file === null || str_starts_with($file, FinanceUpload::FOLDER.'/')) {
+            return null;
+        }
+        $root = realpath(base_path('data/towns'));
+        $path = $root === false ? false : realpath("$root/$file");
 
         return $path !== false && str_starts_with($path, $root.DIRECTORY_SEPARATOR) ? $path : null;
+    }
+
+    /**
+     * Only each contributing cell and its amount, so nothing else a parser emits reaches a page.
+     *
+     * @return list<array{location: string, value: string}>|null
+     */
+    public static function cleanInputs(mixed $inputs): ?array
+    {
+        $clean = [];
+        foreach (is_array($inputs) ? $inputs : [] as $input) {
+            $location = is_array($input) ? ($input['location'] ?? null) : null;
+            $value = is_array($input) ? ($input['value'] ?? null) : null;
+            if (is_string($location) && is_string($value) && is_numeric($value)) {
+                $clean[] = ['location' => mb_substr($location, 0, (int) config('cagayan.finances.location_max')), 'value' => $value];
+            }
+        }
+
+        return $clean === [] ? null : $clean;
     }
 
     /**

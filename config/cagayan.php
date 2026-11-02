@@ -298,6 +298,22 @@ return [
         'note_max' => 500,
         // Workbook citations list every contributing cell, such as 'G61:G64 and K61:K64' (26-11-03).
         'location_max' => 255,
+        // Reports uploaded on Capitol Finances (26-11-03). One file is read at a time by tools/coa (coa.intake) on the
+        // queue, never the repository-wide extraction. The extension decides which reports a file can be.
+        'uploads' => [
+            'file_max_kb' => 30720,
+            'kinds' => [
+                'executive_summary' => ['label' => 'Executive Summary', 'extensions' => ['pdf']],
+                'fs_workbook' => ['label' => 'Financial Statements', 'extensions' => ['xlsx']],
+                'annex_workbook' => ['label' => 'General Fund Annex', 'extensions' => ['xlsx']],
+                'archive' => ['label' => 'Audit Report Workbooks (ZIP)', 'extensions' => ['zip']],
+            ],
+            'archive_members_max' => 40,
+            'archive_bytes_max' => 104857600,
+            'timeout_seconds' => 120,
+            'tries' => 2,
+            'python' => env('COA_PYTHON', base_path('tools/coa/.venv/'.(PHP_OS_FAMILY === 'Windows' ? 'Scripts/python.exe' : 'bin/python'))),
+        ],
         'per_page' => 20,
         'source_requests_per_minute' => 60,
         // Towns whose workbook breakdowns finances:import loads (26-10-28: Tuguegarao first). Other towns'
