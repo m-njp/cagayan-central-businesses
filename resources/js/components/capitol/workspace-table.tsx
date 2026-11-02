@@ -58,7 +58,7 @@ export function WorkspaceTable({
     return (
         <section className="grid min-w-0 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
             <div className="min-w-0 space-y-4">
-                <div className="overflow-hidden rounded-sm border bg-card">
+                <div className="overflow-hidden rounded-sm bg-card">
                     <Table>
                         <TableHeader>
                             <TableRow>

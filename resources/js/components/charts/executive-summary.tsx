@@ -28,12 +28,10 @@ const FinancialConditionChart = lazy(
 );
 
 const numberCell =
-    'border-l px-1.5 text-right font-mono whitespace-nowrap tabular-nums sm:px-2';
+    'px-1.5 text-right font-mono whitespace-nowrap tabular-nums sm:px-2';
+// The sticky Item cell takes its row's shade (table.tsx default) so scrolled years pass behind it.
 const labelCell =
-    'sticky left-0 z-10 h-auto min-w-36 py-1.5 font-normal whitespace-normal';
-// Alternating solid shades; the sticky Item cell repeats its row's shade so scrolled years pass behind it.
-const ROW_SHADES = ['bg-card hover:bg-card', 'bg-muted hover:bg-muted'];
-const CELL_SHADES = ['bg-card', 'bg-muted'];
+    'sticky left-0 z-10 h-auto min-w-36 bg-inherit py-1.5 font-normal whitespace-normal';
 
 /** The note every cell of a row shares, such as a line loaded for one town only; none when the cells differ. */
 function rowNote(history: FinancialHistory, metricId: string): string | null {
@@ -102,10 +100,15 @@ export function ExecutiveSummary({
 
     return (
         <div className="flex min-w-0 flex-col gap-3">
-            <Table className="border type-data sm:type-body">
+            <Table className="type-data sm:type-body">
                 <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                        <TableHead className={`${labelCell} bg-card`}>
+                        <TableHead
+                            className={labelCell.replace(
+                                'bg-inherit',
+                                'bg-card',
+                            )}
+                        >
                             Item
                         </TableHead>
                         {years.map((year) => (
@@ -141,7 +144,11 @@ export function ExecutiveSummary({
                 </TableHeader>
                 <TableBody>
                     {sections.map(({ id, title, history }) => [
-                        <TableRow key={id} className="hover:bg-transparent">
+                        <TableRow
+                            key={id}
+                            data-plain
+                            className="bg-card hover:bg-card"
+                        >
                             <TableHead
                                 scope="colgroup"
                                 colSpan={columns}
@@ -150,17 +157,14 @@ export function ExecutiveSummary({
                                 {title}
                             </TableHead>
                         </TableRow>,
-                        ...history.metrics.map((metric, index) => {
+                        ...history.metrics.map((metric) => {
                             const note = rowNote(history, metric.id);
                             const latest = history.rows.at(-1);
                             return (
-                                <TableRow
-                                    key={metric.id}
-                                    className={ROW_SHADES[index % 2]}
-                                >
+                                <TableRow key={metric.id} className="bg-card">
                                     <TableHead
                                         scope="row"
-                                        className={`${labelCell} ${CELL_SHADES[index % 2]}`}
+                                        className={labelCell}
                                     >
                                         {metric.label}
                                         {note && (
@@ -214,8 +218,7 @@ export function ExecutiveSummary({
                             <PerformanceVisual>
                                 <FinanceHistoryChart
                                     history={results.history}
-                                    bars
-                                    syncId="finance-summary"
+                                    variant="outcome"
                                 />
                             </PerformanceVisual>
                         </section>
@@ -226,7 +229,6 @@ export function ExecutiveSummary({
                         <PerformanceVisual>
                             <FinancialConditionChart
                                 history={position.history}
-                                syncId="finance-summary"
                             />
                         </PerformanceVisual>
                     </section>

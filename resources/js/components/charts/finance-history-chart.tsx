@@ -1,4 +1,5 @@
 import {
+    Area,
     Bar,
     CartesianGrid,
     ComposedChart,
@@ -17,47 +18,66 @@ import type {
     FinancialHistory,
 } from '@/types/economic-performance';
 
+/**
+ * How a series reads (design.md, "Finance Charts"):
+ * - lines: separate amounts, such as business taxes; definition changes break the line.
+ * - outcome: Income and Expenses as overlapping areas with Net Income as a line over zero (Results of Operation).
+ * - stacked: parts that add up to a reported total, such as revenue sources.
+ * - bars: amounts compared side by side each year, such as appropriations, allotments and obligations.
+ * - result: Net Income alone as bars.
+ */
+export type FinanceChartVariant =
+    | 'lines'
+    | 'outcome'
+    | 'stacked'
+    | 'bars'
+    | 'result';
+
 function amount(point?: EconomicObservation): number | null {
     return point?.state === 'shown' && point.value !== null
         ? Number(point.value)
         : null;
 }
 
-/**
- * Annual series as lines, Net Income alone as bars (`result`), or Income and Expenses as paired bars with Net Income as
- * a line over the zero line (`bars`, Results of Operation). A missing year stays a gap, never a zero.
- */
+const color = (index: number) => `var(--chart-${(index % 5) + 1})`;
+const RESULT_COLOR = 'var(--foreground)';
+
+/** Annual finance series; a missing year stays a gap, never a zero. */
 export default function FinanceHistoryChart({
     history,
-    result = false,
-    bars = false,
+    variant = 'lines',
     legend = true,
-    syncId = 'finance-trends',
 }: {
     history: FinancialHistory;
-    result?: boolean;
-    bars?: boolean;
+    variant?: FinanceChartVariant;
     legend?: boolean;
-    syncId?: string;
 }) {
-    const resultMetric = bars
-        ? history.metrics.find((metric) => metric.id === RESULT_METRIC)
-        : undefined;
-    const metrics = history.metrics.filter(
-        (metric) => !bars || metric.id !== RESULT_METRIC,
-    );
-    const unit = metrics[0]?.unit ?? 'php';
-    const segments = financeChartSeries({ ...history, metrics });
-    const color = (index: number) => `var(--chart-${(index % 5) + 1})`;
-    const resultColor = 'var(--foreground)';
+    const resultMetric =
+        variant === 'outcome' || variant === 'result'
+            ? history.metrics.find((metric) => metric.id === RESULT_METRIC)
+            : undefined;
+    const metrics =
+        variant === 'result'
+            ? []
+            : history.metrics.filter((metric) => metric.id !== RESULT_METRIC);
+    const unit = (metrics[0] ?? history.metrics[0])?.unit ?? 'php';
+    const segments =
+        variant === 'lines' ? financeChartSeries({ ...history, metrics }) : [];
     const series = [
         ...metrics.map((metric, index) => ({ metric, color: color(index) })),
-        ...(resultMetric ? [{ metric: resultMetric, color: resultColor }] : []),
+        ...(resultMetric
+            ? [
+                  {
+                      metric: resultMetric,
+                      color: variant === 'result' ? color(0) : RESULT_COLOR,
+                  },
+              ]
+            : []),
     ];
     const config = Object.fromEntries(
-        metrics.map((metric, index) => [
+        series.map(({ metric, color: swatch }, index) => [
             `series${index}`,
-            { label: metric.label, color: color(index) },
+            { label: metric.label, color: swatch },
         ]),
     );
     const data = history.rows.map((row, position) => ({
@@ -65,7 +85,7 @@ export default function FinanceHistoryChart({
         result: amount(row.observations[RESULT_METRIC]),
         ...Object.fromEntries(
             metrics.map((metric, index) => [
-                `bar${index}`,
+                `value${index}`,
                 amount(row.observations[metric.id]),
             ]),
         ),
@@ -76,12 +96,12 @@ export default function FinanceHistoryChart({
             ]),
         ),
     }));
-    const zeroLine = result || resultMetric !== undefined;
+    const category = variant === 'bars' || variant === 'result';
     return (
         <div className="flex min-w-0 flex-col gap-2">
             <ChartContainer
                 config={config}
-                className={`aspect-auto w-full font-mono tabular-nums ${result ? 'h-32 sm:h-36' : 'h-48 sm:h-56'}`}
+                className={`aspect-auto w-full font-mono tabular-nums ${variant === 'result' ? 'h-32 sm:h-36' : 'h-48 sm:h-56'}`}
                 role="group"
                 aria-label={`${series.map(({ metric }) => metric.label).join(' and ')} by year. Exact values are listed in the table.`}
             >
@@ -89,16 +109,15 @@ export default function FinanceHistoryChart({
                     data={data}
                     margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
                     accessibilityLayer
-                    syncId={syncId}
                     barGap={2}
-                    barCategoryGap="28%"
+                    barCategoryGap="24%"
                 >
                     <CartesianGrid vertical={false} stroke="var(--border)" />
                     <XAxis
                         dataKey="year"
-                        type={bars ? 'category' : 'number'}
+                        type={category ? 'category' : 'number'}
                         domain={
-                            bars
+                            category
                                 ? undefined
                                 : history.rows.length === 1
                                   ? [
@@ -108,15 +127,15 @@ export default function FinanceHistoryChart({
                                   : ['dataMin', 'dataMax']
                         }
                         ticks={
-                            bars
+                            category
                                 ? undefined
                                 : history.rows.map((row) => row.year)
                         }
                         tickLine={false}
                         axisLine={false}
                         tickMargin={12}
-                        minTickGap={bars ? 0 : 24}
-                        padding={bars ? undefined : { left: 20, right: 20 }}
+                        minTickGap={category ? 0 : 24}
+                        padding={category ? undefined : { left: 16, right: 16 }}
                     />
                     <YAxis
                         domain={[
@@ -130,12 +149,12 @@ export default function FinanceHistoryChart({
                         tickLine={false}
                         axisLine={false}
                     />
-                    {zeroLine && (
+                    {resultMetric && (
                         <ReferenceLine y={0} stroke="var(--muted-foreground)" />
                     )}
                     <ChartTooltip
                         cursor={
-                            bars
+                            category
                                 ? { fill: 'var(--muted)' }
                                 : {
                                       stroke: 'var(--muted-foreground)',
@@ -152,32 +171,54 @@ export default function FinanceHistoryChart({
                             ) : null
                         }
                     />
-                    {result && !bars && (
+                    {variant === 'result' && (
                         <Bar
                             dataKey="result"
-                            name={metrics[0]?.label}
-                            fill="var(--color-series0)"
+                            name={resultMetric?.label}
+                            fill={color(0)}
                             maxBarSize={32}
                             isAnimationActive={false}
                         />
                     )}
-                    {bars &&
+                    {variant === 'bars' &&
                         metrics.map((metric, index) => (
                             <Bar
                                 key={metric.id}
-                                dataKey={`bar${index}`}
+                                dataKey={`value${index}`}
                                 name={metric.label}
-                                fill={`var(--color-series${index})`}
-                                maxBarSize={28}
+                                fill={color(index)}
+                                maxBarSize={24}
                                 isAnimationActive={false}
                             />
                         ))}
-                    {resultMetric && (
+                    {(variant === 'outcome' || variant === 'stacked') &&
+                        metrics.map((metric, index) => (
+                            <Area
+                                key={metric.id}
+                                dataKey={`value${index}`}
+                                name={metric.label}
+                                type="linear"
+                                stackId={
+                                    variant === 'stacked' ? 'parts' : undefined
+                                }
+                                stroke={color(index)}
+                                strokeWidth={2}
+                                fill={color(index)}
+                                fillOpacity={
+                                    variant === 'stacked' ? 0.55 : 0.15
+                                }
+                                dot={false}
+                                activeDot={{ r: 4 }}
+                                connectNulls={false}
+                                isAnimationActive={false}
+                            />
+                        ))}
+                    {variant === 'outcome' && resultMetric && (
                         <Line
                             dataKey="result"
                             name={resultMetric.label}
                             type="linear"
-                            stroke={resultColor}
+                            stroke={RESULT_COLOR}
                             strokeWidth={2}
                             dot={{ r: 3, fill: 'var(--card)' }}
                             activeDot={{ r: 5 }}
@@ -185,16 +226,15 @@ export default function FinanceHistoryChart({
                             isAnimationActive={false}
                         />
                     )}
-                    {!result &&
-                        !bars &&
+                    {variant === 'lines' &&
                         segments.map((segment, index) => (
                             <Line
                                 key={index}
                                 dataKey={`segment${index}`}
                                 name={segment.metric.label}
                                 type="linear"
-                                stroke={`var(--color-series${segment.index})`}
-                                strokeWidth={3}
+                                stroke={color(segment.index)}
+                                strokeWidth={2}
                                 strokeDasharray={
                                     segment.index % 2 ? '6 4' : undefined
                                 }
@@ -220,13 +260,8 @@ export default function FinanceHistoryChart({
                             key={metric.id}
                             className="flex items-center gap-2 type-meta"
                         >
-                            {bars && metric.id !== RESULT_METRIC ? (
-                                <span
-                                    aria-hidden="true"
-                                    className="size-2.5 rounded-sm"
-                                    style={{ background: swatch }}
-                                />
-                            ) : (
+                            {variant === 'lines' ||
+                            metric.id === RESULT_METRIC ? (
                                 <svg width="24" height="8" aria-hidden="true">
                                     <line
                                         x1="0"
@@ -236,12 +271,18 @@ export default function FinanceHistoryChart({
                                         stroke={swatch}
                                         strokeWidth="3"
                                         strokeDasharray={
-                                            !bars && index % 2
+                                            variant === 'lines' && index % 2
                                                 ? '6 4'
                                                 : undefined
                                         }
                                     />
                                 </svg>
+                            ) : (
+                                <span
+                                    aria-hidden="true"
+                                    className="size-2.5 rounded-sm"
+                                    style={{ background: swatch }}
+                                />
                             )}
                             {metric.label}
                         </li>

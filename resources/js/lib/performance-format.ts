@@ -182,5 +182,6 @@ export function changeLabel(
     const change = Number(point.change);
     if (unit === 'percent') return `${signedNumber.format(change)} points`;
     if (unit === 'count') return signedNumber.format(change);
-    return `${change > 0 ? '+' : ''}${pesoText(change, short)}`;
+    // Accounting style: a fall reads in parentheses, a rise as a plain amount (26-11-03).
+    return pesoText(change, short);
 }

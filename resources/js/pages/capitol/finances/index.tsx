@@ -86,7 +86,7 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
                     aria-label="Finance reports"
                     className="flex min-w-0 flex-col gap-3"
                 >
-                    <div className="overflow-hidden rounded-sm border bg-card">
+                    <div className="overflow-hidden rounded-sm bg-card">
                         <Table className="table-fixed">
                             <TableHeader>
                                 <TableRow>

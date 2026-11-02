@@ -60,6 +60,8 @@ Run `npm run check:fix` after editing. The pre-commit hook runs the lint and Typ
 
 ## Repeated UI Corrections
 
+Never build grids of padded figure tiles (one large amount per card with a year and arrow beneath). Figures for the same years go in table rows, years as columns. Every table uses `components/ui/table.tsx`, which already draws the border, column lines and alternating solid rows; mark section rows `data-plain`. A short amount and its change share one tooltip through `Figure withChange`. Charts follow design.md, "Finance Charts", with no synchronized tooltips (26-11-03).
+
 Show a change only through `TrendMark`, `ObservationChange` and `lib/trend.ts` (green ↑ up, red ↓ down, tokens only). Net Income carries no arrow or color: a loss reads in accounting parentheses (design.md, "Executive Summary View"). Show any rounded or abbreviated peso figure through `ExactAmount` so hover, focus and tap reveal the exact amount. Order year columns oldest to newest. Never read a mutable module cache during render without keeping its result in state: the React Compiler memoizes the read and the screen never updates (the About the Data bug, 26-10-28).
 
 Check every state of a data panel before reporting it done: province or aggregate, a single town, an empty year, and barangay level. Verify the aggregate in the running app, because it carries the most rows. Never print a run of identical or near-identical citations or rows; condense them into one line (design.md, "Economic Map Cleanup"). The economic maps have no Measure selector, and Net Income reads in parentheses when negative, with no arrow.

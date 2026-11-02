@@ -563,6 +563,29 @@ Owner-approved polish of the Executive Summary View after the rejected rebuild w
 - **Capitol only.** A compact figure strip above the table: Income, Expenses, Net Income and Assets for the newest reported year, short amounts through `ExactAmount`, with the change. Public Economy has no strip; it leads with the yearly history.
 - **Words.** Revenue lines use the Statement of Financial Performance's own labels; the SCBAA group is Budget and Actual Amounts (metrics.md M21, M23).
 
+## Dense Data Rule "26-11-03"
+
+Owner correction after the Trends view showed a 2x2 grid of padded figure tiles with a 3xl amount, a year and an arrow under each. Never build that again, on any screen.
+
+- **Rows, not tiles.** Several figures for the same years go in one table row each, with the years as columns. Never a grid of cards, one figure per card, an oversized amount, or the year repeated under every figure.
+- **Every table is the shared `components/ui/table.tsx`.** It draws the outer border, the column lines and alternating solid row shades by default. A section heading row passes `data-plain` so it is never shaded. A sticky first column uses `bg-inherit` to take its row's shade. Wrappers around a table add no second border.
+- **One tooltip per figure.** A short amount and its change arrow are one control (`Figure` with `withChange`): the tooltip reads the exact amount, then "Change from 2024:" and the exact change in accounting style: a fall in parentheses, a rise as a plain amount, no words and no plus sign. Every change label follows this. Never a separate hover target for the arrow.
+- **Maximize rows.** Compact cell padding, `type-data` on phones, no empty space reserved for decoration. Padding exists to separate content, not to fill a card.
+
+## Finance Charts "26-11-03"
+
+Supersedes the chart lines in "Finance Report Polish". One chart per measure, chosen by how its lines relate (`FinanceHistoryChart` `variant`):
+
+| Measure | Chart | Why |
+| :- | :- | :- |
+| Results of Operation | Income and Expenses as overlapping areas, Net Income as a line over a zero line | One chart instead of separate Income, Expenses and Net Income charts; the gap between the areas is the result. Not stacked: Income plus Expenses means nothing |
+| Financial Condition | Liabilities and Government Equity as stacked areas | Their sum is Assets, so the top edge reads as Assets; the tooltip lists all three |
+| Revenue Sources | Stacked areas | The reported sources add up to Income |
+| Budget Execution | Grouped bars per year | Appropriations, allotments and obligations are compared side by side, not added |
+| Business Taxes and Fees | Lines | Separate General Fund collections with no reported total |
+
+No synchronized tooltips across charts. Missing years stay gaps. The Charts view is that one chart above the same dense table; it has no figure tiles and no separate Net Income chart. Budget and Actual Amounts is withdrawn from display (metrics.md M23).
+
 ## Public Navigation and Data Labels "26-10-30"
 
 User correction supersedes the Kita Brand top-line icons and underline. Desktop navigation uses text-only links with a filled selected background, visible keyboard focus and no underline. The public navbar has no Simulated data tag. Sample Data labels sit at the upper right of the Home and Economy wish cards, using a red token-based bordered badge. Public simulated business labels use the shared config-driven SimulatedLabel inside the directory, profile and Business Trends content; Capitol retains its layout label. No extra explanatory copy or navigation icons.

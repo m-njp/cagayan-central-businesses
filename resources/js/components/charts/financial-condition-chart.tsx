@@ -1,4 +1,4 @@
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { FinanceTooltip } from '@/components/charts/finance-tooltip';
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import { formatPesoTick } from '@/lib/performance-format';
@@ -7,13 +7,11 @@ import type { FinancialHistory } from '@/types/economic-performance';
 const STACKED = ['position.liabilities', 'position.equity'];
 const SWATCHES = ['bg-chart-3', 'bg-chart-4'];
 
-/** Liabilities and Government Equity stacked, so each bar's height is the year's Assets (M35). */
+/** Liabilities and Government Equity as stacked areas, so the top edge is each year's Assets (M35). */
 export default function FinancialConditionChart({
     history,
-    syncId,
 }: {
     history: FinancialHistory;
-    syncId?: string;
 }) {
     const stacked = history.metrics.filter((metric) =>
         STACKED.includes(metric.id),
@@ -46,11 +44,10 @@ export default function FinancialConditionChart({
                 role="group"
                 aria-label={`${stacked.map((metric) => metric.label).join(' and ')} by year, adding up to Assets. Exact values are listed in the table.`}
             >
-                <BarChart
+                <AreaChart
                     data={data}
                     margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
                     accessibilityLayer
-                    syncId={syncId}
                 >
                     <CartesianGrid vertical={false} stroke="var(--border)" />
                     <XAxis
@@ -66,7 +63,10 @@ export default function FinancialConditionChart({
                         axisLine={false}
                     />
                     <ChartTooltip
-                        cursor={{ fill: 'var(--muted)' }}
+                        cursor={{
+                            stroke: 'var(--muted-foreground)',
+                            strokeDasharray: '3 3',
+                        }}
                         content={({ active, label }) =>
                             active ? (
                                 <FinanceTooltip
@@ -94,17 +94,23 @@ export default function FinancialConditionChart({
                         }
                     />
                     {stacked.map((metric) => (
-                        <Bar
+                        <Area
                             key={metric.id}
                             dataKey={metric.id.replace('.', '_')}
                             name={metric.label}
+                            type="linear"
                             stackId="assets"
+                            stroke={`var(--color-${metric.id.replace('.', '_')})`}
+                            strokeWidth={2}
                             fill={`var(--color-${metric.id.replace('.', '_')})`}
-                            maxBarSize={40}
+                            fillOpacity={0.55}
+                            dot={false}
+                            activeDot={{ r: 4 }}
+                            connectNulls={false}
                             isAnimationActive={false}
                         />
                     ))}
-                </BarChart>
+                </AreaChart>
             </ChartContainer>
             <ul
                 aria-label="Legend"

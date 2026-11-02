@@ -183,7 +183,7 @@ await test('formatting retains combined notes, puts falls in parentheses and nev
         changeLabel({ ...change, change: '-1500000' }, 'php', true),
         '(₱1.5M)',
     );
-    assert.equal(changeLabel(change, 'php'), '+₱5.00');
+    assert.equal(changeLabel(change, 'php'), '₱5.00');
     assert.equal(
         observationLabel(point('-275749956.23'), 'php', true),
         '(₱275.75M)',

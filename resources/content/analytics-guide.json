@@ -184,27 +184,6 @@
             ]
         },
         {
-            "id": "development",
-            "title": "Budget and Actual Amounts",
-            "summary": "Actual amounts under the Development Fund and Economic Services headings.",
-            "metrics": [
-                {
-                    "id": "sector.development_fund",
-                    "label": "20% Development Fund",
-                    "meaning": "Actual amounts under the 20% Development Fund heading.",
-                    "formula": "Sum of reported actual amounts under the heading.",
-                    "inputs": []
-                },
-                {
-                    "id": "sector.economic_services",
-                    "label": "Economic Services",
-                    "meaning": "Actual amounts for offices such as agriculture, trade and tourism.",
-                    "formula": "Sum of reported actual amounts under the heading.",
-                    "inputs": []
-                }
-            ]
-        },
-        {
             "id": "business",
             "title": "Business Trends",
             "summary": "Annual registered business activity for one industry or Business Category. Shown only with simulated records.",

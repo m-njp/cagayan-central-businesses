@@ -294,6 +294,8 @@ These figures are always labeled General Fund. They are never added to, or compa
 
 ### M23. Budget and Actual Amounts
 
+**Withdrawn from display 26-11-03 by the owner.** The SCBAA amounts are reproducible, but its 20% Development Fund heading covers current appropriations only, while the Executive Summary reports a larger development fund from different amounts (2025: ₱54.56M actual of ₱224.54M in the workbook, against ₱147.46M of ₱340.15M in the Executive Summary). A reader cannot tell which is right from the dashboard alone. The lines stay parsed and stored (`displayed` 0) and return only with a definition that reconciles the two sources.
+
 Renamed 26-11-03 from Development Spending to the statement's own title. From the SCBAA (Statement of Comparison of Budget and Actual Amounts) sheet, Current Appropriations:
 
 | Line | Code |

@@ -4,7 +4,6 @@ import { FinanceToolbar } from '@/components/analytics/finance-toolbar';
 import { ExecutiveSummary } from '@/components/charts/executive-summary';
 import FinancePanel, { Figure } from '@/components/charts/finance-panel';
 import { FinanceTrends } from '@/components/charts/finance-trends';
-import { ObservationChange } from '@/components/charts/observation-change';
 import { RESULT_METRIC } from '@/components/charts/trend-mark';
 import {
     latestYear,
@@ -64,13 +63,12 @@ function FigureStrip({
                 >
                     <dt className="type-meta">{metric.label}</dt>
                     <dd className="flex flex-wrap items-baseline gap-x-2 font-mono type-item tabular-nums">
-                        <Figure point={point} metric={metric} alwaysShort />
-                        {metric.id !== RESULT_METRIC && (
-                            <ObservationChange
-                                point={point}
-                                unit={metric.unit}
-                            />
-                        )}
+                        <Figure
+                            point={point}
+                            metric={metric}
+                            alwaysShort
+                            withChange
+                        />
                     </dd>
                 </div>
             ))}
@@ -141,8 +139,7 @@ export function AnalyticsPanels({
                         trends={
                             <FinanceTrends
                                 history={finance}
-                                filters={filters}
-                                onChange={onChange}
+                                measure={filters.measure}
                             />
                         }
                     />

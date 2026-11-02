@@ -103,7 +103,7 @@ export function FinanceFiguresTable({
                     </Button>
                 </div>
             )}
-            <div className="overflow-hidden rounded-sm border bg-card">
+            <div className="overflow-hidden rounded-sm bg-card">
                 <Table className="w-full min-w-[40rem] table-fixed">
                     <colgroup>
                         {reviewing && <col className="w-10" />}

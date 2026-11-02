@@ -83,6 +83,7 @@ Later steps get their own plans: (2) finance data fixes with one new migration, 
 | :- | :- | :- |
 | "26-11-03" | Plan created as step 1 after the revert | Owner review of the wireframe in this session |
 | "26-11-03" | Added the finance data fixes, accounting labels from the reports, and Capitol parser upload | Owner: a frontend-only pass would not fix the original data entry and transparency problems |
+| "26-11-03" | Owner review of the Charts view: removed the figure tiles, one area chart for Results of Operation, stacked areas for Financial Condition and Revenue Sources, grouped bars for Budget Execution, no synchronized tooltips, one tooltip for an amount and its change, table lines and alternating rows as the shared default, Budget and Actual Amounts withdrawn from display | design.md "Dense Data Rule" and "Finance Charts"; metrics.md M23 |
 
 ## Verification and Handoff
 

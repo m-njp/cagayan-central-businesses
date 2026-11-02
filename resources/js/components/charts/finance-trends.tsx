@@ -1,19 +1,25 @@
 import { lazy } from 'react';
-import { ExactAmount } from '@/components/charts/exact-amount';
-import { ObservationChange } from '@/components/charts/observation-change';
 import PerformanceVisual from '@/components/charts/performance-visual';
-import { RESULT_METRIC } from '@/components/charts/trend-mark';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { focusedFinance } from '@/lib/finance-chart';
-import { observationLabel } from '@/lib/performance-format';
 import type {
     AnalyticsFilters,
     FinancialHistory,
 } from '@/types/economic-performance';
+import type { FinanceChartVariant } from '@/components/charts/finance-history-chart';
 
 const FinanceHistoryChart = lazy(
     () => import('@/components/charts/finance-history-chart'),
 );
+const FinancialConditionChart = lazy(
+    () => import('@/components/charts/financial-condition-chart'),
+);
+
+// One chart per measure, chosen for how its lines relate (design.md, "Finance Charts").
+const VARIANTS: Record<string, FinanceChartVariant> = {
+    totals: 'outcome',
+    revenue_sources: 'stacked',
+    budget: 'bars',
+};
 
 /** 3Y, 5Y and All in the report header; the years themselves show only in column headings and axes. */
 export function PeriodToggle({
@@ -65,163 +71,37 @@ export function PeriodToggle({
     );
 }
 
+/** The Charts view: one chart for the whole measure above its table, never a grid of figure tiles. */
 export function FinanceTrends({
     history,
-    filters,
-    onChange,
+    measure,
 }: {
     history: FinancialHistory;
-    filters: AnalyticsFilters;
-    onChange: (patch: Partial<AnalyticsFilters>) => void;
+    measure: string;
 }) {
-    const totals = filters.measure === 'totals';
-    const selected = focusedFinance(history, filters.metric);
-    const latest = history.rows.at(-1);
-    const plotted = {
-        ...history,
-        metrics: history.metrics.filter((metric) =>
-            totals ? metric.id !== RESULT_METRIC : metric.id === selected?.id,
-        ),
-    };
-    const result = {
-        ...history,
-        metrics: history.metrics.filter(
-            (metric) => metric.id === RESULT_METRIC,
-        ),
-    };
-    const hasValues = plotted.rows.some((row) =>
-        plotted.metrics.some(
+    const plotted = history.rows.some((row) =>
+        history.metrics.some(
             (metric) =>
                 row.observations[metric.id]?.state === 'shown' &&
                 row.observations[metric.id]?.value !== null,
         ),
     );
+    if (!plotted)
+        return (
+            <p role="status" className="py-6 type-body">
+                Not available for this period.
+            </p>
+        );
     return (
-        <div className="flex min-w-0 flex-col gap-3">
-            <div className="grid gap-3 sm:grid-cols-2">
-                {(totals ? plotted.metrics : history.metrics).map(
-                    (metric, index) => {
-                        const point = latest?.observations[metric.id];
-                        const exact = observationLabel(point, metric.unit);
-                        return (
-                            <div
-                                key={metric.id}
-                                className="flex min-w-0 flex-col items-start gap-1"
-                            >
-                                {totals ? (
-                                    <span className="flex items-center gap-2 type-body">
-                                        <svg
-                                            width="24"
-                                            height="8"
-                                            aria-hidden="true"
-                                        >
-                                            <line
-                                                x1="0"
-                                                y1="4"
-                                                x2="24"
-                                                y2="4"
-                                                stroke={`var(--chart-${index + 1})`}
-                                                strokeWidth="3"
-                                                strokeDasharray={
-                                                    index ? '6 4' : undefined
-                                                }
-                                            />
-                                        </svg>
-                                        {metric.label}
-                                    </span>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        aria-pressed={
-                                            selected?.id === metric.id
-                                        }
-                                        onClick={() =>
-                                            onChange({ metric: metric.id })
-                                        }
-                                        className="min-h-8 text-left type-body underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring aria-pressed:font-semibold aria-pressed:underline"
-                                    >
-                                        {metric.label}
-                                    </button>
-                                )}
-                                <span
-                                    className={
-                                        totals || selected?.id === metric.id
-                                            ? 'type-figure'
-                                            : 'font-mono type-item tabular-nums'
-                                    }
-                                >
-                                    <ExactAmount exact={exact}>
-                                        {observationLabel(
-                                            point,
-                                            metric.unit,
-                                            true,
-                                        )}
-                                    </ExactAmount>
-                                </span>
-                                <div className="flex flex-wrap items-center gap-2 type-meta">
-                                    <span>{latest?.year}</span>
-                                    <ObservationChange
-                                        point={point}
-                                        unit={metric.unit}
-                                        markOnly
-                                    />
-                                    {point?.comparable && (
-                                        <span>from {point.comparisonYear}</span>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    },
-                )}
-            </div>
-            {hasValues ? (
-                <PerformanceVisual>
-                    <FinanceHistoryChart history={plotted} legend={false} />
-                </PerformanceVisual>
+        <PerformanceVisual>
+            {measure === 'position' ? (
+                <FinancialConditionChart history={history} />
             ) : (
-                <p role="status" className="py-6 type-body">
-                    Not available for this period.
-                </p>
+                <FinanceHistoryChart
+                    history={history}
+                    variant={VARIANTS[measure] ?? 'lines'}
+                />
             )}
-            {totals && result.metrics.length > 0 && (
-                <div className="flex flex-col gap-2 border-t pt-3">
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <h3 className="type-item">{result.metrics[0].label}</h3>
-                        <span className="font-mono type-item tabular-nums">
-                            <ExactAmount
-                                exact={observationLabel(
-                                    latest?.observations[RESULT_METRIC],
-                                    'php',
-                                )}
-                            >
-                                {observationLabel(
-                                    latest?.observations[RESULT_METRIC],
-                                    'php',
-                                    true,
-                                )}
-                            </ExactAmount>
-                        </span>
-                    </div>
-                    <PerformanceVisual>
-                        {result.rows.some(
-                            (row) =>
-                                row.observations[RESULT_METRIC]?.state ===
-                                    'shown' &&
-                                row.observations[RESULT_METRIC]?.value !== null,
-                        ) ? (
-                            <FinanceHistoryChart
-                                history={result}
-                                result
-                                legend={false}
-                            />
-                        ) : (
-                            <p role="status" className="py-6 type-body">
-                                Not available for this period.
-                            </p>
-                        )}
-                    </PerformanceVisual>
-                </div>
-            )}
-        </div>
+        </PerformanceVisual>
     );
 }

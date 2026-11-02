@@ -4,6 +4,7 @@ import { SourceLine } from '@/components/analytics/source-line';
 import { ExactAmount } from '@/components/charts/exact-amount';
 import { ObservationChange } from '@/components/charts/observation-change';
 import PerformanceVisual from '@/components/charts/performance-visual';
+import { RESULT_METRIC, TrendMark } from '@/components/charts/trend-mark';
 import {
     Table,
     TableBody,
@@ -14,10 +15,12 @@ import {
 } from '@/components/ui/table';
 import { latestYear } from '@/lib/analytics';
 import {
+    changeLabel,
     citationLinks,
     observationLabel,
     observationNote,
 } from '@/lib/performance-format';
+import { trendOf } from '@/lib/trend';
 import type {
     AnalyticsCatalog,
     AnalyticsFilters,
@@ -41,13 +44,37 @@ export function Figure({
     point,
     metric,
     alwaysShort = false,
+    withChange = false,
 }: {
     point?: EconomicObservation;
     metric: EconomicMetric;
     alwaysShort?: boolean;
+    withChange?: boolean;
 }) {
     const exact = observationLabel(point, metric.unit);
     const short = observationLabel(point, metric.unit, true);
+    // One tooltip for the amount and its change; Net Income carries no arrow.
+    const trend =
+        withChange && metric.id !== RESULT_METRIC && point?.comparable
+            ? trendOf(point.change)
+            : null;
+    if (trend && point) {
+        // Accounting style: a fall reads in parentheses, a rise as a plain amount; no words or plus sign.
+        const change = changeLabel(point, metric.unit);
+        return (
+            <ExactAmount
+                exact={exact}
+                detail={`Change from ${point.comparisonYear}: ${change}`}
+            >
+                <span className="inline-flex items-center gap-1">
+                    {alwaysShort ? short : exact}
+                    <span className={trend.tone}>
+                        <TrendMark trend={trend} />
+                    </span>
+                </span>
+            </ExactAmount>
+        );
+    }
     if (exact === short) return <>{exact}</>;
     if (alwaysShort) return <ExactAmount exact={exact}>{short}</ExactAmount>;
     return (
@@ -148,22 +175,12 @@ export default function FinancePanel({
                                         key={row.year}
                                         className={numberCell}
                                     >
-                                        <div className="flex items-center justify-end gap-1">
-                                            <Figure
-                                                point={
-                                                    row.observations[metric.id]
-                                                }
-                                                metric={metric}
-                                                alwaysShort
-                                            />
-                                            <ObservationChange
-                                                point={
-                                                    row.observations[metric.id]
-                                                }
-                                                unit={metric.unit}
-                                                markOnly
-                                            />
-                                        </div>
+                                        <Figure
+                                            point={row.observations[metric.id]}
+                                            metric={metric}
+                                            alwaysShort
+                                            withChange
+                                        />
                                     </TableCell>
                                 ))}
                             </TableRow>

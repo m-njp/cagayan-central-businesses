@@ -185,7 +185,7 @@ export default function Businesses({
             </div>
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
                 <div className="min-w-0 space-y-4">
-                    <div className="overflow-x-auto rounded-sm border bg-card">
+                    <div className="overflow-x-auto rounded-sm bg-card">
                         <Table>
                             <TableHeader>
                                 <TableRow>

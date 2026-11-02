@@ -150,22 +150,6 @@ Basic real property tax, net of the reported discount.
 
 Calculation: Basic Real Property Tax minus its discount.
 
-## Budget and Actual Amounts
-
-Actual amounts under the Development Fund and Economic Services headings.
-
-### 20% Development Fund
-
-Actual amounts under the 20% Development Fund heading.
-
-Calculation: Sum of reported actual amounts under the heading.
-
-### Economic Services
-
-Actual amounts for offices such as agriculture, trade and tourism.
-
-Calculation: Sum of reported actual amounts under the heading.
-
 ## Business Trends
 
 Annual registered business activity for one industry or Business Category. Shown only with simulated records.
