@@ -67,7 +67,11 @@ final class ImportFinancesCommand extends Command
         $loads = fn (string $town, string $kind, string $availability = 'available') => $kind === FinanceDocumentKind::ExecutiveSummary->value
             || $availability !== 'available' || in_array($town, $workbookTowns, true);
         $documents = array_values(array_filter($documents, fn (array $item) => $loads($item['row']['psgc_code'], $item['row']['kind'], $item['row']['availability'])));
-        $extracted = array_values(array_filter($extracted, fn (array $item) => $loads($item['row']['psgc_code'], $item['row']['document_kind'])));
+        // Executive Summary lines beyond the totals load only for the configured towns (metrics.md M35).
+        $detailTowns = (array) config('cagayan.finances.summary_detail_towns');
+        $detailLines = (array) config('cagayan.finances.summary_detail_lines');
+        $extracted = array_values(array_filter($extracted, fn (array $item) => $loads($item['row']['psgc_code'], $item['row']['document_kind'])
+            && (! in_array($item['row']['line_code'], $detailLines, true) || in_array($item['row']['psgc_code'], $detailTowns, true))));
         $reviews = $this->read("{$folder}/reviews.csv", self::REVIEW_COLUMNS, required: false);
         $manual = $this->read("{$folder}/manual-figures.csv", self::MANUAL_COLUMNS, required: false);
 

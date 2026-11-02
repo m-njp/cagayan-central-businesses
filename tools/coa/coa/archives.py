@@ -19,11 +19,11 @@ SOURCE_COLUMNS = [
 
 def key(name: str) -> str:
     """Folder and file names spell towns differently ("Sto-Nino", "Sto.-Nino", "StoNiño")."""
-    ascii_name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
-    return re.sub(r"[^a-z]", "", ascii_name.lower())
+    asciiName = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z]", "", asciiName.lower())
 
 
-def add_workbooks(listing: Path, summaries: Path, target: Path) -> list[str]:
+def addWorkbooks(listing: Path, summaries: Path, target: Path) -> list[str]:
     """Each listing row names a downloaded ZIP, its exact COA URL and the download date."""
     towns = {}
     with (summaries / "sources.csv").open(encoding="utf-8", newline="") as handle:
@@ -31,10 +31,10 @@ def add_workbooks(listing: Path, summaries: Path, target: Path) -> list[str]:
             folder = Path(row["file"]).parts[1]
             towns[key(folder)] = (row["psgc_code"], row["town"], folder)
 
-    sources_path = target / "sources.csv"
+    sourcesPath = target / "sources.csv"
     existing = {}
-    if sources_path.exists():
-        with sources_path.open(encoding="utf-8", newline="") as handle:
+    if sourcesPath.exists():
+        with sourcesPath.open(encoding="utf-8", newline="") as handle:
             existing = {(r["year"], r["psgc_code"], r["kind"]): r for r in csv.DictReader(handle)}
 
     messages = []
@@ -46,7 +46,7 @@ def add_workbooks(listing: Path, summaries: Path, target: Path) -> list[str]:
                 raise ValueError(f"{archive.name}: cannot tell the town and year from the file name")
             year = found.group(2)
             psgc, town, folder = towns[key(found.group(1))]
-            archive_sha = hashlib.sha256(archive.read_bytes()).hexdigest()
+            archiveSha = hashlib.sha256(archive.read_bytes()).hexdigest()
             with zipfile.ZipFile(archive) as bundle:
                 for kind, (pattern, suffix) in MEMBERS.items():
                     members = [name for name in bundle.namelist() if pattern.search(name)]
@@ -60,12 +60,12 @@ def add_workbooks(listing: Path, summaries: Path, target: Path) -> list[str]:
                     existing[(year, psgc, kind)] = {
                         "year": year, "psgc_code": psgc, "town": town, "kind": kind,
                         "file": relative.as_posix(), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
-                        "archive_member": members[0], "archive_sha256": archive_sha,
+                        "archive_member": members[0], "archive_sha256": archiveSha,
                         "source_url": item["source_url"], "retrieved_on": item["retrieved_on"],
                     }
                     messages.append(f"{year} {town} {suffix}: {relative.as_posix()}")
 
-    with sources_path.open("w", encoding="utf-8", newline="") as handle:
+    with sourcesPath.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=SOURCE_COLUMNS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(sorted(existing.values(), key=lambda r: (r["year"], r["town"], r["kind"])))

@@ -14,7 +14,7 @@ export function ProfileSection({
     return (
         <section
             className={cn(
-                'flex flex-col gap-4 rounded-sm border bg-card p-4 md:p-5',
+                'flex flex-col gap-2 rounded-sm border bg-card p-3',
                 className,
             )}
         >

@@ -1,55 +1,52 @@
-import { WishTooltip } from '@/components/charts/wish-tooltip';
 import { formatCount } from '@/lib/format';
-import type { WishAggregate } from '@/types/economic-performance';
+import type { CommunityWishSnapshot } from '@/types/economic-performance';
 
+// One compact row per wish: label, bar scaled to the most wished, count. Every wish is listed, longest first.
 export default function WishRankingChart({
-    items,
-    townName,
+    snapshot,
 }: {
-    items: WishAggregate[];
-    townName: string;
+    snapshot: CommunityWishSnapshot;
 }) {
-    const maximum = Math.max(1, items[0]?.count ?? 0);
+    const { items, townName } = snapshot;
+    if (items.length === 0)
+        return (
+            <p role="status" className="py-4 type-body">
+                No wishes are available for this town.
+            </p>
+        );
+    const maximum = Math.max(1, ...items.map((item) => item.count));
     return (
-        <div
-            className="max-h-[30rem] overflow-y-auto overscroll-contain pr-2"
-            role="region"
+        <ol
+            className="grid max-h-72 gap-1 overflow-y-auto overscroll-contain pr-1"
             aria-label={`Business Wishes in ${townName}`}
-            tabIndex={0}
         >
-            <ol className="grid gap-1">
-                {items.map((item) => (
-                    <li key={item.id}>
-                        <WishTooltip item={item} townName={townName}>
-                            <div
-                                tabIndex={0}
-                                className="grid cursor-default gap-2 rounded-sm px-2 py-3 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                aria-label={`${item.label}: ${formatCount(item.count)} wishes in ${townName}`}
-                            >
-                                <div className="flex items-start justify-between gap-4">
-                                    <span className="min-w-0 type-body wrap-anywhere">
-                                        {item.label}
-                                    </span>
-                                    <span className="shrink-0 font-mono type-body tabular-nums">
-                                        {formatCount(item.count)}
-                                    </span>
-                                </div>
-                                <div
-                                    className="h-2 overflow-hidden rounded-sm bg-muted"
-                                    aria-hidden="true"
-                                >
-                                    <div
-                                        className="h-full rounded-sm bg-chart-1"
-                                        style={{
-                                            width: `${(item.count / maximum) * 100}%`,
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </WishTooltip>
-                    </li>
-                ))}
-            </ol>
-        </div>
+            {items.map((item) => (
+                <li
+                    key={item.id}
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 gap-y-0.5"
+                >
+                    <span
+                        className="truncate type-meta text-foreground"
+                        title={item.label}
+                    >
+                        {item.label}
+                    </span>
+                    <span className="font-mono type-data tabular-nums">
+                        {formatCount(item.count)}
+                    </span>
+                    <span
+                        className="col-span-2 h-1.5 rounded-sm bg-muted"
+                        aria-hidden="true"
+                    >
+                        <span
+                            className="block h-full rounded-sm bg-chart-1"
+                            style={{
+                                width: `${(item.count / maximum) * 100}%`,
+                            }}
+                        />
+                    </span>
+                </li>
+            ))}
+        </ol>
     );
 }

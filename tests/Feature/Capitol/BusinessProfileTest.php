@@ -101,6 +101,18 @@ it('hides admin fields, permit numbers and documents from Staff of another town'
         ->assertInertia(fn (Assert $page) => $page->where('business.admin.ownerName', 'Profile Owner')->has('business.documents', 1));
 });
 
+it('withholds a home-based pin from staff outside its town (P8)', function () {
+    $this->business->update(['is_storefront' => false]);
+
+    $this->actingAs(registryStaff(Municipality::factory()->create()))
+        ->get(route('capitol.businesses.show', $this->business))
+        ->assertInertia(fn (Assert $page) => $page->where('business.location', null));
+
+    $this->actingAs(registryStaff($this->town))
+        ->get(route('capitol.businesses.show', $this->business))
+        ->assertInertia(fn (Assert $page) => $page->has('business.location.lng')->has('business.location.lat'));
+});
+
 it('logs opening the edit form and a document, and never sends the full TIN to the form (P8, P9)', function () {
     $staff = registryStaff($this->town);
     Storage::disk('local')->put('registry/test/cor.pdf', '%PDF-1.4 test');

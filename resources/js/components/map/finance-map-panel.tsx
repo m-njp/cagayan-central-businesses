@@ -5,7 +5,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { RESULT_METRIC, ResultFigure } from '@/components/charts/trend-mark';
 import { financeMapObservation } from '@/lib/finance-map';
 import { formatFigure, formatNumber, sourceName } from '@/lib/format';
 import { financeMapSources, observationLabel } from '@/lib/performance-format';
@@ -137,19 +136,7 @@ export function FinanceMapFigures({
                             <div key={metric.id}>
                                 <dt className="type-label">{metric.label}</dt>
                                 <dd className="font-mono type-body tabular-nums">
-                                    {metric.id === RESULT_METRIC ? (
-                                        <ResultFigure
-                                            point={point}
-                                            className="justify-start"
-                                        >
-                                            {observationLabel(
-                                                point,
-                                                metric.unit,
-                                            )}
-                                        </ResultFigure>
-                                    ) : (
-                                        observationLabel(point, metric.unit)
-                                    )}
+                                    {observationLabel(point, metric.unit)}
                                 </dd>
                                 {!sharedCoverage && point?.coverage && (
                                     <dd className="type-meta">

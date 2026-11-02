@@ -447,14 +447,15 @@ The simulated dataset must make the demo walkthrough work every time. It is seed
 6. At least one barangay where one business exceeds the dominance threshold.
 7. At least one barangay and one business type with non-renewals rising two years in a row (early warning).
 8. At least one barangay clearly below its peer median.
-9. Every business point inside its barangay's boundary.
+9. Every business point inside its barangay's boundary, placed like a town: shops along a main street through the barangay's center on alternating sides, farms along a longer cross street (26-10-29). No random points.
 10. Wishes for several types, with at least one type wished for often and rarely registered.
 11. One administrator for the demo, with the password from `.env`, never in code.
 
 12. The presentation story in `cagayan.simulation.trends`: new food businesses near schools and new online businesses grow every year, and the declining barangay meets item 7.
 13. Records in every review state (draft, submitted, returned), with no history, so they stay out of every statistic; permits for every active year; placeholder documents reading "Simulated data".
+14. At most `simulation.max_per_barangay` (20) records per barangay, pending ones included, each with a local-style name unique in its barangay (26-10-29).
 
-Items 5 through 7, 9, 12 and 13 each have a test, so a seeder change cannot silently break the demo.
+Items 5 through 7, 9, 12, 13 and 14 each have a test, so a seeder change cannot silently break the demo.
 
 ### Transactional Finance Publication "26-10-28"
 

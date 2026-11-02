@@ -1,10 +1,10 @@
+import { SimulatedLabel } from '@/components/privacy/simulated-label';
 import { Head, Link, router } from '@inertiajs/react';
-import { BusinessBadges } from '@/components/business-badges';
+import { Achievements } from '@/components/business-badges';
 import { CategoryIcon } from '@/components/category-icon';
 import { DetailField, DetailGrid } from '@/components/detail-field';
 import { LazyBusinessMap } from '@/components/map/lazy-business-map';
 import { ProfileSection } from '@/components/profile-section';
-import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/format';
 import { icons } from '@/lib/icons';
 import { index, show } from '@/routes/public/businesses';
@@ -25,8 +25,8 @@ type Profile = {
     birVerifiedOn: string | null;
     permitStatus: string;
     permitValidUntil: string | null;
-    isNew: boolean;
     streak: number;
+    milestone: number | null;
     location: { lng: number; lat: number } | null;
     nearby: {
         id: string;
@@ -45,58 +45,38 @@ const PERMIT: Record<string, string> = {
 export default function PublicBusiness({ business }: { business: Profile }) {
     const Location = icons.location;
     const Back = icons.back;
+    const Bir = icons.birRegistered;
     const link = 'underline underline-offset-2';
 
     return (
         <>
             <Head title={business.name} />
-            <header className="flex items-start gap-2">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="mt-1 shrink-0"
-                    asChild
+            <header className="flex flex-col gap-1">
+                <Link
+                    href={index({
+                        query: {
+                            town: business.townCode,
+                            barangay: business.barangayCode,
+                        },
+                    })}
+                    className="inline-flex w-fit items-center gap-1 rounded-sm type-meta hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
-                    <Link
-                        href={index({
-                            query: {
-                                town: business.townCode,
-                                barangay: business.barangayCode,
-                            },
-                        })}
-                        aria-label="Back to Businesses"
-                    >
-                        <Back aria-hidden="true" />
-                    </Link>
-                </Button>
-                <div className="flex min-w-0 flex-col gap-2">
-                    <div className="flex items-start gap-3">
-                        <CategoryIcon
-                            {...business.category}
-                            className="mt-2 size-7"
-                        />
-                        <h1 className="type-title">{business.name}</h1>
-                    </div>
-                    <p className="inline-flex items-center gap-1.5 type-body text-muted-foreground">
-                        <Location
-                            className="size-4 shrink-0"
-                            aria-hidden="true"
-                        />
-                        {business.barangay}, {business.town}
-                    </p>
-                    <BusinessBadges
-                        bir={business.birVerifiedOn}
-                        permit={business.permitStatus}
-                        validUntil={business.permitValidUntil}
-                        isNew={business.isNew}
-                        streak={business.streak}
-                    />
-                </div>
+                    <Back className="size-4" aria-hidden="true" />
+                    Businesses
+                </Link>
+                <h1 className="type-title">{business.name}</h1>
+                <p className="inline-flex items-center gap-1.5 type-body text-muted-foreground">
+                    <Location className="size-4 shrink-0" aria-hidden="true" />
+                    {business.barangay}, {business.town}
+                </p>
             </header>
 
-            <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                <div className="flex min-w-0 flex-col gap-4">
+            <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                <div className="flex min-w-0 flex-col gap-3">
                     <ProfileSection title="About">
+                        <div className="flex justify-end">
+                            <SimulatedLabel />
+                        </div>
                         <p className="type-body">{business.description}</p>
                         <DetailGrid>
                             <DetailField label="Business Type">
@@ -129,11 +109,26 @@ export default function PublicBusiness({ business }: { business: Profile }) {
                                     `${PERMIT[business.permitStatus] ?? 'Valid until'} ${formatDate(business.permitValidUntil)}`}
                             </DetailField>
                             <DetailField label="BIR Registration">
-                                {business.birVerifiedOn &&
-                                    `Certificate checked ${formatDate(business.birVerifiedOn)}`}
+                                {business.birVerifiedOn && (
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <Bir
+                                            className="size-4 shrink-0 text-primary"
+                                            aria-hidden="true"
+                                        />
+                                        Certificate checked{' '}
+                                        {formatDate(business.birVerifiedOn)}
+                                    </span>
+                                )}
                             </DetailField>
                         </DetailGrid>
                     </ProfileSection>
+
+                    <Achievements
+                        milestone={business.milestone}
+                        since={business.yearEstablished}
+                        streak={business.streak}
+                        bir={business.birVerifiedOn}
+                    />
 
                     <ProfileSection title="Contact">
                         <DetailGrid>

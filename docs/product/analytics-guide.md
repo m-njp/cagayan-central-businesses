@@ -1,44 +1,84 @@
 # Understanding Analytics
 
-Reviewed 26-10-28. Shared explanations come from `resources/content/analytics-guide.json`; update that content and this guide together. Metric definitions remain authoritative in `docs/engineering/metrics.md`. The Help sheet on Economy and Analytics shows this content: Measures, then the notes below.
+Reviewed 26-10-29. Shared explanations come from `resources/content/analytics-guide.json`; update that content and this guide together. Metric definitions remain authoritative in `docs/engineering/metrics.md`. The Help sheet on Economy and Analytics shows this content: Measures, then the notes below.
 
 Figures come from COA Annual Audit Reports and appear only after sign-off.
 
-## Government Totals
+## Financial Condition
 
-Revenue is income the government recognized. Expenses are its recognized costs, including non-cash ones.
+What the government owned and owed on December 31. Loaded for Tuguegarao City only.
 
-### Government Revenue
+### Assets
 
-Total government revenue for the fiscal year.
-
-Calculation: Reported amount.
-
-### Government Expenses
-
-Total government expenses, including non-cash expenses and transfers.
+Everything the government owns, such as cash, receivables, land, buildings and roads.
 
 Calculation: Reported amount.
 
-### Surplus or Deficit
+### Liabilities
 
-Revenue less expenses. A negative amount is a deficit.
+Everything the government owes, such as payables, loans and funds held for others.
 
-Calculation: Revenue minus Expenses.
+Calculation: Reported amount.
+
+### Government Equity
+
+Assets minus Liabilities. It is not ownership; no one holds shares.
+
+Calculation: Reported amount.
+
+## Results of Operation
+
+Income the government earned and the costs it recognized in the year, including non-cash ones.
+
+### Income
+
+Government income for the fiscal year, including its share of national taxes. Not business income.
+
+Calculation: Reported amount.
+
+### Expenses
+
+Government expenses, including depreciation and transfers. Not cash paid.
+
+Calculation: Reported amount.
+
+### Net Income
+
+Income less Expenses. A loss is shown in parentheses.
+
+Calculation: Income minus Expenses.
 
 ## Budget Execution
 
-Appropriations authorize spending. Obligations are commitments made against that authority, not cash paid.
+Appropriations are the budget the council passed. Allotments release it to offices. Obligations are commitments made, not cash paid.
 
 ### Current Appropriations
 
-Spending authority for the current appropriations period.
+This year's budget, passed by ordinance.
+
+Calculation: Reported amount.
+
+### Current Allotments
+
+The part of this year's budget released to offices. Tuguegarao City only.
+
+Calculation: Reported amount.
+
+### Continuing Allotments
+
+Unused budget from the year before that remains available. Tuguegarao City only.
 
 Calculation: Reported amount.
 
 ### Current Obligations
 
-Commitments recorded against current appropriations.
+Commitments such as contracts and payroll charged to this year's budget.
+
+Calculation: Reported amount.
+
+### Continuing Obligations
+
+Commitments charged to continuing allotments. Tuguegarao City only.
 
 Calculation: Reported amount.
 
@@ -154,11 +194,11 @@ Calculation: Actual / final budget x 100.
 
 Government amounts divided by the latest census population at or before the fiscal year.
 
-### Revenue per Resident
+### Income per Resident
 
-Government revenue divided by census population.
+Government income divided by census population.
 
-Calculation: Revenue / census population.
+Calculation: Income / census population.
 
 ### Expenses per Resident
 
@@ -188,31 +228,13 @@ Businesses formally closed in the year.
 
 Calculation: Count of records marked closed.
 
-### Declared Sales
-
-Declared gross sales of the group, after the privacy guard.
-
-Calculation: Sum of declared gross sales.
-
-### Share of Active Businesses
-
-The group share of the town active businesses.
-
-Calculation: Group active / town active x 100.
-
-### Share of Declared Sales
-
-The industry share of town declared sales, where disclosure is permitted.
-
-Calculation: Industry sales / town sales x 100.
-
 ## Reading the Table
 
-Each row shows the selected fiscal year, the year before and the change between them. The Source line opens the COA report at the cited page. Change compares consecutive comparable years and does not rate performance. A missing figure says why.
+The Executive Summary lists each line as COA prints it, one column per fiscal year; a year opens its Yearly Summary. The Yearly Summary shows that year, the year before and the change between them. A loss or a fall in pesos is shown in parentheses. The Source line opens the COA report at the cited page. Change compares consecutive comparable years and does not rate performance. A missing figure says why.
 
 ## Coverage
 
-Fiscal years 2019 to 2025. Executive Summary totals cover all 29 towns for 2020 to 2024 and 13 towns for 2025. Breakdowns beyond totals are loaded for Tuguegarao City only. Full-year 2026 waits for a released report.
+Fiscal years 2019 to 2025. Executive Summary totals cover all 29 towns for 2020 to 2024 and 13 towns for 2025. Financial Condition, Allotments, Continuing Obligations and breakdowns beyond totals are loaded for Tuguegarao City only. Full-year 2026 waits for a released report.
 
 ## Sum of Reporting Towns
 

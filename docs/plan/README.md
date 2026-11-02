@@ -6,15 +6,21 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 
 ## Active and Deferred
 
+
+
 | Plan | Status | Scope |
 | :- | :- | :- |
-| [Finance Trends People Can Understand](active/26-10-29-finance-trends.md) | In progress | Shared chart-led finance view, local 3Y / 5Y / Max, focused breakdowns and annual changes |
+| [Executive Summary View and Net Income](active/26-10-29-executive-summary-view.md) | In progress | Default Executive Summary table with charts, COA words Income, Expenses and Net Income, Financial Condition and Allotments for Tuguegarao City; CI and design checks pending |
 | [Business Registry Records](active/26-10-28-business-registry-records.md) | In progress | Staff prepare and Admins review, record profile, form with map pin and documents, BIR and permit badges, public directory, presentation trend seeder |
 
 ## Archive
 
+[Home Navigation and Data Labels](archive/26-10-30-home-navigation-data-labels.md): completed 26-10-30. Frontend checks and build passed; full CI stopped at an unreadable Python cache directory.
+
 | Plan | Status | Reference |
 | :- | :- | :- |
+| [Finance Trends People Can Understand](archive/26-10-29-finance-trends.md) | Superseded 26-10-29 | Chart-led Trends default; Trends stays a view under the Executive Summary View plan |
+| [COA Parser Hardening](archive/26-10-29-coa-parser-hardening.md) | Completed 26-10-29 | Two PDF engines with fallback and digit confirmation, crash isolation and run log, wrapped Appropriations label fix, all 201 Tuguegarao cells tested, camelCase Python; 77 parser tests passed |
 | [Business Categories Revamp](archive/26-10-28-business-categories.md) | Completed 26-10-28, Focus Tag model superseded in part by D39 | Editable Business Types and Focus Tags, registered counts, local sort, search and paging, ten-color tag palette without a package (D38); full suite not run, light mode and edit forms not browser-checked |
 | [Finance Ledger Table Redesign and No Simulated Data](archive/26-10-28-finance-ledger-redesign.md) | Completed 26-10-28 | Simulated data off by default, one evidence store, stored PDF links, ledger table, short Help, and the polish: About the Data fix, year order, shared surplus and deficit display, exact amounts on hover, M26 percent over the prior magnitude; Capitol Analytics checked; 306 PHP tests passed |
 | [Make Analytics Understandable](archive/26-10-28-analytics-clarity.md) | Superseded 26-10-28 | Periods, local history and metrics stayed; layout, sources, Help and Compare replaced by the ledger redesign |

@@ -4,7 +4,6 @@ import { SourceLine } from '@/components/analytics/source-line';
 import { ExactAmount } from '@/components/charts/exact-amount';
 import { ObservationChange } from '@/components/charts/observation-change';
 import PerformanceVisual from '@/components/charts/performance-visual';
-import { RESULT_METRIC, ResultFigure } from '@/components/charts/trend-mark';
 import {
     Table,
     TableBody,
@@ -21,6 +20,7 @@ import {
 } from '@/lib/performance-format';
 import type {
     AnalyticsCatalog,
+    AnalyticsFilters,
     EconomicMetric,
     EconomicObservation,
     FinancialHistory,
@@ -35,9 +35,9 @@ const phone = 'type-data sm:type-body';
 
 /**
  * The exact figure from tablet width up and the short form on a phone, which shows the exact figure on hover, focus or
- * tap. Trends always uses the short form so several years fit. A Surplus or Deficit carries its green or red triangle.
+ * tap. Trends always uses the short form so several years fit. A negative amount reads in parentheses.
  */
-function Figure({
+export function Figure({
     point,
     metric,
     alwaysShort = false,
@@ -48,23 +48,15 @@ function Figure({
 }) {
     const exact = observationLabel(point, metric.unit);
     const short = observationLabel(point, metric.unit, true);
-    const shown =
-        exact === short ? (
-            exact
-        ) : alwaysShort ? (
-            <ExactAmount exact={exact}>{short}</ExactAmount>
-        ) : (
-            <>
-                <span className="hidden sm:inline">{exact}</span>
-                <span className="sm:hidden">
-                    <ExactAmount exact={exact}>{short}</ExactAmount>
-                </span>
-            </>
-        );
-    return metric.id === RESULT_METRIC ? (
-        <ResultFigure point={point}>{shown}</ResultFigure>
-    ) : (
-        <>{shown}</>
+    if (exact === short) return <>{exact}</>;
+    if (alwaysShort) return <ExactAmount exact={exact}>{short}</ExactAmount>;
+    return (
+        <>
+            <span className="hidden sm:inline">{exact}</span>
+            <span className="sm:hidden">
+                <ExactAmount exact={exact}>{short}</ExactAmount>
+            </span>
+        </>
     );
 }
 
@@ -84,7 +76,7 @@ export default function FinancePanel({
 }: {
     history: FinancialHistory;
     catalog: AnalyticsCatalog;
-    presentation: 'summary' | 'trends';
+    presentation: AnalyticsFilters['presentation'];
     year: number | null;
     town: string;
     onYear: (year: number) => void;
@@ -110,7 +102,7 @@ export default function FinancePanel({
 
     if (presentation === 'trends')
         return (
-            <div className="flex min-w-0 flex-col gap-3">
+            <div className="flex min-w-0 flex-col gap-2">
                 {trends ??
                     (plotted && (
                         <PerformanceVisual>
@@ -129,7 +121,7 @@ export default function FinancePanel({
                                 >
                                     <button
                                         type="button"
-                                        className="min-h-10 underline underline-offset-2"
+                                        className="min-h-8 underline underline-offset-2"
                                         onClick={() => onYear(row.year)}
                                     >
                                         {row.year}
@@ -147,7 +139,7 @@ export default function FinancePanel({
                             <TableRow key={metric.id}>
                                 <TableHead
                                     scope="row"
-                                    className="h-auto py-3 font-normal whitespace-normal"
+                                    className="h-auto py-1.5 font-normal whitespace-normal"
                                 >
                                     {metric.label}
                                 </TableHead>
@@ -156,7 +148,7 @@ export default function FinancePanel({
                                         key={row.year}
                                         className={numberCell}
                                     >
-                                        <div className="flex flex-col items-end gap-0.5">
+                                        <div className="flex items-center justify-end gap-1">
                                             <Figure
                                                 point={
                                                     row.observations[metric.id]
@@ -169,6 +161,7 @@ export default function FinancePanel({
                                                     row.observations[metric.id]
                                                 }
                                                 unit={metric.unit}
+                                                markOnly
                                             />
                                         </div>
                                     </TableCell>
@@ -203,7 +196,7 @@ export default function FinancePanel({
     );
 
     return (
-        <div className="flex min-w-0 flex-col gap-3">
+        <div className="flex min-w-0 flex-col gap-2">
             <Table className={phone}>
                 <TableHeader>
                     <TableRow>
@@ -226,7 +219,7 @@ export default function FinancePanel({
                             <TableRow key={metric.id}>
                                 <TableHead
                                     scope="row"
-                                    className="h-auto py-3 font-normal whitespace-normal"
+                                    className="h-auto py-1.5 font-normal whitespace-normal"
                                 >
                                     {metric.label}
                                     {notes[index] &&

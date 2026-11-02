@@ -126,9 +126,9 @@ export type BusinessProfile = {
     birVerifiedOn: string | null;
     permitStatus: string;
     permitValidUntil: string | null;
-    isNew: boolean;
     streak: number;
-    location: { lng: number; lat: number };
+    milestone: number | null;
+    location: { lng: number; lat: number } | null;
     recordStatus: string;
     submittedBy: string | null;
     submittedAt: string | null;

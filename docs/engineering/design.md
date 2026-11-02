@@ -458,11 +458,11 @@ Source
 Executive Summary 2025 p. 2
 ```
 
-- **Yearly Summary** is a table of the year before beside the selected fiscal year, then the change, so a 2025 filter reads 2024 then 2025 (oldest to newest, as Trends does; corrected 26-10-28). The previous year and the change are always shown, so there is no Compare control. Item labels wrap; amounts are right-aligned `font-mono tabular-nums`; the change is the existing triangle and percentage (`text-trend-up`, `text-trend-down`), direction only, never a rating (M26).
+- **Yearly Summary** is a table of the year before beside the selected fiscal year, then the change, so a 2025 filter reads 2024 then 2025 (oldest to newest, as Trends does; corrected 26-10-28). The previous year and the change are always shown, so there is no Compare control. Item labels wrap; amounts are right-aligned `font-mono tabular-nums`; the change is the triangle and the short amount, no percentage (corrected 26-10-29; `text-trend-up`, `text-trend-down`), direction only, never a rating (M26).
 - **Trends** is the existing chart, then the same table with the period's years as columns. Years are underlined buttons: choosing one opens the Yearly Summary for that year with local history, which is the way from a trend to its source. The table uses the short peso form (₱1.68B), with the exact figure kept for screen readers.
 - **Exact amounts on hover.** Every abbreviated peso figure (the short form on a phone and every Trends cell) and every Change cell is an `ExactAmount`: hover, focus or tap shows the exact peso amount, such as "-₱58,651,101.96 from 2024". Tooltips never carry sources. The trigger is a real button with the exact text as its accessible name.
 - **Surplus or Deficit, one display.** `lib/trend.ts` and `components/charts/trend-mark.tsx` are the only place that decides it: a surplus is green with a ▲, a deficit is red with a ▼, zero, missing and hidden figures are neutral with no triangle. `ObservationChange`, `ResultFigure`, the Yearly Summary and Trends rows, the chart tooltip and the map panels all use them with the `--trend-up` and `--trend-down` tokens. Never write the triangle or its color inline. It marks direction and sign, not a rating.
-- **Trends changes.** Each year cell shows the amount with its tooltip and, below it, the change from the year before as a mark and a percent (none for a year without a comparable year before).
+- **Trends changes.** Each year cell shows the amount with its tooltip and the triangle beside it, the exact change on hover (no percent since 26-10-29; none for a year without a comparable year before).
 - **Phones** keep the same four columns: amounts use the short form below the `sm` breakpoint (exact figure for screen readers), cell padding and type shrink, and the table never overflows the page.
 - **Missing, hidden and not available.** A cell reads "Not available" or "Hidden to protect individual businesses", never `0`. The reason (not published by COA, workbook not loaded, awaiting sign-off, census, restated, coverage) prints once under the table when every row shares it, otherwise under its own item label.
 
@@ -500,12 +500,63 @@ User-approved successor to Government Finances Ledger Table: public Economy and 
 
 Approved with D40. The Capitol record and the public profile read like a formal profile, not a long form: a header card with the type icon tile, name, Category chip, type, barangay and Since year, and one row of badges; then compact cards in two columns from `lg` (main content, then a 20 to 22rem side rail). No long single-column rows and no empty side strip.
 
-- **Badges.** BIR Registered (our own shield badge, the checked date on hover), Permit Valid, Expiring or Expired (M32, status dots), Storefront or Home Based, and on Capitol only the dashed record state (Draft, For Review, Returned). Color is never the only signal.
-- **Simulated color.** The layout's Simulated data tag is filled amber (`--simulated`) in both modes so a presentation set is unmistakable.
+- **Badges.** Superseded 26-10-29 by "Businesses and Economy Polish" below: no Permit Valid and no New badge anywhere; Expiring and Expired stay, with the dashed record state on Capitol only. Color is never the only signal.
+- **Simulated color.** The layout's Simulated data tag is an amber (`--simulated`) bordered tag with a dot, in sentence case at the top right, in both modes so a presentation set is unmistakable.
 - **Capitol record.** About, Owner and Registration (TIN masked), Permits, Documents as tiles that open the private file, Registration History as year tiles; side rail Location map with the street address, Business Contact, and Review. Admins approve or return with a required reason from the Review card. Staff see Edit.
 - **Directory.** Tabs All, For Review, Returned, Drafts with counts; names link to the record; Permit column; Barangay filter. Add a Business is the one primary button, for Staff.
 - **Form.** One page: field groups in two columns on the left, and a sticky Location card on the right with Town, Barangay, Street Address and the pin map. Choosing a barangay frames it; a click or drag sets the pin, and a pin in another barangay selects it. Save Draft and Submit for Review. A returned record shows the reason above the form.
-- **Public, corrected by the user "26-10-29".** Nothing loads until a town is chosen; each town's businesses load once and are cached, and every other filter is local. A list row is the category icon in muted ink, the name, "Barangay, Town", and only the BIR shield when registered. No result count, uppercase eyebrow, type, description, Since year, icon tiles, permit or streak marks on rows.
-- **Profile.** The back button sits on the header line, then the category icon and name, "Barangay, Town", and the badges. Below, two columns: About (description, then labels over values in two columns: Business Type, Category, Established, Renewal Streak, Business Permit, BIR Registration), Contact, and More in {barangay} with names and category icons; a sticky Location card with a tall map showing the barangay's other storefronts as dots and this business as a pin. No boxed fields and no ruled table rows. Section headings use `type-item` in Title Case, never `type-label` capitals.
+- **Public, corrected by the user "26-10-29".** Nothing loads until a town is chosen; each town's businesses load once and are cached, and every other filter is local. A list row is the category icon in muted ink and the name, with the milestone and BIR marks in fixed slots (corrected again below, "Businesses and Economy Polish"). No result count, uppercase eyebrow, type, description, Since year, icon tiles, permit or streak marks on rows.
+- **Profile.** Header corrected below ("Businesses and Economy Polish"): back link above the name, then "Barangay, Town". Below, two columns: About (description, then labels over values in two columns: Business Type, Category, Established, Renewal Streak, Business Permit, BIR Registration), Contact, and More in {barangay} with names and category icons; a sticky Location card with a tall map showing the barangay's other storefronts as dots and this business as a pin. No boxed fields; fields are ruled like a table to the card's edges. Section headings use `type-item` in Title Case, never `type-label` capitals.
 - **Badges** (`BusinessBadges`, `BirMark`). Quiet mono: a bordered BIR badge with its shield, a bordered permit badge with its status dot and word (Valid, Expiring, Expired), and muted sparkle New and flame streak marks, each named in a tooltip and for screen readers. Color is only on the permit dot and the BIR shield.
 - **One map** (`BusinessMap`) for the list, both profiles and the form: dashed muted barangay outlines, the chosen barangay darker, tinted and framed, primary dots for storefronts, and the business itself as a primary tag with its category icon and a pointer.
+
+## Businesses and Economy Polish "26-10-29"
+
+User corrections from screenshots of the profile, the directory and Economy. They supersede the Business Registry and Government Finances Ledger Table bullets they contradict.
+
+- **Dates** read mm-dd-yyyy everywhere (12-31-2026), from `formatDate` only.
+- **Profile header.** A small underlined "Businesses" back link with its arrow above the title, so the title, address and cards share one left edge. No category icon beside the name and no badge row under it.
+- **Profile fields.** `DetailGrid` is ruled like a table: a line above the first row and between every cell, running to the card's edges, with field text aligned to the card's text; cards use 12px padding and 8px gaps. BIR Registration reads the shield and "Certificate checked 01-20-2026" inside About.
+- **Achievements.** One card of hexagonal ribboned medals set close together, each with a title and one detail line: M34 Operating Milestone (brass, the years on its face, "Since 2004"), M33 Renewal Streak (solid filled flame and count), BIR Registered (shield, "Checked 01-20-2026"). Hidden when nothing is earned.
+- **No New, no Valid.** No New badge, New This Year filter or sparkle icon. A valid permit has no badge; Expiring, Expired and No Permit on File keep theirs.
+- **Directory.** Filters in one grid row: Town, Search with a leading search icon, Barangay, Category, then BIR Registered. Rows show the category icon and the name only, with two fixed right slots (milestone mark, BIR shield) so rows align. From `lg` the list and map share one fixed-height panel; the list scrolls inside it with Show More at its end.
+- **Map area.** The chosen barangay has a solid primary outline and a name tag in the top left; the rest of the town is dimmed.
+- **Changes.** No percentages. Trends cells show the figure with the triangle beside it; a Change column shows the triangle and the short amount; the exact amount stays on hover through `ExactAmount`. Negative pesos read in accounting style, (₱58.65M), and keep their red down triangle.
+- **Economy.** Panels use 12px padding and tighter charts. Business Trends shows counts only: Declared Sales and Share of Town were removed. The right column is sticky and holds the Town Explorer map and Community Wishes, so no empty strip remains.
+- **Community Wishes.** On Economy, one compact ranked list with thin horizontal bars and every wish, no view switcher.
+- **Home wish cloud.** The Home wish card holds the `@visx/wordcloud` word cloud (`WishCloud`) between its heading, with the Sample Data label, and Share Your Wish: horizontal words packed on an archimedean spiral with a fixed generator, sized on a log scale, the most wished in brand blue, then teal, then muted. No counts on the words; hover, focus or tap shows the original `WishTooltip` (label, town, wishes). A layout that cannot place every word is redone with smaller sizes, so no wish is dropped. Lazy loaded. The Economy action becomes one row below it: heading left, Explore the Economy right.
+
+## Kita Brand "26-10-29"
+
+The app is named Kita (`APP_NAME`). Logos come only from the official files in `docs/brand`, copied to `public/brand` and drawn by `KitaLogo` (`components/kita-logo.tsx`), which picks the reverse file on dark surfaces and never recolors, stretches or retypes them.
+
+- **Public top line.** The horizontal lockup (28 px high) links home, then icon and text links from `lg` with the brass underline on the current section, then the appearance toggle and the Simulated data tag behind a divider. A hairline border closes the line; it still scrolls away.
+- **Footer.** Brand ink: the stacked reverse logo with one sentence on the initiative; Explore (the four sections), Sources (PSA, COA, OpenStreetMap, external links) and Government columns; a bottom row with the Kita icon and name, and Digital Innovation Challenge 2026. No link to the Capitol (D20).
+- **Capitol and Sign In.** The Capitol sidebar shows the horizontal lockup; the Sign In brand panel shows the stacked reverse logo. The browser tab uses the Kita icon.
+
+## Executive Summary View "26-10-29"
+
+User-approved simplification for public Economy and Capitol Analytics. It supersedes the Trends default in "Finance Trends", and every Surplus or Deficit triangle rule in "Government Finances Ledger Table", "Economic Map Cleanup" and "Businesses and Economy Polish".
+
+**The question.** What did this town's government own, owe, earn, spend and budget each year, as COA printed it?
+
+- **Default view.** View offers Executive Summary (default), Yearly Summary and Trends. Executive Summary has no Show or Fiscal Year picker; Period (3Y, 5Y, Max, default Max) sits beside the year range.
+- **One table.** Item, then one column per fiscal year, oldest to newest. Three sections in COA's order, each a `type-label` row: Financial Condition (Assets, Liabilities, Government Equity), Results of Operation (Income, Expenses, Net Income), Budget Execution (Current Appropriations, Current Allotments, Continuing Allotments, Current Obligations, Continuing Obligations). The Item column is sticky; the table scrolls inside its card, never the page.
+- **Amounts.** Exact pesos when three years or fewer are shown. Longer periods use the short form (₱1.68B) with the exact amount on hover, focus or tap through `ExactAmount`, as Trends does. A year heading opens that year's Yearly Summary with local history.
+- **Net Income.** Income minus Expenses (M19). A loss reads in accounting parentheses, (₱6.54M), with no triangle and no green or red, everywhere: the table, Yearly Summary, Trends, chart tooltips and both economic map panels. Triangles remain only on Change cells and Trends change marks, as direction, never a rating.
+- **Words.** Income, Expenses and Net Income under the Government Finances heading; "Government Income" on map legends, which have no such heading. The Show group formerly called Government Totals is Results of Operation.
+- **Charts.** Below the table, side by side from `lg`: Results of Operation (Income and Expenses lines) and Financial Condition (Liabilities and Government Equity stacked, so each bar is Assets), with `--chart-*` tokens, lazy loaded, the table as their alternative.
+- **Missing.** A row a town lacks reads Not available in every cell with the reason once under its label, such as "Loaded for Tuguegarao City only" (M35). Never `0`.
+- **Sources.** One Source line, one link per distinct report page, sorted by report year then page.
+
+## Public Navigation and Data Labels "26-10-30"
+
+User correction supersedes the Kita Brand top-line icons and underline. Desktop navigation uses text-only links with a filled selected background, visible keyboard focus and no underline. The public navbar has no Simulated data tag. Sample Data labels sit at the upper right of the Home and Economy wish cards, using a red token-based bordered badge. Public simulated business labels use the shared config-driven SimulatedLabel inside the directory, profile and Business Trends content; Capitol retains its layout label. No extra explanatory copy or navigation icons.
+
+## Achievements Redesign "26-10-30"
+
+User correction supersedes the custom hexagonal ribbon medals in Businesses and Economy Polish. The shared Achievements card uses lucide-react Award, Flame and ShieldCheck icons from the semantic icon registry, with compact bordered panels, clear values and short details. Stack panels as rows on phones and columns from sm. Keep operating milestone, renewal streak and BIR eligibility unchanged; omit the card when none are earned. No custom medal SVG, ribbon tails or additional animation.
+
+## Original Achievements Restored "26-10-30"
+
+Latest user correction supersedes both attempted external badge packs and the generic icon panels. Retain the original compact hexagonal medals and ribbon tails, original colors, titles, values and details. Refinement is limited to a continuous quiet inner outline, slightly lighter ribbons and more breathing room within the medal face. The original card and wrapping arrangement remain. No external artwork, new dependency, metric or eligibility changes.

@@ -29,6 +29,8 @@ export function PermitBadge({
     status: string;
     validUntil?: string | null;
 }) {
+    // A valid permit is the expected state, so only a problem gets a badge.
+    if (status === 'valid') return null;
     const permit = PERMIT_STATUS[status] ?? PERMIT_STATUS.none;
     if (!validUntil) return <StatusBadge {...permit} />;
 

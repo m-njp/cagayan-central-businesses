@@ -1,18 +1,16 @@
 import {
     Bar,
     CartesianGrid,
-    Cell,
     ComposedChart,
     Line,
     ReferenceLine,
     XAxis,
     YAxis,
 } from 'recharts';
-import { RESULT_METRIC, ResultFigure } from '@/components/charts/trend-mark';
+import { RESULT_METRIC } from '@/components/charts/trend-mark';
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import { financeChartSeries } from '@/lib/finance-chart';
 import { formatMetricTick, observationLabel } from '@/lib/performance-format';
-import { trendOf } from '@/lib/trend';
 import type { FinancialHistory } from '@/types/economic-performance';
 
 export default function FinanceHistoryChart({
@@ -53,13 +51,13 @@ export default function FinanceHistoryChart({
         <div className="flex min-w-0 flex-col gap-2">
             <ChartContainer
                 config={config}
-                className={`aspect-auto w-full font-mono tabular-nums ${result ? 'h-44 sm:h-48' : 'h-72 sm:h-80'}`}
+                className={`aspect-auto w-full font-mono tabular-nums ${result ? 'h-32 sm:h-36' : 'h-48 sm:h-56'}`}
                 role="group"
                 aria-label={`${metrics.map((metric) => metric.label).join(' and ')} by year. Exact values are listed in the table.`}
             >
                 <ComposedChart
                     data={data}
-                    margin={{ top: 16, right: 16, bottom: 8, left: 0 }}
+                    margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
                     accessibilityLayer
                     syncId="finance-trends"
                 >
@@ -124,13 +122,7 @@ export default function FinanceHistoryChart({
                                                 <span className="font-sans">
                                                     {metric.label}
                                                 </span>
-                                                {metric.id === RESULT_METRIC ? (
-                                                    <ResultFigure point={point}>
-                                                        {value}
-                                                    </ResultFigure>
-                                                ) : (
-                                                    <span>{value}</span>
-                                                )}
+                                                <span>{value}</span>
                                             </div>
                                         );
                                     })}
@@ -141,21 +133,11 @@ export default function FinanceHistoryChart({
                     {result ? (
                         <Bar
                             dataKey="result"
-                            name="Surplus or Deficit"
+                            name={metrics[0]?.label}
+                            fill="var(--color-series0)"
                             maxBarSize={32}
                             isAnimationActive={false}
-                        >
-                            {data.map((row) => (
-                                <Cell
-                                    key={row.year}
-                                    fill="currentColor"
-                                    className={
-                                        trendOf(row.result)?.tone ??
-                                        'text-muted-foreground'
-                                    }
-                                />
-                            ))}
-                        </Bar>
+                        />
                     ) : (
                         segments.map((segment, index) => (
                             <Line

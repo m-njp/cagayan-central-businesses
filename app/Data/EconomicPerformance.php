@@ -6,7 +6,7 @@ namespace App\Data;
 final readonly class EconomicPerformance
 {
     /**
-     * @param  array{town: string, period: string, measure: string, dimension: string, group: string|null, wishView: string}  $filters
+     * @param  array{town: string, period: string, measure: string, dimension: string, group: string|null}  $filters
      * @param  array<string, CommunityWishSnapshot>  $wishes
      */
     public function __construct(

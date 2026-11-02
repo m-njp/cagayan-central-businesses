@@ -1,6 +1,6 @@
 import { usePage } from '@inertiajs/react';
 
-// Rendered only by the shared layouts, never by a page (privacy-rules.md, P13). Home explains it under "About the data".
+// The shared config keeps labels consistent in layouts and the cards containing simulated records.
 export function SimulatedLabel() {
     const { simulated } = usePage().props;
 
@@ -10,7 +10,7 @@ export function SimulatedLabel() {
 
     return (
         <span
-            className="shrink-0 rounded-sm bg-simulated px-1.5 py-0.5 font-mono text-xs font-medium text-simulated-foreground"
+            className="inline-flex shrink-0 items-center rounded-sm border border-destructive-foreground/30 bg-destructive-foreground/10 px-2 py-0.5 type-meta font-medium text-destructive-foreground"
             data-test="simulated-label"
         >
             Simulated data

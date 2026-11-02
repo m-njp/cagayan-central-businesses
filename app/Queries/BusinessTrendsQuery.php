@@ -6,18 +6,15 @@ use App\Data\BusinessTrends;
 use App\Data\EconomicMetric;
 use App\Data\EconomicObservation;
 use App\Data\FinancialHistory;
-use App\Data\GuardedFigure;
 use App\Data\SelectOption;
 use App\Models\Municipality;
-use App\Services\Privacy\PrivacyGuard;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
 /**
- * M28 to M31 for the connected town, summed from stats_area_year in SQL. Sales pass through the privacy guard
- * per year across each breakdown (P4); the public variant receives bands only and no sales share (P7). Categories cross
- * industries, so their sales are bands for every audience: an exact category figure minus an industry could expose a hidden group (D39).
+ * M28 active, new and closed business counts for the connected town by industry or Business Category, summed from
+ * stats_area_year in SQL. No sales figure is sent: declared sales were removed from Business Trends (26-10-29).
  */
 final class BusinessTrendsQuery
 {
@@ -27,9 +24,7 @@ final class BusinessTrendsQuery
         'closed' => 'Closed Businesses',
     ];
 
-    public function __construct(private PrivacyGuard $guard) {}
-
-    public function get(bool $public): ?BusinessTrends
+    public function get(): ?BusinessTrends
     {
         // Business records are simulated until a real registry is loaded, so nothing shows unless the label can show too (P13).
         if (! config('cagayan.simulated')) {
@@ -45,7 +40,6 @@ final class BusinessTrendsQuery
         $industries = [];
         $categories = [];
         $datasets = [];
-        $guarded = $this->guardSales($cells);
         $years = range((int) $cells->min('year'), (int) $cells->max('year'));
         foreach ($cells->groupBy(fn (stdClass $cell) => "{$cell->dimension}:{$cell->code}") as $key => $series) {
             $first = $series->first();
@@ -55,12 +49,7 @@ final class BusinessTrendsQuery
             } else {
                 $industries[] = $option;
             }
-            $banded = $public || $first->dimension === 'category';
-            $datasets[$key] = [
-                'counts' => $this->withGaps($this->counts($series), $years),
-                'sales' => $this->withGaps($this->sales($series, $guarded, $banded), $years),
-                'share' => $this->withGaps($this->share($series, $guarded, $banded), $years),
-            ];
+            $datasets[$key] = $this->withGaps($this->counts($series), $years);
         }
 
         return new BusinessTrends($town->psgc_code, $town->name, ['industry' => $industries, 'category' => $categories], $datasets);
@@ -72,8 +61,7 @@ final class BusinessTrendsQuery
         return collect(DB::select(<<<'SQL'
             with cells as (
                 select 'industry' as dimension, t.psic_section as code, t.psic_section_name as label, s.year,
-                    sum(s.active_count) as active, sum(s.new_count) as new, sum(s.closed_count) as closed,
-                    sum(s.declared_sales_total) as sales, max(s.declared_sales_max_single) as max_single
+                    sum(s.active_count) as active, sum(s.new_count) as new, sum(s.closed_count) as closed
                 from stats_area_year s
                 join barangays g on g.id = s.barangay_id
                 join business_types t on t.id = s.business_type_id
@@ -81,8 +69,7 @@ final class BusinessTrendsQuery
                 group by t.psic_section, t.psic_section_name, s.year
                 union all
                 select 'category', c.code, c.name, s.year,
-                    sum(s.active_count), sum(s.new_count), sum(s.closed_count),
-                    sum(s.declared_sales_total), max(s.declared_sales_max_single)
+                    sum(s.active_count), sum(s.new_count), sum(s.closed_count)
                 from stats_area_year s
                 join barangays g on g.id = s.barangay_id
                 join business_types t on t.id = s.business_type_id
@@ -97,36 +84,11 @@ final class BusinessTrendsQuery
                 new - lag(new) over w as new_change,
                 round((new - lag(new) over w) * 100.0 / nullif(lag(new) over w, 0), 1) as new_percent,
                 closed - lag(closed) over w as closed_change,
-                round((closed - lag(closed) over w) * 100.0 / nullif(lag(closed) over w, 0), 1) as closed_percent,
-                sales - lag(sales) over w as sales_change,
-                round((sales - lag(sales) over w) * 100.0 / nullif(lag(sales) over w, 0), 1) as sales_percent,
-                -- Industries and categories each partition the town but cross each other (D39), so town totals come from industries.
-                sum(active) filter (where dimension = 'industry') over y as town_active,
-                sum(sales) filter (where dimension = 'industry') over y as town_sales,
-                max(max_single) filter (where dimension = 'industry') over y as town_max_single,
-                round(active * 100.0 / nullif(sum(active) filter (where dimension = 'industry') over y, 0), 1) as count_share,
-                round(sales * 100.0 / nullif(sum(sales) filter (where dimension = 'industry') over y, 0), 1) as sales_share
+                round((closed - lag(closed) over w) * 100.0 / nullif(lag(closed) over w, 0), 1) as closed_percent
             from cells
-            window w as (partition by dimension, code order by year), y as (partition by year)
+            window w as (partition by dimension, code order by year)
             order by dimension, label, year
             SQL, [$townId, $townId]));
-    }
-
-    /**
-     * @param  Collection<int, stdClass>  $cells
-     * @return array<string, GuardedFigure> keyed "dimension:code:year"
-     */
-    private function guardSales(Collection $cells): array
-    {
-        $guarded = [];
-        foreach ($cells->groupBy(fn (stdClass $cell) => "{$cell->dimension}:{$cell->year}") as $breakdown) {
-            $figures = $this->guard->breakdown($breakdown->mapWithKeys(fn (stdClass $cell) => [
-                "{$cell->dimension}:{$cell->code}:{$cell->year}" => ['total' => (string) $cell->sales, 'count' => (int) $cell->active, 'maxSingle' => (string) $cell->max_single],
-            ])->all());
-            $guarded = [...$guarded, ...$figures];
-        }
-
-        return $guarded;
     }
 
     /** @param  Collection<int, stdClass>  $series */
@@ -146,77 +108,6 @@ final class BusinessTrendsQuery
             metrics: array_map(fn (string $id, string $label) => new EconomicMetric($id, $label, 'count', 'Registered businesses only'), array_keys(self::COUNTS), self::COUNTS),
             rows: $rows,
             axisMaximum: (string) $series->max('active'),
-            note: 'Registered businesses only',
-        );
-    }
-
-    /**
-     * @param  Collection<int, stdClass>  $series
-     * @param  array<string, GuardedFigure>  $guarded
-     */
-    private function sales(Collection $series, array $guarded, bool $public): FinancialHistory
-    {
-        $rows = [];
-        $previous = null;
-        foreach ($series as $cell) {
-            $figure = $guarded["{$cell->dimension}:{$cell->code}:{$cell->year}"];
-            $comparable = $previous !== null && $cell->prior_year !== null && (int) $cell->prior_year === (int) $cell->year - 1
-                && $this->guard->derived($figure, $previous) === null;
-            $shown = $public ? $this->guard->band($figure) : $figure;
-            $rows[] = ['year' => (int) $cell->year, 'observations' => ['sales' => new EconomicObservation(
-                state: $figure->state,
-                value: $shown->value,
-                // P7: the public sees bands, so no numeric change either.
-                comparable: $comparable && ! $public,
-                change: $comparable && ! $public ? (string) $cell->sales_change : null,
-                percentageChange: $comparable && ! $public && $cell->sales_percent !== null ? (float) $cell->sales_percent : null,
-                comparisonYear: $comparable && ! $public ? (int) $cell->year - 1 : null,
-                reason: $figure->reason,
-                band: $shown->band,
-            )]];
-            $previous = $figure;
-        }
-
-        $max = collect($rows)->map(fn (array $row) => $row['observations']['sales']->value)->filter()->max();
-
-        return new FinancialHistory(
-            metrics: [new EconomicMetric('sales', 'Declared Sales', 'php', 'Declared business activity, not the income of residents or of the barangay government')],
-            rows: $rows,
-            axisMaximum: (string) ($max ?? '0'),
-            note: 'Declared business activity, not the income of residents or of the barangay government',
-        );
-    }
-
-    /**
-     * M30. The sales share is hidden when the group's or the town's sales are hidden (P6), and never public (P7).
-     *
-     * @param  Collection<int, stdClass>  $series
-     * @param  array<string, GuardedFigure>  $guarded
-     */
-    private function share(Collection $series, array $guarded, bool $public): FinancialHistory
-    {
-        $metrics = [new EconomicMetric('count_share', 'Share of Active Businesses', 'percent', 'Registered businesses only')];
-        if (! $public) {
-            $metrics[] = new EconomicMetric('sales_share', 'Share of Declared Sales', 'percent', 'Declared business activity, not the income of residents or of the barangay government');
-        }
-
-        $rows = array_values($series->map(function (stdClass $cell) use ($guarded, $public) {
-            $observations = ['count_share' => new EconomicObservation('shown', (string) $cell->count_share, false, null, null, null)];
-            if (! $public) {
-                $town = $this->guard->figure((string) $cell->town_sales, (int) $cell->town_active, (string) $cell->town_max_single);
-                $hidden = $this->guard->derived($guarded["{$cell->dimension}:{$cell->code}:{$cell->year}"], $town);
-                $observations['sales_share'] = $hidden === null
-                    ? new EconomicObservation('shown', (string) $cell->sales_share, false, null, null, null)
-                    : new EconomicObservation('hidden', null, false, null, null, null, $hidden->reason);
-            }
-
-            return ['year' => (int) $cell->year, 'observations' => $observations];
-        })->all());
-
-        return new FinancialHistory(
-            metrics: $metrics,
-            rows: $rows,
-            axisMaximum: '100',
             note: 'Registered businesses only',
         );
     }

@@ -78,7 +78,20 @@ composer data:finances:test
 composer data:finances:extract
 ```
 
-The first run creates `tools/coa/.venv` and installs the pinned `tools/coa/requirements.txt`. The tests read the committed PDFs. Their expected values were read from the PDFs by hand, and they include the four 2024 pairs verified against COA workbooks (`../verified-finances-2024.md`).
+The first run creates `tools/coa/.venv` and installs the pinned `tools/coa/requirements.txt`. The tests read the committed PDFs. Their expected values were read from the PDFs by hand, and they include the four 2024 pairs verified against COA workbooks (`../verified-finances-2024.md`) and every cell of the six Tuguegarao City highlights tables (`tools/coa/tests/test_tuguegarao.py`).
+
+Python in `tools/coa/` names variables, parameters, fields and functions in camelCase (user rule, 26-10-29). Constants stay UPPER_CASE, and CSV column names stay snake_case because the PHP import reads them.
+
+### Two PDF Engines and the Run Log
+
+Since extractor version 3 (26-10-29), each Executive Summary is read with two independent text engines, pdfplumber and pdfium (`pypdfium2`, already pinned as a pdfplumber dependency):
+
+- **Read:** pdfplumber reads the table. When it misses a core line or fails, the parser rereads the PDF with pdfium and keeps that reading if it finds more core lines (`read_with_fallback_engine`, a warning; `engine_failed` records the failure).
+- **Confirm:** every value must also be printed on its page as the other engine reads it. A value the other engine cannot find is `engine_disagreement`, an error. This proves digits, not rows; the arithmetic checks and the tests cover rows.
+- **Isolate:** a document that crashes the parser gets a `parser_failed` error row, and the run continues with the next document.
+- **Log:** every run rewrites `tools/coa/logs/extract.log` (not committed): each document's stored figure count, every issue, fallbacks, and full tracebacks. Warnings and errors also print to the terminal.
+
+The 26-10-29 run had no `engine_disagreement`, fallback or failure in any of the 158 summaries. For Tuguegarao City both engines read the same 22 figures from each of the six reports.
 
 ## Current Run, 26-10-28
 
@@ -125,6 +138,20 @@ Before signing everything off, each report's current-year revenue and expenses w
 Most restatements are under 1 percent. The largest were opened in the PDFs and are printed that way by COA, not misread: Enrile 2021 revenue (₱181.0 million, restated as ₱232.2 million in 2022), Rizal 2024 expenses, Calayan 2022 expenses, and Santa Ana 2020 revenue. The latest report wins (D35), and the screens say "Restated in the 2022 report" (M26). Aparri 2020 revenue differs by ₱0.63 between reports, a digit swap in one of COA's documents.
 
 Reading a value correctly does not make COA's accounts correct: the figures are transcriptions of the reports, which are themselves audited with qualified opinions in many towns.
+
+## Executive Summary Lines, 26-10-29
+
+Since 26-10-29 the parser also stores Assets, Liabilities, Government Equity, Current Allotments, Continuing Allotments and Continuing Obligations (metrics.md M35) for every town. `finances:import` loads them only for the towns in `cagayan.finances.summary_detail_towns`, Tuguegarao City for now; the other towns keep them in `extracted/` until they are added there.
+
+The 72 Tuguegarao figures were approved automatically at the project owner's direction on 26-10-29 (`reviews.csv`), after every cell of the six highlights tables was checked against page images (below). No second person reviewed them, as D35 normally requires.
+
+## Tuguegarao City Cell Check, 26-10-29
+
+Every cell of the six Tuguegarao City highlights tables (2020 to 2025 reports: 12 rows in 2020 and 11 in later years, each with current, prior and change columns, 201 cells) was typed from rendered page images and compared with the parser. All 201 agree to the cent, and pdfium reads the same values.
+
+One label was wrong. The 2021 and 2022 reports wrap "Appropriations – Current" over two lines, and extractor version 2 stopped at "Appropriations", marking those four rows `unspecified_period`. That variant blocked the annual change for 2021 and 2022 (M26). Version 3 reads the wrapped qualifier. A scan of all 158 summaries found no other report with this layout. The values did not change, so the import replayed their sign-offs.
+
+The 2022 report prints Obligations – Continuing as ₱1,044,554,592.87, the same amount as Obligations – Current, and the 2023 report repeats it. It is COA's figure as printed. Continuing lines are read for checks only and are never stored.
 
 ## Economic Maps "26-10-28"
 

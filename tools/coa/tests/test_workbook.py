@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from coa.lines import load
-from coa.workbook import read_annex, read_fs
+from coa.workbook import readAnnex, readFs
 
 ROOT = Path(__file__).resolve().parents[3]
 WORKBOOKS = ROOT / "data" / "towns" / "financial-statements"
@@ -12,12 +12,12 @@ LINES, ALIASES = load(ROOT / "data" / "towns" / "finances" / "lines.csv")
 
 
 def read(year: int, folder: str, kind: str):
-    reader = read_fs if kind == "FS" else read_annex
+    reader = readFs if kind == "FS" else readAnnex
     return reader(WORKBOOKS / str(year) / folder / f"{folder}-{kind}-{year}.xlsx", year, LINES, ALIASES)
 
 
 def values(result) -> dict[tuple[str, int, str], Decimal]:
-    return {(figure.code, figure.fiscal_year, figure.basis): figure.value for figure in result.figures}
+    return {(figure.code, figure.fiscalYear, figure.basis): figure.value for figure in result.figures}
 
 
 # Expected values were read from the workbook cells by hand; sector totals add the class rows shown in the comments.
@@ -61,28 +61,28 @@ CASES = {
 
 
 @pytest.mark.parametrize(("workbook", "expected"), CASES.items(), ids=["-".join(map(str, key)) for key in CASES])
-def test_reads_each_workbook_layout(workbook, expected):
+def testReadsEachWorkbookLayout(workbook, expected):
     found = values(read(*workbook))
 
     assert {key: found.get(key) for key in expected} == {key: Decimal(value) for key, value in expected.items()}
 
 
-def test_flags_local_taxes_that_may_include_the_national_share():
+def testFlagsLocalTaxesThatMayIncludeTheNationalShare():
     result = read(2025, "Enrile", "FS")
 
     assert "national_share_not_separate" in {issue.kind for issue in result.issues}
     assert {figure.variant for figure in result.figures if figure.code == "revenue.tax"} == {"may_include_national_share"}
 
 
-def test_flags_revenue_sources_that_do_not_add_up():
+def testFlagsRevenueSourcesThatDoNotAddUp():
     assert "revenue_sources_mismatch" in {issue.kind for issue in read(2025, "Sto.-Nino", "FS").issues}
 
 
-def test_flags_a_budget_sheet_titled_with_the_wrong_year():
+def testFlagsABudgetSheetTitledWithTheWrongYear():
     assert "sheet_year_mismatch" in {issue.kind for issue in read(2025, "Gattaran", "FS").issues}
 
 
-def test_reports_a_missing_general_fund_detail_instead_of_guessing():
+def testReportsAMissingGeneralFundDetailInsteadOfGuessing():
     result = read(2024, "Abulug", "Annexes")
 
     assert result.figures == []

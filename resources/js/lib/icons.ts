@@ -1,5 +1,6 @@
 import {
     LayoutDashboard,
+    Search,
     MessageSquare,
     ScrollText,
     UserRound,
@@ -24,9 +25,6 @@ import {
     Pencil,
     BedDouble,
     Briefcase,
-    CalendarCheck,
-    CalendarClock,
-    CalendarX,
     CookingPot,
     Fish,
     Flame,
@@ -36,7 +34,6 @@ import {
     Palmtree,
     Scissors,
     ShoppingBag,
-    Sparkles,
     Sprout,
     UtensilsCrossed,
     Wrench,
@@ -68,12 +65,9 @@ export const icons = {
     email: Mail,
     add: Plus,
     edit: Pencil,
-    isNew: Sparkles,
     streak: Flame,
-    permitValid: CalendarCheck,
-    permitExpiring: CalendarClock,
-    permitExpired: CalendarX,
     back: ArrowLeft,
+    search: Search,
 } as const;
 
 // One icon per starter Business Category; a category added later falls back to the store icon.

@@ -2,7 +2,7 @@
 title: "Finance Trends People Can Understand"
 created: "26-10-29"
 updated: "26-10-29"
-status: in-progress
+status: superseded
 branch: "feat/analytics-clarity"
 base: staging
 predecessor: ../archive/26-10-28-finance-ledger-redesign.md
@@ -34,3 +34,7 @@ New workbooks, packages, economic scores, inflation adjustments, forecasts, maps
 ## Verification and Handoff
 
 Read-only database query confirmed seven published Tuguegarao revenue/expense/surplus years. Revenue matches committed parsed output, including 2019 PHP 1,048,262,291.06 and 2025 PHP 1,679,019,473.60. Further check results pending.
+
+## Superseded "26-10-29"
+
+Superseded by [Executive Summary View and Net Income](../active/26-10-29-executive-summary-view.md), which makes the Executive Summary the default view and renames Surplus or Deficit to Net Income. Trends remains a View option. The two open checks (automated checks and design review; phone, desktop, theme and keyboard checks) move to that plan.

@@ -305,7 +305,7 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                         />
                     </div>
                     <div className="flex flex-wrap items-center gap-2 border-t pt-3 type-meta">
-                        <span>Government Revenue</span>
+                        <span>Government Income</span>
                         <span>Low</span>
                         <div className="flex gap-0.5" aria-hidden="true">
                             {[

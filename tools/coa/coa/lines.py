@@ -56,11 +56,11 @@ def match(label: str, aliases: list[Alias], source: str, lines: dict[str, Line])
         text = text[: found.start()].strip()
     for alias in aliases:
         if lines[alias.code].source == source and alias.pattern.fullmatch(text):
-            return alias.code, alias.variant or variant_for(alias.code, qualifier), qualifier
+            return alias.code, alias.variant or variantFor(alias.code, qualifier), qualifier
     return None
 
 
-def variant_for(code: str, qualifier: str) -> str | None:
+def variantFor(code: str, qualifier: str) -> str | None:
     if code == "performance.revenue" and "subsidy from other funds" in qualifier:
         return "includes_subsidy_from_other_funds"
     if code == "performance.expenses" and "subsidy to other funds" in qualifier:

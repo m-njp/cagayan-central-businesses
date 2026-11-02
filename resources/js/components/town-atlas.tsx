@@ -66,7 +66,7 @@ export function TownAtlas({
                     mapStyle={mapStyle}
                     water
                     zoomable
-                    label={`Government Revenue by municipality and city in Cagayan for ${selection.year ?? 'the latest available year'}`}
+                    label={`Government Income by municipality and city in Cagayan for ${selection.year ?? 'the latest available year'}`}
                     shades={Object.fromEntries(
                         atlas.towns.map((item) => [
                             item.code,

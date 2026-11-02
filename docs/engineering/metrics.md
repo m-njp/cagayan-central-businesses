@@ -170,7 +170,7 @@ Each flag states which condition raised it.
 
 ## Town figures (home page map)
 
-Real published figures, separate from business records. Public Home and Capitol economic maps use `stats_finance_year` for Government Revenue, Government Expenses and Surplus or Deficit (M19). The finance ledger is authoritative; there is no separate map finance store.
+Real published figures, separate from business records. Public Home and Capitol economic maps use `stats_finance_year` for Income, Expenses and Net Income (M19). The finance ledger is authoritative; there is no separate map finance store.
 
 - **Latest:** one absolute newest fiscal year with a verified revenue/expense pair for at least one town. Never mix fiscal years or substitute an older town observation. Calendar changes alone do not advance Latest.
 - **Year:** available verified fiscal years, descending. Explicit years with missing records read Not available, never zero.
@@ -189,7 +189,7 @@ Legacy `TownProfile.revenue`/`expenditure` fields remain available for compatibi
 
 Province population/count totals require complete town coverage in the same reference year. Missing source links are not attributed to another town’s source. City/municipal accounts are never summed and shown as the provincial government’s revenue or expenses.
 
-Economic maps shade towns by the selected M19 finance measure and fiscal year, with `ntile(towns.shades)` computed in SQL over available town values only. Null aggregate rows are excluded from town groups. Zero and negative surplus values are valid; missing observations receive no shade. Shade order breaks equal-value ties by PSGC code for stable results. Finance shades are a numeric scale, not a prosperity or performance rating. Barangay boundaries carry no financial shade.
+Economic maps shade towns by the selected M19 finance measure and fiscal year, with `ntile(towns.shades)` computed in SQL over available town values only. Null aggregate rows are excluded from town groups. Zero and negative Net Income values are valid; missing observations receive no shade. Shade order breaks equal-value ties by PSGC code for stable results. Finance shades are a numeric scale, not a prosperity or performance rating. Barangay boundaries carry no financial shade.
 
 ## Government Finances (Approved 26-10-28)
 
@@ -227,15 +227,36 @@ Every finance and business observation has one state. When it is not shown, it a
 | `pending_review` | Extracted or entered, not yet signed off | The value is withheld everywhere except the Capitol review screen; elsewhere Not available with "Awaiting sign-off" in the tooltip |
 | `hidden` | Business privacy guard, P2 to P6 | Hidden, with the reason |
 
-### M19. Government Revenue, Government Expenses, Surplus or Deficit
+### M19. Income, Expenses, Net Income
+
+Renamed 26-10-29 by user approval to the words COA prints (formerly Government Revenue, Government Expenses, Surplus or Deficit). The codes and formulas are unchanged. They always appear under the Government Finances heading, or as "Government Income" where no such heading surrounds them (the economic map legends), so they are never read as business income.
 
 | Measure | Code | Definition and source labels |
 | :- | :- | :- |
-| Government Revenue | `performance.revenue` | Total revenue for the year. Executive Summary: "Income", "Total Income", "Total Revenues". FS: "Total Revenue" |
-| Government Expenses | `performance.expenses` | Total expenses, including non-cash expenses and transfers to other entities. It is not cash disbursements or obligations |
-| Surplus or Deficit | derived | Government Revenue minus Government Expenses, computed in SQL. The summaries' own "Net Income" is read only to check their arithmetic, not stored |
+| Income | `performance.revenue` | Total government income for the year, including the share of national taxes. Executive Summary: "Income", "Total Income", "Total Revenues". FS: "Total Revenue" |
+| Expenses | `performance.expenses` | Total expenses, including non-cash expenses and transfers to other entities. It is not cash disbursements or obligations |
+| Net Income | `performance.surplus` (derived) | Income minus Expenses, computed in SQL. The summaries' own "Net Income" is read only to check their arithmetic, not stored: only 61 of 158 reports print it, and two (Amulung and Rizal 2025) print one that is not Income minus Expenses |
 
-When a source label states a different definition, the figure carries a `definition_variant`. Example: "Includes Subsidy from Other Funds".
+- **Display:** a negative amount reads in accounting parentheses, `(₱6,542,951.65)`. Net Income carries no triangle and no green or red; triangles mark changes only (M26).
+- **Variants:** when a source label states a different definition, the figure carries a `definition_variant`. Example: "Includes Subsidy from Other Funds".
+
+### M35. Financial Condition and Budget Execution Lines
+
+Approved 26-10-29 by the user for the Executive Summary view. Each is the amount the Executive Summary's highlights table prints, as reported; nothing is computed.
+
+| Line | Code | Group | Source labels |
+| :- | :- | :- | :- |
+| Assets | `position.assets` | Financial Condition | "Assets", "Total Assets" |
+| Liabilities | `position.liabilities` | Financial Condition | "Liabilities", "Total Liabilities" |
+| Government Equity | `position.equity` | Financial Condition | "Government Equity", "Net Assets/ Equity" |
+| Current Allotments | `budget.allotments_current` | Budget Execution | "Allotments – Current" |
+| Continuing Allotments | `budget.allotments_continuing` | Budget Execution | "Allotments – Continuing" |
+| Continuing Obligations | `budget.obligations_continuing` | Budget Execution | "Obligations – Continuing" |
+
+- **Coverage:** loaded for the towns in `cagayan.finances.summary_detail_towns`, Tuguegarao City since 26-10-29. Other towns read Not available, "Loaded for Tuguegarao City only" (reason `not_loaded`); their parsed rows stay in `data/towns/finances/extracted/`.
+- **Checks:** Assets equals Liabilities plus Government Equity within ₱1.00, checked by the parser for every report.
+- **Not stored:** Continuing Appropriations. Tuguegarao prints only dashes (2020) or omits the line.
+- **Meaning:** Appropriations are the budget passed by ordinance; Allotments release it to offices; Obligations are commitments charged against allotments, not cash paid. Current lines belong to the year's budget; Continuing lines to unused earlier budget that remains available.
 
 ### M20. Budget Utilization
 
@@ -253,9 +274,9 @@ Revised 26-10-28 by user approval to a business focus. Source lines come from th
 | National Tax Allotment Share | `revenue.national_share` |
 | Fees and Business Income | `revenue.service_business` |
 
-- **Other Revenue** is Government Revenue minus the three sources, computed in SQL. It covers grants, other national tax shares and miscellaneous income, which are not stored separately.
-- **Share of a source** is the source ÷ Government Revenue × 100.
-- **Locally Generated Share** is (Local Taxes + Fees and Business Income) ÷ Government Revenue × 100.
+- **Other Revenue** is Income minus the three sources, computed in SQL. It covers grants, other national tax shares and miscellaneous income, which are not stored separately.
+- **Share of a source** is the source ÷ Income × 100.
+- **Locally Generated Share** is (Local Taxes + Fees and Business Income) ÷ Income × 100.
 - The parser checks that every revenue line in the statement adds up to its Total Revenue, within ₱1.00, before the year's breakdown can be signed off.
 - When a statement has no national share line, Local Taxes carries `definition_variant` `may_include_national_share`, and Locally Generated Share is not available for that year.
 
@@ -302,7 +323,7 @@ Withdrawn 26-10-28 by the user. Health, education, social welfare and other sect
 
 - **When computed:** only for consecutive fiscal years where both values are shown and share the same `definition_variant`.
 - **Absolute change:** current value minus prior value.
-- **Percent change:** absolute change ÷ the size of the prior value (its absolute value) × 100, shown to one decimal. There is none when the prior value is zero. Dividing by the size, not the signed value, keeps the sign of the percent equal to the sign of the change, so a deficit that deepens from -₱10 million to -₱20 million is -100.0 percent, a fall, and surplus of ₱25 million to deficit of ₱34.9 million is -247.1 percent. Changed 26-10-28 on the user's correction; for positive values the result is unchanged.
+- **Percent change:** absolute change ÷ the size of the prior value (its absolute value) × 100, shown to one decimal. There is none when the prior value is zero. Dividing by the size, not the signed value, keeps the sign of the percent equal to the sign of the change, so a loss that deepens from (₱10 million) to (₱20 million) is -100.0 percent, a fall, and Net Income of ₱25 million to a loss of (₱34.9 million) is -247.1 percent. Changed 26-10-28 on the user's correction; for positive values the result is unchanged.
 - **Missing years:** never bridged, imputed, or carried forward.
 - **Restated years:** use the restated figure. The tooltip says it was restated, and the earlier figure stays in Capitol history.
 - **No rating:** an increase is not automatically an improvement, and no good or bad rating follows from a change.
@@ -321,6 +342,8 @@ Withdrawn 26-10-28 by the user. Health, education, social welfare and other sect
 - **Categories cross industries:** a business has one type and a type has one category, so category counts add up to the town total. Industry and category counts are separate breakdowns and are never added together.
 
 ### M29. Declared Sales by Industry or Business Category
+
+Not shown since 26-10-29: the user removed Declared Sales and Share of Town from Business Trends, and the analytics response no longer carries M29 or M30. The definitions stay for any later approved view.
 
 - **Value:** M3 for the group's businesses in a year.
 - **Privacy guard:** always applies:
@@ -355,6 +378,13 @@ Approved 26-10-29 by the user ("years renewed in a row").
 - **Definition:** the number of consecutive years with status new or renewed that end in the latest data year (`cagayan.data.latest_year`). A non-renewal or closure ends the streak, and a business not active in the latest year has a streak of 0. Counted within the data years (from `cagayan.data.first_year`), so a business older than the data shows the years on record.
 - **Computed** in SQL (`App\Services\RenewalStreak`). Shown as a flame and the number when the streak is more than one year.
 
+### M34. Operating Milestone
+
+Approved 26-10-29 by the user ("exclusive badges for 5 years, 10 years, 20 years").
+
+- **Definition:** the highest value in `cagayan.registry.milestones` that is at most the latest data year minus the year established. Null below the first milestone, or when the business is not active (new or renewed) in the latest data year. It counts years since establishment, not years on record or renewals (M33).
+- **Computed** in SQL (`App\Services\OperatingMilestone`). Shown as an achievement medallion on the profile and a small numbered mark on directory rows. Approved records only (P15).
+
 ## Config values
 
 All thresholds live in `config/cagayan.php`, never in code or SQL literals.
@@ -368,6 +398,7 @@ All thresholds live in `config/cagayan.php`, never in code or SQL literals.
 - `specialization.min_type_count`: 3
 - `data.first_year`: 2020
 - `data.latest_year`: 2026
+- `registry.milestones`: 5, 10, 20
 - `towns.shades`: 5
 
 ## How each metric is tested
@@ -385,7 +416,7 @@ Do not test a metric against the seeded demo data. The seeder can change. The de
 
 Approved 26-10-25. This public page is a synthetic UI/data-contract demonstration, separate from town_facts and the deferred verified COA history. Fixture values and changes are finished synthetic figures; no request or frontend computes financial rates from them. The Query validates applicability: consecutive prior observation, shown values, explicit comparability and matching comparison year. Zero prior values have no percentage; missing calendar years become unavailable observations. Exact currency strings retain cents; display percentage changes to one decimal. Future verified metrics must be computed through the existing SQL summary architecture.
 
-Government Revenue and Government Expenses use equal peso axis bounds. They are city-government accounts, not private-business sales, cash-only expenditure, GDP, prosperity or investment scores. Additional measures require explicit units and accounting basis; charts render metric IDs rather than assuming a revenue/expense object shape.
+Income and Expenses use equal peso axis bounds. They are city-government accounts, not private-business sales, cash-only expenditure, GDP, prosperity or investment scores. Additional measures require explicit units and accounting basis; charts render metric IDs rather than assuming a revenue/expense object shape.
 
 Demo wishes count approved public phrases, once per wish per label in a future live pipeline. Types and specific businesses are separate presentations and must not be summed as unique respondents. All-time reference date is 26-10-25. Larger cloud words indicate more wishes; exact counts remain in ranked bars and the equivalent table. No real wishes or raw names/reasons are read. Population and registered-business metrics remain deferred.
 

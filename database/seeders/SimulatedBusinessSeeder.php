@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
  * Simulated businesses for Tuguegarao City, 2020 to 2026, labeled "Simulated data" (D10, D37).
  * It meets database.md "Seeder requirements" 3 to 7 and 9, follows the business_years status rules, and tells the
  * presentation story in cagayan.simulation.trends: food near schools and online work grow, one barangay declines.
+ * No barangay holds more than cagayan.simulation.max_per_barangay records, and every name is unique in its barangay.
  */
 class SimulatedBusinessSeeder extends Seeder
 {
@@ -46,6 +47,42 @@ class SimulatedBusinessSeeder extends Seeder
     ];
 
     private const string DOCUMENT = 'registry/simulated-document.pdf';
+
+    /** Local-style names by type: {last} and {first} are owner names. A type without patterns reads "{last} {Type}". */
+    private const array NAMES = [
+        'sari-sari-store' => ["{first}'s Sari-Sari Store", '{last} Mini Store', '{first} Variety Store'],
+        'grocery' => ['{last} Grocery', '{first} Supermart', '{last} Mart'],
+        'pharmacy' => ['{last} Drugstore', '{first} Pharmacy', '{last} Botika'],
+        'hardware-store' => ['{last} Hardware', '{last} Construction Supply', '{first} Builders Depot'],
+        'clothing-store' => ['{first} Boutique', '{last} Fashion', '{first} Apparel'],
+        'school-supplies' => ['{last} School and Office Supplies', '{first} Bookstore'],
+        'auto-repair' => ['{last} Auto Repair', '{first} Vulcanizing Shop', '{last} Motorparts'],
+        'bakery' => ['{last} Bakeshop', "{first}'s Bakery", '{last} Panaderia'],
+        'water-refilling' => ['{last} Water Station', '{first} Purified Water'],
+        'printing-shop' => ['{last} Printing Services', '{first} Print and Copy'],
+        'coffee-shop' => ['Kape ni {first}', '{last} Coffee', '{first} Brew House'],
+        'restaurant' => ['{last} Restaurant', 'Casa {last}', "{first}'s Kitchen"],
+        'eatery' => ['Kusina ni {first}', '{last} Carinderia', 'Lutong Bahay ni {first}'],
+        'boarding-house' => ['{last} Boarding House', '{first} Dormitory', '{last} Residences'],
+        'hotel' => ['Hotel {last}', '{last} Inn', '{last} Pension House'],
+        'bank' => ['{last} Rural Bank'],
+        'lending' => ['{last} Lending', '{first} Pawnshop', '{last} Credit'],
+        'veterinary-clinic' => ['{last} Veterinary Clinic', '{first} Pet Clinic'],
+        'tutorial-center' => ['{last} Learning Center', '{first} Tutorial Center'],
+        'clinic' => ['{last} Medical Clinic', 'Dr. {last} Clinic'],
+        'dental-clinic' => ['{last} Dental Clinic', 'Dr. {last} Dental'],
+        'gym' => ['{last} Fitness Gym', '{first} Fitness Hub'],
+        'salon' => ['{first} Beauty Salon', "{first}'s Salon and Spa", '{last} Hair Studio'],
+        'laundry' => ['{last} Laundry Hub', 'Labada ni {first}', '{first} Wash and Fold'],
+        'repair-shop' => ['{first} Gadget Repair', '{last} Electronics Repair'],
+        'crop-farm' => ['{last} Farm', '{last} Rice and Corn Farm'],
+        'livestock-farm' => ['{last} Piggery', '{last} Poultry Farm'],
+        'fishpond' => ['{last} Fishpond'],
+        'agri-supply' => ['{last} Agri Supply', '{first} Agrivet'],
+        'rice-mill' => ['{last} Rice Mill'],
+        'online-seller' => ["{first}'s Online Shop", '{first} Online Store'],
+        'digital-services' => ['{first} Creatives', '{last} Digital Studio'],
+    ];
 
     /** Short owner-style descriptions by type, so profiles do not repeat the type and the place. */
     private const array DESCRIPTIONS = [
@@ -91,6 +128,12 @@ class SimulatedBusinessSeeder extends Seeder
     /** @var array<int, string> */
     private array $typeCodes;
 
+    /** @var array<int, int> records each barangay can still take */
+    private array $room = [];
+
+    /** @var array<int, array<string, true>> names already used in each barangay */
+    private array $names = [];
+
     public function run(): void
     {
         $seed = (int) config('cagayan.simulation.seed');
@@ -108,6 +151,9 @@ class SimulatedBusinessSeeder extends Seeder
         $first = (int) config('cagayan.data.first_year');
         $last = (int) config('cagayan.data.latest_year');
         $minimum = (int) config('cagayan.simulation.minimum_per_barangay');
+        $cap = (int) config('cagayan.simulation.max_per_barangay');
+        $this->room = $barangays->mapWithKeys(fn (Barangay $b) => [$b->id => $cap])->all();
+        $cohorts = array_map(fn (int $year) => (int) round($trends['food_new_per_barangay'] * (1 + $trends['food_yearly_growth']) ** ($year - $first)), range($first, $last));
         $medianPopulation = $barangays->pluck('population')->filter()->median() ?? 0;
 
         // Requirement 5: the least populous barangay keeps a small group. Requirement 6: one barangay has a dominant business.
@@ -118,12 +164,16 @@ class SimulatedBusinessSeeder extends Seeder
         $businesses = [];
         $histories = [];
         foreach ($barangays as $barangay) {
-            $count = $barangay->id === $smallest
-                ? $minimum
-                : max($minimum, (int) round(($barangay->population ?? 0) / 1000 * (int) config('cagayan.simulation.businesses_per_thousand_residents')));
+            $school = in_array($barangay->name, $trends['school_barangays'], true);
+            $count = match (true) {
+                $barangay->id === $smallest => $minimum,
+                $barangay->id === $declining => $cap,
+                default => min(max($minimum, (int) round(($barangay->population ?? 0) / 1000 * (int) config('cagayan.simulation.businesses_per_thousand_residents'))),
+                    $cap - ($school ? array_sum($cohorts) : 0)),
+            };
             $rural = ($barangay->population ?? 0) < $medianPopulation;
             // Food in school barangays comes only from the yearly cohorts below, so its growth reads clearly.
-            $excluded = in_array($barangay->name, $trends['school_barangays'], true) ? $trends['food_types'] : [];
+            $excluded = $school ? $trends['food_types'] : [];
             // Requirement 7: the declining barangay loses established businesses at a rising pace; the rest keep renewing.
             $endings = $barangay->id === $declining ? $this->endings($trends['declining_non_renewals']) : [];
 
@@ -139,8 +189,8 @@ class SimulatedBusinessSeeder extends Seeder
 
         // Food near schools: each year brings more new food businesses than the last, and they keep renewing.
         foreach ($barangays->whereIn('name', $trends['school_barangays']) as $barangay) {
-            for ($year = $first; $year <= $last; $year++) {
-                $new = (int) round($trends['food_new_per_barangay'] * (1 + $trends['food_yearly_growth']) ** ($year - $first));
+            foreach ($cohorts as $offset => $new) {
+                $year = $first + $offset;
                 for ($i = 0; $i < $new; $i++) {
                     $this->add($businesses, $histories, $barangay, $types[$trends['food_types'][mt_rand(0, count($trends['food_types']) - 1)]],
                         $year, $first, $last, fate: 0);
@@ -148,12 +198,13 @@ class SimulatedBusinessSeeder extends Seeder
             }
         }
 
-        // Online and home-based services: city-wide, growing every year from their first year.
-        $byPopulation = $barangays->where('id', '!=', $declining)->mapWithKeys(fn (Barangay $b) => [$b->id => (int) $b->population])->all();
+        // Online and home-based services: city-wide, growing every year from their first year. The small group and the
+        // declining barangay keep their story, so these go elsewhere.
+        $byPopulation = $barangays->whereNotIn('id', [$declining, $smallest])->mapWithKeys(fn (Barangay $b) => [$b->id => (int) $b->population])->all();
         for ($year = $trends['online_first_year']; $year <= $last; $year++) {
             $new = (int) round($trends['online_new_first_year'] * (1 + $trends['online_yearly_growth']) ** ($year - $trends['online_first_year']));
             for ($i = 0; $i < $new; $i++) {
-                $barangay = $barangays->firstWhere('id', (int) $this->pick($byPopulation));
+                $barangay = $barangays->firstWhere('id', $this->withRoom($byPopulation));
                 $this->add($businesses, $histories, $barangay, $types[$trends['online_types'][mt_rand(0, count($trends['online_types']) - 1)]],
                     $year, $first, $last, storefront: false);
             }
@@ -163,7 +214,8 @@ class SimulatedBusinessSeeder extends Seeder
         $pending = [];
         foreach ($trends['pending'] as $status => $total) {
             for ($i = 0; $i < $total; $i++) {
-                $barangay = $barangays->firstWhere('id', (int) $this->pick($byPopulation));
+                $barangay = $barangays->firstWhere('id', $this->withRoom($byPopulation));
+                $this->room[$barangay->id]--;
                 $row = $this->business($barangay, $types[$this->pickType(false)], $last, $this->pickSize(), true);
                 $pending[] = array_merge($row, [
                     'record_status' => $status,
@@ -191,9 +243,7 @@ class SimulatedBusinessSeeder extends Seeder
             foreach (array_chunk($rows, 1000) as $chunk) {
                 DB::table('business_years')->insert($chunk);
             }
-            // Requirement 9: one point inside each business's barangay, seeded by the business id so reruns match.
-            DB::statement('update businesses b set location = ST_GeometryN(ST_GeneratePoints(g.boundary, 1, b.id::int), 1)
-                from barangays g where g.id = b.barangay_id');
+            $this->place();
 
             // Mayor's permits run January to December for every active year.
             DB::statement("insert into business_permits (business_id, permit_number, year, valid_from, valid_until, created_at, updated_at)
@@ -223,6 +273,7 @@ class SimulatedBusinessSeeder extends Seeder
     private function add(array &$businesses, array &$histories, Barangay $barangay, int $typeId, int $established, int $first, int $last,
         ?string $size = null, ?int $sales = null, ?int $fate = null, bool $storefront = true): void
     {
+        $this->room[$barangay->id]--;
         $size ??= $this->pickSize();
         [$low, $high] = self::SIZES[$size];
         $row = $this->business($barangay, $typeId, $established, $size, $storefront);
@@ -243,11 +294,7 @@ class SimulatedBusinessSeeder extends Seeder
             'cooperative' => 'cda',
             default => 'sec',
         };
-        $name = $this->pick([
-            $this->faker->lastName().' '.$type => 3,
-            $this->faker->firstName().'\'s '.$type => 2,
-            $barangay->name.' '.$type => 1,
-        ]);
+        $name = $this->name($barangay->id, $this->typeCodes[$typeId], $type);
 
         return [
             'public_id' => (string) Str::uuid(),
@@ -285,6 +332,80 @@ class SimulatedBusinessSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ];
+    }
+
+    /** A local-style name, unique within the barangay; ten tries, then the owner's first and last name are both used. */
+    private function name(int $barangayId, string $code, string $type): string
+    {
+        $patterns = self::NAMES[$code] ?? ['{last} '.$type];
+        for ($try = 0; $try < 10; $try++) {
+            $name = strtr($patterns[mt_rand(0, count($patterns) - 1)], ['{first}' => $this->faker->firstName(), '{last}' => $this->faker->lastName()]);
+            if (! isset($this->names[$barangayId][$name])) {
+                break;
+            }
+            $name = $this->faker->firstName().' '.$this->faker->lastName().' '.$type;
+        }
+        $this->names[$barangayId][$name] = true;
+
+        return $name;
+    }
+
+    /**
+     * A barangay with room left, weighted by population.
+     *
+     * @param  array<int, int>  $weights
+     */
+    private function withRoom(array $weights): int
+    {
+        return (int) $this->pick(array_filter($weights, fn (int $weight, int $id) => $this->room[$id] > 0, ARRAY_FILTER_USE_BOTH));
+    }
+
+    /**
+     * Requirement 9, placed like a town rather than at random: shops line a main street through the barangay's center,
+     * on alternating sides, and farms sit along a longer cross street toward its edges. Both streets follow the
+     * barangay's long axis and stay inside it, kept back from the boundary.
+     */
+    private function place(): void
+    {
+        DB::statement(<<<'SQL'
+            with shape as (
+                select g.id, ST_PointOnSurface(g.boundary) as center, g.boundary,
+                    case when ST_IsEmpty(i.shrunk) then g.boundary else i.shrunk end as inner,
+                    ST_Azimuth(ST_StartPoint(d.line), ST_EndPoint(d.line)) as azimuth, ST_Length(d.line) as span
+                from barangays g
+                cross join lateral (select ST_LongestLine(g.boundary, g.boundary) as line) d
+                cross join lateral (select ST_Buffer(g.boundary::geography, -40)::geometry as shrunk) i
+                where g.boundary is not null
+            ),
+            street as (
+                select s.id, k.street, s.inner, s.boundary, s.azimuth + k.street * pi() / 2 as azimuth,
+                    (select p.geom from ST_Dump(ST_Intersection(s.inner, ST_MakeLine(
+                        ST_Translate(s.center, -sin(s.azimuth + k.street * pi() / 2) * k.half, -cos(s.azimuth + k.street * pi() / 2) * k.half),
+                        ST_Translate(s.center, sin(s.azimuth + k.street * pi() / 2) * k.half, cos(s.azimuth + k.street * pi() / 2) * k.half)))) p
+                        where GeometryType(p.geom) = 'LINESTRING' order by ST_Length(p.geom) desc limit 1) as line
+                from shape s
+                cross join lateral (values (0, least(s.span * 0.3, 0.004)), (1, s.span * 0.45)) as k(street, half)
+            ),
+            ranked as (
+                select b.id, b.barangay_id, x.street,
+                    row_number() over (partition by b.barangay_id, x.street order by b.id) as n,
+                    count(*) over (partition by b.barangay_id, x.street) as total
+                from businesses b
+                join business_types t on t.id = b.business_type_id
+                cross join lateral (select case when t.code in ('crop-farm', 'livestock-farm', 'fishpond', 'rice-mill') then 1 else 0 end as street) x
+            )
+            -- Setbacks of roughly 10 to 35 m and uneven spacing, fixed by the business id, so the strip reads as buildings.
+            update businesses b set location = ST_ClosestPoint(st.inner, ST_Translate(
+                    ST_LineInterpolatePoint(st.line, greatest(0, least(1, (r.n - 0.5 + (r.id % 5 - 2) * 0.15) / r.total))),
+                    case when r.n % 2 = 0 then 1 else -1 end * cos(st.azimuth) * (0.0001 + (r.id % 7) * 0.00004),
+                    case when r.n % 2 = 0 then -1 else 1 end * sin(st.azimuth) * (0.0001 + (r.id % 7) * 0.00004)))
+            from ranked r
+            join street st on st.id = r.barangay_id and st.street = r.street
+            where b.id = r.id and st.line is not null
+            SQL);
+        // A barangay too small for a street keeps every point at its center, still inside it.
+        DB::statement('update businesses b set location = ST_PointOnSurface(g.boundary) from barangays g
+            where g.id = b.barangay_id and not ST_Contains(g.boundary, b.location)');
     }
 
     /**

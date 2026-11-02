@@ -1,15 +1,19 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { BarangayAtlas } from '@/components/barangay-atlas';
+import PerformanceVisual from '@/components/charts/performance-visual';
 import { DefinitionList } from '@/components/definition-list';
 import type { MapStyle } from '@/components/province-map';
 import { TownAtlas } from '@/components/town-atlas';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { pageSearchParams } from '@/lib/navigation';
 import { economicPerformance } from '@/routes/public';
 import { index as suggestions } from '@/routes/public/wishes';
 import type { HomeOverview } from '@/types/data';
+
+const WishCloud = lazy(() => import('@/components/charts/wish-cloud'));
 
 type Props = {
     overview: HomeOverview;
@@ -58,14 +62,29 @@ export default function Home({ overview }: Props) {
 
             <section
                 aria-label="Explore Your Town"
-                className="grid reveal gap-3 md:grid-cols-2"
+                className="grid reveal gap-3"
             >
-                <Card className="justify-between gap-3 py-4 shadow-none">
-                    <CardHeader className="px-4">
-                        <h2 className="type-heading">
+                <Card className="gap-3 py-4 shadow-none">
+                    <CardHeader className="flex-row items-start justify-between gap-3 px-4">
+                        <h2 className="min-w-0 type-heading">
                             What Businesses Would You Like in Your Town?
                         </h2>
+                        {overview.wishes && (
+                            <Badge
+                                variant="outline"
+                                className="ml-auto border-destructive-foreground/30 bg-destructive-foreground/10 type-pin text-destructive-foreground"
+                            >
+                                {overview.wishes.source}
+                            </Badge>
+                        )}
                     </CardHeader>
+                    {overview.wishes && (
+                        <div className="px-4">
+                            <PerformanceVisual>
+                                <WishCloud snapshot={overview.wishes} />
+                            </PerformanceVisual>
+                        </div>
+                    )}
                     <CardFooter className="px-4">
                         <Button asChild>
                             <Link href={suggestions({ query })}>
@@ -74,19 +93,15 @@ export default function Home({ overview }: Props) {
                         </Button>
                     </CardFooter>
                 </Card>
-                <Card className="justify-between gap-3 py-4 shadow-none">
-                    <CardHeader className="px-4">
-                        <h2 className="type-heading">
-                            Explore Your Town's Economy
-                        </h2>
-                    </CardHeader>
-                    <CardFooter className="px-4">
-                        <Button asChild variant="outline">
-                            <Link href={economicPerformance({ query })}>
-                                Explore the Economy
-                            </Link>
-                        </Button>
-                    </CardFooter>
+                <Card className="flex-row flex-wrap items-center justify-between gap-3 px-4 py-4 shadow-none">
+                    <h2 className="type-heading">
+                        Explore Your Town's Economy
+                    </h2>
+                    <Button asChild variant="outline">
+                        <Link href={economicPerformance({ query })}>
+                            Explore the Economy
+                        </Link>
+                    </Button>
                 </Card>
             </section>
 

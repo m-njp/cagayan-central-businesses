@@ -9,11 +9,11 @@ TOKEN = re.compile(rf"{AMOUNT}|{DASH}")
 PERCENT = re.compile(r"\(?-?\d+(?:\.\d+)?\)?\s?%\)?")
 
 
-def parse_amount(token: str) -> Decimal | None:
+def parseAmount(token: str) -> Decimal | None:
     token = token.strip()
     if token == "-":
         return None
-    negative = "(" in token or "-" in token
+    isNegative = "(" in token or "-" in token
     digits = re.sub(r"[^\d.]", "", token)
     value = Decimal(digits)
-    return -value if negative else value
+    return -value if isNegative else value

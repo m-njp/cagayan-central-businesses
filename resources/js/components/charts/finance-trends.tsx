@@ -2,7 +2,7 @@ import { lazy } from 'react';
 import { ExactAmount } from '@/components/charts/exact-amount';
 import { ObservationChange } from '@/components/charts/observation-change';
 import PerformanceVisual from '@/components/charts/performance-visual';
-import { RESULT_METRIC, ResultFigure } from '@/components/charts/trend-mark';
+import { RESULT_METRIC } from '@/components/charts/trend-mark';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { focusedFinance } from '@/lib/finance-chart';
 import { observationLabel } from '@/lib/performance-format';
@@ -14,6 +14,58 @@ import type {
 const FinanceHistoryChart = lazy(
     () => import('@/components/charts/finance-history-chart'),
 );
+
+/** The displayed year range beside 3Y, 5Y and Max, shared by Trends and the Executive Summary. */
+export function PeriodToggle({
+    history,
+    filters,
+    onChange,
+}: {
+    history: FinancialHistory;
+    filters: AnalyticsFilters;
+    onChange: (patch: Partial<AnalyticsFilters>) => void;
+}) {
+    return (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="type-label">
+                {history.rows[0]?.year}
+                {history.rows.length > 1 && ` to ${history.rows.at(-1)?.year}`}
+            </span>
+            <ToggleGroup
+                type="single"
+                variant="outline"
+                value={filters.period}
+                aria-label="Finance Period"
+                onValueChange={(period) => {
+                    if (period)
+                        onChange({
+                            period: period as AnalyticsFilters['period'],
+                        });
+                }}
+            >
+                {filters.period === '2y' && (
+                    <ToggleGroupItem value="2y" className="min-h-8 px-3">
+                        2Y
+                    </ToggleGroupItem>
+                )}
+                {filters.period === 'recent' && (
+                    <ToggleGroupItem value="recent" className="min-h-8 px-3">
+                        Recent
+                    </ToggleGroupItem>
+                )}
+                <ToggleGroupItem value="3y" className="min-h-8 px-3">
+                    3Y
+                </ToggleGroupItem>
+                <ToggleGroupItem value="5y" className="min-h-8 px-3">
+                    5Y
+                </ToggleGroupItem>
+                <ToggleGroupItem value="all" className="min-h-8 px-3">
+                    Max
+                </ToggleGroupItem>
+            </ToggleGroup>
+        </div>
+    );
+}
 
 export function FinanceTrends({
     history,
@@ -47,49 +99,13 @@ export function FinanceTrends({
         ),
     );
     return (
-        <div className="flex min-w-0 flex-col gap-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="type-label">
-                    {history.rows[0]?.year}
-                    {history.rows.length > 1 && ` to ${latest?.year}`}
-                </span>
-                <ToggleGroup
-                    type="single"
-                    variant="outline"
-                    value={filters.period}
-                    aria-label="Finance Period"
-                    onValueChange={(period) => {
-                        if (period)
-                            onChange({
-                                period: period as AnalyticsFilters['period'],
-                            });
-                    }}
-                >
-                    {filters.period === '2y' && (
-                        <ToggleGroupItem value="2y" className="min-h-10 px-3">
-                            2Y
-                        </ToggleGroupItem>
-                    )}
-                    {filters.period === 'recent' && (
-                        <ToggleGroupItem
-                            value="recent"
-                            className="min-h-10 px-3"
-                        >
-                            Recent
-                        </ToggleGroupItem>
-                    )}
-                    <ToggleGroupItem value="3y" className="min-h-10 px-3">
-                        3Y
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="5y" className="min-h-10 px-3">
-                        5Y
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="all" className="min-h-10 px-3">
-                        Max
-                    </ToggleGroupItem>
-                </ToggleGroup>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex min-w-0 flex-col gap-3">
+            <PeriodToggle
+                history={history}
+                filters={filters}
+                onChange={onChange}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
                 {(totals ? plotted.metrics : history.metrics).map(
                     (metric, index) => {
                         const point = latest?.observations[metric.id];
@@ -97,7 +113,7 @@ export function FinanceTrends({
                         return (
                             <div
                                 key={metric.id}
-                                className="flex min-w-0 flex-col items-start gap-2"
+                                className="flex min-w-0 flex-col items-start gap-1"
                             >
                                 {totals ? (
                                     <span className="flex items-center gap-2 type-body">
@@ -129,7 +145,7 @@ export function FinanceTrends({
                                         onClick={() =>
                                             onChange({ metric: metric.id })
                                         }
-                                        className="min-h-10 text-left type-body underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring aria-pressed:font-semibold aria-pressed:underline"
+                                        className="min-h-8 text-left type-body underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring aria-pressed:font-semibold aria-pressed:underline"
                                     >
                                         {metric.label}
                                     </button>
@@ -154,6 +170,7 @@ export function FinanceTrends({
                                     <ObservationChange
                                         point={point}
                                         unit={metric.unit}
+                                        markOnly
                                     />
                                     {point?.comparable && (
                                         <span>from {point.comparisonYear}</span>
@@ -174,13 +191,10 @@ export function FinanceTrends({
                 </p>
             )}
             {totals && result.metrics.length > 0 && (
-                <div className="flex flex-col gap-2 border-t pt-4">
+                <div className="flex flex-col gap-2 border-t pt-3">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <h3 className="type-item">Surplus or Deficit</h3>
-                        <ResultFigure
-                            point={latest?.observations[RESULT_METRIC]}
-                            className="font-mono type-item tabular-nums"
-                        >
+                        <h3 className="type-item">{result.metrics[0].label}</h3>
+                        <span className="font-mono type-item tabular-nums">
                             <ExactAmount
                                 exact={observationLabel(
                                     latest?.observations[RESULT_METRIC],
@@ -193,7 +207,7 @@ export function FinanceTrends({
                                     true,
                                 )}
                             </ExactAmount>
-                        </ResultFigure>
+                        </span>
                     </div>
                     <PerformanceVisual>
                         {result.rows.some(

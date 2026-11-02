@@ -4,13 +4,13 @@ namespace App\Queries;
 
 use App\Data\BusinessAdminFields;
 use App\Data\BusinessProfile;
-use App\Enums\BusinessStatus;
 use App\Enums\PermitStatus;
 use App\Models\Business;
 use App\Models\BusinessDocument;
 use App\Models\BusinessPermit;
 use App\Models\BusinessYear;
 use App\Models\User;
+use App\Services\OperatingMilestone;
 use App\Services\RenewalStreak;
 use Illuminate\Support\Facades\DB;
 
@@ -24,6 +24,7 @@ final class BusinessProfileQuery
         $place = DB::table('businesses')->where('id', $business->id)
             ->selectRaw('ST_X(location) as lng, ST_Y(location) as lat')->first();
         $latest = $business->permits->sortByDesc('year')->first();
+        $milestone = DB::scalar('select '.OperatingMilestone::SQL.' from businesses b where b.id = ?', [...OperatingMilestone::bindings(), $business->id]);
         $people = User::query()->whereKey(array_filter([$business->submitted_by, $business->reviewed_by]))->pluck('name', 'id');
 
         return new BusinessProfile(
@@ -46,9 +47,9 @@ final class BusinessProfileQuery
                 .' from (select max(valid_until) as valid_until from business_permits where business_id = ?) permit',
                 [...PermitStatus::bindings(), $business->id]),
             permitValidUntil: $latest?->valid_until->toDateString(),
-            isNew: $business->years->firstWhere('year', (int) config('cagayan.data.latest_year'))?->status === BusinessStatus::New,
             streak: (int) DB::scalar('select '.RenewalStreak::SQL.' from businesses b where b.id = ?', [...RenewalStreak::bindings(), $business->id]),
-            location: ['lng' => (float) $place->lng, 'lat' => (float) $place->lat],
+            milestone: $milestone === null ? null : (int) $milestone,
+            location: $seesAdmin || $business->is_storefront ? ['lng' => (float) $place->lng, 'lat' => (float) $place->lat] : null,
             recordStatus: $business->record_status->value,
             submittedBy: $people[$business->submitted_by] ?? null,
             submittedAt: $business->submitted_at?->toIso8601String(),

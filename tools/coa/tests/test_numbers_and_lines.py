@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from coa.lines import load, match
-from coa.numbers import TOKEN, parse_amount
+from coa.numbers import TOKEN, parseAmount
 
 LINES, ALIASES = load(Path(__file__).resolve().parents[3] / "data" / "towns" / "finances" / "lines.csv")
 
@@ -20,11 +20,11 @@ LINES, ALIASES = load(Path(__file__).resolve().parents[3] / "data" / "towns" / "
         ("-", None),
     ],
 )
-def test_parses_amounts_as_printed(token, expected):
-    assert parse_amount(token) == expected
+def testParsesAmountsAsPrinted(token, expected):
+    assert parseAmount(token) == expected
 
 
-def test_percent_column_is_not_read_as_an_amount():
+def testPercentColumnIsNotReadAsAnAmount():
     assert len(TOKEN.findall("Assets ₱1,061,476,967.29 ₱820,695,165.21 129.34%")) == 2
 
 
@@ -45,10 +45,10 @@ def test_percent_column_is_not_read_as_an_amount():
         ("Surplus(Deficit)", "performance.net_income"),
     ],
 )
-def test_matches_label_variants(label, code):
+def testMatchesLabelVariants(label, code):
     assert match(label, ALIASES, "executive_summary", LINES)[0] == code
 
 
 @pytest.mark.parametrize("label", ["Insurance Expenses", "Due to NGAs", "Total", "Prior Years", "Equipment"])
-def test_ignores_rows_outside_the_catalog(label):
+def testIgnoresRowsOutsideTheCatalog(label):
     assert match(label, ALIASES, "executive_summary", LINES) is None

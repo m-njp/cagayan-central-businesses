@@ -38,16 +38,10 @@ export function formatDateTime(iso: string): string {
     return `${part('month')} ${part('day')} at ${part('hour')}:${part('minute')} ${part('dayPeriod').toUpperCase()}`;
 }
 
-const dateFormat = new Intl.DateTimeFormat(LOCALE, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'UTC',
-});
-
-// "December 31, 2026" from a server date string (YYYY-MM-DD), read as a calendar date.
+// "12-31-2026" from a server date string (YYYY-MM-DD), read as a calendar date: the one date format on screen.
 export function formatDate(date: string): string {
-    return dateFormat.format(new Date(`${date}T00:00:00Z`));
+    const [year, month, day] = date.slice(0, 10).split('-');
+    return `${month}-${day}-${year}`;
 }
 
 const decimalFormat = new Intl.NumberFormat(LOCALE, {

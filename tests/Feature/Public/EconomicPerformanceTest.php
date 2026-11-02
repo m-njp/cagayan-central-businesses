@@ -9,7 +9,7 @@ use App\Models\TownFact;
 use App\Models\User;
 use App\Models\Wish;
 use App\Queries\AnalyticsCatalogQuery;
-use App\Queries\EconomicPerformanceQuery;
+use App\Queries\SampleWishesQuery;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Filesystem\Filesystem;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -19,7 +19,7 @@ function economyWithWishes(Closure $alter): void
     $demo = $alter(require base_path('data/economic-performance/demo.php'));
     $files = Mockery::mock(Filesystem::class);
     $files->shouldReceive('getRequire')->once()->andReturn($demo);
-    app()->instance(EconomicPerformanceQuery::class, new EconomicPerformanceQuery($files, app(AnalyticsCatalogQuery::class)));
+    app()->instance(SampleWishesQuery::class, new SampleWishesQuery($files));
 }
 
 test('the public catalog lists every town with the sum of reporting towns first', function () {
@@ -37,7 +37,6 @@ test('the public catalog lists every town with the sum of reporting towns first'
         ->where('performance.catalog.towns.0', ['value' => AnalyticsCatalogQuery::ALL_TOWNS, 'label' => 'Sum of Reporting Towns'])
         ->where('performance.catalog.periods', ['all' => 2019, 'recent' => 2023])
         ->where('performance.filters.measure', 'totals')
-        ->where('performance.filters.wishView', 'cloud')
         ->where('performance.wishes.0201529000.townName', 'Tuguegarao City')
         ->where('performance.wishes.0201529000.source', 'Sample Data')
         ->has('performance.wishes.0201529000.items', 21));
@@ -81,6 +80,28 @@ test('a missing year says why it is missing and never shows a value', function (
         ->assertDontSee('987654321.12');
 });
 
+test('Financial Condition reaches the configured town and other towns say it is not loaded, never a value', function () {
+    $tuguegarao = Municipality::factory()->create(['psgc_code' => '0201529000']);
+    $abulug = Municipality::factory()->create(['psgc_code' => '0201501000']);
+    FinanceLine::factory()->create(['code' => 'position.assets', 'group' => 'position', 'label' => 'Assets']);
+    FinanceLine::factory()->create(['code' => 'performance.surplus', 'group' => 'totals', 'label' => 'Net Income', 'source' => 'derived']);
+    FinanceFigure::factory()->verified()->for($tuguegarao)->line('position.assets', 2024, '4909278026.68')->create();
+    FinanceFigure::factory()->verified()->for($tuguegarao)->line('performance.revenue', 2024, '1465722146.22')->create();
+    FinanceFigure::factory()->verified()->for($tuguegarao)->line('performance.expenses', 2024, '1184642113.21')->create();
+    FinanceFigure::factory()->verified()->for($abulug)->line('performance.revenue', 2024, '196960688.39')->create();
+    FinanceFigure::factory()->for($tuguegarao)->line('position.assets', 2025, '987654321.12')->create();
+    $this->artisan('metrics:refresh')->assertSuccessful();
+
+    $this->get(route('public.economic-performance'))->assertInertia(fn (Assert $page) => $page
+        ->where('performance.catalog.measures', fn ($measures) => collect($measures)->contains(['value' => 'position', 'label' => 'Financial Condition', 'towns' => ['0201500000', '0201529000']]))
+        ->where('performance.catalog.finances.0201529000.position.rows.5.observations', fn ($points) => $points['position.assets']['value'] === '4909278026.68')
+        ->where('performance.catalog.finances.0201529000.position.rows.6.observations', fn ($points) => $points['position.assets']['reason'] === 'pending_review' && $points['position.assets']['value'] === null)
+        // 1,465,722,146.22 - 1,184,642,113.21 = 281,080,033.01, the 2024 report's Net Income.
+        ->where('performance.catalog.finances.0201529000.totals.rows.5.observations', fn ($points) => $points['performance.surplus']['value'] === '281080033.01')
+        ->where('performance.catalog.finances.0201501000.position.rows.5.observations', fn ($points) => $points['position.assets']['reason'] === 'not_loaded' && $points['position.assets']['value'] === null))
+        ->assertDontSee('987654321.12');
+});
+
 test('a figure that replaced a different earlier one says which report restated it', function () {
     $town = Municipality::factory()->create(['psgc_code' => '0201501000']);
     FinanceFigure::factory()->for($town)->line('performance.revenue', 2023, '390.00')->create(['status' => FinanceFigureStatus::Superseded, 'reviewed_on' => '2026-10-27']);
@@ -102,24 +123,23 @@ test('selections survive a direct link and retired filters are ignored', functio
         ->assertInertia(fn (Assert $page) => $page
             ->where('performance.filters', [
                 'town' => '0201529000', 'period' => 'recent', 'measure' => 'revenue_sources',
-                'dimension' => 'category', 'group' => null, 'wishView' => 'bars',
-                'presentation' => 'trends', 'year' => null, 'metric' => null,
+                'dimension' => 'category', 'group' => null,
+                'presentation' => 'statement', 'year' => null, 'metric' => null,
             ]));
 });
 
-test('wish presentations receive the same curated aggregates and no raw submissions', function (string $view) {
+test('wishes receive curated aggregates and no raw submissions', function () {
     $town = Municipality::factory()->create(['psgc_code' => '0201529000']);
     Wish::factory()->for($town)->create(['specific_business' => 'PRIVATE COMPANY SENTINEL', 'reason' => 'PRIVATE REASON SENTINEL']);
 
-    $this->get(route('public.economic-performance', ['wishView' => $view]))
+    $this->get(route('public.economic-performance'))
         ->assertInertia(fn (Assert $page) => $page
-            ->where('performance.filters.wishView', $view)
             ->has('performance.wishes.0201529000.items', 21)
             ->where('performance.wishes.0201529000.items.0', ['id' => 'types:pharmacy', 'label' => 'Pharmacy', 'count' => 18])
             ->where('performance.wishes.0201529000.items.6', ['id' => 'specific:mercury-drug', 'label' => 'Mercury Drug', 'count' => 8])
             ->missing('performance.wishes.0201529000.reason'))
         ->assertDontSee('PRIVATE COMPANY SENTINEL')->assertDontSee('PRIVATE REASON SENTINEL');
-})->with(['cloud', 'bars']);
+});
 
 test('invalid filters fail validation before producing a catalog', function (array $filters, string $field) {
     $this->getJson(route('public.economic-performance', $filters))->assertUnprocessable()->assertJsonValidationErrors($field);
@@ -132,8 +152,7 @@ test('invalid filters fail validation before producing a catalog', function (arr
     'unknown dimension' => [['dimension' => 'barangay'], 'dimension'],
     'malformed group' => [['group' => 'industry:<b>'], 'group'],
     'malformed metric' => [['metric' => '<b>revenue</b>'], 'metric'],
-    'removed table view' => [['wishView' => 'table'], 'wishView'],
-    'array input' => [['wishView' => ['cloud']], 'wishView'],
+    'array input' => [['town' => ['0201529000']], 'town'],
 ]);
 
 test('empty wish aggregates remain empty and do not become zero-filled businesses', function () {
@@ -146,8 +165,7 @@ test('empty wish aggregates remain empty and do not become zero-filled businesse
     });
 
     $this->get(route('public.economic-performance'))->assertInertia(fn (Assert $page) => $page
-        ->where('performance.wishes.0201529000.items', [])
-        ->where('performance.wishes.0201529000.cloudLimit', config('cagayan.performance.cloud_limit')));
+        ->where('performance.wishes.0201529000.items', []));
 });
 
 test('combined wishes preserve distinct identities and exact counts across equal labels and ties', function () {
@@ -167,7 +185,7 @@ test('combined wishes preserve distinct identities and exact counts across equal
         ->where('performance.wishes.0201529000.items.1.count', 7));
 });
 
-test('large combined wish lists retain every complete label beyond the cloud limit', function () {
+test('large combined wish lists retain every complete label', function () {
     Municipality::factory()->create(['psgc_code' => '0201529000']);
     economyWithWishes(function (array $demo): array {
         $demo['wishes']['types'] = array_map(fn (int $index) => [
@@ -180,20 +198,21 @@ test('large combined wish lists retain every complete label beyond the cloud lim
         return $demo;
     });
 
-    $this->get(route('public.economic-performance', ['wishView' => 'bars']))->assertInertia(fn (Assert $page) => $page
+    $this->get(route('public.economic-performance'))->assertInertia(fn (Assert $page) => $page
         ->has('performance.wishes.0201529000.items', 120)
         ->where('performance.wishes.0201529000.items.0.count', 120)
         ->where('performance.wishes.0201529000.items.119.count', 1));
 });
 
-test('maximum trend defaults and focused metrics survive validated public and Capitol links', function () {
+test('the Executive Summary over the maximum period is the default and focused metrics survive validated public and Capitol links', function () {
     Municipality::factory()->create(['psgc_code' => '0201529000']);
     $this->get(route('public.economic-performance'))->assertInertia(fn (Assert $page) => $page
-        ->where('performance.filters.presentation', 'trends')
+        ->where('performance.filters.presentation', 'statement')
         ->where('performance.filters.period', 'all')
         ->where('performance.filters.metric', null)
         ->where('performance.filters.year', null)
-        ->where('performance.catalog.guide.topics.3.title', 'Business Taxes and Fees'));
+        ->where('performance.catalog.guide.topics.0.title', 'Financial Condition')
+        ->where('performance.catalog.guide.topics.4.title', 'Business Taxes and Fees'));
     $query = ['presentation' => 'trends', 'period' => '2y', 'year' => 2024, 'metric' => 'revenue.tax'];
     $this->get(route('public.economic-performance', $query))->assertInertia(fn (Assert $page) => $page
         ->where('performance.filters.presentation', 'trends')->where('performance.filters.period', '2y')
@@ -202,7 +221,7 @@ test('maximum trend defaults and focused metrics survive validated public and Ca
         ->assertInertia(fn (Assert $page) => $page->where('filters.presentation', 'trends')
             ->where('filters.period', '2y')->where('filters.year', 2024)->where('filters.metric', 'revenue.tax'));
     $this->get(route('capitol.analytics'))->assertInertia(fn (Assert $page) => $page
-        ->where('filters.presentation', 'trends')->where('filters.period', 'all'));
+        ->where('filters.presentation', 'statement')->where('filters.period', 'all'));
     $this->get(route('public.economic-performance', ['presentation' => 'summary', 'year' => 2024]))
         ->assertInertia(fn (Assert $page) => $page->where('performance.filters.presentation', 'summary')
             ->where('performance.filters.year', 2024));

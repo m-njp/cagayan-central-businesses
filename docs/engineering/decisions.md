@@ -258,6 +258,8 @@ Approved 26-10-27 by the user for the [Finance Ledger and Analytics Program](../
 
 **Why:** the user wants new report years added by running one command, not by reading every PDF by hand. The source files vary by town and year in sheet names, labels and table order, and pdfplumber and openpyxl handle both formats well. Earlier source-review helpers were already Python. Keeping Python out of the runtime leaves the PHP stack unchanged.
 
+**26-10-29:** the parser now imports `pypdfium2` directly as a second PDF text engine, for fallback reading and digit confirmation. It was already pinned as a pdfplumber dependency, so no package was added. Python in `tools/coa/` uses camelCase names (user rule). See [the parser hardening plan](../plan/archive/26-10-29-coa-parser-hardening.md).
+
 ## D35. Finance Ledger
 
 Approved 26-10-27. Government finance figures leave `town_facts` and move into one ledger:

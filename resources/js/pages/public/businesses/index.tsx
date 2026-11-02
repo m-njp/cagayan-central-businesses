@@ -1,6 +1,7 @@
+import { SimulatedLabel } from '@/components/privacy/simulated-label';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { BirMark } from '@/components/business-badges';
+import { BirMark, MilestoneMark } from '@/components/business-badges';
 import { CategoryIcon } from '@/components/category-icon';
 import { LazyBusinessMap } from '@/components/map/lazy-business-map';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Toggle } from '@/components/ui/toggle';
+import { icons } from '@/lib/icons';
 import { pageSearchParams } from '@/lib/navigation';
 import {
     businessQuery,
@@ -59,6 +61,7 @@ export default function PublicBusinesses({
     const barangayName = Object.fromEntries(
         (town?.barangays ?? []).map((b) => [b.value, b.label]),
     );
+    const SearchIcon = icons.search;
     const rows = town ? visibleBusinesses(town.rows, view) : [];
 
     if (businesses) towns.set(businesses.town, businesses);
@@ -131,7 +134,7 @@ export default function PublicBusinesses({
             onValueChange={(next) => onChange(next === 'all' ? null : next)}
             disabled={!town && !!all}
         >
-            <SelectTrigger aria-label={label} className="w-full sm:w-52">
+            <SelectTrigger aria-label={label} className="w-full">
                 <SelectValue placeholder={label} />
             </SelectTrigger>
             <SelectContent>
@@ -148,17 +151,14 @@ export default function PublicBusinesses({
     return (
         <>
             <Head title="Businesses" />
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
                 <h1 className="type-title">Businesses</h1>
-                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
                     <Select
                         value={view.town ?? undefined}
                         onValueChange={chooseTown}
                     >
-                        <SelectTrigger
-                            aria-label="Town"
-                            className="w-full sm:w-56"
-                        >
+                        <SelectTrigger aria-label="Town" className="w-full">
                             <SelectValue placeholder="Choose a Town" />
                         </SelectTrigger>
                         <SelectContent>
@@ -172,16 +172,22 @@ export default function PublicBusinesses({
                             ))}
                         </SelectContent>
                     </Select>
-                    <Input
-                        type="search"
-                        aria-label="Search by name"
-                        placeholder="Search by name"
-                        value={search}
-                        maxLength={60}
-                        disabled={!town}
-                        className="sm:w-56"
-                        onChange={(event) => setSearch(event.target.value)}
-                    />
+                    <div className="relative">
+                        <SearchIcon
+                            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                            aria-hidden="true"
+                        />
+                        <Input
+                            type="search"
+                            aria-label="Search by name"
+                            placeholder="Search by name"
+                            value={search}
+                            maxLength={60}
+                            disabled={!town}
+                            className="pl-9"
+                            onChange={(event) => setSearch(event.target.value)}
+                        />
+                    </div>
                     {choose(
                         'Barangay',
                         view.barangay,
@@ -200,14 +206,6 @@ export default function PublicBusinesses({
                         'All Categories',
                     )}
                     <div className="flex gap-2">
-                        <Toggle
-                            variant="outline"
-                            disabled={!town}
-                            pressed={view.isNew}
-                            onPressedChange={(isNew) => go({ isNew })}
-                        >
-                            New This Year
-                        </Toggle>
                         <Toggle
                             variant="outline"
                             disabled={!town}
@@ -248,12 +246,13 @@ export default function PublicBusinesses({
                     </Button>
                 </div>
             ) : (
-                <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                // From lg the list and the map share one fixed-height panel: the list scrolls inside it, so both edges line up.
+                <div className="grid gap-3 lg:h-[calc(100dvh-12rem)] lg:min-h-[28rem] lg:grid-cols-2">
                     <div
                         className={
                             view.map
-                                ? 'hidden lg:flex lg:flex-col lg:gap-3'
-                                : 'flex flex-col gap-3'
+                                ? 'hidden min-h-0 lg:flex lg:flex-col'
+                                : 'flex min-h-0 flex-col'
                         }
                     >
                         {!town || loading ? (
@@ -264,76 +263,97 @@ export default function PublicBusinesses({
                                 {Array.from({ length: 6 }, (_, i) => (
                                     <Skeleton
                                         key={i}
-                                        className="h-16 w-full rounded-sm"
+                                        className="h-11 w-full rounded-sm"
                                     />
                                 ))}
                             </div>
                         ) : rows.length === 0 ? (
-                            <p className="rounded-sm border bg-card p-6 type-body text-muted-foreground">
+                            <p className="rounded-sm border bg-card p-4 type-body text-muted-foreground">
                                 {town.rows.length === 0
                                     ? 'No registered businesses here yet.'
                                     : 'No businesses match these filters.'}
                             </p>
                         ) : (
-                            <ul className="divide-y rounded-sm border bg-card">
-                                {rows.slice(0, view.shown).map((row) => {
-                                    const category = categories[row.category];
-                                    return (
-                                        <li
-                                            key={row.id}
-                                            onMouseEnter={() =>
-                                                setHighlight(row.id)
-                                            }
-                                            onMouseLeave={() =>
-                                                setHighlight(null)
-                                            }
-                                        >
-                                            <Link
-                                                href={show(row.id)}
-                                                onFocus={() =>
+                            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-sm border bg-card">
+                                <div className="flex justify-end px-3 pt-3">
+                                    <SimulatedLabel />
+                                </div>
+                                <ul className="divide-y">
+                                    {rows.slice(0, view.shown).map((row) => {
+                                        const category =
+                                            categories[row.category];
+                                        return (
+                                            <li
+                                                key={row.id}
+                                                onMouseEnter={() =>
                                                     setHighlight(row.id)
                                                 }
-                                                className="flex items-center gap-3 px-4 py-3 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                onMouseLeave={() =>
+                                                    setHighlight(null)
+                                                }
                                             >
-                                                {category && (
-                                                    <CategoryIcon
-                                                        code={category.code}
-                                                        name={category.name}
-                                                    />
-                                                )}
-                                                <span className="flex min-w-0 flex-1 flex-col">
-                                                    <span className="truncate type-item">
+                                                <Link
+                                                    href={show(row.id)}
+                                                    onFocus={() =>
+                                                        setHighlight(row.id)
+                                                    }
+                                                    className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset"
+                                                >
+                                                    {category && (
+                                                        <CategoryIcon
+                                                            code={category.code}
+                                                            name={category.name}
+                                                        />
+                                                    )}
+                                                    <span className="min-w-0 flex-1 truncate type-item">
                                                         {row.name}
                                                     </span>
-                                                    <span className="truncate type-meta">
-                                                        {
-                                                            barangayName[
-                                                                row.barangay
-                                                            ]
-                                                        }
-                                                        , {town.townName}
+                                                    {/* Two fixed slots, so every row lines up whichever marks it has. */}
+                                                    <span className="grid shrink-0 grid-cols-2 gap-2 *:grid *:size-5 *:place-items-center">
+                                                        <span>
+                                                            {row.milestone && (
+                                                                <MilestoneMark
+                                                                    years={
+                                                                        row.milestone
+                                                                    }
+                                                                />
+                                                            )}
+                                                        </span>
+                                                        <span>
+                                                            {row.bir && (
+                                                                <BirMark />
+                                                            )}
+                                                        </span>
                                                     </span>
-                                                </span>
-                                                {row.bir && <BirMark />}
-                                            </Link>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        )}
-                        {rows.length > view.shown && (
-                            <Button
-                                variant="outline"
-                                className="w-full"
-                                onClick={() =>
-                                    go({ shown: view.shown + PAGE_SIZE }, true)
-                                }
-                            >
-                                Show More
-                            </Button>
+                                                </Link>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                                {rows.length > view.shown && (
+                                    <div className="border-t p-2">
+                                        <Button
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={() =>
+                                                go(
+                                                    {
+                                                        shown:
+                                                            view.shown +
+                                                            PAGE_SIZE,
+                                                    },
+                                                    true,
+                                                )
+                                            }
+                                        >
+                                            Show More
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
                         )}
                         {view.barangay && town && (
-                            <p className="type-body">
+                            <p className="pt-2 type-body">
                                 Missing a business in{' '}
                                 {barangayName[view.barangay]}?{' '}
                                 <Link
@@ -346,7 +366,7 @@ export default function PublicBusinesses({
                         )}
                     </div>
                     <div
-                        className={`h-[calc(100vh-8rem)] min-h-[28rem] lg:sticky lg:top-6 ${view.map ? '' : 'hidden lg:block'}`}
+                        className={`h-[70dvh] lg:h-full ${view.map ? '' : 'hidden lg:block'}`}
                     >
                         {view.town && (
                             <LazyBusinessMap

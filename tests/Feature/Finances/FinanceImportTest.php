@@ -210,6 +210,11 @@ it('imports the committed COA data signed off, with workbooks only for the confi
         ->and(FinanceFigure::query()->where('status', FinanceFigureStatus::Verified)->distinct()->count('municipality_id'))->toBe(29)
         ->and(FinanceFigure::query()->whereHas('document', fn ($document) => $document->whereNot('kind', 'executive_summary'))
             ->whereHas('municipality', fn ($town) => $town->whereNotIn('psgc_code', config('cagayan.finances.workbook_towns')))->exists())->toBeFalse()
+        ->and(FinanceFigure::query()->whereIn('line_code', config('cagayan.finances.summary_detail_lines'))
+            ->whereHas('municipality', fn ($town) => $town->whereNotIn('psgc_code', config('cagayan.finances.summary_detail_towns')))->exists())->toBeFalse()
+        // Assets as printed in the 2025 Executive Summary, page 1 (metrics.md M35).
+        ->and(FinanceFigure::query()->whereHas('municipality', fn ($town) => $town->where('psgc_code', '0201529000'))
+            ->where(['status' => FinanceFigureStatus::Verified, 'fiscal_year' => 2025, 'line_code' => 'position.assets'])->value('value'))->toBe('5157038108.96')
         ->and($tuguegarao?->revenue?->value)->toBe('1679019473.60')
         ->and($tuguegarao?->expenditure?->value)->toBe('1403269517.37')
         // The 2024 report heads its columns 2024 then 2023 but prints 2023 first; the parser reads printed order.

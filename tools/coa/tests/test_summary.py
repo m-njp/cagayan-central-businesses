@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from coa.checks import document_checks, mislabelled_years, restatement_checks, swap_years
+from coa.checks import documentChecks, mislabelledYears, restatementChecks, swapYears
 from coa.lines import load
-from coa.summary import parse_summary
+from coa.summary import parseSummary
 
 ROOT = Path(__file__).resolve().parents[3]
 SUMMARIES = ROOT / "data" / "towns" / "executive-summaries"
@@ -14,11 +14,11 @@ LINES, ALIASES = load(ROOT / "data" / "towns" / "finances" / "lines.csv")
 
 def parse(year: int, folder: str):
     path = next((SUMMARIES / str(year) / folder).glob("*.pdf"))
-    return parse_summary(path, year, LINES, ALIASES)
+    return parseSummary(path, year, LINES, ALIASES)
 
 
 def values(result) -> dict[tuple[str, int], Decimal]:
-    return {(figure.code, figure.fiscal_year): figure.value for figure in result.figures}
+    return {(figure.code, figure.fiscalYear): figure.value for figure in result.figures}
 
 
 # Expected values were read from each PDF's highlights table by hand, not from parser output.
@@ -71,20 +71,20 @@ VERIFIED_2024 = {
 
 
 @pytest.mark.parametrize(("report", "expected"), LAYOUTS.items(), ids=[f"{year}-{town}" for year, town in LAYOUTS])
-def test_reads_each_layout(report, expected):
+def testReadsEachLayout(report, expected):
     found = values(parse(*report))
 
     assert {key: found.get(key) for key in expected} == {key: Decimal(value) for key, value in expected.items()}
 
 
 @pytest.mark.parametrize("town", VERIFIED_2024)
-def test_reproduces_verified_2024_figures(town):
+def testReproducesVerified2024Figures(town):
     found = values(parse(2024, town))
 
     assert (str(found[("performance.revenue", 2024)]), str(found[("performance.expenses", 2024)])) == VERIFIED_2024[town]
 
 
-def test_marks_definition_variants():
+def testMarksDefinitionVariants():
     variants = {figure.code: figure.variant for figure in parse(2020, "Sto.-Nino").figures}
 
     assert variants["performance.revenue"] == "includes_subsidy_from_other_funds"
@@ -92,47 +92,47 @@ def test_marks_definition_variants():
     assert {figure.variant for figure in parse(2020, "Abulug").figures if figure.code == "budget.appropriations_current"} == {"unspecified_period"}
 
 
-def test_repeated_header_year_falls_back_to_report_and_prior_year():
+def testRepeatedHeaderYearFallsBackToReportAndPriorYear():
     result = parse(2020, "Sta.-Praxedes")
 
-    assert {figure.fiscal_year for figure in result.figures} == {2019, 2020}
+    assert {figure.fiscalYear for figure in result.figures} == {2019, 2020}
     assert "header_years_repeated" in {issue.kind for issue in result.issues}
 
 
-def test_balance_and_net_income_hold_for_a_clean_report():
+def testBalanceAndNetIncomeHoldForACleanReport():
     result = parse(2024, "Tuguegarao-City")
 
-    assert [issue for issue in document_checks(result.figures, result.changes, 2024) if issue.severity == "error"] == []
+    assert [issue for issue in documentChecks(result.figures, result.changes, 2024) if issue.severity == "error"] == []
 
 
-def test_flags_source_net_income_that_does_not_add_up():
+def testFlagsSourceNetIncomeThatDoesNotAddUp():
     result = parse(2025, "Rizal")
 
-    assert "net_income_mismatch" in {issue.kind for issue in document_checks(result.figures, result.changes, 2025)}
+    assert "net_income_mismatch" in {issue.kind for issue in documentChecks(result.figures, result.changes, 2025)}
 
 
-def test_reversed_change_column_is_only_informational():
+def testReversedChangeColumnIsOnlyInformational():
     result = parse(2021, "Abulug")
-    issues = document_checks(result.figures, result.changes, 2021)
+    issues = documentChecks(result.figures, result.changes, 2021)
 
     assert {issue.kind for issue in issues} == {"change_sign_reversed"}
     assert {issue.severity for issue in issues} == {"info"}
 
 
-def test_flags_swapped_columns_against_the_previous_report():
+def testFlagsSwappedColumnsAgainstThePreviousReport():
     reports = {2023: parse(2023, "Gattaran").figures, 2024: parse(2024, "Gattaran").figures}
 
-    swapped = {issue.code for year, issue in restatement_checks(reports) if issue.kind == "repeats_previous_year"}
+    swapped = {issue.code for year, issue in restatementChecks(reports) if issue.kind == "repeats_previous_year"}
 
     assert {"position.assets", "performance.revenue", "performance.expenses"} <= swapped
 
 
-def test_reads_mislabelled_column_headers_in_printed_order():
+def testReadsMislabelledColumnHeadersInPrintedOrder():
     # Gattaran 2024 heads its columns "2024 2023" but prints 2023 first; values read from page 2 by hand.
     earlier, result = parse(2023, "Gattaran").figures, parse(2024, "Gattaran")
-    assert mislabelled_years(result.figures, result.changes, earlier, 2024)
+    assert mislabelledYears(result.figures, result.changes, earlier, 2024)
 
-    found = {(figure.code, figure.fiscal_year): figure.value for figure in swap_years(result.figures, 2024)}
+    found = {(figure.code, figure.fiscalYear): figure.value for figure in swapYears(result.figures, 2024)}
 
     assert found[("performance.revenue", 2024)] == Decimal("401727932.51")
     assert found[("performance.expenses", 2024)] == Decimal("408270884.16")
@@ -140,7 +140,7 @@ def test_reads_mislabelled_column_headers_in_printed_order():
 
 
 @pytest.mark.parametrize(("year", "town"), [(2021, "Abulug"), (2024, "Tuguegarao-City"), (2025, "Gattaran")])
-def test_correctly_labelled_columns_are_never_swapped(year, town):
+def testCorrectlyLabelledColumnsAreNeverSwapped(year, town):
     result = parse(year, town)
 
-    assert not mislabelled_years(result.figures, result.changes, parse(year - 1, town).figures, year)
+    assert not mislabelledYears(result.figures, result.changes, parse(year - 1, town).figures, year)

@@ -3,22 +3,24 @@
 import argparse
 import csv
 import hashlib
+import logging
 from decimal import Decimal
 from collections import Counter, defaultdict
 from pathlib import Path
 
 from . import EXTRACTOR_VERSION
-from .archives import add_workbooks
-from .checks import document_checks, mislabelled_years, restatement_checks, swap_years
+from .archives import addWorkbooks
+from .checks import documentChecks, mislabelledYears, restatementChecks, swapYears
 from .lines import load
-from .summary import Issue, parse_summary
-from .workbook import read_annex, read_fs
+from .summary import Issue, parseSummary
+from .workbook import readAnnex, readFs
 
 ROOT = Path(__file__).resolve().parents[3]
 TOWNS = ROOT / "data" / "towns"
 SUMMARIES = TOWNS / "executive-summaries"
 WORKBOOKS = TOWNS / "financial-statements"
 OUTPUT = TOWNS / "finances"
+LOG_FILE = Path(__file__).resolve().parents[1] / "logs" / "extract.log"
 
 EXTRACTED_COLUMNS = [
     "psgc_code", "town", "reported_in_year", "document_kind", "fiscal_year", "line_code", "basis", "value",
@@ -26,6 +28,8 @@ EXTRACTED_COLUMNS = [
 ]
 ISSUE_COLUMNS = ["psgc_code", "town", "reported_in_year", "severity", "kind", "line_code", "message", "location"]
 DOCUMENT_COLUMNS = ["psgc_code", "town", "fiscal_year", "kind", "availability", "file", "source_url", "sha256", "checked_on"]
+
+log = logging.getLogger("coa")
 
 
 def main() -> None:
@@ -36,87 +40,124 @@ def main() -> None:
     adding.add_argument("listing", type=Path, help="CSV with archive,source_url,retrieved_on")
     arguments = parser.parse_args()
     if arguments.command == "add-workbooks":
-        for message in add_workbooks(arguments.listing.resolve(), SUMMARIES, WORKBOOKS):
+        for message in addWorkbooks(arguments.listing.resolve(), SUMMARIES, WORKBOOKS):
             print(message)
         return
+    configureLogging()
     extract()
 
 
+def configureLogging() -> None:
+    """Everything goes to tools/coa/logs/extract.log, rewritten each run; warnings and errors also print."""
+    LOG_FILE.parent.mkdir(exist_ok=True)
+    fileHandler = logging.FileHandler(LOG_FILE, mode="w", encoding="utf-8")
+    fileHandler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setLevel(logging.WARNING)
+    consoleHandler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
+    log.setLevel(logging.DEBUG)
+    log.handlers = [fileHandler, consoleHandler]
+    logging.getLogger("pdfminer").setLevel(logging.ERROR)
+
+
 def extract() -> None:
+    log.info("Extractor version %s", EXTRACTOR_VERSION)
     lines, aliases = load(OUTPUT / "lines.csv")
-    sources = read_csv(SUMMARIES / "sources.csv")
+    sources = readCsv(SUMMARIES / "sources.csv")
     extracted: dict[int, list[dict]] = defaultdict(list)
     issues: dict[int, list[dict]] = defaultdict(list)
-    by_town: dict[str, dict[int, list]] = defaultdict(dict)
+    byTown: dict[str, dict[int, list]] = defaultdict(dict)
 
     for source in sorted(sources, key=lambda row: (int(row["year"]), row["town"])):
         year, path = int(source["year"]), SUMMARIES / source["file"]
-        document_issues: list[Issue] = []
-        if hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
-            document_issues.append(Issue("error", "checksum_mismatch", "", "File differs from sources.csv"))
-        result = parse_summary(path, year, lines, aliases)
-        if mislabelled_years(result.figures, result.changes, by_town[source["psgc_code"]].get(year - 1, []), year):
-            result.figures = swap_years(result.figures, year)
-            document_issues.append(Issue("warning", "header_years_swapped", "", f"Columns are headed {year} then {year - 1} but printed {year - 1} then {year}; read in printed order"))
-        document_issues += result.issues + document_checks(result.figures, result.changes, year)
-        by_town[source["psgc_code"]][year] = result.figures
-        for figure in stored(result.figures, lines):
+        documentIssues: list[Issue] = []
+        try:
+            if hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+                documentIssues.append(Issue("error", "checksum_mismatch", "", "File differs from sources.csv"))
+            result = parseSummary(path, year, lines, aliases)
+            if mislabelledYears(result.figures, result.changes, byTown[source["psgc_code"]].get(year - 1, []), year):
+                result.figures = swapYears(result.figures, year)
+                documentIssues.append(Issue("warning", "header_years_swapped", "", f"Columns are headed {year} then {year - 1} but printed {year - 1} then {year}; read in printed order"))
+            documentIssues += result.issues + documentChecks(result.figures, result.changes, year)
+        except Exception as error:
+            # One unreadable file must not stop the run; its figures are simply absent and the issue says why.
+            log.exception("%s %s: parser failed", year, source["town"])
+            issues[year].append(issueRow(source, year, Issue("error", "parser_failed", "", f"{type(error).__name__}: {error}; see tools/coa/logs/extract.log")))
+            continue
+        byTown[source["psgc_code"]][year] = result.figures
+        storedFigures = stored(result.figures, lines)
+        for figure in storedFigures:
             extracted[year].append({
                 "psgc_code": source["psgc_code"], "town": source["town"], "reported_in_year": year,
-                "document_kind": "executive_summary", "fiscal_year": figure.fiscal_year, "line_code": figure.code, "basis": "actual",
+                "document_kind": "executive_summary", "fiscal_year": figure.fiscalYear, "line_code": figure.code, "basis": "actual",
                 "value": f"{figure.value:.2f}", "definition_variant": figure.variant or "",
-                "source_label": figure.source_label, "location": f"page {figure.page}",
+                "source_label": figure.sourceLabel, "location": f"page {figure.page}",
                 "document_sha256": source["sha256"], "extractor_version": EXTRACTOR_VERSION,
             })
-        issues[year] += [issue_row(source, year, issue) for issue in document_issues]
+        issues[year] += [issueRow(source, year, issue) for issue in documentIssues]
+        logDocument(f"{year} {source['town']} executive summary", len(storedFigures), documentIssues)
 
-    for code, reports in by_town.items():
+    for code, reports in byTown.items():
         source = next(row for row in sources if row["psgc_code"] == code)
-        for year, issue in restatement_checks(reports):
-            issues[year].append(issue_row(source, year, issue))
+        for year, issue in restatementChecks(reports):
+            issues[year].append(issueRow(source, year, issue))
 
-    workbooks = read_csv(WORKBOOKS / "sources.csv")
-    extract_workbooks(workbooks, lines, aliases, extracted, issues)
+    workbooks = readCsv(WORKBOOKS / "sources.csv")
+    extractWorkbooks(workbooks, lines, aliases, extracted, issues)
 
     (OUTPUT / "extracted").mkdir(parents=True, exist_ok=True)
     (OUTPUT / "issues").mkdir(parents=True, exist_ok=True)
     for year in sorted(extracted.keys() | issues.keys()):
-        write_csv(OUTPUT / "extracted" / f"{year}.csv", EXTRACTED_COLUMNS, extracted[year])
-        write_csv(OUTPUT / "issues" / f"{year}.csv", ISSUE_COLUMNS, sorted(issues[year], key=lambda row: (row["town"], row["severity"], row["kind"], row["line_code"])))
-    write_csv(OUTPUT / "documents.csv", DOCUMENT_COLUMNS, documents(sources) + workbook_documents(workbooks))
+        writeCsv(OUTPUT / "extracted" / f"{year}.csv", EXTRACTED_COLUMNS, extracted[year])
+        writeCsv(OUTPUT / "issues" / f"{year}.csv", ISSUE_COLUMNS, sorted(issues[year], key=lambda row: (row["town"], row["severity"], row["kind"], row["line_code"])))
+    writeCsv(OUTPUT / "documents.csv", DOCUMENT_COLUMNS, documents(sources) + workbookDocuments(workbooks))
     report(extracted, issues, len(sources))
 
 
-def extract_workbooks(workbooks: list[dict], lines, aliases, extracted: dict[int, list[dict]], issues: dict[int, list[dict]]) -> None:
+def extractWorkbooks(workbooks: list[dict], lines, aliases, extracted: dict[int, list[dict]], issues: dict[int, list[dict]]) -> None:
     """Breakdowns from the statement workbooks, checked against the same town's Executive Summary totals."""
     summary = {
         (row["psgc_code"], int(row["fiscal_year"]), row["line_code"]): Decimal(row["value"])
-        for year_rows in extracted.values() for row in year_rows
+        for yearRows in extracted.values() for row in yearRows
         if row["document_kind"] == "executive_summary" and row["reported_in_year"] == int(row["fiscal_year"])
     }
-    readers = {"fs_workbook": read_fs, "annex_workbook": read_annex}
-    by_town: dict[tuple[str, str], dict[int, list]] = defaultdict(dict)
+    readers = {"fs_workbook": readFs, "annex_workbook": readAnnex}
+    byTown: dict[tuple[str, str], dict[int, list]] = defaultdict(dict)
     for source in sorted(workbooks, key=lambda row: (int(row["year"]), row["town"], row["kind"])):
         year, path = int(source["year"]), WORKBOOKS / source["file"]
-        result = readers[source["kind"]](path, year, lines, aliases)
-        if hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
-            result.issues.append(Issue("error", "checksum_mismatch", "", f"{source['file']} differs from sources.csv"))
-        if source["kind"] == "fs_workbook":
-            result.issues += summary_checks(result.figures, summary, source["psgc_code"], year)
-        by_town[(source["psgc_code"], source["kind"])][year] = result.figures
-        for figure in stored(result.figures, lines):
+        try:
+            result = readers[source["kind"]](path, year, lines, aliases)
+            if hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+                result.issues.append(Issue("error", "checksum_mismatch", "", f"{source['file']} differs from sources.csv"))
+            if source["kind"] == "fs_workbook":
+                result.issues += summaryChecks(result.figures, summary, source["psgc_code"], year)
+        except Exception as error:
+            log.exception("%s %s %s: parser failed", year, source["town"], source["kind"])
+            issues[year].append(issueRow(source, year, Issue("error", "parser_failed", "", f"{source['file']}: {type(error).__name__}: {error}; see tools/coa/logs/extract.log")))
+            continue
+        byTown[(source["psgc_code"], source["kind"])][year] = result.figures
+        storedFigures = stored(result.figures, lines)
+        for figure in storedFigures:
             extracted[year].append({
                 "psgc_code": source["psgc_code"], "town": source["town"], "reported_in_year": year,
-                "document_kind": source["kind"], "fiscal_year": figure.fiscal_year, "line_code": figure.code,
+                "document_kind": source["kind"], "fiscal_year": figure.fiscalYear, "line_code": figure.code,
                 "basis": figure.basis, "value": f"{figure.value:.2f}", "definition_variant": figure.variant or "",
-                "source_label": figure.source_label, "location": figure.location,
+                "source_label": figure.sourceLabel, "location": figure.location,
                 "document_sha256": source["sha256"], "extractor_version": EXTRACTOR_VERSION,
             })
-        issues[year] += [issue_row(source, year, issue) for issue in result.issues]
-    for (code, _), reports in by_town.items():
+        issues[year] += [issueRow(source, year, issue) for issue in result.issues]
+        logDocument(f"{year} {source['town']} {source['kind']}", len(storedFigures), result.issues)
+    for (code, _), reports in byTown.items():
         source = next(row for row in workbooks if row["psgc_code"] == code)
-        for year, issue in restatement_checks(reports):
-            issues[year].append(issue_row(source, year, issue))
+        for year, issue in restatementChecks(reports):
+            issues[year].append(issueRow(source, year, issue))
+
+
+def logDocument(name: str, figureCount: int, documentIssues: list[Issue]) -> None:
+    log.info("%s: %d figures stored", name, figureCount)
+    for issue in documentIssues:
+        level = {"error": logging.ERROR, "warning": logging.WARNING}.get(issue.severity, logging.INFO)
+        log.log(level, "%s: %s %s %s", name, issue.kind, issue.code, issue.message)
 
 
 def stored(figures, lines) -> list:
@@ -124,24 +165,24 @@ def stored(figures, lines) -> list:
     return [figure for figure in figures if lines[figure.code].group != "checks"]
 
 
-def summary_checks(figures, summary: dict, psgc: str, year: int) -> list[Issue]:
+def summaryChecks(figures, summary: dict, psgc: str, year: int) -> list[Issue]:
     """Revenue sources should add up to the summary's revenue, and expense types to its expenses."""
     found = []
     for total, prefix in (("performance.revenue", "revenue."), ("performance.expenses", "expense.")):
-        parts = [figure.value for figure in figures if figure.fiscal_year == year and figure.basis == "actual" and figure.code.startswith(prefix)]
+        parts = [figure.value for figure in figures if figure.fiscalYear == year and figure.basis == "actual" and figure.code.startswith(prefix)]
         stated = summary.get((psgc, year, total))
         if parts and stated is not None and abs(sum(parts) - stated) > Decimal("1.00"):
             found.append(Issue("warning", "differs_from_summary", total, f"{year}: workbook lines add up to {sum(parts)}, the Executive Summary states {stated}"))
     return found
 
 
-def workbook_documents(workbooks: list[dict]) -> list[dict]:
+def workbookDocuments(workbooks: list[dict]) -> list[dict]:
     rows = [{
         "psgc_code": row["psgc_code"], "town": row["town"], "fiscal_year": row["year"], "kind": row["kind"],
         "availability": "available", "file": f"financial-statements/{row['file']}", "source_url": row["source_url"],
         "sha256": row["sha256"], "checked_on": row["retrieved_on"],
     } for row in workbooks]
-    for row in read_csv(WORKBOOKS / "not-published.csv"):
+    for row in readCsv(WORKBOOKS / "not-published.csv"):
         for kind in ("fs_workbook", "annex_workbook"):
             rows.append({
                 "psgc_code": row["psgc_code"], "town": row["town"], "fiscal_year": row["year"], "kind": kind,
@@ -171,7 +212,7 @@ def documents(sources: list[dict]) -> list[dict]:
     return rows
 
 
-def issue_row(source: dict, year: int, issue: Issue) -> dict:
+def issueRow(source: dict, year: int, issue: Issue) -> dict:
     return {
         "psgc_code": source["psgc_code"], "town": source["town"], "reported_in_year": year,
         "severity": issue.severity, "kind": issue.kind, "line_code": issue.code, "message": issue.message,
@@ -179,26 +220,27 @@ def issue_row(source: dict, year: int, issue: Issue) -> dict:
     }
 
 
-def report(extracted: dict[int, list[dict]], issues: dict[int, list[dict]], documents_read: int) -> None:
-    rows = [row for year_rows in extracted.values() for row in year_rows]
+def report(extracted: dict[int, list[dict]], issues: dict[int, list[dict]], documentsRead: int) -> None:
+    rows = [row for yearRows in extracted.values() for row in yearRows]
     current = {(row["psgc_code"], row["reported_in_year"], row["line_code"]) for row in rows if row["fiscal_year"] == row["reported_in_year"]}
-    print(f"Documents read: {documents_read}")
+    print(f"Documents read: {documentsRead}")
     print(f"Figures extracted: {len(rows)}")
     for code in ("performance.revenue", "performance.expenses", "budget.appropriations_current", "budget.obligations_current"):
-        print(f"  {code}: {sum(1 for key in current if key[2] == code)} of {documents_read} reports")
-    severities = Counter(row["severity"] for year_rows in issues.values() for row in year_rows)
-    kinds = Counter((row["severity"], row["kind"]) for year_rows in issues.values() for row in year_rows)
+        print(f"  {code}: {sum(1 for key in current if key[2] == code)} of {documentsRead} reports")
+    severities = Counter(row["severity"] for yearRows in issues.values() for row in yearRows)
+    kinds = Counter((row["severity"], row["kind"]) for yearRows in issues.values() for row in yearRows)
     print(f"Issues: {dict(severities)}")
     for (severity, kind), count in sorted(kinds.items()):
         print(f"  {severity} {kind}: {count}")
+    print(f"Log: {LOG_FILE.relative_to(ROOT).as_posix()}")
 
 
-def read_csv(path: Path) -> list[dict]:
+def readCsv(path: Path) -> list[dict]:
     with path.open(encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
 
 
-def write_csv(path: Path, columns: list[str], rows: list[dict]) -> None:
+def writeCsv(path: Path, columns: list[str], rows: list[dict]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=columns, lineterminator="\n")
         writer.writeheader()

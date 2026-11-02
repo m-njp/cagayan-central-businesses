@@ -59,6 +59,22 @@ it('counts the renewal streak as consecutive active years ending in the latest y
     $this->get(route('public.businesses.show', $lapsed))->assertInertia(fn (Assert $page) => $page->where('business.streak', 0));
 });
 
+it('awards the highest operating milestone reached by an active business (M34)', function () {
+    $latest = (int) config('cagayan.data.latest_year');
+    $this->business->update(['year_established' => $latest - 12]);
+    BusinessYear::factory()->for($this->business)->status(BusinessStatus::Renewed, $latest)->create();
+    $young = Business::factory()->inBarangay($this->barangay)->create(['year_established' => $latest - 3]);
+    BusinessYear::factory()->for($young)->status(BusinessStatus::Renewed, $latest)->create();
+    $closed = Business::factory()->inBarangay($this->barangay)->create(['year_established' => $latest - 25]);
+    BusinessYear::factory()->for($closed)->status(BusinessStatus::NotRenewed, $latest)->create();
+
+    $this->get(route('public.businesses.show', $this->business))->assertInertia(fn (Assert $page) => $page->where('business.milestone', 10));
+    $this->get(route('public.businesses.show', $young))->assertInertia(fn (Assert $page) => $page->where('business.milestone', null));
+    $this->get(route('public.businesses.show', $closed))->assertInertia(fn (Assert $page) => $page->where('business.milestone', null));
+    $this->get(route('public.businesses.index', ['town' => config('cagayan.performance.demo_town')]))
+        ->assertInertia(fn (Assert $page) => $page->where('businesses.rows', fn ($rows) => collect($rows)->pluck('milestone')->sort()->values()->all() === [null, null, 10]));
+});
+
 it('never shows drafts, submissions or returned records (P15)', function (RecordStatus $status) {
     $hidden = Business::factory()->inBarangay($this->barangay)->status($status)->create(['business_name' => 'Pending Shop']);
 

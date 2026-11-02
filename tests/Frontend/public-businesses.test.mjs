@@ -11,8 +11,8 @@ const row = (overrides) => ({
     name: 'Kape ni Maria',
     category: 'food-and-beverage',
     barangay: '0201529016',
-    isNew: true,
     bir: true,
+    milestone: null,
     point: null,
     ...overrides,
 });
@@ -37,7 +37,6 @@ void test('a shared link restores the town and filters and drops unknown values'
         q: 'kape',
         barangay: '0201529016',
         category: null,
-        isNew: true,
         bir: false,
         map: true,
         shown: 60,
@@ -46,7 +45,6 @@ void test('a shared link restores the town and filters and drops unknown values'
         town: '0201529000',
         q: 'kape',
         barangay: '0201529016',
-        new: '1',
         show: 'map',
         more: '2',
     });
@@ -61,7 +59,6 @@ void test('filters combine on the loaded rows', () => {
             id: 'b',
             name: 'Santos Hardware',
             category: 'retail',
-            isNew: false,
             bir: false,
         }),
     ];
@@ -72,9 +69,7 @@ void test('filters combine on the loaded rows', () => {
         ['b'],
     );
     assert.deepEqual(
-        visibleBusinesses(rows, { ...base, isNew: true, bir: true }).map(
-            (r) => r.id,
-        ),
+        visibleBusinesses(rows, { ...base, bir: true }).map((r) => r.id),
         ['a'],
     );
     assert.deepEqual(

@@ -2,6 +2,7 @@
 
 use App\Enums\TownMeasure;
 use App\Models\FinanceFigure;
+use App\Models\FinanceLine;
 use App\Models\Municipality;
 use App\Models\TownFact;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +36,25 @@ it('computes surplus and changes only between consecutive comparable years (M19,
     expect([$revenue[2024]->change, $revenue[2024]->percent_change])->toBe(['50.00', '50.0'])
         ->and([$revenue[2025]->comparable, $revenue[2025]->change])->toBe([false, null])
         ->and(series($this->town, 'performance.surplus')[2024]->value)->toBe('30.00');
+});
+
+it('stores Financial Condition and allotments as reported, with Net Income as Income minus Expenses (M19, M35)', function () {
+    foreach (['position.assets' => 'position', 'budget.allotments_continuing' => 'budget'] as $code => $group) {
+        FinanceLine::factory()->create(['code' => $code, 'group' => $group]);
+    }
+    signed($this->town, 'position.assets', 2024, '4909278026.68');
+    signed($this->town, 'position.assets', 2025, '5157038108.96');
+    signed($this->town, 'budget.allotments_continuing', 2025, '569397448.57');
+    signed($this->town, 'performance.revenue', 2025, '1679019473.60');
+    signed($this->town, 'performance.expenses', 2025, '1403269517.37');
+
+    $this->artisan('metrics:refresh')->assertSuccessful();
+
+    // Tuguegarao 2025: 5,157,038,108.96 - 4,909,278,026.68 = 247,760,082.28, as the report's change column prints.
+    // Net Income: 1,679,019,473.60 - 1,403,269,517.37 = 275,749,956.23, as the report prints.
+    expect(series($this->town, 'position.assets')[2025]->change)->toBe('247760082.28')
+        ->and(series($this->town, 'budget.allotments_continuing')[2025]->value)->toBe('569397448.57')
+        ->and(series($this->town, 'performance.surplus')[2025]->value)->toBe('275749956.23');
 });
 
 it('leaves a gap year without change and a zero base without percent (M26)', function () {

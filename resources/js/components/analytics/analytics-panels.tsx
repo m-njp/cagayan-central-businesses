@@ -1,5 +1,7 @@
+import { SimulatedLabel } from '@/components/privacy/simulated-label';
 import type { ReactNode } from 'react';
 import { AnalyticsHelp } from '@/components/analytics/analytics-help';
+import { ExecutiveSummary } from '@/components/charts/executive-summary';
 import FinancePanel from '@/components/charts/finance-panel';
 import { FinanceTrends } from '@/components/charts/finance-trends';
 import {
@@ -23,7 +25,7 @@ function Unavailable() {
 
 /**
  * Government finances for the selected town, plus business trends while simulated records are loaded. Shared by the
- * public Economy page and the Capitol Analytics page. The server decides where sales are bands.
+ * public Economy page and the Capitol Analytics page.
  */
 export function AnalyticsPanels({
     catalog,
@@ -40,8 +42,7 @@ export function AnalyticsPanels({
 }) {
     const finance = selectedFinance(catalog, filters);
     const business = selectedBusiness(catalog, filters);
-    const panel =
-        'flex min-w-0 flex-col gap-3 rounded-sm border bg-card p-3 sm:p-4';
+    const panel = 'flex min-w-0 flex-col gap-2 rounded-sm border bg-card p-3';
     const shown = {
         catalog,
         presentation: filters.presentation,
@@ -58,9 +59,10 @@ export function AnalyticsPanels({
                         <h2 id="finance-heading" className="type-heading">
                             Government Finances
                         </h2>
-                        {filters.measure === 'business_taxes' && (
-                            <span className="type-label">General Fund</span>
-                        )}
+                        {filters.presentation !== 'statement' &&
+                            filters.measure === 'business_taxes' && (
+                                <span className="type-label">General Fund</span>
+                            )}
                     </div>
                     <AnalyticsHelp
                         guide={catalog.guide}
@@ -68,7 +70,13 @@ export function AnalyticsPanels({
                     />
                 </div>
                 {financeControls}
-                {finance ? (
+                {filters.presentation === 'statement' ? (
+                    <ExecutiveSummary
+                        catalog={catalog}
+                        filters={filters}
+                        onChange={onChange}
+                    />
+                ) : finance ? (
                     <FinancePanel
                         history={finance}
                         {...shown}
@@ -86,28 +94,15 @@ export function AnalyticsPanels({
             </section>
             {catalog.businesses && (
                 <section aria-labelledby="business-heading" className={panel}>
-                    <h2 id="business-heading" className="type-heading">
-                        Business Trends
-                    </h2>
-                    <p className="type-label">Simulated Data</p>
+                    <div className="flex items-start justify-between gap-3">
+                        <h2 id="business-heading" className="type-heading">
+                            Business Trends
+                        </h2>
+                        <SimulatedLabel />
+                    </div>
                     {businessControls}
                     {business ? (
-                        <>
-                            <FinancePanel
-                                history={business.dataset.counts}
-                                {...shown}
-                            />
-                            <h3 className="type-item">Declared Sales</h3>
-                            <FinancePanel
-                                history={business.dataset.sales}
-                                {...shown}
-                            />
-                            <h3 className="type-item">Share of Town</h3>
-                            <FinancePanel
-                                history={business.dataset.share}
-                                {...shown}
-                            />
-                        </>
+                        <FinancePanel history={business.dataset} {...shown} />
                     ) : (
                         <Unavailable />
                     )}

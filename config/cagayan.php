@@ -27,7 +27,6 @@ return [
         'first_year' => 2019,
         'last_year' => 2025,
         'recent_first_year' => 2023,
-        'cloud_limit' => 20,
     ],
 
     'privacy' => [
@@ -104,21 +103,23 @@ return [
     */
     'simulation' => [
         'seed' => 20261028,
-        'businesses_per_thousand_residents' => 9,
+        'businesses_per_thousand_residents' => 2,
         'minimum_per_barangay' => 3,
+        // No barangay lists more than this many records, pending ones included.
+        'max_per_barangay' => 20,
         // The presentation story: food near schools and home-based online work grow each year, one barangay declines.
         'trends' => [
             'school_barangays' => ['Carig Norte', 'Carig Sur', 'Ugac Norte', 'Ugac Sur', 'Caritan Centro', 'Centro 10'],
             'food_types' => ['coffee-shop', 'restaurant', 'eatery', 'bakery'],
-            'food_new_per_barangay' => 3,
+            'food_new_per_barangay' => 1,
             'food_yearly_growth' => 0.2,
             'online_types' => ['online-seller', 'digital-services'],
             'online_first_year' => 2021,
-            'online_new_first_year' => 6,
-            'online_yearly_growth' => 0.35,
+            'online_new_first_year' => 3,
+            'online_yearly_growth' => 0.3,
             'declining_barangay' => 'Linao East',
             // Non-renewals per year in the declining barangay, rising so M14 fires (seeder requirement 7).
-            'declining_non_renewals' => [2024 => 3, 2025 => 5, 2026 => 8],
+            'declining_non_renewals' => [2024 => 3, 2025 => 4, 2026 => 5],
             'pending' => ['submitted' => 10, 'returned' => 4, 'draft' => 5],
         ],
     ],
@@ -252,6 +253,8 @@ return [
     */
     'registry' => [
         'permit_expiring_days' => 30,
+        // M34 Operating Milestone badges, in years since the business was established.
+        'milestones' => [5, 10, 20],
         'document_max_kb' => 5120,
         'document_mimes' => ['pdf', 'jpg', 'jpeg', 'png'],
         'documents_max' => 12,
@@ -298,8 +301,16 @@ return [
         // Towns whose workbook breakdowns finances:import loads (26-10-28: Tuguegarao first). Other towns'
         // parsed workbooks stay in data/towns/finances/extracted; every Executive Summary always loads.
         'workbook_towns' => ['0201529000'],
+        // Executive Summary lines beyond the totals (26-10-29: Tuguegarao first, metrics.md M35). Other towns
+        // keep them in data/towns/finances/extracted until they are added here.
+        'summary_detail_towns' => ['0201529000'],
+        'summary_detail_lines' => [
+            'position.assets', 'position.liabilities', 'position.equity',
+            'budget.allotments_current', 'budget.allotments_continuing', 'budget.obligations_continuing',
+        ],
         'groups' => [
-            'totals' => ['label' => 'Government Totals', 'bases' => ['actual']],
+            'position' => ['label' => 'Financial Condition', 'bases' => ['actual']],
+            'totals' => ['label' => 'Results of Operation', 'bases' => ['actual']],
             'budget' => ['label' => 'Budget Execution', 'bases' => ['actual']],
             'revenue_sources' => ['label' => 'Revenue Sources', 'bases' => ['actual']],
             'business_taxes' => ['label' => 'Business Taxes and Fees', 'bases' => ['actual']],
