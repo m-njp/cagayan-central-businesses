@@ -295,6 +295,9 @@ return [
         'coa_url' => 'https://www.coa.gov.ph/reports/annual-audit-reports/aar-local-government-units/',
         'source_url_max' => 500,
         'review_batch_max' => 200,
+        // Report grid (26-11-03): changed cells per save, and finance writes per person per minute.
+        'entry_changes_max' => 60,
+        'writes_per_minute' => 20,
         'note_max' => 500,
         // Workbook citations list every contributing cell, such as 'G61:G64 and K61:K64' (26-11-03).
         'location_max' => 255,

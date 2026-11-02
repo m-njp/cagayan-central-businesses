@@ -1,8 +1,8 @@
 import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { FinanceEntryForm } from '@/components/capitol/finance-entry-form';
 import { FinanceFiguresTable } from '@/components/capitol/finance-figures-table';
+import { FinanceReportGrid } from '@/components/capitol/finance-report-grid';
 import {
     FinanceUploadForm,
     FinanceUploads,
@@ -158,19 +158,17 @@ export default function FinanceReportPage({
                     </Select>
                     <Sheet open={entering} onOpenChange={setEntering}>
                         <SheetTrigger asChild>
-                            <Button className="w-full">Enter a Figure</Button>
+                            <Button className="w-full">Enter Report</Button>
                         </SheetTrigger>
-                        <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
+                        <SheetContent className="w-full overflow-y-auto sm:max-w-3xl">
                             <SheetHeader>
-                                <SheetTitle>Enter a Figure</SheetTitle>
+                                <SheetTitle>Enter Report</SheetTitle>
                                 <SheetDescription>
-                                    {report.town.label}
+                                    {report.town.label} {report.year}
                                 </SheetDescription>
                             </SheetHeader>
-                            <FinanceEntryForm
-                                key={year}
+                            <FinanceReportGrid
                                 report={report}
-                                fiscalYear={year}
                                 onSaved={() => setEntering(false)}
                             />
                         </SheetContent>

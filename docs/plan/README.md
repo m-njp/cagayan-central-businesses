@@ -10,6 +10,7 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 
 | Plan | Status | Scope |
 | :- | :- | :- |
+| [Data Entry](active/26-11-03-data-entry.md) | In progress | Step 2: finance report grid with zero-trust safeguards, Data Entry hub and review queue, consistent forms, population in the database |
 | [Government Finances Report Redesign](active/26-11-03-finance-report-redesign.md) | Planned | Step 1 after the revert: Executive Summary polish, column lines and row shading, arrows, range chips and icon toggles, better tooltips, Capitol figure strip, retired indicators |
 | [Executive Summary View and Net Income](active/26-10-29-executive-summary-view.md) | In progress | Default Executive Summary table with charts, COA words Income, Expenses and Net Income, Financial Condition and Allotments for Tuguegarao City; CI and design checks pending |
 | [Business Registry Records](active/26-10-28-business-registry-records.md) | In progress | Staff prepare and Admins review, record profile, form with map pin and documents, BIR and permit badges, public directory, presentation trend seeder |

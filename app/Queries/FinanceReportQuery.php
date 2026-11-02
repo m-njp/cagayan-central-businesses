@@ -3,6 +3,7 @@
 namespace App\Queries;
 
 use App\Data\FinanceDocumentLink;
+use App\Data\FinanceEntryCell;
 use App\Data\FinanceFigureRow;
 use App\Data\FinanceIssue;
 use App\Data\FinanceLineOption;
@@ -18,6 +19,7 @@ use App\Models\FinanceLine;
 use App\Models\FinanceUpload;
 use App\Models\Municipality;
 use App\Models\User;
+use App\Services\FinanceEntryCells;
 use App\Services\FinanceYears;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -34,8 +36,11 @@ final class FinanceReportQuery
         'annex_workbook' => 'Annexes',
     ];
 
+    public function __construct(private FinanceEntryCells $cells) {}
+
     public function get(User $user, Municipality $town, int $year): FinanceReport
     {
+        $entryYears = FinanceEntryCells::years($year);
         $figures = FinanceFigure::query()
             ->select('finance_figures.*', 'l.label as line_label', 'l.group as line_group')
             ->join('finance_lines as l', 'l.code', '=', 'finance_figures.line_code')
@@ -64,7 +69,12 @@ final class FinanceReportQuery
                 ))->all()),
             lines: array_values(FinanceLine::query()->enterable()->orderBy('sort')->get(['code', 'label', 'group'])
                 ->map(fn (FinanceLine $line) => new FinanceLineOption($line->code, $line->label,
-                    config('cagayan.finances.groups.'.$line->getAttribute('group').'.bases', ['actual'])))->all()),
+                    config('cagayan.finances.groups.'.$line->getAttribute('group').'.bases', ['actual']),
+                    (string) $line->getAttribute('group'), (string) config('cagayan.finances.groups.'.$line->getAttribute('group').'.label')))->all()),
+            entryYears: $entryYears,
+            cells: array_values($this->cells->current($town->id, $entryYears)->map(fn (FinanceFigure $figure) => new FinanceEntryCell(
+                $figure->line_code, $figure->fiscal_year, $figure->basis->value, (string) $figure->value, $figure->status->value,
+            ))->all()),
             uploads: array_values($uploads->map(fn (FinanceUpload $upload) => new FinanceUploadRow(
                 $upload->public_id, $upload->original_name, (string) config("cagayan.finances.uploads.kinds.{$upload->kind}.label"),
                 $upload->status->value, $upload->status->label(), $upload->figures, $upload->message,
@@ -80,6 +90,7 @@ final class FinanceReportQuery
                 'sourceUrlMax' => (int) config('cagayan.finances.source_url_max'),
                 'reviewBatchMax' => (int) config('cagayan.finances.review_batch_max'),
                 'uploadMaxKb' => (int) config('cagayan.finances.uploads.file_max_kb'),
+                'changesMax' => (int) config('cagayan.finances.entry_changes_max'),
             ],
         );
     }

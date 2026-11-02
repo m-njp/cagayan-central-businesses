@@ -83,7 +83,19 @@ export type FinanceReport = {
     figures: FinanceFigureRow[];
     issues: FinanceIssue[];
     documents: FinanceDocumentLink[];
-    lines: (SelectOption & { bases: ('actual' | 'budget_final')[] })[];
+    lines: (SelectOption & {
+        bases: ('actual' | 'budget_final')[];
+        group: string;
+        groupLabel: string;
+    })[];
+    entryYears: number[];
+    cells: {
+        line: string;
+        fiscalYear: number;
+        basis: 'actual' | 'budget_final';
+        value: string;
+        status: FinanceFigureStatus;
+    }[];
     uploads: FinanceUploadRow[];
     uploadKinds: SelectOption[];
     limits: {
@@ -94,5 +106,6 @@ export type FinanceReport = {
         sourceUrlMax: number;
         reviewBatchMax: number;
         uploadMaxKb: number;
+        changesMax: number;
     };
 };

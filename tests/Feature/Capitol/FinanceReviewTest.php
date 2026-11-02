@@ -9,6 +9,7 @@ use App\Models\FinanceLine;
 use App\Models\Municipality;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
@@ -25,12 +26,30 @@ function staffFor(Municipality ...$towns): User
     return $user;
 }
 
+/** One changed cell of the report grid; cell fields go into the change, the rest are shared by the save. */
 function manualEntry(array $overrides = []): array
 {
-    return [...[
-        'line_code' => 'performance.revenue', 'fiscal_year' => 2024, 'basis' => 'actual',
-        'value' => '196960688.40', 'document_kind' => 'executive_summary',
-    ], ...$overrides];
+    $change = ['line_code' => 'performance.revenue', 'fiscal_year' => 2024, 'basis' => 'actual', 'value' => '196960688.40', 'base' => '196960688.39'];
+    $shared = ['submission' => (string) Str::uuid(), 'document_kind' => 'executive_summary'];
+    foreach ($overrides as $key => $value) {
+        if (in_array($key, ['line_code', 'fiscal_year', 'basis', 'value', 'base'], true)) {
+            $change[$key] = $value;
+        } else {
+            $shared[$key] = $value;
+        }
+    }
+    // Another cell than the seeded pending revenue figure starts empty.
+    if (! array_key_exists('base', $overrides) && [$change['line_code'], $change['fiscal_year']] !== ['performance.revenue', 2024]) {
+        $change['base'] = null;
+    }
+
+    return [...$shared, 'changes' => [$change]];
+}
+
+/** Cell fields are validated per change. */
+function entryField(string $field): string
+{
+    return in_array($field, ['line_code', 'fiscal_year', 'basis', 'value'], true) ? "changes.0.{$field}" : $field;
 }
 
 it('hides finance review from guests', function () {
@@ -86,7 +105,7 @@ it('lets assigned staff enter a figure that waits as pending', function () {
 it('rejects an entry without a report or link, or with a malformed amount', function (array $overrides, string $field) {
     $this->actingAs(User::factory()->create())
         ->post(route('capitol.finances.figures.store', ['town' => '0201501000', 'year' => 2024]), manualEntry($overrides))
-        ->assertSessionHasErrors($field);
+        ->assertSessionHasErrors(entryField($field));
 
     expect(FinanceFigure::query()->count())->toBe(1);
 })->with([
@@ -150,7 +169,7 @@ it('requires a reason to reject', function () {
 it('rejects invalid finance inputs without writing a figure', function (array $overrides, string $field) {
     $this->actingAs(User::factory()->create())
         ->post(route('capitol.finances.figures.store', ['town' => '0201501000', 'year' => 2024]), manualEntry($overrides))
-        ->assertSessionHasErrors($field);
+        ->assertSessionHasErrors(entryField($field));
 
     $this->assertDatabaseCount('finance_figures', 1);
     $this->assertDatabaseCount('activity_logs', 0);
