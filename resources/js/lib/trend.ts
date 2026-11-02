@@ -1,14 +1,14 @@
-// The one place that decides how a change looks: green up for a rise, red down for a fall (design.md,
+// The one place that decides how a change looks: a green up arrow for a rise, a red down arrow for a fall (design.md,
 // "Executive Summary View"). The colors are the --trend-up and --trend-down tokens. Direction only, never a rating (M26).
 // Net Income itself carries no mark; a loss reads in parentheses.
 export type Trend = {
     direction: 1 | -1 | 0;
     tone: string;
-    glyph: '▲' | '▼' | '=';
+    glyph: '↑' | '↓' | '=';
 };
 
-const UP: Trend = { direction: 1, tone: 'text-trend-up', glyph: '▲' };
-const DOWN: Trend = { direction: -1, tone: 'text-trend-down', glyph: '▼' };
+const UP: Trend = { direction: 1, tone: 'text-trend-up', glyph: '↑' };
+const DOWN: Trend = { direction: -1, tone: 'text-trend-down', glyph: '↓' };
 const FLAT: Trend = {
     direction: 0,
     tone: 'text-muted-foreground',

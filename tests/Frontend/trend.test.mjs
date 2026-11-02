@@ -6,16 +6,16 @@ import {
     CHANGE_WORDS,
 } from '../../resources/js/lib/trend.ts';
 
-void test('a rise is a green up triangle and a fall a red down triangle', () => {
+void test('a rise is a green up arrow and a fall a red down arrow', () => {
     assert.deepEqual(trendOf('275749956.23'), {
         direction: 1,
         tone: 'text-trend-up',
-        glyph: '▲',
+        glyph: '↑',
     });
     assert.deepEqual(trendOf('-34917500.01'), {
         direction: -1,
         tone: 'text-trend-down',
-        glyph: '▼',
+        glyph: '↓',
     });
     assert.equal(trendOf(0).glyph, '=');
 });

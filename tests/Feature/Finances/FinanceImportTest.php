@@ -77,6 +77,20 @@ it('loads parsed figures as pending and publishes none of them', function () {
         ->and(abulugRevenue())->toBeNull();
 });
 
+it('stores every contributing cell of a summed workbook figure', function () {
+    $cells = 'Sheet!K61; Sheet!K62; Sheet!K63; Sheet!K64; Sheet!K65; Sheet!K66; Sheet!K67';
+    $inputs = [['location' => 'Sheet!K61', 'value' => '300.00'], ['location' => 'Sheet!K62', 'value' => '200.00']];
+    writeFinanceFolder(['extracted' => [
+        '0201501000,Abulug,2024,executive_summary,2024,performance.revenue,actual,500.00,,Income,'.$cells.','.SHA_2024.',1.1.0,"'.str_replace('"', '""', json_encode($inputs)).'"',
+    ]]);
+
+    importFinances()->assertSuccessful();
+
+    $figure = FinanceFigure::query()->where('fiscal_year', 2024)->where('line_code', 'performance.revenue')->sole();
+    expect($figure->location)->toBe($cells)
+        ->and($figure->inputs)->toEqual($inputs);
+});
+
 it('rejects manual imports that bypass the finance entry limits', function (string $value, string $basis, string $source, bool $hasDocument = false) {
     writeFinanceFolder();
     $row = [(string) Str::uuid(), '0201501000', '2024', 'performance.revenue', $basis, $value, '', $hasDocument ? '2024' : '', $hasDocument ? 'executive_summary' : '', $source, '', 'Checked the report', 'pending', ''];
@@ -179,7 +193,7 @@ it('lets the latest report win for a restated year whatever the review order', f
 
     importFinances()->assertSuccessful();
 
-    $statuses = FinanceFigure::query()->where('fiscal_year', 2023)->pluck('status', 'value')->map->value->all();
+    $statuses = FinanceFigure::query()->where('fiscal_year', 2023)->orderBy('value')->pluck('status', 'value')->map->value->all();
     expect($statuses)->toBe(['390.00' => 'superseded', '400.00' => 'verified']);
 });
 

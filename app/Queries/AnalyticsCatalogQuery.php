@@ -37,14 +37,6 @@ final class AnalyticsCatalogQuery
         'annex_c1' => 'annex_workbook',
     ];
 
-    /** The document behind each derived line's inputs. */
-    private const array DERIVED_KINDS = [
-        'revenue.remaining' => 'fs_workbook',
-        'revenue.local_share' => 'fs_workbook',
-        'sector.development_fund.utilization' => 'fs_workbook',
-        'sector.economic_services.utilization' => 'fs_workbook',
-    ];
-
     public function __construct(private BusinessTrendsQuery $businesses, private FinanceEvidenceQuery $evidence) {}
 
     public function get(): AnalyticsCatalog
@@ -138,7 +130,7 @@ final class AnalyticsCatalogQuery
         $rows = array_map(fn (int $year) => ['year' => $year, 'observations' => $lines->mapWithKeys(function (FinanceLine $line) use ($byKey, $year, $townId, $documents, $pending, $references, $detailLoaded, $detailLines) {
             $row = $byKey->get("{$line->code} {$year}");
             if ($row === null) {
-                $kind = self::SOURCE_KINDS[$line->source] ?? self::DERIVED_KINDS[$line->code] ?? 'executive_summary';
+                $kind = self::SOURCE_KINDS[$line->source] ?? 'executive_summary';
                 $reason = ! $detailLoaded && in_array($line->code, $detailLines, true) ? 'not_loaded' : match ($documents["{$townId} {$year} {$kind}"] ?? null) {
                     FinanceAvailability::Available => isset($pending["{$townId} {$year} {$line->code}"]) ? 'pending_review' : 'not_reported',
                     FinanceAvailability::NotPublished => 'not_published',
@@ -157,7 +149,6 @@ final class AnalyticsCatalogQuery
                 comparisonYear: $row->comparable ? $year - 1 : null,
                 coverage: $row->reporting_towns === null ? null
                     : ['reporting' => (int) $row->reporting_towns, 'total' => (int) $row->total_towns, 'matched' => (int) $row->matched_towns],
-                censusYear: $row->census_year === null ? null : (int) $row->census_year,
                 restatedIn: $row->restated_in === null ? null : (int) $row->restated_in,
                 sourceRefs: $references["{$townId} {$year} {$line->code}"] ?? [],
             )];

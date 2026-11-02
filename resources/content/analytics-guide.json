@@ -102,40 +102,49 @@
         {
             "id": "revenue_sources",
             "title": "Revenue Sources",
-            "summary": "Where revenue came from. National transfers can move revenue without a change in local business activity.",
+            "summary": "Revenue by source as printed in the Statement of Financial Performance. National transfers can move revenue without a change in local business activity.",
             "metrics": [
                 {
                     "id": "revenue.tax",
-                    "label": "Local Taxes",
-                    "meaning": "Tax revenue as reported.",
+                    "label": "Tax Revenue",
+                    "meaning": "Taxes collected by the local government, as reported.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "revenue.national_share",
-                    "label": "National Tax Allotment Share",
-                    "meaning": "The government share of national tax collections.",
+                    "label": "Share from National Collections",
+                    "meaning": "The local government share of national tax collections, as reported.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "revenue.other_national_share",
+                    "label": "Other Shares from National Taxes",
+                    "meaning": "Other shares from national taxes, such as national wealth, as reported.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "revenue.service_business",
-                    "label": "Fees and Business Income",
+                    "label": "Service and Business Income",
                     "meaning": "Income from services, fees and government business. Not private-business sales.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
-                    "id": "revenue.remaining",
-                    "label": "Other Revenue",
-                    "meaning": "Grants, other national shares and miscellaneous income.",
-                    "formula": "Revenue minus Local Taxes, National Tax Allotment Share and Fees and Business Income.",
-                    "inputs": [
-                        "performance.revenue",
-                        "revenue.tax",
-                        "revenue.national_share",
-                        "revenue.service_business"
-                    ]
+                    "id": "revenue.grants",
+                    "label": "Shares, Grants and Donations",
+                    "meaning": "Shares, grants and donations received, as reported.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "revenue.other",
+                    "label": "Other Income",
+                    "meaning": "Gains and miscellaneous income, as reported.",
+                    "formula": "Reported amount.",
+                    "inputs": []
                 }
             ]
         },
@@ -176,12 +185,12 @@
         },
         {
             "id": "development",
-            "title": "Development Spending",
+            "title": "Budget and Actual Amounts",
             "summary": "Actual amounts under the Development Fund and Economic Services headings.",
             "metrics": [
                 {
                     "id": "sector.development_fund",
-                    "label": "Development Fund",
+                    "label": "20% Development Fund",
                     "meaning": "Actual amounts under the 20% Development Fund heading.",
                     "formula": "Sum of reported actual amounts under the heading.",
                     "inputs": []
@@ -192,89 +201,6 @@
                     "meaning": "Actual amounts for offices such as agriculture, trade and tourism.",
                     "formula": "Sum of reported actual amounts under the heading.",
                     "inputs": []
-                }
-            ]
-        },
-        {
-            "id": "budget_share",
-            "title": "Budget Utilization",
-            "summary": "The share of current appropriations recorded as obligations.",
-            "metrics": [
-                {
-                    "id": "budget.utilization",
-                    "label": "Budget Utilization",
-                    "meaning": "Obligations as a percentage of appropriations.",
-                    "formula": "Obligations / Appropriations x 100.",
-                    "inputs": [
-                        "budget.obligations_current",
-                        "budget.appropriations_current"
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "revenue_share",
-            "title": "Locally Generated Share",
-            "summary": "The share of revenue from local taxes plus fees and business income.",
-            "metrics": [
-                {
-                    "id": "revenue.local_share",
-                    "label": "Locally Generated Share",
-                    "meaning": "Local taxes plus fees and business income, as a percentage of revenue.",
-                    "formula": "(Local Taxes + Fees and Business Income) / Revenue x 100.",
-                    "inputs": [
-                        "revenue.tax",
-                        "revenue.service_business",
-                        "performance.revenue"
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "development_share",
-            "title": "Development Utilization",
-            "summary": "Actual development amounts against the final budget for the same heading.",
-            "metrics": [
-                {
-                    "id": "sector.development_fund.utilization",
-                    "label": "Development Fund Utilization",
-                    "meaning": "Development Fund actual as a percentage of its final budget.",
-                    "formula": "Actual / final budget x 100.",
-                    "inputs": [
-                        "sector.development_fund",
-                        "sector.development_fund:budget_final"
-                    ]
-                },
-                {
-                    "id": "sector.economic_services.utilization",
-                    "label": "Economic Services Utilization",
-                    "meaning": "Economic Services actual as a percentage of its final budget.",
-                    "formula": "Actual / final budget x 100.",
-                    "inputs": [
-                        "sector.economic_services",
-                        "sector.economic_services:budget_final"
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "per_capita",
-            "title": "Per Resident",
-            "summary": "Government amounts divided by the latest census population at or before the fiscal year.",
-            "metrics": [
-                {
-                    "id": "per_capita.revenue",
-                    "label": "Income per Resident",
-                    "meaning": "Government income divided by census population.",
-                    "formula": "Income / census population.",
-                    "inputs": ["performance.revenue"]
-                },
-                {
-                    "id": "per_capita.expenses",
-                    "label": "Expenses per Resident",
-                    "meaning": "Government expenses divided by census population.",
-                    "formula": "Expenses / census population.",
-                    "inputs": ["performance.expenses"]
                 }
             ]
         },

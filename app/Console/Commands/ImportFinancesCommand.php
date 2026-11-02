@@ -38,7 +38,7 @@ final class ImportFinancesCommand extends Command
 
     public const array DOCUMENT_COLUMNS = ['psgc_code', 'town', 'fiscal_year', 'kind', 'availability', 'file', 'source_url', 'sha256', 'checked_on'];
 
-    public const array EXTRACTED_COLUMNS = ['psgc_code', 'town', 'reported_in_year', 'document_kind', 'fiscal_year', 'line_code', 'basis', 'value', 'definition_variant', 'source_label', 'location', 'document_sha256', 'extractor_version'];
+    public const array EXTRACTED_COLUMNS = ['psgc_code', 'town', 'reported_in_year', 'document_kind', 'fiscal_year', 'line_code', 'basis', 'value', 'definition_variant', 'source_label', 'location', 'document_sha256', 'extractor_version', 'input_values'];
 
     public const array REVIEW_COLUMNS = ['psgc_code', 'reported_in_year', 'document_kind', 'line_code', 'fiscal_year', 'basis', 'value', 'decision', 'reviewed_on', 'note'];
 
@@ -194,6 +194,7 @@ final class ImportFinancesCommand extends Command
             $details = [
                 'source_label' => $row['source_label'] ?: null, 'location' => $row['location'] ?: null,
                 'extractor_version' => $row['extractor_version'] ?: null,
+                'inputs' => json_decode($row['input_values'] ?: '[]', true, flags: JSON_THROW_ON_ERROR) ?: null,
             ];
             $figure = $existing->get($key);
 
@@ -221,7 +222,7 @@ final class ImportFinancesCommand extends Command
         }
 
         foreach (array_chunk($inserts, 500) as $chunk) {
-            FinanceFigure::query()->insert($chunk);
+            FinanceFigure::query()->insert(array_map(fn (array $row) => [...$row, 'inputs' => $row['inputs'] === null ? null : json_encode($row['inputs'], JSON_THROW_ON_ERROR)], $chunk));
         }
 
         $stale = $existing->reject(fn (FinanceFigure $figure, string $key) => isset($seen[$key]));
@@ -336,7 +337,7 @@ final class ImportFinancesCommand extends Command
                 FinanceBasis::tryFrom($row['basis']) === null => "unknown basis {$row['basis']}",
                 ! ctype_digit($row['fiscal_year']) => "fiscal_year {$row['fiscal_year']} is not a year",
                 ! is_numeric($row['value']) => "value {$row['value']} is not a number",
-                mb_strlen($row['location']) > 60 => 'location is longer than 60 characters',
+                mb_strlen($row['location']) > config('cagayan.finances.location_max') => 'location is longer than '.config('cagayan.finances.location_max').' characters',
                 mb_strlen($row['source_label']) > 300 => 'source_label is longer than 300 characters',
                 isset($seen[$key]) => "repeats line {$seen[$key]}",
                 default => null,

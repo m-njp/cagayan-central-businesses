@@ -66,7 +66,6 @@ export function observationNote(point?: EconomicObservation): string | null {
         if (point.change !== null)
             notes.push(`Change over ${matched} reporting both years`);
     }
-    if (point?.censusYear) notes.push(`Using the ${point.censusYear} census`);
     if (point?.restatedIn)
         notes.push(`Restated in the ${point.restatedIn} report`);
     const reason = reasonLabel(point);

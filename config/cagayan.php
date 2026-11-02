@@ -296,6 +296,8 @@ return [
         'source_url_max' => 500,
         'review_batch_max' => 200,
         'note_max' => 500,
+        // Workbook citations list every contributing cell, such as 'G61:G64 and K61:K64' (26-11-03).
+        'location_max' => 255,
         'per_page' => 20,
         'source_requests_per_minute' => 60,
         // Towns whose workbook breakdowns finances:import loads (26-10-28: Tuguegarao first). Other towns'
@@ -314,12 +316,7 @@ return [
             'budget' => ['label' => 'Budget Execution', 'bases' => ['actual']],
             'revenue_sources' => ['label' => 'Revenue Sources', 'bases' => ['actual']],
             'business_taxes' => ['label' => 'Business Taxes and Fees', 'bases' => ['actual']],
-            'development' => ['label' => 'Development Spending', 'bases' => ['actual', 'budget_final']],
-            // Derived in SQL (metrics.md M19 to M25); never entered, charted apart from peso totals.
-            'budget_share' => ['label' => 'Budget Utilization', 'bases' => []],
-            'revenue_share' => ['label' => 'Locally Generated Share', 'bases' => []],
-            'development_share' => ['label' => 'Development Utilization', 'bases' => []],
-            'per_capita' => ['label' => 'Per Resident', 'bases' => []],
+            'development' => ['label' => 'Budget and Actual Amounts', 'bases' => ['actual', 'budget_final']],
         ],
     ],
 

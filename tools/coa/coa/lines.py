@@ -24,6 +24,7 @@ class Line:
     label: str
     group: str
     source: str
+    displayed: bool = True
 
 
 def load(path: Path) -> tuple[dict[str, Line], list[Alias]]:
@@ -31,7 +32,7 @@ def load(path: Path) -> tuple[dict[str, Line], list[Alias]]:
     aliases: list[Alias] = []
     with path.open(encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
-            lines[row["code"]] = Line(row["code"], row["label"], row["group"], row["source"])
+            lines[row["code"]] = Line(row["code"], row["label"], row["group"], row["source"], row["displayed"] == "1")
             for entry in row["aliases"].split(";"):
                 pattern, _, variant = entry.partition("@")
                 aliases.append(Alias(row["code"], re.compile(pattern), variant or None))

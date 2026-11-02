@@ -1,6 +1,7 @@
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { FinanceTooltip } from '@/components/charts/finance-tooltip';
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
-import { formatPesoTick, observationLabel } from '@/lib/performance-format';
+import { formatPesoTick } from '@/lib/performance-format';
 import type { FinancialHistory } from '@/types/economic-performance';
 
 const STACKED = ['position.liabilities', 'position.equity'];
@@ -9,8 +10,10 @@ const SWATCHES = ['bg-chart-3', 'bg-chart-4'];
 /** Liabilities and Government Equity stacked, so each bar's height is the year's Assets (M35). */
 export default function FinancialConditionChart({
     history,
+    syncId,
 }: {
     history: FinancialHistory;
+    syncId?: string;
 }) {
     const stacked = history.metrics.filter((metric) =>
         STACKED.includes(metric.id),
@@ -47,6 +50,7 @@ export default function FinancialConditionChart({
                     data={data}
                     margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
                     accessibilityLayer
+                    syncId={syncId}
                 >
                     <CartesianGrid vertical={false} stroke="var(--border)" />
                     <XAxis
@@ -63,32 +67,31 @@ export default function FinancialConditionChart({
                     />
                     <ChartTooltip
                         cursor={{ fill: 'var(--muted)' }}
-                        content={({ active, label }) => {
-                            const row = history.rows.find(
-                                (item) => item.year === Number(label),
-                            );
-                            return active && row ? (
-                                <div className="grid max-w-80 gap-2 rounded-sm border bg-popover p-3 text-popover-foreground shadow-md">
-                                    <p className="type-label">{row.year}</p>
-                                    {history.metrics.map((metric) => (
-                                        <div
-                                            key={metric.id}
-                                            className="grid gap-1 border-t pt-2 type-data"
-                                        >
-                                            <span className="font-sans">
-                                                {metric.label}
-                                            </span>
-                                            <span>
-                                                {observationLabel(
-                                                    row.observations[metric.id],
-                                                    metric.unit,
-                                                )}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : null;
-                        }}
+                        content={({ active, label }) =>
+                            active ? (
+                                <FinanceTooltip
+                                    history={history}
+                                    label={label}
+                                    series={[
+                                        ...history.metrics
+                                            .filter(
+                                                (metric) =>
+                                                    !STACKED.includes(
+                                                        metric.id,
+                                                    ),
+                                            )
+                                            .map((metric) => ({
+                                                metric,
+                                                color: 'var(--foreground)',
+                                            })),
+                                        ...stacked.map((metric, index) => ({
+                                            metric,
+                                            color: `var(--chart-${index + 3})`,
+                                        })),
+                                    ]}
+                                />
+                            ) : null
+                        }
                     />
                     {stacked.map((metric) => (
                         <Bar

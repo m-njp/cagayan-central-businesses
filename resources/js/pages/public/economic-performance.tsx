@@ -59,17 +59,6 @@ export default function EconomicPerformancePage({
                         catalog={catalog}
                         filters={filters}
                         onChange={change}
-                        financeControls={
-                            <div className="grid gap-3 sm:grid-cols-3">
-                                <AnalyticsPickers
-                                    idPrefix="performance"
-                                    catalog={catalog}
-                                    filters={filters}
-                                    fields={['presentation', 'measure', 'year']}
-                                    onChange={change}
-                                />
-                            </div>
-                        }
                         businessControls={
                             <div className="grid gap-3 sm:grid-cols-2 lg:w-2/3">
                                 <AnalyticsPickers

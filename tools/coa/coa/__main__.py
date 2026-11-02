@@ -4,6 +4,7 @@ import argparse
 import csv
 import hashlib
 import logging
+import json
 from decimal import Decimal
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -24,7 +25,7 @@ LOG_FILE = Path(__file__).resolve().parents[1] / "logs" / "extract.log"
 
 EXTRACTED_COLUMNS = [
     "psgc_code", "town", "reported_in_year", "document_kind", "fiscal_year", "line_code", "basis", "value",
-    "definition_variant", "source_label", "location", "document_sha256", "extractor_version",
+    "definition_variant", "source_label", "location", "document_sha256", "extractor_version", "input_values",
 ]
 ISSUE_COLUMNS = ["psgc_code", "town", "reported_in_year", "severity", "kind", "line_code", "message", "location"]
 DOCUMENT_COLUMNS = ["psgc_code", "town", "fiscal_year", "kind", "availability", "file", "source_url", "sha256", "checked_on"]
@@ -93,6 +94,7 @@ def extract() -> None:
                 "value": f"{figure.value:.2f}", "definition_variant": figure.variant or "",
                 "source_label": figure.sourceLabel, "location": f"page {figure.page}",
                 "document_sha256": source["sha256"], "extractor_version": EXTRACTOR_VERSION,
+                "input_values": json.dumps(getattr(figure, "inputs", []), ensure_ascii=False),
             })
         issues[year] += [issueRow(source, year, issue) for issue in documentIssues]
         logDocument(f"{year} {source['town']} executive summary", len(storedFigures), documentIssues)
@@ -144,6 +146,7 @@ def extractWorkbooks(workbooks: list[dict], lines, aliases, extracted: dict[int,
                 "basis": figure.basis, "value": f"{figure.value:.2f}", "definition_variant": figure.variant or "",
                 "source_label": figure.sourceLabel, "location": figure.location,
                 "document_sha256": source["sha256"], "extractor_version": EXTRACTOR_VERSION,
+                "input_values": json.dumps(getattr(figure, "inputs", []), ensure_ascii=False),
             })
         issues[year] += [issueRow(source, year, issue) for issue in result.issues]
         logDocument(f"{year} {source['town']} {source['kind']}", len(storedFigures), result.issues)

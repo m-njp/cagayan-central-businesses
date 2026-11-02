@@ -1,418 +1,424 @@
-psgc_code,town,reported_in_year,document_kind,fiscal_year,line_code,basis,value,definition_variant,source_label,location,document_sha256,extractor_version
-0201502000,Alcala,2025,executive_summary,2025,position.assets,actual,524273294.40,,Financial Position Total Assets,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2024,position.assets,actual,574679455.47,,Financial Position Total Assets,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2025,position.liabilities,actual,31837743.77,,Liabilities,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2024,position.liabilities,actual,45214201.17,,Liabilities,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2025,position.equity,actual,492435550.63,,Total Government Equity,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2024,position.equity,actual,529465254.30,,Total Government Equity,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2025,performance.revenue,actual,245651940.81,,Results of Operations Total Revenues,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2024,performance.revenue,actual,224744176.27,,Results of Operations Total Revenues,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2025,performance.expenses,actual,280569440.82,,Total Expenses,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201502000,Alcala,2025,executive_summary,2024,performance.expenses,actual,201010574.32,,Total Expenses,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3
-0201504000,Amulung,2025,executive_summary,2025,position.assets,actual,1061476967.29,,Assets,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2024,position.assets,actual,820695165.21,,Assets,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2025,position.liabilities,actual,101492559.65,,Liabilities,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2024,position.liabilities,actual,86514295.99,,Liabilities,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2025,position.equity,actual,959984407.64,,Government Equity,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2024,position.equity,actual,734180869.22,,Government Equity,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2025,performance.revenue,actual,328126509.34,,Income,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2024,performance.revenue,actual,256735144.32,,Income,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2025,performance.expenses,actual,282275424.76,,Expenses,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201504000,Amulung,2025,executive_summary,2024,performance.expenses,actual,250478152.24,,Expenses,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3
-0201506000,Baggao,2025,executive_summary,2025,position.assets,actual,1614036437.02,,Financial Condition Total Assets,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,position.assets,actual,1542784868.15,,Financial Condition Total Assets,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,position.liabilities,actual,251591575.08,,Total Liabilities,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,position.liabilities,actual,305235291.37,,Total Liabilities,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,position.equity,actual,1362444861.94,,Total Government Equity,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,position.equity,actual,1237549576.78,,Total Government Equity,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,performance.revenue,actual,617744144.41,includes_subsidy_from_other_funds,Results of Operations Total Income (Includes Total Operating Income and Subsidy from Other Funds),page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,performance.revenue,actual,537294661.04,includes_subsidy_from_other_funds,Results of Operations Total Income (Includes Total Operating Income and Subsidy from Other Funds),page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,performance.expenses,actual,538241189.24,includes_subsidy_to_other_funds,"Total Expenses (Includes Total Operating Expenses, Subsidy to NGAs, Subsidy to Other Funds and Donations",page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,performance.expenses,actual,519456174.84,includes_subsidy_to_other_funds,"Total Expenses (Includes Total Operating Expenses, Subsidy to NGAs, Subsidy to Other Funds and Donations",page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,budget.appropriations_current,actual,712229885.52,,"b) Appropriations, Allotments and Obligations: Appropriations-Current",page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,budget.appropriations_current,actual,616411280.76,,"b) Appropriations, Allotments and Obligations: Appropriations-Current",page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,budget.allotments_current,actual,712229887.52,,Allotments – Current,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,budget.allotments_current,actual,616411280.76,,Allotments – Current,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,budget.allotments_continuing,actual,141565032.51,,Allotments –Continuing,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,budget.allotments_continuing,actual,316374844.77,,Allotments –Continuing,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,budget.obligations_current,actual,562476516.79,,Obligations – Current,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,budget.obligations_current,actual,527639371.11,,Obligations – Current,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2025,budget.obligations_continuing,actual,50645302.19,,Obligations –Continuing,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201506000,Baggao,2025,executive_summary,2024,budget.obligations_continuing,actual,189857202.44,,Obligations –Continuing,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3
-0201512000,Enrile,2025,executive_summary,2025,position.assets,actual,548906709.26,,Financial Condition: Assets,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,position.assets,actual,475408223.49,,Financial Condition: Assets,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,position.liabilities,actual,124917361.47,,Liabilities,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,position.liabilities,actual,84126474.86,,Liabilities,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,position.equity,actual,423989347.78,,Government Equity,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,position.equity,actual,391281748.63,,Government Equity,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,performance.revenue,actual,320926560.17,,Results of Operation: Income,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,performance.revenue,actual,272011996.86,,Results of Operation: Income,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,performance.expenses,actual,288104449.64,,Expense,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,performance.expenses,actual,256322104.51,,Expense,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,budget.appropriations_current,actual,253067495.70,,"Appropriations, Allotments and Obligations: Appropriations – Current",page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,budget.appropriations_current,actual,231322868.52,,"Appropriations, Allotments and Obligations: Appropriations – Current",page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,budget.allotments_current,actual,253067495.70,,Allotments – Current,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,budget.allotments_current,actual,231322868.52,,Allotments – Current,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,budget.allotments_continuing,actual,10618856.43,,Allotments – Continuing,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,budget.allotments_continuing,actual,13870515.06,,Allotments – Continuing,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,budget.obligations_current,actual,221331929.93,,Obligations – Current,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,budget.obligations_current,actual,215948826.39,,Obligations – Current,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2025,budget.obligations_continuing,actual,9281681.57,,Obligations – Continuing,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201512000,Enrile,2025,executive_summary,2024,budget.obligations_continuing,actual,11618506.24,,Obligations – Continuing,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3
-0201513000,Gattaran,2025,executive_summary,2025,position.assets,actual,1068248800.80,,Financial Position Total Assets,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2024,position.assets,actual,976006032.37,,Financial Position Total Assets,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2025,position.liabilities,actual,197043455.24,,Liabilities,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2024,position.liabilities,actual,178262692.25,,Liabilities,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2025,position.equity,actual,871205345.56,,Total Government Equity,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2024,position.equity,actual,797743340.12,,Total Government Equity,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2025,performance.revenue,actual,482695413.29,,Results of Operations Total Revenues,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2024,performance.revenue,actual,401727932.51,,Results of Operations Total Revenues,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2025,performance.expenses,actual,435095493.18,,Total Expenses,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201513000,Gattaran,2025,executive_summary,2024,performance.expenses,actual,408270884.16,,Total Expenses,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3
-0201515000,Iguig,2025,executive_summary,2025,position.assets,actual,690055674.82,,Assets,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2024,position.assets,actual,658325899.15,,Assets,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2025,position.liabilities,actual,207953838.88,,Liabilities,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2024,position.liabilities,actual,218633760.58,,Liabilities,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2025,position.equity,actual,482101835.94,,Government Equity,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2024,position.equity,actual,439692138.57,,Government Equity,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2025,performance.revenue,actual,203676880.29,,Income,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2024,performance.revenue,actual,178201695.25,,Income,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2025,performance.expenses,actual,160451708.27,,Expenses,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201515000,Iguig,2025,executive_summary,2024,performance.expenses,actual,172259855.06,,Expenses,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3
-0201519000,Peñablanca,2025,executive_summary,2025,position.assets,actual,971155126.13,,Assets,page 1,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2024,position.assets,actual,836497286.52,,Assets,page 1,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2025,position.liabilities,actual,44890632.12,,Liabilities,page 1,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2024,position.liabilities,actual,34055603.28,,Liabilities,page 1,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2025,position.equity,actual,926264494.01,,Government Equity,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2024,position.equity,actual,802441683.24,,Government Equity,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2025,performance.revenue,actual,564598504.68,,Results of Operations Income,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2024,performance.revenue,actual,483674062.93,,Results of Operations Income,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2025,performance.expenses,actual,440925223.43,,Expenses,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201519000,Peñablanca,2025,executive_summary,2024,performance.expenses,actual,422962455.46,,Expenses,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3
-0201520000,Piat,2025,executive_summary,2025,position.assets,actual,398656514.91,,Financial Position Total Assets,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,position.assets,actual,367773314.73,,Financial Position Total Assets,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,position.liabilities,actual,64675738.69,,Liabilities,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,position.liabilities,actual,67927983.11,,Liabilities,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,position.equity,actual,333980776.22,,Total Government Equity,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,position.equity,actual,299845331.62,,Total Government Equity,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,performance.revenue,actual,184288736.38,,Results of Operations Total Income,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,performance.revenue,actual,164101970.71,,Results of Operations Total Income,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,performance.expenses,actual,146516339.98,,Total Expenses,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,performance.expenses,actual,127361599.61,,Total Expenses,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,budget.appropriations_current,actual,191953255.00,,"Appropriations, Allotments and Obligations Appropriations- Current",page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,budget.appropriations_current,actual,164973197.00,,"Appropriations, Allotments and Obligations Appropriations- Current",page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,budget.allotments_current,actual,191953255.00,,Allotment- Current,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,budget.allotments_current,actual,164973197.00,,Allotment- Current,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,budget.obligations_current,actual,127598883.72,,Obligations- Current,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,budget.obligations_current,actual,110093143.47,,Obligations- Current,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,budget.allotments_continuing,actual,48681305.85,,Allotment- Continuing,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,budget.allotments_continuing,actual,45844486.02,,Allotment- Continuing,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2025,budget.obligations_continuing,actual,18103737.11,,Obligations- Continuing,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201520000,Piat,2025,executive_summary,2024,budget.obligations_continuing,actual,24875018.11,,Obligations- Continuing,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3
-0201521000,Rizal,2025,executive_summary,2025,position.assets,actual,414928115.62,,Financial Position Total Assets,page 1,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,position.assets,actual,368889924.53,,Financial Position Total Assets,page 1,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,position.liabilities,actual,237411816.91,,Total Liabilities,page 1,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,position.liabilities,actual,201853764.90,,Total Liabilities,page 1,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,position.equity,actual,177516298.71,,Government Equity,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,position.equity,actual,167036159.63,,Government Equity,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,performance.revenue,actual,151455946.55,,Results of Operations Total Income,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,performance.revenue,actual,128803462.38,,Results of Operations Total Income,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,performance.expenses,actual,147374035.98,,Total Expenses,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,performance.expenses,actual,131334171.45,,Total Expenses,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,budget.appropriations_current,actual,152750815.00,,"Appropriations, Allotments and Obligations Appropriations- Current",page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,budget.appropriations_current,actual,129378120.00,,"Appropriations, Allotments and Obligations Appropriations- Current",page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,budget.allotments_current,actual,152750815.00,,Allotment- Current,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,budget.allotments_current,actual,129378120.00,,Allotment- Current,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,budget.allotments_continuing,actual,1947700.23,,Allotment- Continuing,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,budget.allotments_continuing,actual,1947825.85,,Allotment- Continuing,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,budget.obligations_current,actual,129605891.60,,Obligations- Current,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,budget.obligations_current,actual,124733768.81,,Obligations- Current,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2025,budget.obligations_continuing,actual,1573113.75,,Obligations- Continuing,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201521000,Rizal,2025,executive_summary,2024,budget.obligations_continuing,actual,1947825.85,,Obligations- Continuing,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3
-0201526000,Santo Niño,2025,executive_summary,2025,position.assets,actual,863136703.46,,Financial Position Total Assets,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2024,position.assets,actual,797326569.63,,Financial Position Total Assets,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2025,position.liabilities,actual,148517585.16,,Total Liabilities,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2024,position.liabilities,actual,147976609.16,,Total Liabilities,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2025,position.equity,actual,714619118.30,,Total Government Equity,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2024,position.equity,actual,649349960.47,,Total Government Equity,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2025,performance.revenue,actual,298648712.98,,Financial Performance Total Income,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2024,performance.revenue,actual,254556078.94,,Financial Performance Total Income,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2025,performance.expenses,actual,271727306.22,,Total Expenses,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2024,performance.expenses,actual,199565954.55,,Total Expenses,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2025,budget.appropriations_current,actual,332286397.00,,"Appropriations, Allotments and Obligations Total Appropriations – Current",page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2024,budget.appropriations_current,actual,225663150.66,,"Appropriations, Allotments and Obligations Total Appropriations – Current",page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2025,budget.obligations_current,actual,301955827.28,,Total Obligations – Current,page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2024,budget.obligations_current,actual,190988561.82,,Total Obligations – Current,page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2025,budget.obligations_continuing,actual,51614817.98,,Total Obligations - Continuing,page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201526000,Santo Niño,2025,executive_summary,2024,budget.obligations_continuing,actual,28062801.31,,Total Obligations - Continuing,page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3
-0201527000,Solana,2025,executive_summary,2025,position.assets,actual,1238370429.98,,Financial Condition: Assets,page 1,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2024,position.assets,actual,1146475237.91,,Financial Condition: Assets,page 1,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2025,position.liabilities,actual,333577540.69,,Liabilities,page 1,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2024,position.liabilities,actual,276738094.15,,Liabilities,page 1,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2025,position.equity,actual,904792889.29,,Government Equity,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2024,position.equity,actual,869737143.76,,Government Equity,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2025,performance.revenue,actual,449380526.18,,Results of Operation: Income,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2024,performance.revenue,actual,380075107.05,,Results of Operation: Income,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2025,performance.expenses,actual,415111710.44,,Expense,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2024,performance.expenses,actual,368983685.62,,Expense,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2025,budget.appropriations_current,actual,421124739.34,unspecified_period,Appropriations,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2024,budget.appropriations_current,actual,423057604.16,unspecified_period,Appropriations,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2025,budget.obligations_current,actual,420195592.30,unspecified_period,Obligations,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201527000,Solana,2025,executive_summary,2024,budget.obligations_current,actual,387377687.34,unspecified_period,Obligations,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3
-0201528000,Tuao,2025,executive_summary,2025,position.assets,actual,914283147.94,,Financial Position Total Assets,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2024,position.assets,actual,863008925.75,,Financial Position Total Assets,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2025,position.liabilities,actual,91715712.07,,Total Liabilities,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2024,position.liabilities,actual,120464005.80,,Total Liabilities,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2025,position.equity,actual,822567435.87,,Total Government Equity,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2024,position.equity,actual,742544919.95,,Total Government Equity,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2025,performance.revenue,actual,405366050.15,,Financial Performance Total Revenue,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2024,performance.revenue,actual,300894802.59,,Financial Performance Total Revenue,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2025,performance.expenses,actual,321618630.23,,Total Expenses,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2024,performance.expenses,actual,277751737.57,,Total Expenses,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2025,budget.appropriations_current,actual,440077402.26,,"Appropriations, Allotments and Obligations Total Appropriations – Current",page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2024,budget.appropriations_current,actual,308573005.52,,"Appropriations, Allotments and Obligations Total Appropriations – Current",page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2025,budget.obligations_current,actual,329992809.07,,Total Obligations – Current,page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2024,budget.obligations_current,actual,241503445.19,,Total Obligations – Current,page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2025,budget.obligations_continuing,actual,49171758.09,,Total Obligations - Continuing,page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201528000,Tuao,2025,executive_summary,2024,budget.obligations_continuing,actual,56289384.57,,Total Obligations - Continuing,page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,position.assets,actual,5157038108.96,,Financial Condition: Assets,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,position.assets,actual,4909278026.68,,Financial Condition: Assets,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,position.liabilities,actual,1479779110.38,,Liabilities,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,position.liabilities,actual,1323381986.04,,Liabilities,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,position.equity,actual,3677258998.58,,Government Equity,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,position.equity,actual,3585896040.64,,Government Equity,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,performance.revenue,actual,1679019473.60,,Results of Operation: Income,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,performance.revenue,actual,1465722146.22,,Results of Operation: Income,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,performance.expenses,actual,1403269517.37,,Expense,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,performance.expenses,actual,1184642113.21,,Expense,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,budget.appropriations_current,actual,1770385132.94,,"Appropriations, Allotments and Obligations: Appropriations – Current",page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,budget.appropriations_current,actual,1568978181.74,,"Appropriations, Allotments and Obligations: Appropriations – Current",page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,budget.allotments_current,actual,1770385132.94,,Allotments – Current,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,budget.allotments_current,actual,1568978181.74,,Allotments – Current,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,budget.allotments_continuing,actual,569397448.57,,Allotments – Continuing,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,budget.allotments_continuing,actual,611297908.10,,Allotments – Continuing,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,budget.obligations_current,actual,1336894842.45,,Obligations – Current,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,budget.obligations_current,actual,1249898538.69,,Obligations – Current,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2025,budget.obligations_continuing,actual,210885825.73,,Obligations – Continuing,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201529000,Tuguegarao City,2025,executive_summary,2024,budget.obligations_continuing,actual,235381805.69,,Obligations – Continuing,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,3
-0201502000,Alcala,2025,annex_workbook,2025,local.real_property_tax,actual,1265507.60,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3
-0201502000,Alcala,2025,annex_workbook,2024,local.real_property_tax,actual,1198682.00,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3
-0201502000,Alcala,2025,annex_workbook,2025,local.business_tax,actual,1517576.05,,Business Tax,C-1 (Detailed SFPerf - GF)!D11,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3
-0201502000,Alcala,2025,annex_workbook,2024,local.business_tax,actual,1821525.55,,Business Tax,C-1 (Detailed SFPerf - GF)!D11,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3
-0201502000,Alcala,2025,annex_workbook,2025,local.permit_fees,actual,1374078.26,,Permit Fees,C-1 (Detailed SFPerf - GF)!D18,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3
-0201502000,Alcala,2025,annex_workbook,2024,local.permit_fees,actual,1460162.44,,Permit Fees,C-1 (Detailed SFPerf - GF)!D18,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3
-0201502000,Alcala,2025,annex_workbook,2025,local.market_operations,actual,226784.40,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D28,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3
-0201502000,Alcala,2025,annex_workbook,2024,local.market_operations,actual,249067.52,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D28,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3
-0201502000,Alcala,2025,fs_workbook,2025,revenue.tax,actual,4824484.63,,Tax Revenue,B-1 (Consolidated SFPerf)!D8,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2024,revenue.tax,actual,5028348.81,,Tax Revenue,B-1 (Consolidated SFPerf)!D8,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2025,revenue.national_share,actual,226747504.00,,Share from Internal Revenue Collections,B-1 (Consolidated SFPerf)!D9,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2024,revenue.national_share,actual,191062640.00,,Share from Internal Revenue Collections,B-1 (Consolidated SFPerf)!D9,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2025,revenue.service_business,actual,13966987.46,,Service and Business Income,B-1 (Consolidated SFPerf)!D11,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2024,revenue.service_business,actual,14209472.55,,Service and Business Income,B-1 (Consolidated SFPerf)!D11,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2025,sector.economic_services,actual,24922227.47,,Economic Services,SCBAA!A64,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2025,sector.economic_services,budget_final,28781100.75,,Economic Services,SCBAA!A64,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2025,sector.development_fund,actual,52090767.16,,20% Development Fund,SCBAA!A75,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201502000,Alcala,2025,fs_workbook,2025,sector.development_fund,budget_final,52130904.16,,20% Development Fund,SCBAA!A75,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3
-0201504000,Amulung,2025,annex_workbook,2025,local.real_property_tax,actual,1456739.13,,Real Property Tax- Basic,A-2.1!E16,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3
-0201504000,Amulung,2025,annex_workbook,2024,local.real_property_tax,actual,1755199.22,,Real Property Tax- Basic,A-2.1!E16,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3
-0201504000,Amulung,2025,annex_workbook,2025,local.business_tax,actual,7115196.86,,Business Tax,A-2.1!E18,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3
-0201504000,Amulung,2025,annex_workbook,2024,local.business_tax,actual,6336297.48,,Business Tax,A-2.1!E18,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3
-0201504000,Amulung,2025,annex_workbook,2025,local.permit_fees,actual,1528397.80,,Permit Fees,A-2.1!E33,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3
-0201504000,Amulung,2025,annex_workbook,2024,local.permit_fees,actual,1332980.93,,Permit Fees,A-2.1!E33,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3
-0201504000,Amulung,2025,annex_workbook,2025,local.market_operations,actual,927200.00,,Receipt from Market Operations,A-2.1!E42,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3
-0201504000,Amulung,2025,annex_workbook,2024,local.market_operations,actual,895300.00,,Receipt from Market Operations,A-2.1!E42,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3
-0201504000,Amulung,2025,fs_workbook,2025,revenue.tax,actual,11081051.21,,Tax Revenue,SFPerformance!E11,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3
-0201504000,Amulung,2025,fs_workbook,2024,revenue.tax,actual,10675886.03,,Tax Revenue,SFPerformance!E11,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3
-0201504000,Amulung,2025,fs_workbook,2025,revenue.national_share,actual,267630156.00,,Share from National Taxes,SFPerformance!E12,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3
-0201504000,Amulung,2025,fs_workbook,2024,revenue.national_share,actual,239074833.00,,Share from National Taxes,SFPerformance!E12,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3
-0201504000,Amulung,2025,fs_workbook,2025,revenue.service_business,actual,9089682.88,,Service and Business Income,SFPerformance!E13,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3
-0201504000,Amulung,2025,fs_workbook,2024,revenue.service_business,actual,6717515.83,,Service and Business Income,SFPerformance!E13,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3
-0201504000,Amulung,2025,fs_workbook,2025,sector.economic_services,actual,10038696.93,,Economic Services,SCBAA!A65,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3
-0201504000,Amulung,2025,fs_workbook,2025,sector.economic_services,budget_final,11105436.00,,Economic Services,SCBAA!A65,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3
-0201506000,Baggao,2025,annex_workbook,2025,local.real_property_tax,actual,1702084.02,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3
-0201506000,Baggao,2025,annex_workbook,2024,local.real_property_tax,actual,2270184.60,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3
-0201506000,Baggao,2025,annex_workbook,2025,local.business_tax,actual,12025382.92,,Business Tax,C-1 (Detailed SFPerf - GF)!D12,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3
-0201506000,Baggao,2025,annex_workbook,2024,local.business_tax,actual,11570635.95,,Business Tax,C-1 (Detailed SFPerf - GF)!D12,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3
-0201506000,Baggao,2025,annex_workbook,2025,local.permit_fees,actual,2093688.50,,Permit Fees,C-1 (Detailed SFPerf - GF)!D20,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3
-0201506000,Baggao,2025,annex_workbook,2024,local.permit_fees,actual,2203230.00,,Permit Fees,C-1 (Detailed SFPerf - GF)!D20,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3
-0201506000,Baggao,2025,annex_workbook,2025,local.market_operations,actual,1166693.14,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D27,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3
-0201506000,Baggao,2025,annex_workbook,2024,local.market_operations,actual,1619708.98,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D27,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3
-0201506000,Baggao,2025,fs_workbook,2025,revenue.tax,actual,18079388.97,,Tax Revenue,B-1 (Consolidated SFPerf)!D8,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2024,revenue.tax,actual,18554960.47,,Tax Revenue,B-1 (Consolidated SFPerf)!D8,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2025,revenue.national_share,actual,569103533.00,,Share from Internal Revenue Collections,B-1 (Consolidated SFPerf)!D9,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2024,revenue.national_share,actual,479237737.00,,Share from Internal Revenue Collections,B-1 (Consolidated SFPerf)!D9,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2025,revenue.service_business,actual,23580920.97,,Service and Business Income,B-1 (Consolidated SFPerf)!D11,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2024,revenue.service_business,actual,23169594.75,,Service and Business Income,B-1 (Consolidated SFPerf)!D11,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2025,sector.economic_services,actual,37786870.06,,Economic Services,SCBAA!A64,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2025,sector.economic_services,budget_final,45644970.00,,Economic Services,SCBAA!A64,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2025,sector.development_fund,actual,98685345.65,,20% Development Fund,SCBAA!A75,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201506000,Baggao,2025,fs_workbook,2025,sector.development_fund,budget_final,156373222.00,,20% Development Fund,SCBAA!A75,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3
-0201512000,Enrile,2025,annex_workbook,2025,local.real_property_tax,actual,1327830.66,,Real Property Tax- Basic,B - Detailed SFPe!H15,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3
-0201512000,Enrile,2025,annex_workbook,2024,local.real_property_tax,actual,1430881.01,,Real Property Tax- Basic,B - Detailed SFPe!H15,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3
-0201512000,Enrile,2025,annex_workbook,2025,local.business_tax,actual,4206825.47,,Business Tax,B - Detailed SFPe!H19,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3
-0201512000,Enrile,2025,annex_workbook,2024,local.business_tax,actual,4045318.98,,Business Tax,B - Detailed SFPe!H19,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3
-0201512000,Enrile,2025,annex_workbook,2025,local.permit_fees,actual,1125570.61,,Permit Fees,B - Detailed SFPe!H29,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3
-0201512000,Enrile,2025,annex_workbook,2024,local.permit_fees,actual,1038586.77,,Permit Fees,B - Detailed SFPe!H29,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3
-0201512000,Enrile,2025,annex_workbook,2025,local.market_operations,actual,1706814.28,,Receipt from Market Operations,B - Detailed SFPe!H43,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3
-0201512000,Enrile,2025,annex_workbook,2024,local.market_operations,actual,1822585.98,,Receipt from Market Operations,B - Detailed SFPe!H43,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3
-0201512000,Enrile,2025,fs_workbook,2025,revenue.tax,actual,221114045.61,may_include_national_share,Tax Revenue,8. Consolidated Fin Per!D11,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3
-0201512000,Enrile,2025,fs_workbook,2024,revenue.tax,actual,187806430.54,may_include_national_share,Tax Revenue,8. Consolidated Fin Per!D11,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3
-0201512000,Enrile,2025,fs_workbook,2025,revenue.service_business,actual,29898178.08,,Service and Business Income,8. Consolidated Fin Per!D12,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3
-0201512000,Enrile,2025,fs_workbook,2024,revenue.service_business,actual,28662251.06,,Service and Business Income,8. Consolidated Fin Per!D12,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3
-0201512000,Enrile,2025,fs_workbook,2025,sector.economic_services,actual,4184006.67,,Economic  Services,11. SCBAA.!A38,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3
-0201512000,Enrile,2025,fs_workbook,2025,sector.economic_services,budget_final,39721746.44,,Economic  Services,11. SCBAA.!A38,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3
-0201512000,Enrile,2025,fs_workbook,2025,sector.development_fund,actual,13177651.49,,20%    Development  Fund,11. SCBAA.!A47,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3
-0201512000,Enrile,2025,fs_workbook,2025,sector.development_fund,budget_final,44526178.00,,20%    Development  Fund,11. SCBAA.!A47,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3
-0201513000,Gattaran,2025,annex_workbook,2025,local.real_property_tax,actual,1662824.06,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3
-0201513000,Gattaran,2025,annex_workbook,2024,local.real_property_tax,actual,1488819.05,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3
-0201513000,Gattaran,2025,annex_workbook,2025,local.business_tax,actual,13786235.92,,Business Tax,C-1 (Detailed SFPerf - GF)!D12,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3
-0201513000,Gattaran,2025,annex_workbook,2024,local.business_tax,actual,12898862.85,,Business Tax,C-1 (Detailed SFPerf - GF)!D12,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3
-0201513000,Gattaran,2025,annex_workbook,2025,local.permit_fees,actual,3238803.83,,Permit Fees,C-1 (Detailed SFPerf - GF)!D19,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3
-0201513000,Gattaran,2025,annex_workbook,2024,local.permit_fees,actual,2512795.08,,Permit Fees,C-1 (Detailed SFPerf - GF)!D19,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3
-0201513000,Gattaran,2025,annex_workbook,2025,local.market_operations,actual,9620808.00,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D26,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3
-0201513000,Gattaran,2025,annex_workbook,2024,local.market_operations,actual,9965880.50,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D26,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3
-0201513000,Gattaran,2025,fs_workbook,2025,revenue.tax,actual,19625112.71,,Tax Revenue,Stmt of Finl Performance!E9,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2024,revenue.tax,actual,19105115.65,,Tax Revenue,Stmt of Finl Performance!E9,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2025,revenue.national_share,actual,427535223.00,,Share from Internal Revenue Collections,Stmt of Finl Performance!E10,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2024,revenue.national_share,actual,360073890.00,,Share from Internal Revenue Collections,Stmt of Finl Performance!E10,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2025,revenue.service_business,actual,35484062.71,,Service and Business Income,Stmt of Finl Performance!E12,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2024,revenue.service_business,actual,22448257.75,,Service and Business Income,Stmt of Finl Performance!E12,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2025,sector.economic_services,actual,6181481.78,,Economic Services,SCBAA!A70,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2025,sector.economic_services,budget_final,8170000.00,,Economic Services,SCBAA!A70,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2025,sector.development_fund,actual,74272089.00,,20 % Dev't. Fund,SCBAA!A78,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201513000,Gattaran,2025,fs_workbook,2025,sector.development_fund,budget_final,85554560.00,,20 % Dev't. Fund,SCBAA!A78,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3
-0201515000,Iguig,2025,annex_workbook,2025,local.real_property_tax,actual,1774728.69,,Real Property Tax- Basic,B-1 (Detailed SFPer-GF)!F16,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3
-0201515000,Iguig,2025,annex_workbook,2024,local.real_property_tax,actual,3062109.58,,Real Property Tax- Basic,B-1 (Detailed SFPer-GF)!F16,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3
-0201515000,Iguig,2025,annex_workbook,2025,local.business_tax,actual,10073577.79,,Business Tax,B-1 (Detailed SFPer-GF)!F23,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3
-0201515000,Iguig,2025,annex_workbook,2024,local.business_tax,actual,9368552.11,,Business Tax,B-1 (Detailed SFPer-GF)!F23,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3
-0201515000,Iguig,2025,annex_workbook,2025,local.permit_fees,actual,3871391.94,,Permit Fees,B-1 (Detailed SFPer-GF)!F42,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3
-0201515000,Iguig,2025,annex_workbook,2024,local.permit_fees,actual,3740925.88,,Permit Fees,B-1 (Detailed SFPer-GF)!F42,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3
-0201515000,Iguig,2025,annex_workbook,2025,local.market_operations,actual,1530720.00,,Receipt from Market Operations,B-1 (Detailed SFPer-GF)!F53,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3
-0201515000,Iguig,2025,annex_workbook,2024,local.market_operations,actual,2054790.00,,Receipt from Market Operations,B-1 (Detailed SFPer-GF)!F53,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3
-0201515000,Iguig,2025,fs_workbook,2025,revenue.tax,actual,14274088.38,,Tax Revenue,SFPerformance!D10,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2024,revenue.tax,actual,16530223.49,,Tax Revenue,SFPerformance!D10,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2025,revenue.national_share,actual,172788380.00,,Share from National Taxes,SFPerformance!D11,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2024,revenue.national_share,actual,145643038.80,,Share from National Taxes,SFPerformance!D11,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2025,revenue.service_business,actual,16614411.91,,Service and Business Income,SFPerformance!D12,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2024,revenue.service_business,actual,16028432.96,,Service and Business Income,SFPerformance!D12,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2025,sector.economic_services,actual,6271290.53,,ECONOMIC SERVICES,SCBAA!A77,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2025,sector.economic_services,budget_final,8707698.12,,ECONOMIC SERVICES,SCBAA!A77,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2025,sector.development_fund,actual,34445736.58,,20% Development Fund,SCBAA!A85,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201515000,Iguig,2025,fs_workbook,2025,sector.development_fund,budget_final,34557676.80,,20% Development Fund,SCBAA!A85,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3
-0201519000,Peñablanca,2025,annex_workbook,2025,local.real_property_tax,actual,1361536.74,,Real Property Tax- Basic,B-1!F17,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3
-0201519000,Peñablanca,2025,annex_workbook,2024,local.real_property_tax,actual,1408993.82,,Real Property Tax- Basic,B-1!F17,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3
-0201519000,Peñablanca,2025,annex_workbook,2025,local.business_tax,actual,3603248.22,,Business Tax,B-1!F24,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3
-0201519000,Peñablanca,2025,annex_workbook,2024,local.business_tax,actual,3556312.08,,Business Tax,B-1!F24,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3
-0201519000,Peñablanca,2025,annex_workbook,2025,local.permit_fees,actual,5148704.93,,Permit Fees,B-1!F44,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3
-0201519000,Peñablanca,2025,annex_workbook,2024,local.permit_fees,actual,4546669.02,,Permit Fees,B-1!F44,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3
-0201519000,Peñablanca,2025,annex_workbook,2024,local.market_operations,actual,150850.00,,Receipt from Market Operations,B-1!F59,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3
-0201519000,Peñablanca,2025,fs_workbook,2025,revenue.tax,actual,8839513.33,,Tax Revenue,SFPerformance!G10,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2024,revenue.tax,actual,8707096.39,,Tax Revenue,SFPerformance!G10,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2025,revenue.national_share,actual,546594435.00,,Share from Internal Revenue Collections (IRA),SFPerformance!G11,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2024,revenue.national_share,actual,460290907.00,,Share from Internal Revenue Collections (IRA),SFPerformance!G11,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2025,revenue.service_business,actual,8439307.04,,Service and Business Income,SFPerformance!G13,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2024,revenue.service_business,actual,8359484.51,,Service and Business Income,SFPerformance!G13,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2025,sector.economic_services,actual,22643535.98,,Economic Services,SCBAA!A53,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2025,sector.economic_services,budget_final,28414970.29,,Economic Services,SCBAA!A53,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2025,sector.development_fund,actual,84886567.58,,20% Development Fund,SCBAA!A62,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201519000,Peñablanca,2025,fs_workbook,2025,sector.development_fund,budget_final,109366401.60,,20% Development Fund,SCBAA!A62,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3
-0201520000,Piat,2025,annex_workbook,2025,local.real_property_tax,actual,1165579.50,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!G14,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3
-0201520000,Piat,2025,annex_workbook,2024,local.real_property_tax,actual,1407390.10,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!G14,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3
-0201520000,Piat,2025,annex_workbook,2025,local.business_tax,actual,5432169.56,,Business Tax,B-1(Detailed SFPer- GF)!G17,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3
-0201520000,Piat,2025,annex_workbook,2024,local.business_tax,actual,4380838.88,,Business Tax,B-1(Detailed SFPer- GF)!G17,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3
-0201520000,Piat,2025,annex_workbook,2025,local.permit_fees,actual,568715.32,,Permit Fees,B-1(Detailed SFPer- GF)!G32,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3
-0201520000,Piat,2025,annex_workbook,2024,local.permit_fees,actual,667467.19,,Permit Fees,B-1(Detailed SFPer- GF)!G32,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3
-0201520000,Piat,2025,annex_workbook,2025,local.market_operations,actual,753654.00,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!G45,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3
-0201520000,Piat,2025,annex_workbook,2024,local.market_operations,actual,744380.00,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!G45,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3
-0201520000,Piat,2025,fs_workbook,2025,revenue.tax,actual,8086027.56,,Tax Revenue,SFPerformance!F8,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2024,revenue.tax,actual,8911680.69,,Tax Revenue,SFPerformance!F8,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2025,revenue.national_share,actual,167649921.00,,Share on National Taxes,SFPerformance!F9,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2024,revenue.national_share,actual,146658968.00,,Share on National Taxes,SFPerformance!F9,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2025,revenue.service_business,actual,8476388.89,,Service and Business Income,SFPerformance!F10,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2024,revenue.service_business,actual,8531322.02,,Service and Business Income,SFPerformance!F10,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2025,sector.economic_services,actual,15282581.39,,Economic Services,SCBAA!A55,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2025,sector.economic_services,budget_final,21906944.83,,Economic Services,SCBAA!A55,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2025,sector.development_fund,actual,3406565.87,,20% Development Fund,SCBAA!A63,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201520000,Piat,2025,fs_workbook,2025,sector.development_fund,budget_final,33577499.00,,20% Development Fund,SCBAA!A63,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3
-0201521000,Rizal,2025,annex_workbook,2025,local.real_property_tax,actual,233824.53,,Real Property Tax- Basic,Annex B-1!G13,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3
-0201521000,Rizal,2025,annex_workbook,2024,local.real_property_tax,actual,251336.99,,Real Property Tax- Basic,Annex B-1!G13,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3
-0201521000,Rizal,2025,annex_workbook,2025,local.business_tax,actual,1529261.39,,Business Tax,Annex B-1!G18,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3
-0201521000,Rizal,2025,annex_workbook,2024,local.business_tax,actual,1448347.96,,Business Tax,Annex B-1!G18,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3
-0201521000,Rizal,2025,annex_workbook,2025,local.permit_fees,actual,226431.86,,Permit Fees,Annex B-1!G27,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3
-0201521000,Rizal,2025,annex_workbook,2024,local.permit_fees,actual,495342.76,,Permit Fees,Annex B-1!G27,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3
-0201521000,Rizal,2025,fs_workbook,2025,revenue.tax,actual,2200403.52,,Tax Revenue,Financial Performance!G9,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2024,revenue.tax,actual,2166114.27,,Tax Revenue,Financial Performance!G9,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2025,revenue.national_share,actual,147513242.00,,Share from National Taxes,Financial Performance!G10,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2024,revenue.national_share,actual,124490293.00,,Share from National Taxes,Financial Performance!G10,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2025,revenue.service_business,actual,1742301.03,,Service and Business Income,Financial Performance!G11,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2024,revenue.service_business,actual,2147055.11,,Service and Business Income,Financial Performance!G11,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2025,sector.economic_services,actual,5275420.12,,Economic Services,SCABAA!A66,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2025,sector.economic_services,budget_final,5280420.12,,Economic Services,SCABAA!A66,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2025,sector.development_fund,actual,22674972.57,,20% Development Fund,SCABAA!A77,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201521000,Rizal,2025,fs_workbook,2025,sector.development_fund,budget_final,29550163.00,,20% Development Fund,SCABAA!A77,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3
-0201526000,Santo Niño,2025,annex_workbook,2025,local.real_property_tax,actual,361763.99,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!F15,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3
-0201526000,Santo Niño,2025,annex_workbook,2024,local.real_property_tax,actual,560074.44,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!F15,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3
-0201526000,Santo Niño,2025,annex_workbook,2025,local.business_tax,actual,1587150.17,,Business Tax,B-1(Detailed SFPer- GF)!F25,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3
-0201526000,Santo Niño,2025,annex_workbook,2024,local.business_tax,actual,946581.58,,Business Tax,B-1(Detailed SFPer- GF)!F25,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3
-0201526000,Santo Niño,2025,annex_workbook,2025,local.permit_fees,actual,618036.72,,Permit Fees,B-1(Detailed SFPer- GF)!F51,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3
-0201526000,Santo Niño,2025,annex_workbook,2024,local.permit_fees,actual,902624.59,,Permit Fees,B-1(Detailed SFPer- GF)!F51,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3
-0201526000,Santo Niño,2025,annex_workbook,2025,local.market_operations,actual,532850.00,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!F63,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3
-0201526000,Santo Niño,2025,annex_workbook,2024,local.market_operations,actual,397700.00,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!F63,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3
-0201526000,Santo Niño,2025,fs_workbook,2025,revenue.tax,actual,2635199.88,,Tax Revenue,Statement of Fin. Performance!E9,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2024,revenue.tax,actual,2627772.13,,Tax Revenue,Statement of Fin. Performance!E9,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2025,revenue.national_share,actual,287405331.00,,Share from National Taxes,Statement of Fin. Performance!E10,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2024,revenue.national_share,actual,242120818.00,,Share from National Taxes,Statement of Fin. Performance!E10,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2025,revenue.service_business,actual,8585789.28,,Service and Business Income,Statement of Fin. Performance!E12,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2024,revenue.service_business,actual,7961237.20,,Service and Business Income,Statement of Fin. Performance!E12,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2025,sector.economic_services,actual,39046685.57,,Economic Services,SCBAA_Final!A66,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2025,sector.economic_services,budget_final,45343732.00,,Economic Services,SCBAA_Final!A66,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2025,sector.development_fund,actual,57830100.48,,20% Development Fund,SCBAA_Final!A77,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201526000,Santo Niño,2025,fs_workbook,2025,sector.development_fund,budget_final,77232073.79,,20% Development Fund,SCBAA_Final!A77,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3
-0201527000,Solana,2025,annex_workbook,2025,local.business_tax,actual,16661026.58,,Business Tax,B1!E14,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3
-0201527000,Solana,2025,annex_workbook,2024,local.business_tax,actual,14825239.74,,Business Tax,B1!E14,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3
-0201527000,Solana,2025,annex_workbook,2025,local.permit_fees,actual,9474697.61,,Permit Fees,B1!E27,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3
-0201527000,Solana,2025,annex_workbook,2024,local.permit_fees,actual,9326674.28,,Permit Fees,B1!E27,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3
-0201527000,Solana,2025,annex_workbook,2025,local.market_operations,actual,1577710.00,,Receipt from Market Operations,B1!E33,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3
-0201527000,Solana,2025,annex_workbook,2024,local.market_operations,actual,1552750.00,,Receipt from Market Operations,B1!E33,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3
-0201527000,Solana,2025,fs_workbook,2025,revenue.tax,actual,22918681.28,,Tax Revenue,Consolidated Fin Per!E11,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2024,revenue.tax,actual,21487633.01,,Tax Revenue,Consolidated Fin Per!E11,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2025,revenue.national_share,actual,369696574.00,,Share from National Taxes,Consolidated Fin Per!E12,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2024,revenue.national_share,actual,317372743.00,,Share from National Taxes,Consolidated Fin Per!E12,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2025,revenue.service_business,actual,23846660.97,,Service and Business Income,Consolidated Fin Per!E13,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2024,revenue.service_business,actual,23539535.38,,Service and Business Income,Consolidated Fin Per!E13,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2025,sector.economic_services,actual,450.00,,Economic Services,Comp of Budget-Actual!A51,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2025,sector.economic_services,budget_final,32891249.84,,Economic Services,Comp of Budget-Actual!A51,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2025,sector.development_fund,actual,135523.78,,20% Development Fund,Comp of Budget-Actual!A60,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201527000,Solana,2025,fs_workbook,2025,sector.development_fund,budget_final,73939314.80,,20% Development Fund,Comp of Budget-Actual!A60,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3
-0201528000,Tuao,2025,annex_workbook,2025,local.real_property_tax,actual,1319001.74,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!F15,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3
-0201528000,Tuao,2025,annex_workbook,2024,local.real_property_tax,actual,1418400.53,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!F15,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3
-0201528000,Tuao,2025,annex_workbook,2025,local.business_tax,actual,16054757.84,,Business Tax,B-1(Detailed SFPer- GF)!F20,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3
-0201528000,Tuao,2025,annex_workbook,2024,local.business_tax,actual,13591188.42,,Business Tax,B-1(Detailed SFPer- GF)!F20,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3
-0201528000,Tuao,2025,annex_workbook,2025,local.permit_fees,actual,1007718.00,,Permit Fees,B-1(Detailed SFPer- GF)!F45,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3
-0201528000,Tuao,2025,annex_workbook,2024,local.permit_fees,actual,717655.00,,Permit Fees,B-1(Detailed SFPer- GF)!F45,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3
-0201528000,Tuao,2025,annex_workbook,2025,local.market_operations,actual,9385887.20,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!F54,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3
-0201528000,Tuao,2025,annex_workbook,2024,local.market_operations,actual,8251549.32,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!F54,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3
-0201528000,Tuao,2025,fs_workbook,2025,revenue.tax,actual,19812154.76,,Tax Revenue,Statement of Fin. Performance!E9,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2024,revenue.tax,actual,17697480.50,,Tax Revenue,Statement of Fin. Performance!E9,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2025,revenue.national_share,actual,297108753.00,,Share from Internal Revenue Collections,Statement of Fin. Performance!E10,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2024,revenue.national_share,actual,250288586.00,,Share from Internal Revenue Collections,Statement of Fin. Performance!E10,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2025,revenue.service_business,actual,15036535.85,,Service and Business Income,Statement of Fin. Performance!E12,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2024,revenue.service_business,actual,14734379.89,,Service and Business Income,Statement of Fin. Performance!E12,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2025,sector.economic_services,actual,33211063.59,,Economic Services,SCBAA!A68,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2025,sector.economic_services,budget_final,36021865.00,,Economic Services,SCBAA!A68,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2025,sector.development_fund,actual,37424200.42,,20% Development Fund,SCBAA!A79,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201528000,Tuao,2025,fs_workbook,2025,sector.development_fund,budget_final,59469266.00,,20% Development Fund,SCBAA!A79,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3
-0201529000,Tuguegarao City,2025,annex_workbook,2025,local.real_property_tax,actual,51278565.33,,Real Property Tax- Basic,ANNEX-B!G18,722c8ecb93be68dd0484163675e2ee1a2386c078897873adf0ee44ab3969b692,3
-0201529000,Tuguegarao City,2025,annex_workbook,2025,local.business_tax,actual,246562814.78,,Business Tax,ANNEX-B!G26,722c8ecb93be68dd0484163675e2ee1a2386c078897873adf0ee44ab3969b692,3
-0201529000,Tuguegarao City,2025,annex_workbook,2025,local.permit_fees,actual,43210301.65,,Permit Fees,ANNEX-B!G53,722c8ecb93be68dd0484163675e2ee1a2386c078897873adf0ee44ab3969b692,3
-0201529000,Tuguegarao City,2025,annex_workbook,2025,local.market_operations,actual,7023535.00,,Receipt from Market Operations,ANNEX-B!G63,722c8ecb93be68dd0484163675e2ee1a2386c078897873adf0ee44ab3969b692,3
-0201529000,Tuguegarao City,2025,fs_workbook,2025,revenue.tax,actual,430895820.24,,Tax Revenue,8 - Financial Performance 2025!D9,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2024,revenue.tax,actual,395914007.42,,Tax Revenue,8 - Financial Performance 2025!D9,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2025,revenue.national_share,actual,1075220109.22,,Share from National Collections,8 - Financial Performance 2025!D10,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2024,revenue.national_share,actual,898158650.00,,Share from National Collections,8 - Financial Performance 2025!D10,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2025,revenue.service_business,actual,170862441.29,,Service and Business Income,8 - Financial Performance 2025!D11,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2024,revenue.service_business,actual,169615661.43,,Service and Business Income,8 - Financial Performance 2025!D11,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2025,sector.economic_services,actual,99846291.10,,Economic Services,11 - SCBAA!A60,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2025,sector.economic_services,budget_final,161160894.00,,Economic Services,11 - SCBAA!A60,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2025,sector.development_fund,actual,54562727.33,,20% Development Fund,11 - SCBAA!A68,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
-0201529000,Tuguegarao City,2025,fs_workbook,2025,sector.development_fund,budget_final,224537355.00,,20% Development Fund,11 - SCBAA!A68,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,3
+psgc_code,town,reported_in_year,document_kind,fiscal_year,line_code,basis,value,definition_variant,source_label,location,document_sha256,extractor_version,input_values
+0201502000,Alcala,2025,executive_summary,2025,position.assets,actual,524273294.40,,Financial Position Total Assets,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2024,position.assets,actual,574679455.47,,Financial Position Total Assets,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2025,position.liabilities,actual,31837743.77,,Liabilities,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2024,position.liabilities,actual,45214201.17,,Liabilities,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2025,position.equity,actual,492435550.63,,Total Government Equity,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2024,position.equity,actual,529465254.30,,Total Government Equity,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2025,performance.revenue,actual,245651940.81,,Results of Operations Total Revenues,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2024,performance.revenue,actual,224744176.27,,Results of Operations Total Revenues,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2025,performance.expenses,actual,280569440.82,,Total Expenses,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201502000,Alcala,2025,executive_summary,2024,performance.expenses,actual,201010574.32,,Total Expenses,page 1,68851dcf748f8957dc91dd07051761757472eab8a17fd1981ea0d31f61b8c291,3,[]
+0201504000,Amulung,2025,executive_summary,2025,position.assets,actual,1061476967.29,,Assets,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2024,position.assets,actual,820695165.21,,Assets,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2025,position.liabilities,actual,101492559.65,,Liabilities,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2024,position.liabilities,actual,86514295.99,,Liabilities,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2025,position.equity,actual,959984407.64,,Government Equity,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2024,position.equity,actual,734180869.22,,Government Equity,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2025,performance.revenue,actual,328126509.34,,Income,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2024,performance.revenue,actual,256735144.32,,Income,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2025,performance.expenses,actual,282275424.76,,Expenses,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201504000,Amulung,2025,executive_summary,2024,performance.expenses,actual,250478152.24,,Expenses,page 1,b27271f47fc5e7bdbd9ca16cc38d645dd8f72aaf1257ccdd7b5147d82b5fc4da,3,[]
+0201506000,Baggao,2025,executive_summary,2025,position.assets,actual,1614036437.02,,Financial Condition Total Assets,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,position.assets,actual,1542784868.15,,Financial Condition Total Assets,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,position.liabilities,actual,251591575.08,,Total Liabilities,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,position.liabilities,actual,305235291.37,,Total Liabilities,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,position.equity,actual,1362444861.94,,Total Government Equity,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,position.equity,actual,1237549576.78,,Total Government Equity,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,performance.revenue,actual,617744144.41,includes_subsidy_from_other_funds,Results of Operations Total Income (Includes Total Operating Income and Subsidy from Other Funds),page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,performance.revenue,actual,537294661.04,includes_subsidy_from_other_funds,Results of Operations Total Income (Includes Total Operating Income and Subsidy from Other Funds),page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,performance.expenses,actual,538241189.24,includes_subsidy_to_other_funds,"Total Expenses (Includes Total Operating Expenses, Subsidy to NGAs, Subsidy to Other Funds and Donations",page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,performance.expenses,actual,519456174.84,includes_subsidy_to_other_funds,"Total Expenses (Includes Total Operating Expenses, Subsidy to NGAs, Subsidy to Other Funds and Donations",page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,budget.appropriations_current,actual,712229885.52,,"b) Appropriations, Allotments and Obligations: Appropriations-Current",page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,budget.appropriations_current,actual,616411280.76,,"b) Appropriations, Allotments and Obligations: Appropriations-Current",page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,budget.allotments_current,actual,712229887.52,,Allotments – Current,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,budget.allotments_current,actual,616411280.76,,Allotments – Current,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,budget.allotments_continuing,actual,141565032.51,,Allotments –Continuing,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,budget.allotments_continuing,actual,316374844.77,,Allotments –Continuing,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,budget.obligations_current,actual,562476516.79,,Obligations – Current,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,budget.obligations_current,actual,527639371.11,,Obligations – Current,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2025,budget.obligations_continuing,actual,50645302.19,,Obligations –Continuing,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201506000,Baggao,2025,executive_summary,2024,budget.obligations_continuing,actual,189857202.44,,Obligations –Continuing,page 2,ae0c7cb310ee2ab992a8cddcb4191e79b1b96526ec216d30b05579cd4797010f,3,[]
+0201512000,Enrile,2025,executive_summary,2025,position.assets,actual,548906709.26,,Financial Condition: Assets,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,position.assets,actual,475408223.49,,Financial Condition: Assets,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,position.liabilities,actual,124917361.47,,Liabilities,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,position.liabilities,actual,84126474.86,,Liabilities,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,position.equity,actual,423989347.78,,Government Equity,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,position.equity,actual,391281748.63,,Government Equity,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,performance.revenue,actual,320926560.17,,Results of Operation: Income,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,performance.revenue,actual,272011996.86,,Results of Operation: Income,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,performance.expenses,actual,288104449.64,,Expense,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,performance.expenses,actual,256322104.51,,Expense,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,budget.appropriations_current,actual,253067495.70,,"Appropriations, Allotments and Obligations: Appropriations – Current",page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,budget.appropriations_current,actual,231322868.52,,"Appropriations, Allotments and Obligations: Appropriations – Current",page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,budget.allotments_current,actual,253067495.70,,Allotments – Current,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,budget.allotments_current,actual,231322868.52,,Allotments – Current,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,budget.allotments_continuing,actual,10618856.43,,Allotments – Continuing,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,budget.allotments_continuing,actual,13870515.06,,Allotments – Continuing,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,budget.obligations_current,actual,221331929.93,,Obligations – Current,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,budget.obligations_current,actual,215948826.39,,Obligations – Current,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2025,budget.obligations_continuing,actual,9281681.57,,Obligations – Continuing,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201512000,Enrile,2025,executive_summary,2024,budget.obligations_continuing,actual,11618506.24,,Obligations – Continuing,page 2,c1a0c19969edf5ab4bfed59ecf3dee6c56820ef5f14c9af6e60678e3aaf789b9,3,[]
+0201513000,Gattaran,2025,executive_summary,2025,position.assets,actual,1068248800.80,,Financial Position Total Assets,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2024,position.assets,actual,976006032.37,,Financial Position Total Assets,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2025,position.liabilities,actual,197043455.24,,Liabilities,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2024,position.liabilities,actual,178262692.25,,Liabilities,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2025,position.equity,actual,871205345.56,,Total Government Equity,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2024,position.equity,actual,797743340.12,,Total Government Equity,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2025,performance.revenue,actual,482695413.29,,Results of Operations Total Revenues,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2024,performance.revenue,actual,401727932.51,,Results of Operations Total Revenues,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2025,performance.expenses,actual,435095493.18,,Total Expenses,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201513000,Gattaran,2025,executive_summary,2024,performance.expenses,actual,408270884.16,,Total Expenses,page 2,6ad1f38a0021443cad6c4bd5806963025be8c0e860d345262742a123d60c9b82,3,[]
+0201515000,Iguig,2025,executive_summary,2025,position.assets,actual,690055674.82,,Assets,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2024,position.assets,actual,658325899.15,,Assets,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2025,position.liabilities,actual,207953838.88,,Liabilities,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2024,position.liabilities,actual,218633760.58,,Liabilities,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2025,position.equity,actual,482101835.94,,Government Equity,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2024,position.equity,actual,439692138.57,,Government Equity,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2025,performance.revenue,actual,203676880.29,,Income,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2024,performance.revenue,actual,178201695.25,,Income,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2025,performance.expenses,actual,160451708.27,,Expenses,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201515000,Iguig,2025,executive_summary,2024,performance.expenses,actual,172259855.06,,Expenses,page 1,041abca5256b9ab20ae694cab527c273029451d8d40cb29150a201d180b5ad83,3,[]
+0201519000,Peñablanca,2025,executive_summary,2025,position.assets,actual,971155126.13,,Assets,page 1,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2024,position.assets,actual,836497286.52,,Assets,page 1,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2025,position.liabilities,actual,44890632.12,,Liabilities,page 1,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2024,position.liabilities,actual,34055603.28,,Liabilities,page 1,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2025,position.equity,actual,926264494.01,,Government Equity,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2024,position.equity,actual,802441683.24,,Government Equity,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2025,performance.revenue,actual,564598504.68,,Results of Operations Income,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2024,performance.revenue,actual,483674062.93,,Results of Operations Income,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2025,performance.expenses,actual,440925223.43,,Expenses,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201519000,Peñablanca,2025,executive_summary,2024,performance.expenses,actual,422962455.46,,Expenses,page 2,71b563d25bd33701ebe76a6377a3be5cb964befd2d1255edd7b7bb39cb51d7af,3,[]
+0201520000,Piat,2025,executive_summary,2025,position.assets,actual,398656514.91,,Financial Position Total Assets,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,position.assets,actual,367773314.73,,Financial Position Total Assets,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,position.liabilities,actual,64675738.69,,Liabilities,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,position.liabilities,actual,67927983.11,,Liabilities,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,position.equity,actual,333980776.22,,Total Government Equity,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,position.equity,actual,299845331.62,,Total Government Equity,page 1,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,performance.revenue,actual,184288736.38,,Results of Operations Total Income,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,performance.revenue,actual,164101970.71,,Results of Operations Total Income,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,performance.expenses,actual,146516339.98,,Total Expenses,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,performance.expenses,actual,127361599.61,,Total Expenses,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,budget.appropriations_current,actual,191953255.00,,"Appropriations, Allotments and Obligations Appropriations- Current",page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,budget.appropriations_current,actual,164973197.00,,"Appropriations, Allotments and Obligations Appropriations- Current",page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,budget.allotments_current,actual,191953255.00,,Allotment- Current,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,budget.allotments_current,actual,164973197.00,,Allotment- Current,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,budget.obligations_current,actual,127598883.72,,Obligations- Current,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,budget.obligations_current,actual,110093143.47,,Obligations- Current,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,budget.allotments_continuing,actual,48681305.85,,Allotment- Continuing,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,budget.allotments_continuing,actual,45844486.02,,Allotment- Continuing,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2025,budget.obligations_continuing,actual,18103737.11,,Obligations- Continuing,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201520000,Piat,2025,executive_summary,2024,budget.obligations_continuing,actual,24875018.11,,Obligations- Continuing,page 2,eb5a856c4f68863431ef29710c507109c13f6e42963f2e899b56f8d2d9f616a5,3,[]
+0201521000,Rizal,2025,executive_summary,2025,position.assets,actual,414928115.62,,Financial Position Total Assets,page 1,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,position.assets,actual,368889924.53,,Financial Position Total Assets,page 1,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,position.liabilities,actual,237411816.91,,Total Liabilities,page 1,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,position.liabilities,actual,201853764.90,,Total Liabilities,page 1,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,position.equity,actual,177516298.71,,Government Equity,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,position.equity,actual,167036159.63,,Government Equity,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,performance.revenue,actual,151455946.55,,Results of Operations Total Income,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,performance.revenue,actual,128803462.38,,Results of Operations Total Income,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,performance.expenses,actual,147374035.98,,Total Expenses,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,performance.expenses,actual,131334171.45,,Total Expenses,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,budget.appropriations_current,actual,152750815.00,,"Appropriations, Allotments and Obligations Appropriations- Current",page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,budget.appropriations_current,actual,129378120.00,,"Appropriations, Allotments and Obligations Appropriations- Current",page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,budget.allotments_current,actual,152750815.00,,Allotment- Current,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,budget.allotments_current,actual,129378120.00,,Allotment- Current,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,budget.allotments_continuing,actual,1947700.23,,Allotment- Continuing,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,budget.allotments_continuing,actual,1947825.85,,Allotment- Continuing,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,budget.obligations_current,actual,129605891.60,,Obligations- Current,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,budget.obligations_current,actual,124733768.81,,Obligations- Current,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2025,budget.obligations_continuing,actual,1573113.75,,Obligations- Continuing,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201521000,Rizal,2025,executive_summary,2024,budget.obligations_continuing,actual,1947825.85,,Obligations- Continuing,page 2,a544280244dfc9116b728b05abf82e0b4e84f58a7b808b3b662abc78838e4420,3,[]
+0201526000,Santo Niño,2025,executive_summary,2025,position.assets,actual,863136703.46,,Financial Position Total Assets,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2024,position.assets,actual,797326569.63,,Financial Position Total Assets,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2025,position.liabilities,actual,148517585.16,,Total Liabilities,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2024,position.liabilities,actual,147976609.16,,Total Liabilities,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2025,position.equity,actual,714619118.30,,Total Government Equity,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2024,position.equity,actual,649349960.47,,Total Government Equity,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2025,performance.revenue,actual,298648712.98,,Financial Performance Total Income,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2024,performance.revenue,actual,254556078.94,,Financial Performance Total Income,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2025,performance.expenses,actual,271727306.22,,Total Expenses,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2024,performance.expenses,actual,199565954.55,,Total Expenses,page 1,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2025,budget.appropriations_current,actual,332286397.00,,"Appropriations, Allotments and Obligations Total Appropriations – Current",page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2024,budget.appropriations_current,actual,225663150.66,,"Appropriations, Allotments and Obligations Total Appropriations – Current",page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2025,budget.obligations_current,actual,301955827.28,,Total Obligations – Current,page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2024,budget.obligations_current,actual,190988561.82,,Total Obligations – Current,page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2025,budget.obligations_continuing,actual,51614817.98,,Total Obligations - Continuing,page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201526000,Santo Niño,2025,executive_summary,2024,budget.obligations_continuing,actual,28062801.31,,Total Obligations - Continuing,page 2,2f026ae8f9305b9c918fab3049ecc304eaf059d4c090b9daf2aeccb7d5af1ae5,3,[]
+0201527000,Solana,2025,executive_summary,2025,position.assets,actual,1238370429.98,,Financial Condition: Assets,page 1,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2024,position.assets,actual,1146475237.91,,Financial Condition: Assets,page 1,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2025,position.liabilities,actual,333577540.69,,Liabilities,page 1,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2024,position.liabilities,actual,276738094.15,,Liabilities,page 1,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2025,position.equity,actual,904792889.29,,Government Equity,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2024,position.equity,actual,869737143.76,,Government Equity,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2025,performance.revenue,actual,449380526.18,,Results of Operation: Income,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2024,performance.revenue,actual,380075107.05,,Results of Operation: Income,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2025,performance.expenses,actual,415111710.44,,Expense,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2024,performance.expenses,actual,368983685.62,,Expense,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2025,budget.appropriations_current,actual,421124739.34,unspecified_period,Appropriations,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2024,budget.appropriations_current,actual,423057604.16,unspecified_period,Appropriations,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2025,budget.obligations_current,actual,420195592.30,unspecified_period,Obligations,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201527000,Solana,2025,executive_summary,2024,budget.obligations_current,actual,387377687.34,unspecified_period,Obligations,page 2,ad861580b89e37df00c01cc543a76ce8a9958a394a9a89c8441318cf649127c4,3,[]
+0201528000,Tuao,2025,executive_summary,2025,position.assets,actual,914283147.94,,Financial Position Total Assets,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2024,position.assets,actual,863008925.75,,Financial Position Total Assets,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2025,position.liabilities,actual,91715712.07,,Total Liabilities,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2024,position.liabilities,actual,120464005.80,,Total Liabilities,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2025,position.equity,actual,822567435.87,,Total Government Equity,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2024,position.equity,actual,742544919.95,,Total Government Equity,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2025,performance.revenue,actual,405366050.15,,Financial Performance Total Revenue,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2024,performance.revenue,actual,300894802.59,,Financial Performance Total Revenue,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2025,performance.expenses,actual,321618630.23,,Total Expenses,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2024,performance.expenses,actual,277751737.57,,Total Expenses,page 1,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2025,budget.appropriations_current,actual,440077402.26,,"Appropriations, Allotments and Obligations Total Appropriations – Current",page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2024,budget.appropriations_current,actual,308573005.52,,"Appropriations, Allotments and Obligations Total Appropriations – Current",page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2025,budget.obligations_current,actual,329992809.07,,Total Obligations – Current,page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2024,budget.obligations_current,actual,241503445.19,,Total Obligations – Current,page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2025,budget.obligations_continuing,actual,49171758.09,,Total Obligations - Continuing,page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201528000,Tuao,2025,executive_summary,2024,budget.obligations_continuing,actual,56289384.57,,Total Obligations - Continuing,page 2,6fecd55e0be7ead6eb87ec8dfac3ef2e6f576242a8dd674bccd2541904df466d,3,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,position.assets,actual,5157038108.96,,Financial Condition: Assets,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,position.assets,actual,4909278026.68,,Financial Condition: Assets,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,position.liabilities,actual,1479779110.38,,Liabilities,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,position.liabilities,actual,1323381986.04,,Liabilities,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,position.equity,actual,3677258998.58,,Government Equity,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,position.equity,actual,3585896040.64,,Government Equity,page 1,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,performance.revenue,actual,1679019473.60,,Results of Operation: Income,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,performance.revenue,actual,1465722146.22,,Results of Operation: Income,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,performance.expenses,actual,1403269517.37,,Expense,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,performance.expenses,actual,1184642113.21,,Expense,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,budget.appropriations_current,actual,1770385132.94,,"Appropriations, Allotments and Obligations: Appropriations – Current",page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,budget.appropriations_current,actual,1568978181.74,,"Appropriations, Allotments and Obligations: Appropriations – Current",page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,budget.allotments_current,actual,1770385132.94,,Allotments – Current,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,budget.allotments_current,actual,1568978181.74,,Allotments – Current,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,budget.allotments_continuing,actual,569397448.57,,Allotments – Continuing,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,budget.allotments_continuing,actual,611297908.10,,Allotments – Continuing,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,budget.obligations_current,actual,1336894842.45,,Obligations – Current,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,budget.obligations_current,actual,1249898538.69,,Obligations – Current,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2025,budget.obligations_continuing,actual,210885825.73,,Obligations – Continuing,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201529000,Tuguegarao City,2025,executive_summary,2024,budget.obligations_continuing,actual,235381805.69,,Obligations – Continuing,page 2,8f9300d6ef350ed4bc5bfe5254c090ca63c4f78d26cf13fac44d0672d7f9cc7a,1.1.0,[]
+0201502000,Alcala,2025,annex_workbook,2025,local.real_property_tax,actual,1265507.60,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3,[]
+0201502000,Alcala,2025,annex_workbook,2024,local.real_property_tax,actual,1198682.00,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3,[]
+0201502000,Alcala,2025,annex_workbook,2025,local.business_tax,actual,1517576.05,,Business Tax,C-1 (Detailed SFPerf - GF)!D11,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3,[]
+0201502000,Alcala,2025,annex_workbook,2024,local.business_tax,actual,1821525.55,,Business Tax,C-1 (Detailed SFPerf - GF)!D11,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3,[]
+0201502000,Alcala,2025,annex_workbook,2025,local.permit_fees,actual,1374078.26,,Permit Fees,C-1 (Detailed SFPerf - GF)!D18,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3,[]
+0201502000,Alcala,2025,annex_workbook,2024,local.permit_fees,actual,1460162.44,,Permit Fees,C-1 (Detailed SFPerf - GF)!D18,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3,[]
+0201502000,Alcala,2025,annex_workbook,2025,local.market_operations,actual,226784.40,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D28,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3,[]
+0201502000,Alcala,2025,annex_workbook,2024,local.market_operations,actual,249067.52,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D28,915c8fddc8342e693cf2e53692c0f046664ba7b09d8892b972d69313c0456c22,3,[]
+0201502000,Alcala,2025,fs_workbook,2025,revenue.tax,actual,4824484.63,,Tax Revenue,B-1 (Consolidated SFPerf)!D8,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2024,revenue.tax,actual,5028348.81,,Tax Revenue,B-1 (Consolidated SFPerf)!D8,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2025,revenue.national_share,actual,226747504.00,,Share from Internal Revenue Collections,B-1 (Consolidated SFPerf)!D9,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2024,revenue.national_share,actual,191062640.00,,Share from Internal Revenue Collections,B-1 (Consolidated SFPerf)!D9,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2025,revenue.service_business,actual,13966987.46,,Service and Business Income,B-1 (Consolidated SFPerf)!D11,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2024,revenue.service_business,actual,14209472.55,,Service and Business Income,B-1 (Consolidated SFPerf)!D11,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2025,sector.economic_services,actual,24922227.47,,Economic Services,SCBAA!A64,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2025,sector.economic_services,budget_final,28781100.75,,Economic Services,SCBAA!A64,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2025,sector.development_fund,actual,52090767.16,,20% Development Fund,SCBAA!A75,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201502000,Alcala,2025,fs_workbook,2025,sector.development_fund,budget_final,52130904.16,,20% Development Fund,SCBAA!A75,b2615ec872f2a3306adeed66d42504c68726a38e0538ce80bb065d41623469fa,3,[]
+0201504000,Amulung,2025,annex_workbook,2025,local.real_property_tax,actual,1456739.13,,Real Property Tax- Basic,A-2.1!E16,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3,[]
+0201504000,Amulung,2025,annex_workbook,2024,local.real_property_tax,actual,1755199.22,,Real Property Tax- Basic,A-2.1!E16,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3,[]
+0201504000,Amulung,2025,annex_workbook,2025,local.business_tax,actual,7115196.86,,Business Tax,A-2.1!E18,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3,[]
+0201504000,Amulung,2025,annex_workbook,2024,local.business_tax,actual,6336297.48,,Business Tax,A-2.1!E18,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3,[]
+0201504000,Amulung,2025,annex_workbook,2025,local.permit_fees,actual,1528397.80,,Permit Fees,A-2.1!E33,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3,[]
+0201504000,Amulung,2025,annex_workbook,2024,local.permit_fees,actual,1332980.93,,Permit Fees,A-2.1!E33,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3,[]
+0201504000,Amulung,2025,annex_workbook,2025,local.market_operations,actual,927200.00,,Receipt from Market Operations,A-2.1!E42,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3,[]
+0201504000,Amulung,2025,annex_workbook,2024,local.market_operations,actual,895300.00,,Receipt from Market Operations,A-2.1!E42,32c5fe16b8dcd7f1916be2516025abc869aad8852cad54ddba7a8531f3a45bbf,3,[]
+0201504000,Amulung,2025,fs_workbook,2025,revenue.tax,actual,11081051.21,,Tax Revenue,SFPerformance!E11,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3,[]
+0201504000,Amulung,2025,fs_workbook,2024,revenue.tax,actual,10675886.03,,Tax Revenue,SFPerformance!E11,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3,[]
+0201504000,Amulung,2025,fs_workbook,2025,revenue.national_share,actual,267630156.00,,Share from National Taxes,SFPerformance!E12,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3,[]
+0201504000,Amulung,2025,fs_workbook,2024,revenue.national_share,actual,239074833.00,,Share from National Taxes,SFPerformance!E12,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3,[]
+0201504000,Amulung,2025,fs_workbook,2025,revenue.service_business,actual,9089682.88,,Service and Business Income,SFPerformance!E13,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3,[]
+0201504000,Amulung,2025,fs_workbook,2024,revenue.service_business,actual,6717515.83,,Service and Business Income,SFPerformance!E13,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3,[]
+0201504000,Amulung,2025,fs_workbook,2025,sector.economic_services,actual,10038696.93,,Economic Services,SCBAA!A65,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3,[]
+0201504000,Amulung,2025,fs_workbook,2025,sector.economic_services,budget_final,11105436.00,,Economic Services,SCBAA!A65,c0a412eefc697752ab5010bd081d8dc611868d5b084d4a3ff406ac54afbd6fc8,3,[]
+0201506000,Baggao,2025,annex_workbook,2025,local.real_property_tax,actual,1702084.02,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3,[]
+0201506000,Baggao,2025,annex_workbook,2024,local.real_property_tax,actual,2270184.60,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3,[]
+0201506000,Baggao,2025,annex_workbook,2025,local.business_tax,actual,12025382.92,,Business Tax,C-1 (Detailed SFPerf - GF)!D12,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3,[]
+0201506000,Baggao,2025,annex_workbook,2024,local.business_tax,actual,11570635.95,,Business Tax,C-1 (Detailed SFPerf - GF)!D12,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3,[]
+0201506000,Baggao,2025,annex_workbook,2025,local.permit_fees,actual,2093688.50,,Permit Fees,C-1 (Detailed SFPerf - GF)!D20,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3,[]
+0201506000,Baggao,2025,annex_workbook,2024,local.permit_fees,actual,2203230.00,,Permit Fees,C-1 (Detailed SFPerf - GF)!D20,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3,[]
+0201506000,Baggao,2025,annex_workbook,2025,local.market_operations,actual,1166693.14,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D27,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3,[]
+0201506000,Baggao,2025,annex_workbook,2024,local.market_operations,actual,1619708.98,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D27,f698ebb752d8a095b08b5259072ed191032daa0c2b4b22df84c3fb06214ea5fa,3,[]
+0201506000,Baggao,2025,fs_workbook,2025,revenue.tax,actual,18079388.97,,Tax Revenue,B-1 (Consolidated SFPerf)!D8,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2024,revenue.tax,actual,18554960.47,,Tax Revenue,B-1 (Consolidated SFPerf)!D8,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2025,revenue.national_share,actual,569103533.00,,Share from Internal Revenue Collections,B-1 (Consolidated SFPerf)!D9,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2024,revenue.national_share,actual,479237737.00,,Share from Internal Revenue Collections,B-1 (Consolidated SFPerf)!D9,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2025,revenue.service_business,actual,23580920.97,,Service and Business Income,B-1 (Consolidated SFPerf)!D11,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2024,revenue.service_business,actual,23169594.75,,Service and Business Income,B-1 (Consolidated SFPerf)!D11,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2025,sector.economic_services,actual,37786870.06,,Economic Services,SCBAA!A64,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2025,sector.economic_services,budget_final,45644970.00,,Economic Services,SCBAA!A64,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2025,sector.development_fund,actual,98685345.65,,20% Development Fund,SCBAA!A75,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201506000,Baggao,2025,fs_workbook,2025,sector.development_fund,budget_final,156373222.00,,20% Development Fund,SCBAA!A75,733533ec0dcfc865edfc14d5320fdcdb70876723a63c087c6204e01228bdf26c,3,[]
+0201512000,Enrile,2025,annex_workbook,2025,local.real_property_tax,actual,1327830.66,,Real Property Tax- Basic,B - Detailed SFPe!H15,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3,[]
+0201512000,Enrile,2025,annex_workbook,2024,local.real_property_tax,actual,1430881.01,,Real Property Tax- Basic,B - Detailed SFPe!H15,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3,[]
+0201512000,Enrile,2025,annex_workbook,2025,local.business_tax,actual,4206825.47,,Business Tax,B - Detailed SFPe!H19,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3,[]
+0201512000,Enrile,2025,annex_workbook,2024,local.business_tax,actual,4045318.98,,Business Tax,B - Detailed SFPe!H19,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3,[]
+0201512000,Enrile,2025,annex_workbook,2025,local.permit_fees,actual,1125570.61,,Permit Fees,B - Detailed SFPe!H29,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3,[]
+0201512000,Enrile,2025,annex_workbook,2024,local.permit_fees,actual,1038586.77,,Permit Fees,B - Detailed SFPe!H29,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3,[]
+0201512000,Enrile,2025,annex_workbook,2025,local.market_operations,actual,1706814.28,,Receipt from Market Operations,B - Detailed SFPe!H43,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3,[]
+0201512000,Enrile,2025,annex_workbook,2024,local.market_operations,actual,1822585.98,,Receipt from Market Operations,B - Detailed SFPe!H43,6f07b346739b8f3e382ad0984032e301bd793fa07687d74922b40d86e99a4ffb,3,[]
+0201512000,Enrile,2025,fs_workbook,2025,revenue.tax,actual,221114045.61,may_include_national_share,Tax Revenue,8. Consolidated Fin Per!D11,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3,[]
+0201512000,Enrile,2025,fs_workbook,2024,revenue.tax,actual,187806430.54,may_include_national_share,Tax Revenue,8. Consolidated Fin Per!D11,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3,[]
+0201512000,Enrile,2025,fs_workbook,2025,revenue.service_business,actual,29898178.08,,Service and Business Income,8. Consolidated Fin Per!D12,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3,[]
+0201512000,Enrile,2025,fs_workbook,2024,revenue.service_business,actual,28662251.06,,Service and Business Income,8. Consolidated Fin Per!D12,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3,[]
+0201512000,Enrile,2025,fs_workbook,2025,sector.economic_services,actual,4184006.67,,Economic  Services,11. SCBAA.!A38,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3,[]
+0201512000,Enrile,2025,fs_workbook,2025,sector.economic_services,budget_final,39721746.44,,Economic  Services,11. SCBAA.!A38,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3,[]
+0201512000,Enrile,2025,fs_workbook,2025,sector.development_fund,actual,13177651.49,,20%    Development  Fund,11. SCBAA.!A47,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3,[]
+0201512000,Enrile,2025,fs_workbook,2025,sector.development_fund,budget_final,44526178.00,,20%    Development  Fund,11. SCBAA.!A47,8808e9f1ff2e87c8e6bf8fb4351b74ba958a0cb19a4fd741cbd314eb9cbcb271,3,[]
+0201513000,Gattaran,2025,annex_workbook,2025,local.real_property_tax,actual,1662824.06,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3,[]
+0201513000,Gattaran,2025,annex_workbook,2024,local.real_property_tax,actual,1488819.05,,Real Property Tax - Basic,C-1 (Detailed SFPerf - GF)!D10,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3,[]
+0201513000,Gattaran,2025,annex_workbook,2025,local.business_tax,actual,13786235.92,,Business Tax,C-1 (Detailed SFPerf - GF)!D12,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3,[]
+0201513000,Gattaran,2025,annex_workbook,2024,local.business_tax,actual,12898862.85,,Business Tax,C-1 (Detailed SFPerf - GF)!D12,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3,[]
+0201513000,Gattaran,2025,annex_workbook,2025,local.permit_fees,actual,3238803.83,,Permit Fees,C-1 (Detailed SFPerf - GF)!D19,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3,[]
+0201513000,Gattaran,2025,annex_workbook,2024,local.permit_fees,actual,2512795.08,,Permit Fees,C-1 (Detailed SFPerf - GF)!D19,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3,[]
+0201513000,Gattaran,2025,annex_workbook,2025,local.market_operations,actual,9620808.00,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D26,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3,[]
+0201513000,Gattaran,2025,annex_workbook,2024,local.market_operations,actual,9965880.50,,Receipt from Market Operations,C-1 (Detailed SFPerf - GF)!D26,2877aa6113ba2181a7e1ce7d01f94b479055562e74bcfd48e0dcae6c2ca4ecf4,3,[]
+0201513000,Gattaran,2025,fs_workbook,2025,revenue.tax,actual,19625112.71,,Tax Revenue,Stmt of Finl Performance!E9,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2024,revenue.tax,actual,19105115.65,,Tax Revenue,Stmt of Finl Performance!E9,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2025,revenue.national_share,actual,427535223.00,,Share from Internal Revenue Collections,Stmt of Finl Performance!E10,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2024,revenue.national_share,actual,360073890.00,,Share from Internal Revenue Collections,Stmt of Finl Performance!E10,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2025,revenue.service_business,actual,35484062.71,,Service and Business Income,Stmt of Finl Performance!E12,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2024,revenue.service_business,actual,22448257.75,,Service and Business Income,Stmt of Finl Performance!E12,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2025,sector.economic_services,actual,6181481.78,,Economic Services,SCBAA!A70,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2025,sector.economic_services,budget_final,8170000.00,,Economic Services,SCBAA!A70,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2025,sector.development_fund,actual,74272089.00,,20 % Dev't. Fund,SCBAA!A78,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201513000,Gattaran,2025,fs_workbook,2025,sector.development_fund,budget_final,85554560.00,,20 % Dev't. Fund,SCBAA!A78,ed59a82bc4e19e57b1e71fbae17219a353ae2c3a8ec307cc7aaa1d26d3c0144d,3,[]
+0201515000,Iguig,2025,annex_workbook,2025,local.real_property_tax,actual,1774728.69,,Real Property Tax- Basic,B-1 (Detailed SFPer-GF)!F16,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3,[]
+0201515000,Iguig,2025,annex_workbook,2024,local.real_property_tax,actual,3062109.58,,Real Property Tax- Basic,B-1 (Detailed SFPer-GF)!F16,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3,[]
+0201515000,Iguig,2025,annex_workbook,2025,local.business_tax,actual,10073577.79,,Business Tax,B-1 (Detailed SFPer-GF)!F23,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3,[]
+0201515000,Iguig,2025,annex_workbook,2024,local.business_tax,actual,9368552.11,,Business Tax,B-1 (Detailed SFPer-GF)!F23,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3,[]
+0201515000,Iguig,2025,annex_workbook,2025,local.permit_fees,actual,3871391.94,,Permit Fees,B-1 (Detailed SFPer-GF)!F42,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3,[]
+0201515000,Iguig,2025,annex_workbook,2024,local.permit_fees,actual,3740925.88,,Permit Fees,B-1 (Detailed SFPer-GF)!F42,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3,[]
+0201515000,Iguig,2025,annex_workbook,2025,local.market_operations,actual,1530720.00,,Receipt from Market Operations,B-1 (Detailed SFPer-GF)!F53,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3,[]
+0201515000,Iguig,2025,annex_workbook,2024,local.market_operations,actual,2054790.00,,Receipt from Market Operations,B-1 (Detailed SFPer-GF)!F53,3941301125785140143da3b9f7f8443348b2a98879947601ee0c7d37e88730c3,3,[]
+0201515000,Iguig,2025,fs_workbook,2025,revenue.tax,actual,14274088.38,,Tax Revenue,SFPerformance!D10,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2024,revenue.tax,actual,16530223.49,,Tax Revenue,SFPerformance!D10,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2025,revenue.national_share,actual,172788380.00,,Share from National Taxes,SFPerformance!D11,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2024,revenue.national_share,actual,145643038.80,,Share from National Taxes,SFPerformance!D11,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2025,revenue.service_business,actual,16614411.91,,Service and Business Income,SFPerformance!D12,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2024,revenue.service_business,actual,16028432.96,,Service and Business Income,SFPerformance!D12,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2025,sector.economic_services,actual,6271290.53,,ECONOMIC SERVICES,SCBAA!A77,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2025,sector.economic_services,budget_final,8707698.12,,ECONOMIC SERVICES,SCBAA!A77,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2025,sector.development_fund,actual,34445736.58,,20% Development Fund,SCBAA!A85,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201515000,Iguig,2025,fs_workbook,2025,sector.development_fund,budget_final,34557676.80,,20% Development Fund,SCBAA!A85,5c8fae75f1019a4693c329e34a947386d5d898b8bafd366015d4c0fe67a4b5dd,3,[]
+0201519000,Peñablanca,2025,annex_workbook,2025,local.real_property_tax,actual,1361536.74,,Real Property Tax- Basic,B-1!F17,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3,[]
+0201519000,Peñablanca,2025,annex_workbook,2024,local.real_property_tax,actual,1408993.82,,Real Property Tax- Basic,B-1!F17,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3,[]
+0201519000,Peñablanca,2025,annex_workbook,2025,local.business_tax,actual,3603248.22,,Business Tax,B-1!F24,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3,[]
+0201519000,Peñablanca,2025,annex_workbook,2024,local.business_tax,actual,3556312.08,,Business Tax,B-1!F24,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3,[]
+0201519000,Peñablanca,2025,annex_workbook,2025,local.permit_fees,actual,5148704.93,,Permit Fees,B-1!F44,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3,[]
+0201519000,Peñablanca,2025,annex_workbook,2024,local.permit_fees,actual,4546669.02,,Permit Fees,B-1!F44,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3,[]
+0201519000,Peñablanca,2025,annex_workbook,2024,local.market_operations,actual,150850.00,,Receipt from Market Operations,B-1!F59,d328cc771b2a410bd2c3f3a6ba5e69a7dab3845bcd6fdb98991252fe30c2ba63,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2025,revenue.tax,actual,8839513.33,,Tax Revenue,SFPerformance!G10,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2024,revenue.tax,actual,8707096.39,,Tax Revenue,SFPerformance!G10,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2025,revenue.national_share,actual,546594435.00,,Share from Internal Revenue Collections (IRA),SFPerformance!G11,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2024,revenue.national_share,actual,460290907.00,,Share from Internal Revenue Collections (IRA),SFPerformance!G11,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2025,revenue.service_business,actual,8439307.04,,Service and Business Income,SFPerformance!G13,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2024,revenue.service_business,actual,8359484.51,,Service and Business Income,SFPerformance!G13,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2025,sector.economic_services,actual,22643535.98,,Economic Services,SCBAA!A53,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2025,sector.economic_services,budget_final,28414970.29,,Economic Services,SCBAA!A53,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2025,sector.development_fund,actual,84886567.58,,20% Development Fund,SCBAA!A62,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201519000,Peñablanca,2025,fs_workbook,2025,sector.development_fund,budget_final,109366401.60,,20% Development Fund,SCBAA!A62,5039d06a38683c2101cc560bd17a9b42a64fb8ff75d5fdb00e710a236aa70fdd,3,[]
+0201520000,Piat,2025,annex_workbook,2025,local.real_property_tax,actual,1165579.50,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!G14,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3,[]
+0201520000,Piat,2025,annex_workbook,2024,local.real_property_tax,actual,1407390.10,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!G14,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3,[]
+0201520000,Piat,2025,annex_workbook,2025,local.business_tax,actual,5432169.56,,Business Tax,B-1(Detailed SFPer- GF)!G17,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3,[]
+0201520000,Piat,2025,annex_workbook,2024,local.business_tax,actual,4380838.88,,Business Tax,B-1(Detailed SFPer- GF)!G17,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3,[]
+0201520000,Piat,2025,annex_workbook,2025,local.permit_fees,actual,568715.32,,Permit Fees,B-1(Detailed SFPer- GF)!G32,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3,[]
+0201520000,Piat,2025,annex_workbook,2024,local.permit_fees,actual,667467.19,,Permit Fees,B-1(Detailed SFPer- GF)!G32,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3,[]
+0201520000,Piat,2025,annex_workbook,2025,local.market_operations,actual,753654.00,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!G45,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3,[]
+0201520000,Piat,2025,annex_workbook,2024,local.market_operations,actual,744380.00,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!G45,e4a0eb4f7ef7cc25e3020b55997216bbda89f279f890d161b97861e479d75acd,3,[]
+0201520000,Piat,2025,fs_workbook,2025,revenue.tax,actual,8086027.56,,Tax Revenue,SFPerformance!F8,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2024,revenue.tax,actual,8911680.69,,Tax Revenue,SFPerformance!F8,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2025,revenue.national_share,actual,167649921.00,,Share on National Taxes,SFPerformance!F9,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2024,revenue.national_share,actual,146658968.00,,Share on National Taxes,SFPerformance!F9,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2025,revenue.service_business,actual,8476388.89,,Service and Business Income,SFPerformance!F10,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2024,revenue.service_business,actual,8531322.02,,Service and Business Income,SFPerformance!F10,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2025,sector.economic_services,actual,15282581.39,,Economic Services,SCBAA!A55,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2025,sector.economic_services,budget_final,21906944.83,,Economic Services,SCBAA!A55,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2025,sector.development_fund,actual,3406565.87,,20% Development Fund,SCBAA!A63,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201520000,Piat,2025,fs_workbook,2025,sector.development_fund,budget_final,33577499.00,,20% Development Fund,SCBAA!A63,bf26e7eae0261233dfe1957c6487f3ab377cdfa367329c2f92ad19bf7b6e1e75,3,[]
+0201521000,Rizal,2025,annex_workbook,2025,local.real_property_tax,actual,233824.53,,Real Property Tax- Basic,Annex B-1!G13,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3,[]
+0201521000,Rizal,2025,annex_workbook,2024,local.real_property_tax,actual,251336.99,,Real Property Tax- Basic,Annex B-1!G13,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3,[]
+0201521000,Rizal,2025,annex_workbook,2025,local.business_tax,actual,1529261.39,,Business Tax,Annex B-1!G18,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3,[]
+0201521000,Rizal,2025,annex_workbook,2024,local.business_tax,actual,1448347.96,,Business Tax,Annex B-1!G18,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3,[]
+0201521000,Rizal,2025,annex_workbook,2025,local.permit_fees,actual,226431.86,,Permit Fees,Annex B-1!G27,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3,[]
+0201521000,Rizal,2025,annex_workbook,2024,local.permit_fees,actual,495342.76,,Permit Fees,Annex B-1!G27,c807a6a828070122e8b78654d6d44109cf292e6ec32d9d277e60c058cb0c307d,3,[]
+0201521000,Rizal,2025,fs_workbook,2025,revenue.tax,actual,2200403.52,,Tax Revenue,Financial Performance!G9,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2024,revenue.tax,actual,2166114.27,,Tax Revenue,Financial Performance!G9,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2025,revenue.national_share,actual,147513242.00,,Share from National Taxes,Financial Performance!G10,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2024,revenue.national_share,actual,124490293.00,,Share from National Taxes,Financial Performance!G10,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2025,revenue.service_business,actual,1742301.03,,Service and Business Income,Financial Performance!G11,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2024,revenue.service_business,actual,2147055.11,,Service and Business Income,Financial Performance!G11,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2025,sector.economic_services,actual,5275420.12,,Economic Services,SCABAA!A66,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2025,sector.economic_services,budget_final,5280420.12,,Economic Services,SCABAA!A66,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2025,sector.development_fund,actual,22674972.57,,20% Development Fund,SCABAA!A77,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201521000,Rizal,2025,fs_workbook,2025,sector.development_fund,budget_final,29550163.00,,20% Development Fund,SCABAA!A77,a63c2f93753cb523e3a5f0780f4267db4550e2054b4b0a50fa72eb752aaf723c,3,[]
+0201526000,Santo Niño,2025,annex_workbook,2025,local.real_property_tax,actual,361763.99,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!F15,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3,[]
+0201526000,Santo Niño,2025,annex_workbook,2024,local.real_property_tax,actual,560074.44,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!F15,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3,[]
+0201526000,Santo Niño,2025,annex_workbook,2025,local.business_tax,actual,1587150.17,,Business Tax,B-1(Detailed SFPer- GF)!F25,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3,[]
+0201526000,Santo Niño,2025,annex_workbook,2024,local.business_tax,actual,946581.58,,Business Tax,B-1(Detailed SFPer- GF)!F25,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3,[]
+0201526000,Santo Niño,2025,annex_workbook,2025,local.permit_fees,actual,618036.72,,Permit Fees,B-1(Detailed SFPer- GF)!F51,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3,[]
+0201526000,Santo Niño,2025,annex_workbook,2024,local.permit_fees,actual,902624.59,,Permit Fees,B-1(Detailed SFPer- GF)!F51,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3,[]
+0201526000,Santo Niño,2025,annex_workbook,2025,local.market_operations,actual,532850.00,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!F63,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3,[]
+0201526000,Santo Niño,2025,annex_workbook,2024,local.market_operations,actual,397700.00,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!F63,7db5cdf820a3e16a16ad9cba1890901781734d19511f709faaf18c04789fb37b,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2025,revenue.tax,actual,2635199.88,,Tax Revenue,Statement of Fin. Performance!E9,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2024,revenue.tax,actual,2627772.13,,Tax Revenue,Statement of Fin. Performance!E9,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2025,revenue.national_share,actual,287405331.00,,Share from National Taxes,Statement of Fin. Performance!E10,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2024,revenue.national_share,actual,242120818.00,,Share from National Taxes,Statement of Fin. Performance!E10,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2025,revenue.service_business,actual,8585789.28,,Service and Business Income,Statement of Fin. Performance!E12,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2024,revenue.service_business,actual,7961237.20,,Service and Business Income,Statement of Fin. Performance!E12,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2025,sector.economic_services,actual,39046685.57,,Economic Services,SCBAA_Final!A66,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2025,sector.economic_services,budget_final,45343732.00,,Economic Services,SCBAA_Final!A66,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2025,sector.development_fund,actual,57830100.48,,20% Development Fund,SCBAA_Final!A77,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201526000,Santo Niño,2025,fs_workbook,2025,sector.development_fund,budget_final,77232073.79,,20% Development Fund,SCBAA_Final!A77,fcf5326ebac410fc731628393f45d5944113676d959133aaab05b5d3511ae5c0,3,[]
+0201527000,Solana,2025,annex_workbook,2025,local.business_tax,actual,16661026.58,,Business Tax,B1!E14,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3,[]
+0201527000,Solana,2025,annex_workbook,2024,local.business_tax,actual,14825239.74,,Business Tax,B1!E14,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3,[]
+0201527000,Solana,2025,annex_workbook,2025,local.permit_fees,actual,9474697.61,,Permit Fees,B1!E27,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3,[]
+0201527000,Solana,2025,annex_workbook,2024,local.permit_fees,actual,9326674.28,,Permit Fees,B1!E27,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3,[]
+0201527000,Solana,2025,annex_workbook,2025,local.market_operations,actual,1577710.00,,Receipt from Market Operations,B1!E33,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3,[]
+0201527000,Solana,2025,annex_workbook,2024,local.market_operations,actual,1552750.00,,Receipt from Market Operations,B1!E33,0198ef4f0b826f566965393fcc779e98386454046cba65307da68b775c59aa08,3,[]
+0201527000,Solana,2025,fs_workbook,2025,revenue.tax,actual,22918681.28,,Tax Revenue,Consolidated Fin Per!E11,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2024,revenue.tax,actual,21487633.01,,Tax Revenue,Consolidated Fin Per!E11,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2025,revenue.national_share,actual,369696574.00,,Share from National Taxes,Consolidated Fin Per!E12,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2024,revenue.national_share,actual,317372743.00,,Share from National Taxes,Consolidated Fin Per!E12,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2025,revenue.service_business,actual,23846660.97,,Service and Business Income,Consolidated Fin Per!E13,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2024,revenue.service_business,actual,23539535.38,,Service and Business Income,Consolidated Fin Per!E13,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2025,sector.economic_services,actual,450.00,,Economic Services,Comp of Budget-Actual!A51,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2025,sector.economic_services,budget_final,32891249.84,,Economic Services,Comp of Budget-Actual!A51,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2025,sector.development_fund,actual,135523.78,,20% Development Fund,Comp of Budget-Actual!A60,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201527000,Solana,2025,fs_workbook,2025,sector.development_fund,budget_final,73939314.80,,20% Development Fund,Comp of Budget-Actual!A60,f6e4eeaa51b4b0b57ba3aca63ee59cfe65d494b801c075fade18257ae2f8b7e6,3,[]
+0201528000,Tuao,2025,annex_workbook,2025,local.real_property_tax,actual,1319001.74,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!F15,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3,[]
+0201528000,Tuao,2025,annex_workbook,2024,local.real_property_tax,actual,1418400.53,,Real Property Tax- Basic,B-1(Detailed SFPer- GF)!F15,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3,[]
+0201528000,Tuao,2025,annex_workbook,2025,local.business_tax,actual,16054757.84,,Business Tax,B-1(Detailed SFPer- GF)!F20,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3,[]
+0201528000,Tuao,2025,annex_workbook,2024,local.business_tax,actual,13591188.42,,Business Tax,B-1(Detailed SFPer- GF)!F20,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3,[]
+0201528000,Tuao,2025,annex_workbook,2025,local.permit_fees,actual,1007718.00,,Permit Fees,B-1(Detailed SFPer- GF)!F45,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3,[]
+0201528000,Tuao,2025,annex_workbook,2024,local.permit_fees,actual,717655.00,,Permit Fees,B-1(Detailed SFPer- GF)!F45,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3,[]
+0201528000,Tuao,2025,annex_workbook,2025,local.market_operations,actual,9385887.20,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!F54,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3,[]
+0201528000,Tuao,2025,annex_workbook,2024,local.market_operations,actual,8251549.32,,Receipt from Market Operations,B-1(Detailed SFPer- GF)!F54,a9be31f2c17b10b8b2a60df7b80a787d3a6c3a2209d700752a9d44343aae6408,3,[]
+0201528000,Tuao,2025,fs_workbook,2025,revenue.tax,actual,19812154.76,,Tax Revenue,Statement of Fin. Performance!E9,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2024,revenue.tax,actual,17697480.50,,Tax Revenue,Statement of Fin. Performance!E9,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2025,revenue.national_share,actual,297108753.00,,Share from Internal Revenue Collections,Statement of Fin. Performance!E10,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2024,revenue.national_share,actual,250288586.00,,Share from Internal Revenue Collections,Statement of Fin. Performance!E10,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2025,revenue.service_business,actual,15036535.85,,Service and Business Income,Statement of Fin. Performance!E12,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2024,revenue.service_business,actual,14734379.89,,Service and Business Income,Statement of Fin. Performance!E12,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2025,sector.economic_services,actual,33211063.59,,Economic Services,SCBAA!A68,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2025,sector.economic_services,budget_final,36021865.00,,Economic Services,SCBAA!A68,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2025,sector.development_fund,actual,37424200.42,,20% Development Fund,SCBAA!A79,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201528000,Tuao,2025,fs_workbook,2025,sector.development_fund,budget_final,59469266.00,,20% Development Fund,SCBAA!A79,2a658752e350175102d930835e90786b9baa8f60825d321a5932b9731010037d,3,[]
+0201529000,Tuguegarao City,2025,annex_workbook,2025,local.real_property_tax,actual,51278565.33,,Real Property Tax- Basic,ANNEX-B!G18; ANNEX-B!G19,722c8ecb93be68dd0484163675e2ee1a2386c078897873adf0ee44ab3969b692,1.1.0,"[{""location"": ""ANNEX-B!G18"", ""value"": ""60927153.30""}, {""location"": ""ANNEX-B!G19"", ""value"": ""-9648587.97""}]"
+0201529000,Tuguegarao City,2025,annex_workbook,2025,local.business_tax,actual,246562814.78,,Business Tax,ANNEX-B!G26,722c8ecb93be68dd0484163675e2ee1a2386c078897873adf0ee44ab3969b692,1.1.0,"[{""location"": ""ANNEX-B!G26"", ""value"": ""246562814.78""}]"
+0201529000,Tuguegarao City,2025,annex_workbook,2025,local.permit_fees,actual,43210301.65,,Permit Fees,ANNEX-B!G53,722c8ecb93be68dd0484163675e2ee1a2386c078897873adf0ee44ab3969b692,1.1.0,"[{""location"": ""ANNEX-B!G53"", ""value"": ""43210301.65""}]"
+0201529000,Tuguegarao City,2025,annex_workbook,2025,local.market_operations,actual,7023535.00,,Receipt from Market Operations,ANNEX-B!G63,722c8ecb93be68dd0484163675e2ee1a2386c078897873adf0ee44ab3969b692,1.1.0,"[{""location"": ""ANNEX-B!G63"", ""value"": ""7023535.00""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,revenue.tax,actual,430895820.24,,Tax Revenue,8 - Financial Performance 2025!D9,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!D9"", ""value"": ""430895820.24""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2024,revenue.tax,actual,395914007.42,,Tax Revenue,8 - Financial Performance 2025!F9,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!F9"", ""value"": ""395914007.42""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,revenue.national_share,actual,1075220109.22,,Share from National Collections,8 - Financial Performance 2025!D10,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!D10"", ""value"": ""1075220109.22""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2024,revenue.national_share,actual,898158650.00,,Share from National Collections,8 - Financial Performance 2025!F10,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!F10"", ""value"": ""898158650.00""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,revenue.service_business,actual,170862441.29,,Service and Business Income,8 - Financial Performance 2025!D11,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!D11"", ""value"": ""170862441.29""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2024,revenue.service_business,actual,169615661.43,,Service and Business Income,8 - Financial Performance 2025!F11,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!F11"", ""value"": ""169615661.43""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,sector.economic_services,actual,99846291.10,,Economic Services,11 - SCBAA!K61; 11 - SCBAA!K62; 11 - SCBAA!K63; 11 - SCBAA!K64,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""11 - SCBAA!K61"", ""value"": ""69065950.52""}, {""location"": ""11 - SCBAA!K62"", ""value"": ""30780340.58""}, {""location"": ""11 - SCBAA!K63"", ""value"": ""0.00""}, {""location"": ""11 - SCBAA!K64"", ""value"": ""0.00""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,sector.economic_services,budget_final,161160894.00,,Economic Services,11 - SCBAA!G61; 11 - SCBAA!G62; 11 - SCBAA!G63; 11 - SCBAA!G64,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""11 - SCBAA!G61"", ""value"": ""74889822.00""}, {""location"": ""11 - SCBAA!G62"", ""value"": ""36820509.00""}, {""location"": ""11 - SCBAA!G63"", ""value"": ""49450563.00""}, {""location"": ""11 - SCBAA!G64"", ""value"": ""0.00""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,sector.development_fund,actual,54562727.33,,20% Development Fund,11 - SCBAA!K69; 11 - SCBAA!K70,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""11 - SCBAA!K69"", ""value"": ""0.00""}, {""location"": ""11 - SCBAA!K70"", ""value"": ""54562727.33""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,sector.development_fund,budget_final,224537355.00,,20% Development Fund,11 - SCBAA!G69; 11 - SCBAA!G70,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""11 - SCBAA!G69"", ""value"": ""0.00""}, {""location"": ""11 - SCBAA!G70"", ""value"": ""224537355.00""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,revenue.grants,actual,1188656.11,,"Shares, Grants and Donations",8 - Financial Performance 2025!D12,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!D12"", ""value"": ""1188656.11""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2024,revenue.grants,actual,1884059.60,,"Shares, Grants and Donations",8 - Financial Performance 2025!F12,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!F12"", ""value"": ""1884059.60""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,revenue.other,actual,852446.74,,Other Income,8 - Financial Performance 2025!D13,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!D13"", ""value"": ""852446.74""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2024,revenue.other,actual,149767.77,,Other Income,8 - Financial Performance 2025!F13,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!F13"", ""value"": ""149767.77""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2025,fs.total_revenue,actual,1679019473.60,,Total Revenue,8 - Financial Performance 2025!D14,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!D14"", ""value"": ""1679019473.60""}]"
+0201529000,Tuguegarao City,2025,fs_workbook,2024,fs.total_revenue,actual,1465722146.22,,Total Revenue,8 - Financial Performance 2025!F14,ced149a8620983e2081edd9c0da20aaa7a8a0b2d2abde247a8ffee9a53747f69,1.1.0,"[{""location"": ""8 - Financial Performance 2025!F14"", ""value"": ""1465722146.22""}]"

@@ -95,7 +95,7 @@ The 26-10-29 run had no `engine_disagreement`, fallback or failure in any of the
 
 ## Current Run, 26-10-28
 
-Scope was trimmed to a business focus on 26-10-28 (M21 to M23). The run reads 158 Executive Summaries for 2020 to 2025 and the 17 workbook pairs in `../financial-statements/`.
+Scope was trimmed to a business focus on 26-10-28 (M21 to M23). On 26-11-03 the parser (version 1.1.0) began citing every contributing cell with its amount in `input_values`, and the reported Shares, Grants and Donations, Other Income and Total Revenue rows replaced the calculated Other Revenue for Tuguegarao City 2024 and 2025. Those rows load as Pending and need an independent sign-off. The run reads 158 Executive Summaries for 2020 to 2025 and the 17 workbook pairs in `../financial-statements/`.
 
 Reports and workbooks containing each stored line, current year only:
 

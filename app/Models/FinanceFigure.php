@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $source_url
  * @property string|null $source_label
  * @property string|null $location
+ * @property list<array<string, mixed>>|null $inputs
  * @property FinanceEntryMethod $entry_method
  * @property string|null $extractor_version
  * @property FinanceFigureStatus $status
@@ -37,7 +38,7 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'public_id', 'municipality_id', 'fiscal_year', 'line_code', 'basis', 'value', 'definition_variant',
-    'finance_document_id', 'source_url', 'source_label', 'location', 'entry_method', 'extractor_version',
+    'finance_document_id', 'source_url', 'source_label', 'location', 'inputs', 'entry_method', 'extractor_version',
     'status', 'entered_by', 'reviewed_by', 'reviewed_on', 'note',
 ])]
 class FinanceFigure extends Model
@@ -93,6 +94,7 @@ class FinanceFigure extends Model
             'entry_method' => FinanceEntryMethod::class,
             'status' => FinanceFigureStatus::class,
             'reviewed_on' => 'date',
+            'inputs' => 'array',
         ];
     }
 }

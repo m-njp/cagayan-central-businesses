@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, CircleHelp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Sheet,
@@ -47,7 +47,15 @@ export function AnalyticsHelp({
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button variant="outline">Help</Button>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="size-9"
+                    aria-label="Help"
+                    title="Help"
+                >
+                    <CircleHelp aria-hidden="true" />
+                </Button>
             </SheetTrigger>
             <SheetContent className="w-full overflow-y-auto sm:max-w-md">
                 <SheetHeader>

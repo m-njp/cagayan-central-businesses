@@ -143,7 +143,7 @@ Unique `(municipality_id, fiscal_year, kind)`.
 
 One figure, parsed from a report or entered by hand.
 
-Manual-entry validation is centralized in `config/cagayan.php` under `finances` and enforced server-side. The browser receives the same year, amount, source-length, note-length and review-batch limits. New form entries require a displayed catalog line, a supported fiscal year no later than the selected report, a non-negative amount with at most two decimal places within `value_max`, a matching basis from the line's catalog group, and a plain-text note up to `note_max`. Only Development Spending permits Final Budget. These 13 stored lines do not include the derived surplus/deficit, so negative entries are rejected without changing M19.
+Manual-entry validation is centralized in `config/cagayan.php` under `finances` and enforced server-side. The browser receives the same year, amount, source-length, note-length and review-batch limits. New form entries require a displayed catalog line, a supported fiscal year no later than the selected report, a non-negative amount with at most two decimal places within `value_max`, a matching basis from the line's catalog group, and a plain-text note up to `note_max`. Only Budget and Actual Amounts permits Final Budget. These 13 stored lines do not include the derived surplus/deficit, so negative entries are rejected without changing M19.
 
 Sources must be an existing report for the selected town/report year or an HTTPS URL whose actual host is `coa.gov.ph` or a subdomain. Credentials, alternate ports and lookalike domains are rejected. `OfficialCoaUrl` is shared by the form and CSV import. Manual CSV replay enforces the same amount, year, basis, source and text-length limits; historical empty notes can still round-trip. Structural database checks continue to enforce references, source presence and the unique verified observation. This UI correction changes no schema and does not certify a source's contents automatically.
 
@@ -159,7 +159,9 @@ Sources must be an existing report for the selected town/report year or an HTTPS
 | `definition_variant` | string(60), nullable | Set when the source label states another definition. M26 does not compute change across a variant |
 | `finance_document_id` | foreign key, nullable | The report read. Required for parsed figures |
 | `source_url` | string(500), nullable | For a manual figure without a document |
-| `source_label`, `location` | string, nullable | The label as printed and the page or cell, for reviewers |
+| `source_label` | string, nullable | The label as printed, for reviewers |
+| `location` | string(255), nullable | The page, or every contributing cell such as `11 - SCBAA!K61; 11 - SCBAA!K62`. Limit in `cagayan.finances.location_max` (26-11-03) |
+| `inputs` | jsonb, nullable | Each contributing cell and its amount, `[{location, value}]`, so a summed figure can be checked against the workbook (26-11-03) |
 | `entry_method` | enum `parsed`, `manual` | `App\Enums\FinanceEntryMethod` |
 | `extractor_version` | string(10), nullable | Parser rules that produced a parsed figure |
 | `status` | enum `pending`, `verified`, `rejected`, `superseded`, default `pending` | `App\Enums\FinanceFigureStatus` |
@@ -410,7 +412,7 @@ Signed-off government finance series and their derived lines (metrics.md M19 to 
 - `municipality_id`, nullable. Null rows are the Sum of Reporting Towns (M27), for peso lines only.
 - `fiscal_year`, `metric` (a `finance_lines.code`), `value` decimal(20, 2), `definition_variant`
 - `change` decimal(20, 2), `percent_change` decimal(10, 1), `comparable` boolean (M26)
-- `census_year`, for per-resident lines (M25)
+- `census_year`, always null since per-resident lines were retired on 26-11-03 (M25); kept to avoid a destructive migration
 - `restated_in`, the report year of a figure that replaced a different earlier figure (M26)
 - `reporting_towns`, `total_towns`, `matched_towns`, for Sum of Reporting Towns rows
 

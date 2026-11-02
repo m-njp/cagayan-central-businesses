@@ -36,6 +36,7 @@ export default function Analytics({
                         catalog={catalog}
                         filters={filters}
                         onChange={change}
+                        figures
                     />
                 </div>
                 <WorkspaceFilters>
@@ -43,14 +44,7 @@ export default function Analytics({
                         idPrefix="analytics"
                         catalog={catalog}
                         filters={filters}
-                        fields={[
-                            'town',
-                            'presentation',
-                            'measure',
-                            'year',
-                            'dimension',
-                            'group',
-                        ]}
+                        fields={['town', 'dimension', 'group']}
                         onChange={change}
                     />
                 </WorkspaceFilters>

@@ -21,7 +21,6 @@ final readonly class EconomicObservation
         public ?string $reason = null,
         public ?string $band = null,
         public ?array $coverage = null,
-        public ?int $censusYear = null,
         public ?int $restatedIn = null,
         public array $sourceRefs = [],
     ) {}

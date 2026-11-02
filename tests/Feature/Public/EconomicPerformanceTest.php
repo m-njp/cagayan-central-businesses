@@ -5,7 +5,6 @@ use App\Models\FinanceDocument;
 use App\Models\FinanceFigure;
 use App\Models\FinanceLine;
 use App\Models\Municipality;
-use App\Models\TownFact;
 use App\Models\User;
 use App\Models\Wish;
 use App\Queries\AnalyticsCatalogQuery;
@@ -244,7 +243,7 @@ test('public sources trace signed-off and derived figures without exposing pendi
         // One evidence entry per figure; the link is our stored copy of the report, never COA's address.
         ->where('performance.catalog.sources.'.$revenue->public_id, [
             'kind' => 'executive_summary', 'label' => 'Executive Summary', 'town' => 'Tuguegarao City',
-            'fiscalYear' => 2024, 'reportYear' => 2025, 'page' => 2, 'location' => 'page 2',
+            'fiscalYear' => 2024, 'reportYear' => 2025, 'page' => 2, 'location' => 'page 2', 'inputs' => [],
             'url' => route('public.finance-sources.show', $revenue->public_id, absolute: false),
         ])
         ->where('performance.catalog.finances.0201500000.totals.rows.5.observations', fn ($points) => $points['performance.surplus']['sourceRefs'] === [$revenue->public_id, $expenses->public_id]))
@@ -252,18 +251,15 @@ test('public sources trace signed-off and derived figures without exposing pendi
         ->assertDontSee('coa.gov.ph/tuguegarao-2025.pdf');
 });
 
-test('development utilization evidence includes actual and final budget and per-resident evidence includes census', function () {
+test('a summed workbook figure lists its contributing cells and the retired measures are not offered', function () {
     $town = Municipality::factory()->create(['psgc_code' => '0201529000']);
-    $actual = FinanceFigure::factory()->verified()->for($town)->line('sector.development_fund', 2024, '60.00')->create();
-    $budget = FinanceFigure::factory()->verified()->for($town)->line('sector.development_fund', 2024, '100.00')->create(['basis' => 'budget_final']);
-    FinanceFigure::factory()->verified()->for($town)->line('performance.revenue', 2024, '500.00')->create();
-    TownFact::factory()->for($town)->create(['measure' => 'population', 'year' => 2024, 'value' => '100', 'checked_on' => '2026-10-23']);
-    FinanceLine::factory()->create(['code' => 'sector.development_fund.utilization', 'group' => 'development_share', 'source' => 'derived', 'unit' => 'percent']);
-    FinanceLine::factory()->create(['code' => 'per_capita.revenue', 'group' => 'per_capita', 'source' => 'derived']);
+    $inputs = [['location' => '11 - SCBAA!K61', 'value' => '60.00'], ['location' => '11 - SCBAA!K62', 'value' => '40.00']];
+    $actual = FinanceFigure::factory()->verified()->for($town)->line('sector.economic_services', 2024, '100.00')->create(['inputs' => $inputs]);
     $this->artisan('metrics:refresh')->assertSuccessful();
     $this->get(route('public.economic-performance'))->assertInertia(fn (Assert $page) => $page
-        ->where('performance.catalog.finances.0201529000.development_share.rows.5.observations', fn ($points) => $points['sector.development_fund.utilization']['sourceRefs'] === [$actual->public_id, $budget->public_id])
-        ->where('performance.catalog.finances.0201529000.per_capita.rows.5.observations', fn ($points) => count($points['per_capita.revenue']['sourceRefs']) === 2 && $points['per_capita.revenue']['censusYear'] === 2024));
+        ->where("performance.catalog.sources.{$actual->public_id}.inputs", $inputs)
+        ->missing('performance.catalog.finances.0201529000.per_capita')
+        ->missing('performance.catalog.finances.0201529000.development_share'));
 });
 
 test('the learning guide retains the shared help definitions', function () {

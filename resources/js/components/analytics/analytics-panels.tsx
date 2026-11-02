@@ -1,10 +1,13 @@
 import { SimulatedLabel } from '@/components/privacy/simulated-label';
 import type { ReactNode } from 'react';
-import { AnalyticsHelp } from '@/components/analytics/analytics-help';
+import { FinanceToolbar } from '@/components/analytics/finance-toolbar';
 import { ExecutiveSummary } from '@/components/charts/executive-summary';
-import FinancePanel from '@/components/charts/finance-panel';
+import FinancePanel, { Figure } from '@/components/charts/finance-panel';
 import { FinanceTrends } from '@/components/charts/finance-trends';
+import { ObservationChange } from '@/components/charts/observation-change';
+import { RESULT_METRIC } from '@/components/charts/trend-mark';
 import {
+    latestYear,
     selectedBusiness,
     selectedFinance,
     selectedYear,
@@ -23,6 +26,57 @@ function Unavailable() {
     );
 }
 
+const STRIP = [
+    ['totals', 'performance.revenue'],
+    ['totals', 'performance.expenses'],
+    ['totals', RESULT_METRIC],
+    ['position', 'position.assets'],
+] as const;
+
+/** Capitol only: the newest reported year's headline figures with the change from the year before. */
+function FigureStrip({
+    catalog,
+    town,
+}: {
+    catalog: AnalyticsCatalog;
+    town: string;
+}) {
+    const histories = catalog.finances[town];
+    const year = histories?.totals ? latestYear(histories.totals) : null;
+    if (!histories || year === null) return null;
+    const figures = STRIP.flatMap(([group, id]) => {
+        const history = histories[group];
+        const metric = history?.metrics.find((item) => item.id === id);
+        const point = history?.rows.find((row) => row.year === year)
+            ?.observations[id];
+        return metric ? [{ metric, point }] : [];
+    });
+    return (
+        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-sm border bg-border sm:grid-cols-4">
+            {figures.map(({ metric, point }) => (
+                <div
+                    key={metric.id}
+                    className="flex min-w-0 flex-col gap-0.5 bg-card px-3 py-2"
+                >
+                    <dt className="type-meta">
+                        {metric.label}{' '}
+                        <span className="font-mono tabular-nums">{year}</span>
+                    </dt>
+                    <dd className="flex flex-wrap items-baseline gap-x-2 font-mono type-item tabular-nums">
+                        <Figure point={point} metric={metric} alwaysShort />
+                        {metric.id !== RESULT_METRIC && (
+                            <ObservationChange
+                                point={point}
+                                unit={metric.unit}
+                            />
+                        )}
+                    </dd>
+                </div>
+            ))}
+        </dl>
+    );
+}
+
 /**
  * Government finances for the selected town, plus business trends while simulated records are loaded. Shared by the
  * public Economy page and the Capitol Analytics page.
@@ -31,14 +85,14 @@ export function AnalyticsPanels({
     catalog,
     filters,
     onChange,
-    financeControls,
     businessControls,
+    figures = false,
 }: {
     catalog: AnalyticsCatalog;
     filters: AnalyticsFilters;
     onChange: (patch: Partial<AnalyticsFilters>) => void;
-    financeControls?: ReactNode;
     businessControls?: ReactNode;
+    figures?: boolean;
 }) {
     const finance = selectedFinance(catalog, filters);
     const business = selectedBusiness(catalog, filters);
@@ -64,12 +118,15 @@ export function AnalyticsPanels({
                                 <span className="type-label">General Fund</span>
                             )}
                     </div>
-                    <AnalyticsHelp
-                        guide={catalog.guide}
-                        showBusiness={catalog.businesses !== null}
+                    <FinanceToolbar
+                        catalog={catalog}
+                        filters={filters}
+                        onChange={onChange}
                     />
                 </div>
-                {financeControls}
+                {figures && (
+                    <FigureStrip catalog={catalog} town={filters.town} />
+                )}
                 {filters.presentation === 'statement' ? (
                     <ExecutiveSummary
                         catalog={catalog}

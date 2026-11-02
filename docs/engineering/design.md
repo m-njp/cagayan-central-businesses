@@ -549,6 +549,20 @@ User-approved simplification for public Economy and Capitol Analytics. It supers
 - **Missing.** A row a town lacks reads Not available in every cell with the reason once under its label, such as "Loaded for Tuguegarao City only" (M35). Never `0`.
 - **Sources.** One Source line, one link per distinct report page, sorted by report year then page.
 
+## Finance Report Polish "26-11-03"
+
+Owner-approved polish of the Executive Summary View after the rejected rebuild was reverted (plan `docs/plan/active/26-11-03-finance-report-redesign.md`). It supersedes, in "Executive Summary View", the View picker, the Period caption beside the year range, Max, the `type-label` section rows, and every triangle.
+
+**The question.** How did this town's government do year after year, in COA's own words?
+
+- **Header.** One row beside Government Finances: Show (only in Charts or one year), 3Y 5Y All chips, a Year select that opens the Yearly Summary, an icon Table or Charts toggle (Charts is the former Trends) and an icon Help button. No year-range caption; years appear only in column headings and axes. Every control is local history.
+- **Table.** Visible column lines, alternating solid row shades (`bg-card`, `bg-muted`; the sticky Item cell repeats its row's shade), Title Case section rows in `type-item`, and a trailing Change column comparing the newest year with the year before. Net Income has no Change mark.
+- **Change marks.** Green up arrow ↑ and red down arrow ↓ from `lib/trend.ts`, direction only, never a rating.
+- **Charts.** Results of Operation shows Income and Expenses as paired bars with Net Income as a line over the zero line; Financial Condition keeps its stacked bars. Both share one compact tooltip card (year, then swatch, label and exact amount per series) and hover the same year together.
+- **Source.** One wrapping line of links, never a vertical stack.
+- **Capitol only.** A compact figure strip above the table: Income, Expenses, Net Income and Assets for the newest reported year, short amounts through `ExactAmount`, with the change. Public Economy has no strip; it leads with the yearly history.
+- **Words.** Revenue lines use the Statement of Financial Performance's own labels; the SCBAA group is Budget and Actual Amounts (metrics.md M21, M23).
+
 ## Public Navigation and Data Labels "26-10-30"
 
 User correction supersedes the Kita Brand top-line icons and underline. Desktop navigation uses text-only links with a filled selected background, visible keyboard focus and no underline. The public navbar has no Simulated data tag. Sample Data labels sit at the upper right of the Home and Economy wish cards, using a red token-based bordered badge. Public simulated business labels use the shared config-driven SimulatedLabel inside the directory, profile and Business Trends content; Capitol retains its layout label. No extra explanatory copy or navigation icons.

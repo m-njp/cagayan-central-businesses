@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import { SourceLine } from '@/components/analytics/source-line';
 import { Figure } from '@/components/charts/finance-panel';
-import { PeriodToggle } from '@/components/charts/finance-trends';
+import { ObservationChange } from '@/components/charts/observation-change';
 import PerformanceVisual from '@/components/charts/performance-visual';
 import { RESULT_METRIC } from '@/components/charts/trend-mark';
 import {
@@ -28,9 +28,12 @@ const FinancialConditionChart = lazy(
 );
 
 const numberCell =
-    'px-1.5 text-right font-mono whitespace-nowrap tabular-nums sm:px-2';
+    'border-l px-1.5 text-right font-mono whitespace-nowrap tabular-nums sm:px-2';
 const labelCell =
-    'sticky left-0 z-10 h-auto min-w-36 bg-card py-1.5 font-normal whitespace-normal';
+    'sticky left-0 z-10 h-auto min-w-36 py-1.5 font-normal whitespace-normal';
+// Alternating solid shades; the sticky Item cell repeats its row's shade so scrolled years pass behind it.
+const ROW_SHADES = ['bg-card hover:bg-card', 'bg-muted hover:bg-muted'];
+const CELL_SHADES = ['bg-card', 'bg-muted'];
 
 /** The note every cell of a row shares, such as a line loaded for one town only; none when the cells differ. */
 function rowNote(history: FinancialHistory, metricId: string): string | null {
@@ -78,6 +81,9 @@ export function ExecutiveSummary({
             </p>
         );
 
+    // Change compares the newest year with the year before; Net Income itself carries no arrow.
+    const hasChange = years.length > 1;
+    const columns = years.length + (hasChange ? 2 : 1);
     const results = sections.find((section) => section.id === 'totals');
     const position = sections.find((section) => section.id === 'position');
     // Reports in year order, then page order, however the sections cite them.
@@ -96,15 +102,12 @@ export function ExecutiveSummary({
 
     return (
         <div className="flex min-w-0 flex-col gap-3">
-            <PeriodToggle
-                history={sections[0].history}
-                filters={filters}
-                onChange={onChange}
-            />
-            <Table className="type-data sm:type-body">
+            <Table className="border type-data sm:type-body">
                 <TableHeader>
-                    <TableRow>
-                        <TableHead className={labelCell}>Item</TableHead>
+                    <TableRow className="hover:bg-transparent">
+                        <TableHead className={`${labelCell} bg-card`}>
+                            Item
+                        </TableHead>
                         {years.map((year) => (
                             <TableHead
                                 key={year}
@@ -129,6 +132,11 @@ export function ExecutiveSummary({
                                 </button>
                             </TableHead>
                         ))}
+                        {hasChange && (
+                            <TableHead className={numberCell} scope="col">
+                                Change
+                            </TableHead>
+                        )}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -136,19 +144,23 @@ export function ExecutiveSummary({
                         <TableRow key={id} className="hover:bg-transparent">
                             <TableHead
                                 scope="colgroup"
-                                colSpan={years.length + 1}
-                                className="sticky left-0 h-auto bg-card pt-3 pb-1 type-label"
+                                colSpan={columns}
+                                className="sticky left-0 h-auto bg-card pt-3 pb-1 type-item"
                             >
                                 {title}
                             </TableHead>
                         </TableRow>,
-                        ...history.metrics.map((metric) => {
+                        ...history.metrics.map((metric, index) => {
                             const note = rowNote(history, metric.id);
+                            const latest = history.rows.at(-1);
                             return (
-                                <TableRow key={metric.id}>
+                                <TableRow
+                                    key={metric.id}
+                                    className={ROW_SHADES[index % 2]}
+                                >
                                     <TableHead
                                         scope="row"
-                                        className={labelCell}
+                                        className={`${labelCell} ${CELL_SHADES[index % 2]}`}
                                     >
                                         {metric.label}
                                         {note && (
@@ -171,6 +183,20 @@ export function ExecutiveSummary({
                                             />
                                         </TableCell>
                                     ))}
+                                    {hasChange && (
+                                        <TableCell className={numberCell}>
+                                            {metric.id !== RESULT_METRIC && (
+                                                <ObservationChange
+                                                    point={
+                                                        latest?.observations[
+                                                            metric.id
+                                                        ]
+                                                    }
+                                                    unit={metric.unit}
+                                                />
+                                            )}
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             );
                         }),
@@ -187,13 +213,9 @@ export function ExecutiveSummary({
                             <h3 className="type-item">{results.title}</h3>
                             <PerformanceVisual>
                                 <FinanceHistoryChart
-                                    history={{
-                                        ...results.history,
-                                        metrics: results.history.metrics.filter(
-                                            (metric) =>
-                                                metric.id !== RESULT_METRIC,
-                                        ),
-                                    }}
+                                    history={results.history}
+                                    bars
+                                    syncId="finance-summary"
                                 />
                             </PerformanceVisual>
                         </section>
@@ -204,6 +226,7 @@ export function ExecutiveSummary({
                         <PerformanceVisual>
                             <FinancialConditionChart
                                 history={position.history}
+                                syncId="finance-summary"
                             />
                         </PerformanceVisual>
                     </section>

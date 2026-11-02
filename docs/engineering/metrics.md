@@ -258,27 +258,26 @@ Approved 26-10-29 by the user for the Executive Summary view. Each is the amount
 - **Not stored:** Continuing Appropriations. Tuguegarao prints only dashes (2020) or omits the line.
 - **Meaning:** Appropriations are the budget passed by ordinance; Allotments release it to offices; Obligations are commitments charged against allotments, not cash paid. Current lines belong to the year's budget; Continuing lines to unused earlier budget that remains available.
 
-### M20. Budget Utilization
+### M20. Budget Utilization (Retired)
 
-- Current Obligations ÷ Current Appropriations × 100, for the same town and year. Both come from the Executive Summary.
-- Not available when either figure is missing, or when appropriations are zero.
-- A low or high rate is not a judgment of performance.
+Retired 26-11-03 by the owner. It divided Current Obligations by Current Appropriations, while the obligation rate in the [DBM guide](https://www.dbm.gov.ph/images/pdffiles/2016-BUDGET-NG-BAYANTagalog.pdf) divides obligations by allotments. The figures themselves stay in Budget Execution; no rate is computed or shown.
 
-### M21. Revenue by Source and Locally Generated Share
+### M21. Revenue Sources
 
-Revised 26-10-28 by user approval to a business focus. Source lines come from the FS Statement of Financial Performance:
+Revised 26-11-03 by the owner. Every line is a reported amount from the FS Statement of Financial Performance, labeled with the statement's own words:
 
 | Revenue source | Code |
 | :- | :- |
-| Local Taxes | `revenue.tax` |
-| National Tax Allotment Share | `revenue.national_share` |
-| Fees and Business Income | `revenue.service_business` |
+| Tax Revenue | `revenue.tax` |
+| Share from National Collections | `revenue.national_share` |
+| Other Shares from National Taxes | `revenue.other_national_share` |
+| Service and Business Income | `revenue.service_business` |
+| Shares, Grants and Donations | `revenue.grants` |
+| Other Income | `revenue.other` |
 
-- **Other Revenue** is Income minus the three sources, computed in SQL. It covers grants, other national tax shares and miscellaneous income, which are not stored separately.
-- **Share of a source** is the source ÷ Income × 100.
-- **Locally Generated Share** is (Local Taxes + Fees and Business Income) ÷ Income × 100.
-- The parser checks that every revenue line in the statement adds up to its Total Revenue, within ₱1.00, before the year's breakdown can be signed off.
-- When a statement has no national share line, Local Taxes carries `definition_variant` `may_include_national_share`, and Locally Generated Share is not available for that year.
+- The statement's Total Revenue is stored as `fs.total_revenue` (a check line, not displayed). The parser checks that the lines add up to it within ₱1.00. For Tuguegarao City 2025 they sum to ₱1,679,019,473.60, equal to Income.
+- Each figure cites the worksheet cell for its year (prior-year values sit in a different column from current-year values).
+- **Retired 26-11-03:** the calculated Other Revenue remainder (Income minus three sources) is replaced by the reported lines. Locally Generated Share was retired because consolidated income does not establish BLGF's Total Regular Income denominator ([BLGF definitions](https://blgf.gov.ph/wp-content/uploads/2020/01/MC-004-2019-DO-No-075-2018-Establishing-the-LGU-Fiscal-Sustainability-Scorecard-FSS-in-the-BLGF.pdf)).
 
 ### M22. Business Taxes and Fees
 
@@ -293,31 +292,28 @@ From the Part 4 Annex detailed statement, General Fund only:
 
 These figures are always labeled General Fund. They are never added to, or compared with, the consolidated totals in M19 and M21. Community Tax was removed on 26-10-28.
 
-### M23. Development Spending
+### M23. Budget and Actual Amounts
 
-From the SCBAA (budget and actual) sheet, Current Appropriations:
+Renamed 26-11-03 from Development Spending to the statement's own title. From the SCBAA (Statement of Comparison of Budget and Actual Amounts) sheet, Current Appropriations:
 
 | Line | Code |
 | :- | :- |
-| Development Fund | `sector.development_fund` (the 20% Development Fund) |
+| 20% Development Fund | `sector.development_fund` |
 | Economic Services | `sector.economic_services` (agriculture, trade, tourism and other economic offices) |
 
 - **Value:** the sum of every actual amount (personnel, operations, capital outlay, other) listed under the heading.
 - **Budget:** the sum of the final budget column is stored with basis `budget_final`.
-- **Utilization** is the actual ÷ the final budget × 100. Not available when the final budget is zero.
+- **Inputs:** every summed cell and its amount is stored with the figure (`finance_figures.inputs`), for example 2025 Economic Services actual K61:K64 and final budget G61:G64, so the sum can be checked against the workbook.
+- **Utilization (retired 26-11-03):** actual ÷ final budget gave 24.30% for the 2025 Development Fund while the Executive Summary reports 43.35% from different amounts. No rate is computed; both amounts stay.
 - **Unknown headings:** the parser recognizes the other sector headings only to know where each section ends. Spending under headings outside the catalog is reported as an issue, never added to these two lines.
 
 ### M24. Spending by Sector (Withdrawn)
 
 Withdrawn 26-10-28 by the user. Health, education, social welfare and other sector spending, per-sector capital outlay, and expense types are not stored or displayed. The SCBAA headings proved too inconsistent across towns for a reliable cross-town comparison, and they fall outside the business focus.
 
-### M25. Per Capita
+### M25. Per Capita (Retired)
 
-- A figure divided by the town's population in the latest census at or before the fiscal year:
-  - the 2020 census for fiscal 2019 to 2023
-  - the 2024 census for fiscal 2024 and 2025
-- The census year is always stated.
-- Not available when that census figure is not verified.
+Retired 26-11-03 by the owner. Income and Expenses per Resident are no longer computed or shown.
 
 ### M26. Year-over-Year Change
 

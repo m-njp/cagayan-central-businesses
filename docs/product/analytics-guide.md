@@ -1,6 +1,6 @@
 # Understanding Analytics
 
-Reviewed 26-10-29. Shared explanations come from `resources/content/analytics-guide.json`; update that content and this guide together. Metric definitions remain authoritative in `docs/engineering/metrics.md`. The Help sheet on Economy and Analytics shows this content: Measures, then the notes below.
+Reviewed 26-11-03. Per Resident, Locally Generated Share, Budget Utilization and Development Utilization were retired on 26-11-03 because their formulas could not be tied to an official definition. Shared explanations come from `resources/content/analytics-guide.json`; update that content and this guide together. Metric definitions remain authoritative in `docs/engineering/metrics.md`. The Help sheet on Economy and Analytics shows this content: Measures, then the notes below.
 
 Figures come from COA Annual Audit Reports and appear only after sign-off.
 
@@ -84,31 +84,43 @@ Calculation: Reported amount.
 
 ## Revenue Sources
 
-Where revenue came from. National transfers can move revenue without a change in local business activity.
+Revenue by source as printed in the Statement of Financial Performance. National transfers can move revenue without a change in local business activity.
 
-### Local Taxes
+### Tax Revenue
 
-Tax revenue as reported.
-
-Calculation: Reported amount.
-
-### National Tax Allotment Share
-
-The government share of national tax collections.
+Taxes collected by the local government, as reported.
 
 Calculation: Reported amount.
 
-### Fees and Business Income
+### Share from National Collections
+
+The local government share of national tax collections, as reported.
+
+Calculation: Reported amount.
+
+### Other Shares from National Taxes
+
+Other shares from national taxes, such as national wealth, as reported.
+
+Calculation: Reported amount.
+
+### Service and Business Income
 
 Income from services, fees and government business. Not private-business sales.
 
 Calculation: Reported amount.
 
-### Other Revenue
+### Shares, Grants and Donations
 
-Grants, other national shares and miscellaneous income.
+Shares, grants and donations received, as reported.
 
-Calculation: Revenue minus Local Taxes, National Tax Allotment Share and Fees and Business Income.
+Calculation: Reported amount.
+
+### Other Income
+
+Gains and miscellaneous income, as reported.
+
+Calculation: Reported amount.
 
 ## Business Taxes and Fees
 
@@ -138,11 +150,11 @@ Basic real property tax, net of the reported discount.
 
 Calculation: Basic Real Property Tax minus its discount.
 
-## Development Spending
+## Budget and Actual Amounts
 
 Actual amounts under the Development Fund and Economic Services headings.
 
-### Development Fund
+### 20% Development Fund
 
 Actual amounts under the 20% Development Fund heading.
 
@@ -153,58 +165,6 @@ Calculation: Sum of reported actual amounts under the heading.
 Actual amounts for offices such as agriculture, trade and tourism.
 
 Calculation: Sum of reported actual amounts under the heading.
-
-## Budget Utilization
-
-The share of current appropriations recorded as obligations.
-
-### Budget Utilization
-
-Obligations as a percentage of appropriations.
-
-Calculation: Obligations / Appropriations x 100.
-
-## Locally Generated Share
-
-The share of revenue from local taxes plus fees and business income.
-
-### Locally Generated Share
-
-Local taxes plus fees and business income, as a percentage of revenue.
-
-Calculation: (Local Taxes + Fees and Business Income) / Revenue x 100.
-
-## Development Utilization
-
-Actual development amounts against the final budget for the same heading.
-
-### Development Fund Utilization
-
-Development Fund actual as a percentage of its final budget.
-
-Calculation: Actual / final budget x 100.
-
-### Economic Services Utilization
-
-Economic Services actual as a percentage of its final budget.
-
-Calculation: Actual / final budget x 100.
-
-## Per Resident
-
-Government amounts divided by the latest census population at or before the fiscal year.
-
-### Income per Resident
-
-Government income divided by census population.
-
-Calculation: Income / census population.
-
-### Expenses per Resident
-
-Government expenses divided by census population.
-
-Calculation: Expenses / census population.
 
 ## Business Trends
 

@@ -199,11 +199,10 @@ await test('formatting retains combined notes, puts falls in parentheses and nev
     assert.equal(
         observationNote({
             ...change,
-            censusYear: 2024,
             restatedIn: 2025,
             coverage: { reporting: 13, total: 29, matched: 12 },
         }),
-        '13 of 29 towns. Change over 12 reporting both years. Using the 2024 census. Restated in the 2025 report',
+        '13 of 29 towns. Change over 12 reporting both years. Restated in the 2025 report',
     );
     assert.equal(
         observationNote(

@@ -32,7 +32,6 @@ export type EconomicObservation = {
         | null;
     band?: string | null;
     coverage?: { reporting: number; total: number; matched: number } | null;
-    censusYear?: number | null;
     restatedIn?: number | null;
     sourceRefs?: string[];
 };
@@ -112,17 +111,13 @@ export type AnalyticsGuide = {
 
 /** The one evidence entry behind a published figure; observations point to it by key. */
 export type FinanceSource = {
-    kind:
-        | 'executive_summary'
-        | 'fs_workbook'
-        | 'annex_workbook'
-        | 'census'
-        | null;
+    kind: 'executive_summary' | 'fs_workbook' | 'annex_workbook' | null;
     label: string;
     town: string;
     fiscalYear: number;
     reportYear: number | null;
     page: number | null;
     location: string | null;
+    inputs: { location: string; value: string }[];
     url: string | null;
 };

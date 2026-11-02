@@ -15,55 +15,53 @@ const FinanceHistoryChart = lazy(
     () => import('@/components/charts/finance-history-chart'),
 );
 
-/** The displayed year range beside 3Y, 5Y and Max, shared by Trends and the Executive Summary. */
+/** 3Y, 5Y and All in the report header; the years themselves show only in column headings and axes. */
 export function PeriodToggle({
-    history,
     filters,
     onChange,
 }: {
-    history: FinancialHistory;
     filters: AnalyticsFilters;
     onChange: (patch: Partial<AnalyticsFilters>) => void;
 }) {
+    const item = 'h-9 min-w-8 px-1.5 font-mono type-data';
     return (
-        <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="type-label">
-                {history.rows[0]?.year}
-                {history.rows.length > 1 && ` to ${history.rows.at(-1)?.year}`}
-            </span>
-            <ToggleGroup
-                type="single"
-                variant="outline"
-                value={filters.period}
-                aria-label="Finance Period"
-                onValueChange={(period) => {
-                    if (period)
-                        onChange({
-                            period: period as AnalyticsFilters['period'],
-                        });
-                }}
-            >
-                {filters.period === '2y' && (
-                    <ToggleGroupItem value="2y" className="min-h-8 px-3">
-                        2Y
-                    </ToggleGroupItem>
-                )}
-                {filters.period === 'recent' && (
-                    <ToggleGroupItem value="recent" className="min-h-8 px-3">
-                        Recent
-                    </ToggleGroupItem>
-                )}
-                <ToggleGroupItem value="3y" className="min-h-8 px-3">
-                    3Y
+        <ToggleGroup
+            type="single"
+            variant="outline"
+            size="sm"
+            value={filters.presentation === 'summary' ? '' : filters.period}
+            aria-label="Period"
+            onValueChange={(period) => {
+                if (period)
+                    onChange({
+                        period: period as AnalyticsFilters['period'],
+                        presentation:
+                            filters.presentation === 'summary'
+                                ? 'statement'
+                                : filters.presentation,
+                    });
+            }}
+        >
+            {filters.period === '2y' && (
+                <ToggleGroupItem value="2y" className={item}>
+                    2Y
                 </ToggleGroupItem>
-                <ToggleGroupItem value="5y" className="min-h-8 px-3">
-                    5Y
+            )}
+            {filters.period === 'recent' && (
+                <ToggleGroupItem value="recent" className={item}>
+                    Recent
                 </ToggleGroupItem>
-                <ToggleGroupItem value="all" className="min-h-8 px-3">
-                    Max
-                </ToggleGroupItem>
-            </ToggleGroup>
-        </div>
+            )}
+            <ToggleGroupItem value="3y" className={item}>
+                3Y
+            </ToggleGroupItem>
+            <ToggleGroupItem value="5y" className={item}>
+                5Y
+            </ToggleGroupItem>
+            <ToggleGroupItem value="all" className={item}>
+                All
+            </ToggleGroupItem>
+        </ToggleGroup>
     );
 }
 
@@ -100,11 +98,6 @@ export function FinanceTrends({
     );
     return (
         <div className="flex min-w-0 flex-col gap-3">
-            <PeriodToggle
-                history={history}
-                filters={filters}
-                onChange={onChange}
-            />
             <div className="grid gap-3 sm:grid-cols-2">
                 {(totals ? plotted.metrics : history.metrics).map(
                     (metric, index) => {

@@ -37,6 +37,7 @@ class Found:
     variant: str | None
     sourceLabel: str
     location: str
+    inputs: tuple[dict[str, str], ...] = ()
 
 
 @dataclass
@@ -159,8 +160,8 @@ def budgetScore(name: str, rows: list[tuple]) -> int:
     return 2 if "comparison of budget" in text or re.search(r"scb?a?baa", text) else 0
 
 
-def readLines(rows, columns, sheet, file, source, lines, aliases) -> dict[str, tuple[dict[int, Decimal], str, str]]:
-    """First row per catalog line: {code: ({year: value}, label, location)}."""
+def readLines(rows, columns, sheet, file, source, lines, aliases):
+    """Keep the exact cell and signed amount for every year and summed component."""
     found = {}
     for number, row in enumerate(rows, start=1):
         labelled = labelOf(row, min(columns.values()))
@@ -173,14 +174,19 @@ def readLines(rows, columns, sheet, file, source, lines, aliases) -> dict[str, t
         values = {year: value for year, value in values.items() if value is not None}
         if not values:
             continue
-        location = f"{sheet}!{get_column_letter(min(columns.values()) + 1)}{number}"
+        inputs = {year: [{"location": f"{sheet}!{get_column_letter(columns[year] + 1)}{number}", "value": f"{value:.2f}"}] for year, value in values.items()}
         if hit[0] in found:
-            earlier, earlierLabel, earlierLocation = found[hit[0]]
+            earlier, earlierLabel, earlierInputs = found[hit[0]]
             values = {year: earlier.get(year, Decimal(0)) + values.get(year, Decimal(0)) for year in earlier.keys() | values.keys()}
-            found[hit[0]] = (values, f"{earlierLabel} + {labelled[0]}", earlierLocation)
+            inputs = {year: earlierInputs.get(year, []) + inputs.get(year, []) for year in values}
+            found[hit[0]] = (values, f"{earlierLabel} + {labelled[0]}", inputs)
         else:
-            found[hit[0]] = (values, labelled[0], location)
+            found[hit[0]] = (values, labelled[0], inputs)
     return found
+
+
+def citation(inputs):
+    return "; ".join(item["location"] for item in inputs)
 
 
 def readFs(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias]) -> Result:
@@ -211,13 +217,15 @@ def readPerformance(result: Result, file: str, sheet: str, rows, reportYear, lin
 
     if "revenue.national_share" not in found and "revenue.tax" in found:
         result.issues.append(Issue("warning", "national_share_not_separate", "revenue.tax", f"{file}!{sheet}: no national share line, so Local Taxes may include it"))
-    for code, (values, label, location) in found.items():
+    for code, (values, label, inputs) in found.items():
         variant = "may_include_national_share" if code == "revenue.tax" and "revenue.national_share" not in found else None
         for year, value in values.items():
-            result.figures.append(Found(code, year, abs(value) if code == "expense.transfers" else value, "actual", variant, label, location))
+            result.figures.append(Found(code, year, abs(value) if code == "expense.transfers" else value, "actual", variant, label, citation(inputs[year]), tuple(inputs[year])))
 
     if "fs.total_revenue" in totals:
         for year, total in totals["fs.total_revenue"][0].items():
+            _, label, inputs = totals["fs.total_revenue"]
+            result.figures.append(Found("fs.total_revenue", year, total, "actual", None, label, citation(inputs[year]), tuple(inputs[year])))
             parts = [values[year] for code, (values, _, _) in found.items() if code.startswith("revenue.") and year in values]
             if parts and abs(sum(parts) - total) > Decimal("1.00"):
                 result.issues.append(Issue("error", "revenue_sources_mismatch", "revenue.tax", f"{year}: sources add up to {sum(parts)}, Total Revenue is {total}"))
@@ -257,10 +265,10 @@ def readSectors(result: Result, file: str, sheet: str, rows, reportYear, lines, 
         budget = amount(row[final]) if final is not None and final < len(row) else None
         hit = match(labelled[0], aliases, "fs_scbaa", lines)
         if hit and hit[0].count(".") == 1:
-            current = sectors.setdefault(hit[0], {"label": labelled[0], "row": number, "actual": Decimal(0), "budget": Decimal(0), "seen": False})
-            if spent is None:
+            current = sectors.setdefault(hit[0], {"label": labelled[0], "row": number, "actual": Decimal(0), "budget": Decimal(0), "seen": False, "actual_inputs": [], "budget_inputs": []})
+            if spent is None and budget is None:
                 continue
-        elif spent is None:
+        elif spent is None and budget is None:
             if not any(pattern.match(text) for pattern in SECTOR_CLASSES.values()):
                 current = None
                 if not re.match(r"^(other purposes|others)\b", text):
@@ -270,17 +278,21 @@ def readSectors(result: Result, file: str, sheet: str, rows, reportYear, lines, 
             if spent:
                 result.issues.append(Issue("info", "spending_outside_catalog", "", f"{file}!{sheet} row {number}: '{labelled[0]}' {spent} is not under a catalog sector"))
             continue
-        current["actual"] += spent
+        if spent is not None:
+            current["actual"] += spent
+            current["actual_inputs"].append({"location": f"{sheet}!{get_column_letter(actual + 1)}{number}", "value": f"{spent:.2f}"})
+        if budget is not None:
+            current["budget_inputs"].append({"location": f"{sheet}!{get_column_letter(final + 1)}{number}", "value": f"{budget:.2f}"})
         current["budget"] += budget or 0
         current["seen"] = True
 
     for code, sector in sectors.items():
         if not sector["seen"]:
             continue
-        location = f"{sheet}!A{sector['row']}"
-        result.figures.append(Found(code, reportYear, sector["actual"], "actual", None, sector["label"], location))
-        if final is not None:
-            result.figures.append(Found(code, reportYear, sector["budget"], "budget_final", None, sector["label"], location))
+        for basis, key in (("actual", "actual_inputs"), ("budget_final", "budget_inputs")):
+            if sector[key]:
+                result.figures.append(Found(code, reportYear, sum(Decimal(item["value"]) for item in sector[key]), basis, None, sector["label"], citation(sector[key]), tuple(sector[key])))
+
 
 
 def readAnnex(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias]) -> Result:
@@ -296,9 +308,10 @@ def readAnnex(path: Path, reportYear: int, lines: dict[str, Line], aliases: list
         return result
     found = readLines(rows, columns, sheet, path.name, "annex_c1", lines, aliases)
     discount = found.pop("annex.rpt_discount", None)
-    for code, (values, label, location) in found.items():
+    for code, (values, label, inputs) in found.items():
         for year, value in values.items():
             if code == "local.real_property_tax" and discount and year in discount[0]:
                 value -= abs(discount[0][year])
-            result.figures.append(Found(code, year, value, "actual", None, label, location))
+                inputs[year] += [{**item, "value": f"{-abs(Decimal(item['value'])):.2f}"} for item in discount[2][year]]
+            result.figures.append(Found(code, year, value, "actual", None, label, citation(inputs[year]), tuple(inputs[year])))
     return result

@@ -87,3 +87,30 @@ def testReportsAMissingGeneralFundDetailInsteadOfGuessing():
 
     assert result.figures == []
     assert {issue.kind for issue in result.issues} == {"sheet_not_found"}
+
+@pytest.mark.parametrize(("code", "basis", "column", "rows", "expected"), [
+    ("sector.economic_services", "budget_final", "G", [61, 62, 63, 64], "161160894.00"),
+    ("sector.economic_services", "actual", "K", [61, 62, 63, 64], "99846291.10"),
+    ("sector.development_fund", "budget_final", "G", [69, 70], "224537355.00"),
+    ("sector.development_fund", "actual", "K", [69, 70], "54562727.33"),
+])
+def testTuguegaraoBudgetSumsCiteEveryContributingAmount(code, basis, column, rows, expected):
+    result = read(2025, "Tuguegarao-City", "FS")
+    figure = next(item for item in result.figures if (item.code, item.fiscalYear, item.basis) == (code, 2025, basis))
+
+    assert figure.value == Decimal(expected)
+    assert [item["location"] for item in figure.inputs] == [f"11 - SCBAA!{column}{row}" for row in rows]
+    assert figure.location == "; ".join(item["location"] for item in figure.inputs)
+    assert sum(Decimal(item["value"]) for item in figure.inputs) == Decimal(expected)
+
+
+@pytest.mark.parametrize(("year", "cells", "amounts", "expected"), [
+    (2024, ["F19", "F20"], ["56878423.47", "-8229120.59"], "48649302.88"),
+    (2025, ["G18", "G19"], ["60927153.30", "-9648587.97"], "51278565.33"),
+])
+def testBasicPropertyTaxCitesTheSignedDiscount(year, cells, amounts, expected):
+    result = read(year, "Tuguegarao-City", "Annexes")
+    figure = next(item for item in result.figures if (item.code, item.fiscalYear) == ("local.real_property_tax", year))
+
+    assert figure.value == Decimal(expected)
+    assert list(figure.inputs) == [{"location": f"ANNEX-B!{cell}", "value": value} for cell, value in zip(cells, amounts)]
