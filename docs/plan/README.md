@@ -10,7 +10,6 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 
 | Plan | Status | Scope |
 | :- | :- | :- |
-| [Data Ingestion Rebuild](active/26-11-02-data-ingestion-rebuild.md) | In progress | One source-based Data workspace, independent publication, consolidated finance report and exact evidence; tests deferred until implementation and docs finish |
 | [Executive Summary View and Net Income](active/26-10-29-executive-summary-view.md) | In progress | Default Executive Summary table with charts, COA words Income, Expenses and Net Income, Financial Condition and Allotments for Tuguegarao City; CI and design checks pending |
 | [Business Registry Records](active/26-10-28-business-registry-records.md) | In progress | Staff prepare and Admins review, record profile, form with map pin and documents, BIR and permit badges, public directory, presentation trend seeder |
 
@@ -20,6 +19,7 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 
 | Plan | Status | Reference |
 | :- | :- | :- |
+| [Data Ingestion Rebuild](archive/26-11-02-data-ingestion-rebuild.md) | Abandoned 26-11-03 | Owner rejected the redesign and scope; reverted to `2b96ff4`, work kept in a stash |
 | [Finance Trends People Can Understand](archive/26-10-29-finance-trends.md) | Superseded 26-10-29 | Chart-led Trends default; Trends stays a view under the Executive Summary View plan |
 | [COA Parser Hardening](archive/26-10-29-coa-parser-hardening.md) | Completed 26-10-29 | Two PDF engines with fallback and digit confirmation, crash isolation and run log, wrapped Appropriations label fix, all 201 Tuguegarao cells tested, camelCase Python; 77 parser tests passed |
 | [Business Categories Revamp](archive/26-10-28-business-categories.md) | Completed 26-10-28, Focus Tag model superseded in part by D39 | Editable Business Types and Focus Tags, registered counts, local sort, search and paging, ten-color tag palette without a package (D38); full suite not run, light mode and edit forms not browser-checked |

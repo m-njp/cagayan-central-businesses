@@ -1,14 +1,18 @@
 ---
 title: "Kita Data Flow and Finance Report Rebuild"
 created: "26-11-02"
-updated: "26-11-02"
-status: in-progress
+updated: "26-11-03"
+status: abandoned
 branch: feat/data-ingestion-rebuild
 base: feat/business-registry
 predecessor: 26-10-29-executive-summary-view.md
 ---
 
 # Kita Data Flow and Finance Report Rebuild
+
+## Abandoned "26-11-03"
+
+The owner rejected the implementation and asked for a full revert to `2b96ff4`. Reasons: the finance dashboard was rebuilt from scratch instead of reusing existing components; maps and the public Home layout changed without a request; the Capitol pages were merged into one Data workspace when only better input forms were asked for. The uncommitted work is kept, not applied, in the stash "rejected: data-ingestion-rebuild 26-11-03". Both migrations were rolled back. Their incomplete `down()` left three schema changes, which were restored by hand: the finance document key, `record_view_logs.business_id` not null and `finance_figures.location` varchar(60). Baseline finances, town and barangay figures, and statistics were reloaded. Later improvements (arrows for changes, Continuing Appropriations, label casing, input forms) need new plans against the baseline.
 
 ## Objective
 
