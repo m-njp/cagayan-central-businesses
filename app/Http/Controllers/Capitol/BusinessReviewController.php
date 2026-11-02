@@ -16,7 +16,7 @@ final class BusinessReviewController extends Controller
     {
         $review->handle($request->user(), $business, $request->decision(), $request->note());
         Inertia::flash('toast', ['type' => 'success', 'message' => $request->decision() === RecordStatus::Approved
-            ? 'Business approved and published.' : 'Business returned for resubmission.']);
+            ? 'Business verified and published.' : 'Business returned for changes.']);
 
         return to_route('capitol.businesses.show', $business);
     }

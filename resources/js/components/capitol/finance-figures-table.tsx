@@ -17,9 +17,9 @@ import {
 import type { FinanceFigureRow, FinanceReport } from '@/types/finance';
 
 const STATUS: Record<FinanceFigureRow['status'], string> = {
-    pending: 'Pending Review',
+    pending: 'Pending',
     verified: 'Verified',
-    rejected: 'Rejected',
+    rejected: 'Returned',
     superseded: 'Superseded',
 };
 
@@ -78,7 +78,7 @@ export function FinanceFiguresTable({
                                     openReview('verified', event.currentTarget)
                                 }
                             >
-                                Sign Off
+                                Verify
                             </Button>
                             <Button
                                 size="sm"
@@ -87,7 +87,7 @@ export function FinanceFiguresTable({
                                     openReview('rejected', event.currentTarget)
                                 }
                             >
-                                Reject
+                                Return
                             </Button>
                         </>
                     )}
@@ -273,8 +273,8 @@ export function FinanceFiguresTable({
                                                         <span className="block type-meta">
                                                             {figure.status ===
                                                             'verified'
-                                                                ? 'Signed off by '
-                                                                : 'Rejected by '}
+                                                                ? 'Verified by '
+                                                                : 'Returned by '}
                                                             {figure.reviewedBy}
                                                         </span>
                                                     )}

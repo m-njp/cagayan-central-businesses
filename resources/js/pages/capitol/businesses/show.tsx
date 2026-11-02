@@ -318,7 +318,7 @@ export default function BusinessShow({
                                     onClick={() => decide('approved')}
                                 >
                                     {form.processing && <Spinner />}
-                                    Approve and Publish
+                                    Verify and Publish
                                 </Button>
                                 <Field data-invalid={!!form.errors.note}>
                                     <FieldLabel htmlFor="review-note" required>

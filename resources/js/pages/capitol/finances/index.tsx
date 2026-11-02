@@ -23,7 +23,7 @@ import { formatCount } from '@/lib/format';
 import { index, show } from '@/routes/capitol/finances';
 import type { FinanceReviewList } from '@/types/finance';
 
-const STATUS_OPTIONS = [{ value: 'pending', label: 'Pending Review' }];
+const STATUS_OPTIONS = [{ value: 'pending', label: 'Pending' }];
 
 export default function Finances({ list }: { list: FinanceReviewList }) {
     const cached = useRef(new Map<string, FinanceReviewList>());
@@ -100,7 +100,7 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
                                         Verified
                                     </TableHead>
                                     <TableHead className="text-right">
-                                        Rejected
+                                        Returned
                                     </TableHead>
                                 </TableRow>
                             </TableHeader>

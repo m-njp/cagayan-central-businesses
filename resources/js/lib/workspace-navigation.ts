@@ -1,4 +1,4 @@
-import { analytics, dashboard } from '@/routes/capitol';
+import { analytics, dashboard, dataEntry } from '@/routes/capitol';
 import { index as businesses } from '@/routes/capitol/businesses';
 import { index as categories } from '@/routes/capitol/categories';
 import { index as finances } from '@/routes/capitol/finances';
@@ -22,6 +22,13 @@ export function workspaceNavigation(workspace: Workspace) {
             group: 'Workspace',
             href: dashboard(),
             icon: icons.dashboard,
+            visible: true,
+        },
+        {
+            label: 'Data Entry',
+            group: 'Workspace',
+            href: dataEntry(),
+            icon: icons.dataEntry,
             visible: true,
         },
         {

@@ -42,7 +42,7 @@ final class FinanceReviewController extends Controller
         $result = $review->handle($request->user(), $town, $request->reportYear(), $decision,
             $request->figureIds(), $request->filled('note') ? $request->string('note')->toString() : null);
 
-        $message = sprintf('%d %s %s.', $result['done'], $result['done'] === 1 ? 'figure' : 'figures', $decision === 'verified' ? 'signed off' : 'rejected');
+        $message = sprintf('%d %s %s.', $result['done'], $result['done'] === 1 ? 'figure' : 'figures', $decision === 'verified' ? 'verified' : 'returned');
         if ($result['skipped'] > 0) {
             $message .= sprintf(' %d you entered %s for another reviewer.', $result['skipped'], $result['skipped'] === 1 ? 'needs' : 'need');
         }

@@ -131,7 +131,7 @@ export function FinanceUploads({ report }: { report: FinanceReport }) {
                             <span>
                                 {upload.figures}{' '}
                                 {upload.figures === 1 ? 'figure' : 'figures'} to
-                                sign off
+                                verify
                             </span>
                         )}
                     </span>

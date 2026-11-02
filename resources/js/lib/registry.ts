@@ -22,7 +22,7 @@ export const PERMIT_STATUS: Record<string, { label: string; dot: string }> = {
 
 export const RECORD_STATUS: Record<string, string> = {
     draft: 'Draft',
-    submitted: 'For Review',
+    submitted: 'Pending',
     returned: 'Returned',
-    approved: 'Approved',
+    approved: 'Verified',
 };
