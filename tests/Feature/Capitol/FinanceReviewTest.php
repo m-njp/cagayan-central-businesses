@@ -188,7 +188,7 @@ it('accepts exact cents up to the cap and publishes the manual source to reviewe
             ->where('breadcrumbs.2.label', 'Report 2024')
             ->where('report.limits.lastYear', 2024)
             ->where('report.figures', fn ($rows) => collect($rows)->firstWhere('id', $entry->public_id)['sourceUrl'] === $source
-                && collect($rows)->firstWhere('id', $entry->public_id)['groupLabel'] === 'Government Totals'));
+                && collect($rows)->firstWhere('id', $entry->public_id)['groupLabel'] === 'Results of Operation'));
 });
 
 it('allows final budget only for the development spending lines', function () {

@@ -91,6 +91,6 @@ Later steps get their own plans: (2) finance data fixes with one new migration, 
 
 Full CI ("26-11-03", real exit code): frontend format and lint, TypeScript, Pint, PHPStan pass; Pest 332 of 334. The two failures are the owner decisions below. Privacy review: no business data or uploader identity in public responses. Fixed after review: uploads stay private (no public file or link), workbook inputs keep only cell and amount, a re-read never rewrites a signed-off citation, PDF reader exception text is replaced. Upload, economy and source tests rerun: 36 passed. Design check: the strip repeated the year on every label; it now shows once.
 
-Open for the owner: sign off the 12 new figures; approve updating FinanceReviewTest's stale "Government Totals" expectation; decide whether uploaded reports may ever be public; inputs in the review row and an upload rate limit are deferred.
+Owner decisions "26-11-03": FinanceReviewTest now expects Results of Operation (33 passed); uploaded reports stay private (D42). Still open: sign off the 12 new figures; inputs in the review row and an upload rate limit are deferred.
 
 Remaining planned checks: affected Pest and frontend tests, `npm run check`, `npm run types:check`, `npm run build`, `composer ci:check`, `/design-check`, `/privacy-check`, browser at desktop and 375px in both themes with keyboard and touch, Back and Forward with no application requests.

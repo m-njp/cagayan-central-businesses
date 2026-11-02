@@ -342,7 +342,7 @@ Approved 26-11-03 by the owner ([finance report redesign plan](../plan/active/26
 
 - **One file at a time:** the queue job `ExtractFinanceUpload` runs `python -m coa.intake` from `tools/coa/` on that one file, never the repository-wide extraction. A PDF is an Executive Summary, an XLSX a Financial Statements or General Fund Annex workbook, a ZIP the audit report's workbooks. Size, archive and runtime limits are in `cagayan.finances.uploads`.
 - **Same ledger, same sign-off:** figures arrive as pending, credited to the uploader, so someone else signs them off (D35). A different report already on record is never overwritten.
-- **Private files:** uploads stay on the private `local` disk under `finance-uploads/`. A document read from an upload stays out of the CSV import and export, so `composer data:finances` neither deletes nor exports it.
+- **Private files:** uploads stay on the private `local` disk under `finance-uploads/` and are never served publicly, even after their figures are signed off (owner, 26-11-03): a file's author metadata could name the staff member who saved it. Public sources for those figures show the report and cells without a download link. A document read from an upload stays out of the CSV import and export, so `composer data:finances` neither deletes nor exports it.
 - **Runtime:** the worker needs the `tools/coa/.venv` (or `COA_PYTHON`). `composer doctor` reports it. No Docker change and no new package: the parser's pinned dependencies are reused.
 
 **Why:** the owner wants non-technical staff to load a new report year without the command line, while every figure keeps its exact source and independent sign-off.
