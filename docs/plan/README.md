@@ -10,6 +10,7 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 
 | Plan | Status | Scope |
 | :- | :- | :- |
+| [Data Ingestion Rebuild](active/26-11-02-data-ingestion-rebuild.md) | In progress | One source-based Data workspace, independent publication, consolidated finance report and exact evidence; tests deferred until implementation and docs finish |
 | [Executive Summary View and Net Income](active/26-10-29-executive-summary-view.md) | In progress | Default Executive Summary table with charts, COA words Income, Expenses and Net Income, Financial Condition and Allotments for Tuguegarao City; CI and design checks pending |
 | [Business Registry Records](active/26-10-28-business-registry-records.md) | In progress | Staff prepare and Admins review, record profile, form with map pin and documents, BIR and permit badges, public directory, presentation trend seeder |
 
