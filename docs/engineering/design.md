@@ -568,7 +568,9 @@ Owner-approved polish of the Executive Summary View after the rejected rebuild w
 Owner correction after the Trends view showed a 2x2 grid of padded figure tiles with a 3xl amount, a year and an arrow under each. Never build that again, on any screen.
 
 - **Rows, not tiles.** Several figures for the same years go in one table row each, with the years as columns. Never a grid of cards, one figure per card, an oversized amount, or the year repeated under every figure.
-- **Every table is the shared `components/ui/table.tsx`.** It draws the outer border, the column lines and alternating solid row shades by default. A section heading row passes `data-plain` so it is never shaded. A sticky first column uses `bg-inherit` to take its row's shade. Wrappers around a table add no second border.
+- **Every table is the shared `components/ui/table.tsx`.** It draws the outer border and the column lines by default. Alternating solid row shades are only for finance tables beside charts (`<Table data-striped>`: Executive Summary, the Charts view table, Yearly Summary); other workspace tables are not striped (owner, 26-11-03). A section heading row passes `data-plain` so it is never shaded. A sticky first column uses `bg-inherit` to take its row's shade. Wrappers around a table add no second border.
+- **Clickable rows, not underlined links.** A row that opens something puts `RowLink` (`components/row-link.tsx`) in its first cell and `RowChevron` in a narrow last cell. The whole row is the click and keyboard target, with hover and focus on the row. Buttons inside such a row sit above it with `relative z-10`. Underlines stay only on links inside text, such as a Source line.
+- **Density tokens.** Spacing comes from `--spacing-panel` (inside cards and panels), `--spacing-cell-x`, `--spacing-cell-y` and `--spacing-row` (table header height) in `resources/css/app.css`, used as `p-panel`, `px-cell-x`, `py-cell-y` and `h-row`. Tighten or loosen the whole app there, never per screen.
 - **One tooltip per figure.** A short amount and its change arrow are one control (`Figure` with `withChange`): the tooltip reads the exact amount, then "Change from 2024:" and the exact change in accounting style: a fall in parentheses, a rise as a plain amount, no words and no plus sign. Every change label follows this. Never a separate hover target for the arrow.
 - **Maximize rows.** Compact cell padding, `type-data` on phones, no empty space reserved for decoration. Padding exists to separate content, not to fill a card.
 
@@ -581,6 +583,8 @@ Supersedes the chart lines in "Finance Report Polish". One chart per measure, ch
 | Results of Operation | Income and Expenses as overlapping areas, Net Income as a line over a zero line | One chart instead of separate Income, Expenses and Net Income charts; the gap between the areas is the result. Not stacked: Income plus Expenses means nothing |
 | Financial Condition | Liabilities and Government Equity as stacked areas | Their sum is Assets, so the top edge reads as Assets; the tooltip lists all three |
 | Revenue Sources | Stacked areas | The reported sources add up to Income |
+
+Stacked parts use one hue, the `--map-*` ramp, darkest at the base, with light fills (30%) and solid edges, so they read as layers of one total. Unrelated `--chart-*` colors are only for series compared side by side (owner, 26-11-03).
 | Budget Execution | Grouped bars per year | Appropriations, allotments and obligations are compared side by side, not added |
 | Business Taxes and Fees | Lines | Separate General Fund collections with no reported total |
 

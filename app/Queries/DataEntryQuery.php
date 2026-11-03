@@ -30,17 +30,17 @@ final class DataEntryQuery
             ->when($towns, fn (Builder $query) => $query->whereIn('g.municipality_id', $towns));
 
         $datasets = [
-            new DataEntryDataset('finances', 'Government Finances', route('capitol.finances.index', absolute: false),
+            new DataEntryDataset('finances', 'Government Finances', ['Economy', 'Analytics', 'Home Map'], route('capitol.finances.index', absolute: false),
                 (clone $finances)->where('f.status', 'pending')->count(), $this->date((clone $finances)->max('f.updated_at')),
                 'Enter Report', route('capitol.finances.index', absolute: false)),
-            new DataEntryDataset('businesses', 'Businesses', route('capitol.businesses.index', absolute: false),
+            new DataEntryDataset('businesses', 'Businesses', ['Business Directory', 'Dashboard Map'], route('capitol.businesses.index', absolute: false),
                 (clone $businesses)->where('b.record_status', 'submitted')->count(), $this->date((clone $businesses)->max('b.updated_at')),
                 $user->can('add-business') ? 'Add Business' : null,
                 $user->can('add-business') ? route('capitol.businesses.create', absolute: false) : null),
         ];
         if ($user->can('manage-categories')) {
             // Category changes apply on save (D39), so there is nothing pending to count.
-            $datasets[] = new DataEntryDataset('categories', 'Business Categories', route('capitol.categories.index', absolute: false),
+            $datasets[] = new DataEntryDataset('categories', 'Business Categories', ['Business Directory', 'Wish Form'], route('capitol.categories.index', absolute: false),
                 null, $this->date(DB::table('business_types')->max('updated_at')),
                 'Add Category', route('capitol.categories.index', absolute: false));
         }

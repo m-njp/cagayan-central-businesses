@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { Pagination } from '@/components/capitol/pagination';
+import { RowChevron, RowLink } from '@/components/row-link';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -26,6 +27,7 @@ export default function DataEntryPage({ entry }: { entry: DataEntry }) {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Dataset</TableHead>
+                        <TableHead>Shows On</TableHead>
                         <TableHead className="text-right">Pending</TableHead>
                         <TableHead className="text-right">
                             Last Change
@@ -37,12 +39,12 @@ export default function DataEntryPage({ entry }: { entry: DataEntry }) {
                     {entry.datasets.map((dataset) => (
                         <TableRow key={dataset.id}>
                             <TableCell className="whitespace-normal">
-                                <Link
-                                    href={dataset.href}
-                                    className="underline underline-offset-4"
-                                >
+                                <RowLink href={dataset.href}>
                                     {dataset.label}
-                                </Link>
+                                </RowLink>
+                            </TableCell>
+                            <TableCell className="whitespace-normal text-muted-foreground">
+                                {dataset.shownOn.join(', ')}
                             </TableCell>
                             <TableCell className={number}>
                                 {dataset.pending === null
@@ -54,7 +56,12 @@ export default function DataEntryPage({ entry }: { entry: DataEntry }) {
                             </TableCell>
                             <TableCell className="py-1">
                                 {dataset.action && dataset.actionHref && (
-                                    <Button asChild size="sm" variant="outline">
+                                    <Button
+                                        asChild
+                                        size="sm"
+                                        variant="outline"
+                                        className="relative z-10"
+                                    >
                                         <Link href={dataset.actionHref}>
                                             {dataset.action}
                                         </Link>
@@ -84,6 +91,9 @@ export default function DataEntryPage({ entry }: { entry: DataEntry }) {
                                 <TableHead className="text-right">
                                     Since
                                 </TableHead>
+                                <TableHead className="w-0 px-1">
+                                    <span className="sr-only">Open</span>
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -91,12 +101,9 @@ export default function DataEntryPage({ entry }: { entry: DataEntry }) {
                                 entry.review.map((row) => (
                                     <TableRow key={row.href}>
                                         <TableCell className="whitespace-normal">
-                                            <Link
-                                                href={row.href}
-                                                className="underline underline-offset-4"
-                                            >
+                                            <RowLink href={row.href}>
                                                 {row.item}
-                                            </Link>
+                                            </RowLink>
                                         </TableCell>
                                         <TableCell>{row.dataset}</TableCell>
                                         <TableCell className={number}>
@@ -105,12 +112,15 @@ export default function DataEntryPage({ entry }: { entry: DataEntry }) {
                                         <TableCell className={number}>
                                             {row.since}
                                         </TableCell>
+                                        <TableCell className="w-0 px-1">
+                                            <RowChevron />
+                                        </TableCell>
                                     </TableRow>
                                 ))
                             ) : (
                                 <TableRow>
                                     <TableCell
-                                        colSpan={4}
+                                        colSpan={5}
                                         className="py-6 text-center whitespace-normal text-muted-foreground"
                                     >
                                         Nothing is waiting for review.

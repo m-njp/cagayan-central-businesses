@@ -4,6 +4,7 @@ import type { Pagination } from '@/types/workspace';
 export type DataEntryDataset = {
     id: string;
     label: string;
+    shownOn: string[];
     href: string;
     pending: number | null;
     lastChange: string | null;

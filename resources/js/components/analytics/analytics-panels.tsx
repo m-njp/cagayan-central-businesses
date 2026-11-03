@@ -95,7 +95,8 @@ export function AnalyticsPanels({
 }) {
     const finance = selectedFinance(catalog, filters);
     const business = selectedBusiness(catalog, filters);
-    const panel = 'flex min-w-0 flex-col gap-2 rounded-sm border bg-card p-3';
+    const panel =
+        'flex min-w-0 flex-col gap-2 rounded-sm border bg-card p-panel';
     const shown = {
         catalog,
         presentation: filters.presentation,

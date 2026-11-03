@@ -37,8 +37,8 @@ Step 2 of 4 agreed on "26-11-03". Data entry is scattered and slow: finances tak
 - [x] All seven safeguards enforced on the server, each with a failing-without-protection test where it is a security rule.
 
 **Phase 2 Hub and review queue**
-- [ ] Data Entry page in the sidebar; one Waiting for Review list across datasets for Admins.
-- [ ] Status words Pending, Verified, Returned on every data page.
+- [x] Data Entry page in the sidebar; one Waiting for Review list across datasets for Admins; Shows On column says where each dataset appears.
+- [x] Status words Pending, Verified, Returned on every data page.
 
 **Phase 3 Consistent forms**
 - [ ] Businesses and Business Categories use the same action placement, no field help icons, one toast saying where the data appears after sign-off.
@@ -55,6 +55,7 @@ New datasets, OCR, public data entry other than the existing wish form, Docker c
 | Date | Change | Reason / Reference |
 | :- | :- | :- |
 | "26-11-03" | Plan created | Owner answers in this session |
+| "26-11-03" | Phase 2 built, plus owner corrections: clickable rows with chevrons instead of underlines, density tokens, report source as buttons, one-hue stacked charts, stripes only on finance tables | `DataEntryQuery`, `row-link.tsx`, `app.css` density tokens; design.md "Dense Data Rule" |
 | "26-11-03" | Phase 1 built | `SubmitFinanceEntries`, `FinanceEntryCells`, `finance-report-grid.tsx`; `RecordFinanceFigure`, `StoreFinanceFigureRequest` and `finance-entry-form.tsx` removed |
 
 ## Verification and Handoff

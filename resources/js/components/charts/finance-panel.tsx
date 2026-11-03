@@ -136,7 +136,7 @@ export default function FinancePanel({
                             <FinanceHistoryChart history={history} />
                         </PerformanceVisual>
                     ))}
-                <Table className={phone}>
+                <Table data-striped className={phone}>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Item</TableHead>
@@ -214,7 +214,7 @@ export default function FinancePanel({
 
     return (
         <div className="flex min-w-0 flex-col gap-2">
-            <Table className={phone}>
+            <Table data-striped className={phone}>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Item</TableHead>

@@ -40,6 +40,11 @@
     --workspace-sidebar-width: 13rem;
     --workspace-map-height: clamp(22rem, 57dvh, 38rem);
     --spacing-gutter: 1rem;
+    /* Density (26-11-03): compact by default so screens show rows, not padding. */
+    --spacing-panel: 0.5rem;
+    --spacing-cell-x: 0.5rem;
+    --spacing-cell-y: 0.25rem;
+    --spacing-row: 2rem;
 
     /* Motion. One easing for everything, three speeds. */
     --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);

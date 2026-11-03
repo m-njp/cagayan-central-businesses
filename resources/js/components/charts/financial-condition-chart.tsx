@@ -5,7 +5,8 @@ import { formatPesoTick } from '@/lib/performance-format';
 import type { FinancialHistory } from '@/types/economic-performance';
 
 const STACKED = ['position.liabilities', 'position.equity'];
-const SWATCHES = ['bg-chart-3', 'bg-chart-4'];
+// Two layers of one hue: Liabilities darker at the base, Government Equity lighter above (26-11-03).
+const LAYERS = ['var(--map-5)', 'var(--map-2)'];
 
 /** Liabilities and Government Equity as stacked areas, so the top edge is each year's Assets (M35). */
 export default function FinancialConditionChart({
@@ -19,7 +20,7 @@ export default function FinancialConditionChart({
     const config = Object.fromEntries(
         stacked.map((metric, index) => [
             metric.id.replace('.', '_'),
-            { label: metric.label, color: `var(--chart-${index + 3})` },
+            { label: metric.label, color: LAYERS[index] },
         ]),
     );
     const data = history.rows.map((row) => ({
@@ -86,7 +87,7 @@ export default function FinancialConditionChart({
                                             })),
                                         ...stacked.map((metric, index) => ({
                                             metric,
-                                            color: `var(--chart-${index + 3})`,
+                                            color: LAYERS[index],
                                         })),
                                     ]}
                                 />
@@ -101,9 +102,9 @@ export default function FinancialConditionChart({
                             type="linear"
                             stackId="assets"
                             stroke={`var(--color-${metric.id.replace('.', '_')})`}
-                            strokeWidth={2}
+                            strokeWidth={1.5}
                             fill={`var(--color-${metric.id.replace('.', '_')})`}
-                            fillOpacity={0.55}
+                            fillOpacity={0.3}
                             dot={false}
                             activeDot={{ r: 4 }}
                             connectNulls={false}
@@ -123,7 +124,8 @@ export default function FinancialConditionChart({
                     >
                         <span
                             aria-hidden="true"
-                            className={`size-2.5 rounded-sm ${SWATCHES[index]}`}
+                            className="size-2.5 rounded-sm"
+                            style={{ background: LAYERS[index] }}
                         />
                         {metric.label}
                     </li>

@@ -54,7 +54,7 @@ export default function BusinessShow({
     return (
         <>
             <Head title={business.name} />
-            <header className="flex flex-col gap-3 rounded-sm border bg-card p-3 sm:flex-row sm:items-start">
+            <header className="flex flex-col gap-3 rounded-sm border bg-card p-panel sm:flex-row sm:items-start">
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <h1 className="type-heading">{business.name}</h1>
                     <p className="type-body text-muted-foreground">

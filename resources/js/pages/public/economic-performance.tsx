@@ -75,7 +75,7 @@ export default function EconomicPerformancePage({
                 <div className="flex min-w-0 flex-col gap-3 lg:sticky lg:top-4">
                     <aside
                         aria-label="Town Explorer"
-                        className="dark flex min-w-0 flex-col gap-2 rounded-sm bg-brand p-3 text-brand-foreground"
+                        className="dark flex min-w-0 flex-col gap-2 rounded-sm bg-brand p-panel text-brand-foreground"
                     >
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <h2 className="type-heading">Cagayan</h2>
@@ -96,7 +96,7 @@ export default function EconomicPerformancePage({
                     </aside>
                     <section
                         aria-labelledby="wishes-heading"
-                        className="flex min-w-0 flex-col gap-2 rounded-sm border bg-card p-3"
+                        className="flex min-w-0 flex-col gap-2 rounded-sm border bg-card p-panel"
                     >
                         <div className="flex items-start justify-between gap-3">
                             <h2 id="wishes-heading" className="type-item">

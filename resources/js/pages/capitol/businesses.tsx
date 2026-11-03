@@ -4,6 +4,7 @@ import { CategoryChip } from '@/components/capitol/category-chip';
 import { Pagination } from '@/components/capitol/pagination';
 import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { PermitBadge, RecordBadge } from '@/components/registry-badges';
+import { RowChevron, RowLink } from '@/components/row-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -200,13 +201,16 @@ export default function Businesses({
                                     )}
                                     <TableHead>Status</TableHead>
                                     <TableHead>Permit</TableHead>
+                                    <TableHead className="w-0 px-1">
+                                        <span className="sr-only">Open</span>
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {directory.rows.length === 0 && (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={7}
+                                            colSpan={8}
                                             className="py-8 text-center text-muted-foreground"
                                         >
                                             {active || filters.record
@@ -219,12 +223,11 @@ export default function Businesses({
                                     <TableRow key={row.publicId}>
                                         <TableCell className="whitespace-normal">
                                             <span className="flex flex-wrap items-center gap-2">
-                                                <Link
+                                                <RowLink
                                                     href={show(row.publicId)}
-                                                    className="underline-offset-2 hover:underline"
                                                 >
                                                     {row.name}
-                                                </Link>
+                                                </RowLink>
                                                 <RecordBadge
                                                     status={row.recordStatus}
                                                 />
@@ -268,6 +271,9 @@ export default function Businesses({
                                             <PermitBadge
                                                 status={row.permitStatus}
                                             />
+                                        </TableCell>
+                                        <TableCell className="w-0 px-1">
+                                            <RowChevron />
                                         </TableCell>
                                     </TableRow>
                                 ))}

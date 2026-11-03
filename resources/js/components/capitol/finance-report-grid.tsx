@@ -3,13 +3,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import {
     Table,
@@ -20,6 +13,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { store } from '@/routes/capitol/finances/figures';
 import type { FinanceReport } from '@/types/finance';
 
@@ -139,29 +133,33 @@ export function FinanceReportGrid({
                     <FieldLabel htmlFor="entry-source" required>
                         Source Report
                     </FieldLabel>
-                    <Select
+                    <ToggleGroup
+                        id="entry-source"
+                        type="single"
+                        variant="outline"
+                        size="sm"
+                        className="flex-wrap justify-start"
                         value={form.data.document_kind}
-                        onValueChange={(kind) =>
-                            form.setData('document_kind', kind)
-                        }
+                        onValueChange={(kind) => {
+                            if (kind) form.setData('document_kind', kind);
+                        }}
                     >
-                        <SelectTrigger id="entry-source" className="w-full">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {sources.map((document) => (
-                                <SelectItem
-                                    key={document.kind}
-                                    value={document.kind}
-                                >
-                                    {document.label} {report.year}
-                                </SelectItem>
-                            ))}
-                            <SelectItem value={OTHER_SOURCE}>
-                                Another COA Report
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
+                        {sources.map((document) => (
+                            <ToggleGroupItem
+                                key={document.kind}
+                                value={document.kind}
+                                className="h-8 px-3"
+                            >
+                                {document.label}
+                            </ToggleGroupItem>
+                        ))}
+                        <ToggleGroupItem
+                            value={OTHER_SOURCE}
+                            className="h-8 px-3"
+                        >
+                            COA Link
+                        </ToggleGroupItem>
+                    </ToggleGroup>
                     {form.errors.document_kind && (
                         <FieldError>{form.errors.document_kind}</FieldError>
                     )}

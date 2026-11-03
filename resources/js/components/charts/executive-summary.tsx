@@ -100,7 +100,7 @@ export function ExecutiveSummary({
 
     return (
         <div className="flex min-w-0 flex-col gap-3">
-            <Table className="type-data sm:type-body">
+            <Table data-striped className="type-data sm:type-body">
                 <TableHeader>
                     <TableRow className="hover:bg-transparent">
                         <TableHead

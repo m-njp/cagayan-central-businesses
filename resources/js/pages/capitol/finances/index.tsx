@@ -1,5 +1,6 @@
 import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import { RowChevron, RowLink } from '@/components/row-link';
 import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Pagination } from '@/components/capitol/pagination';
@@ -102,6 +103,9 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
                                     <TableHead className="text-right">
                                         Returned
                                     </TableHead>
+                                    <TableHead className="w-0 px-1">
+                                        <span className="sr-only">Open</span>
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -109,15 +113,14 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
                                     list.rows.map((row) => (
                                         <TableRow key={row.townCode + row.year}>
                                             <TableCell className="whitespace-normal">
-                                                <Link
+                                                <RowLink
                                                     href={show({
                                                         town: row.townCode,
                                                         year: row.year,
                                                     })}
-                                                    className="underline underline-offset-4"
                                                 >
                                                     {row.town}
-                                                </Link>
+                                                </RowLink>
                                             </TableCell>
                                             <TableCell className="text-right font-mono tabular-nums">
                                                 {formatCount(row.pending)}
@@ -128,12 +131,15 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
                                             <TableCell className="text-right font-mono tabular-nums">
                                                 {formatCount(row.rejected)}
                                             </TableCell>
+                                            <TableCell className="w-0 px-1">
+                                                <RowChevron />
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 ) : (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={4}
+                                            colSpan={5}
                                             className="py-8 text-center whitespace-normal text-muted-foreground"
                                         >
                                             No finance reports match these

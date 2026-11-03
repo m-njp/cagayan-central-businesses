@@ -39,7 +39,9 @@ function amount(point?: EconomicObservation): number | null {
         : null;
 }
 
-const color = (index: number) => `var(--chart-${(index % 5) + 1})`;
+const contrast = (index: number) => `var(--chart-${(index % 5) + 1})`;
+// Parts of one total read as layers of one hue, darkest at the base, never as unrelated colors (26-11-03).
+const layer = (index: number) => `var(--map-${5 - (index % 5)})`;
 const RESULT_COLOR = 'var(--foreground)';
 
 /** Annual finance series; a missing year stays a gap, never a zero. */
@@ -61,6 +63,7 @@ export default function FinanceHistoryChart({
             ? []
             : history.metrics.filter((metric) => metric.id !== RESULT_METRIC);
     const unit = (metrics[0] ?? history.metrics[0])?.unit ?? 'php';
+    const color = variant === 'stacked' ? layer : contrast;
     const segments =
         variant === 'lines' ? financeChartSeries({ ...history, metrics }) : [];
     const series = [
@@ -202,11 +205,9 @@ export default function FinanceHistoryChart({
                                     variant === 'stacked' ? 'parts' : undefined
                                 }
                                 stroke={color(index)}
-                                strokeWidth={2}
+                                strokeWidth={variant === 'stacked' ? 1.5 : 2}
                                 fill={color(index)}
-                                fillOpacity={
-                                    variant === 'stacked' ? 0.55 : 0.15
-                                }
+                                fillOpacity={variant === 'stacked' ? 0.3 : 0.12}
                                 dot={false}
                                 activeDot={{ r: 4 }}
                                 connectNulls={false}
