@@ -1,7 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { FieldHelp } from '@/components/capitol/field-help';
 import type { Point } from '@/components/map/business-map';
 import { LazyBusinessMap } from '@/components/map/lazy-business-map';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -369,15 +368,7 @@ export default function BusinessFormPage({
                     </Group>
 
                     <fieldset className="flex flex-col gap-3 rounded-sm border bg-card p-4">
-                        <legend className="flex items-center gap-1 px-1 type-label">
-                            Documents
-                            <FieldHelp label="Documents">
-                                PDF, JPG or PNG up to{' '}
-                                {Math.round(page.limits.documentMaxKb / 1024)}{' '}
-                                MB each. A BIR Certificate of Registration earns
-                                the BIR Registered badge once approved.
-                            </FieldHelp>
-                        </legend>
+                        <legend className="px-1 type-label">Documents</legend>
                         {page.documents.length > 0 && (
                             <ul className="flex flex-col gap-1 type-meta">
                                 {page.documents.map((document, position) => (

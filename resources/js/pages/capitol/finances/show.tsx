@@ -63,6 +63,42 @@ export default function FinanceReportPage({
             <Head title={`${report.town.label} ${report.year}`} />
             <header className="flex flex-wrap items-center justify-between gap-3">
                 <h1 className="type-heading">{report.town.label}</h1>
+                <div className="flex flex-wrap items-center gap-2">
+                    <Sheet open={entering} onOpenChange={setEntering}>
+                        <SheetTrigger asChild>
+                            <Button>Enter Report</Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-full overflow-y-auto sm:max-w-3xl">
+                            <SheetHeader>
+                                <SheetTitle>Enter Report</SheetTitle>
+                                <SheetDescription>
+                                    {report.town.label} {report.year}
+                                </SheetDescription>
+                            </SheetHeader>
+                            <FinanceReportGrid
+                                report={report}
+                                onSaved={() => setEntering(false)}
+                            />
+                        </SheetContent>
+                    </Sheet>
+                    <Sheet open={uploading} onOpenChange={setUploading}>
+                        <SheetTrigger asChild>
+                            <Button variant="outline">Upload Report</Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-full overflow-y-auto sm:max-w-md">
+                            <SheetHeader>
+                                <SheetTitle>Upload Report</SheetTitle>
+                                <SheetDescription>
+                                    {report.town.label} {report.year}
+                                </SheetDescription>
+                            </SheetHeader>
+                            <FinanceUploadForm
+                                report={report}
+                                onSaved={() => setUploading(false)}
+                            />
+                        </SheetContent>
+                    </Sheet>
+                </div>
             </header>
             <div
                 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 type-meta"
@@ -156,42 +192,6 @@ export default function FinanceReportPage({
                             ))}
                         </SelectContent>
                     </Select>
-                    <Sheet open={entering} onOpenChange={setEntering}>
-                        <SheetTrigger asChild>
-                            <Button className="w-full">Enter Report</Button>
-                        </SheetTrigger>
-                        <SheetContent className="w-full overflow-y-auto sm:max-w-3xl">
-                            <SheetHeader>
-                                <SheetTitle>Enter Report</SheetTitle>
-                                <SheetDescription>
-                                    {report.town.label} {report.year}
-                                </SheetDescription>
-                            </SheetHeader>
-                            <FinanceReportGrid
-                                report={report}
-                                onSaved={() => setEntering(false)}
-                            />
-                        </SheetContent>
-                    </Sheet>
-                    <Sheet open={uploading} onOpenChange={setUploading}>
-                        <SheetTrigger asChild>
-                            <Button variant="outline" className="w-full">
-                                Upload a Report
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent className="w-full overflow-y-auto sm:max-w-md">
-                            <SheetHeader>
-                                <SheetTitle>Upload a Report</SheetTitle>
-                                <SheetDescription>
-                                    {report.town.label} {report.year}
-                                </SheetDescription>
-                            </SheetHeader>
-                            <FinanceUploadForm
-                                report={report}
-                                onSaved={() => setUploading(false)}
-                            />
-                        </SheetContent>
-                    </Sheet>
                     <FinanceUploads report={report} />
                 </WorkspaceFilters>
             </div>

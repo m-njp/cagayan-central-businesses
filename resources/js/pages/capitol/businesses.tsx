@@ -152,7 +152,7 @@ export default function Businesses({
                 <h1 className="type-heading">Businesses</h1>
                 {directory.canAdd && (
                     <Button asChild>
-                        <Link href={create()}>Add a Business</Link>
+                        <Link href={create()}>Add Business</Link>
                     </Button>
                 )}
             </header>

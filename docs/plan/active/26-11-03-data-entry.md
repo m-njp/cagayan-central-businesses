@@ -41,7 +41,7 @@ Step 2 of 4 agreed on "26-11-03". Data entry is scattered and slow: finances tak
 - [x] Status words Pending, Verified, Returned on every data page.
 
 **Phase 3 Consistent forms**
-- [ ] Businesses and Business Categories use the same action placement, no field help icons, one toast saying where the data appears after sign-off.
+- [x] Businesses and Business Categories use the same action placement, no field help icons, one toast saying where the data appears after sign-off. Every data page puts its primary action top right in the header with the hub's verbs: Enter Report and Upload Report, Add Business, Add Category or Add Business Type.
 
 **Phase 4 Population**
 - [ ] Population stored in the database by place and census year, entered through the same grid with independent verification; maps read it without a rebuild.

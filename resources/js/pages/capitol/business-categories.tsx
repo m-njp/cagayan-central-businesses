@@ -172,25 +172,46 @@ export default function BusinessCategoriesPage({
             <Head title="Business Categories" />
             <header className="flex flex-wrap items-center justify-between gap-3">
                 <h1 className="type-heading">Business Categories</h1>
-                <div role="tablist" aria-label="View" className="flex gap-1">
-                    {(['categories', 'types'] as const).map((view) => (
-                        <Button
-                            key={view}
-                            role="tab"
-                            aria-selected={state.view === view}
-                            variant={
-                                state.view === view ? 'default' : 'outline'
-                            }
-                            size="sm"
-                            onClick={() =>
-                                go({ view, sort: 'name', dir: 'asc' })
-                            }
-                        >
-                            {view === 'categories'
-                                ? 'Categories'
-                                : 'Business Types'}
-                        </Button>
-                    ))}
+                <div className="flex flex-wrap items-center gap-2">
+                    <div
+                        role="tablist"
+                        aria-label="View"
+                        className="flex gap-1"
+                    >
+                        {(['categories', 'types'] as const).map((view) => (
+                            <Button
+                                key={view}
+                                role="tab"
+                                aria-selected={state.view === view}
+                                variant={
+                                    state.view === view ? 'default' : 'outline'
+                                }
+                                size="sm"
+                                onClick={() =>
+                                    go({ view, sort: 'name', dir: 'asc' })
+                                }
+                            >
+                                {view === 'categories'
+                                    ? 'Categories'
+                                    : 'Business Types'}
+                            </Button>
+                        ))}
+                    </div>
+                    <Button
+                        onClick={() =>
+                            setSheet({
+                                kind:
+                                    state.view === 'types'
+                                        ? 'type'
+                                        : 'category',
+                                code: null,
+                            })
+                        }
+                    >
+                        {state.view === 'types'
+                            ? 'Add Business Type'
+                            : 'Add Category'}
+                    </Button>
                 </div>
             </header>
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
@@ -480,23 +501,6 @@ export default function BusinessCategoriesPage({
                             Clear Filters
                         </Button>
                     )}
-                    <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() =>
-                            setSheet({
-                                kind:
-                                    state.view === 'types'
-                                        ? 'type'
-                                        : 'category',
-                                code: null,
-                            })
-                        }
-                    >
-                        {state.view === 'types'
-                            ? 'Add a Business Type'
-                            : 'Add a Category'}
-                    </Button>
                 </WorkspaceFilters>
             </div>
             <Sheet
@@ -507,8 +511,8 @@ export default function BusinessCategoriesPage({
                     <SheetHeader>
                         <SheetTitle>
                             {sheet?.kind === 'category'
-                                ? (editingCategory?.name ?? 'Add a Category')
-                                : (editingType?.name ?? 'Add a Business Type')}
+                                ? (editingCategory?.name ?? 'Add Category')
+                                : (editingType?.name ?? 'Add Business Type')}
                         </SheetTitle>
                     </SheetHeader>
                     {sheet?.kind === 'type' && (

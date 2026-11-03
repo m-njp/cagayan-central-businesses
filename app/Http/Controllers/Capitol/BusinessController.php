@@ -73,7 +73,9 @@ final class BusinessController extends Controller
 
     private function saved(SaveBusinessRequest $request, Business $business): RedirectResponse
     {
-        Inertia::flash('toast', ['type' => 'success', 'message' => $request->boolean('submit') ? 'Submitted for review.' : 'Draft saved.']);
+        Inertia::flash('toast', ['type' => 'success', 'message' => $request->boolean('submit')
+            ? 'Submitted for review. It appears in the Business Directory and on the Dashboard map once someone else verifies it.'
+            : 'Draft saved. Submit it for review when it is complete.']);
 
         return to_route('capitol.businesses.show', $business);
     }
