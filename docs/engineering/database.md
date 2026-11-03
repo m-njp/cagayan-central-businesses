@@ -139,6 +139,26 @@ A COA report for one town and fiscal year, or the record that COA had not publis
 
 Unique `(municipality_id, fiscal_year, kind)`. A document read from a Capitol upload has `file` under `finance-uploads/` on the private disk and stays out of the CSV import and export (D42).
 
+#### population_figures
+
+Proposed census counts (D43). Read by the Population page and the review; maps read the published `town_facts` and `barangays` values.
+
+| Column | Type | Notes |
+| :- | :- | :- |
+| `id` | id | |
+| `public_id` | uuid | unique |
+| `municipality_id` | foreign key | restrict on delete |
+| `barangay_id` | foreign key, nullable | Null for the town's own count |
+| `year` | smallint | Census year |
+| `value` | unsigned bigint | Persons; at most `cagayan.population.value_max` |
+| `source_url` | string(500) | Official HTTPS psa.gov.ph link |
+| `status` | string(12) | `pending`, `verified`, `rejected` (shown as Returned), `superseded` |
+| `entered_by`, `reviewed_by` | foreign keys to `users`, nullable | Null on delete. Nobody reviews their own entry |
+| `reviewed_on` | date, nullable | |
+| `note` | string(500), nullable | Reason for a correction or a return |
+
+Index `(municipality_id, year, status)`.
+
 #### finance_uploads
 
 A COA report uploaded on Capitol Finances (D42).

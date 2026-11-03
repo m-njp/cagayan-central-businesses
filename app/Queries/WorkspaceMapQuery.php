@@ -2,27 +2,20 @@
 
 namespace App\Queries;
 
-use App\Data\BarangayProfile;
-use App\Data\TownFigure;
 use App\Data\WorkspaceMap;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 
 final class WorkspaceMapQuery
 {
-    public function __construct(private TownAtlasQuery $atlas, private FinanceMapQuery $finances) {}
+    public function __construct(private TownAtlasQuery $atlas, private FinanceMapQuery $finances, private BarangayAtlasQuery $populations) {}
 
     public function get(?string $town, bool $drill): WorkspaceMap
     {
-        $census = $town && $drill ? $this->census($town) : null;
-        $barangays = array_map(fn (array $f) => new BarangayProfile(
-            $f['properties']['psgc_code'],
-            $f['properties']['name'],
-            TownFigure::fromNullable($f['properties']['population'], $census['year'], $census['source']),
-            $f['properties']['shade'],
-        ), $census['features'] ?? []);
+        // Boundaries come from the map file; counts and shades come from the database.
+        $barangays = $town && $drill && $this->census($town) !== null ? $this->populations->get($town) : [];
 
-        return new WorkspaceMap($this->atlas->get(), $barangays, $this->finances->get());
+        return new WorkspaceMap($this->atlas->get(), $barangays, $this->finances->get(), $this->populations->counts());
     }
 
     /** @return array{year: int, source: string, features: list<array{properties: array{psgc_code: string, name: string, population: int|null, shade: int|null}}>} | null */

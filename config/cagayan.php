@@ -142,6 +142,15 @@ return [
 
     ],
 
+    // Population entry (Data Entry, Phase 4, 26-11-03): census years offered, the largest count accepted, changed
+    // places per save, and saves per person per minute.
+    'population' => [
+        'first_year' => 2015,
+        'value_max' => 10000000,
+        'changes_max' => 120,
+        'writes_per_minute' => 20,
+    ],
+
     /*
     | Dates written into messages, such as a wish cooldown, use residents'
     | local time. The database stores UTC.

@@ -346,3 +346,11 @@ Approved 26-11-03 by the owner ([finance report redesign plan](../plan/active/26
 - **Runtime:** the worker needs the `tools/coa/.venv` (or `COA_PYTHON`). `composer doctor` reports it. No Docker change and no new package: the parser's pinned dependencies are reused.
 
 **Why:** the owner wants non-technical staff to load a new report year without the command line, while every figure keeps its exact source and independent sign-off.
+
+## D43. Population Entry and Database Counts on Maps
+
+Approved 26-11-03 by the owner ([Data Entry plan](../plan/active/26-11-03-data-entry.md), Phase 4).
+
+- **Proposals, then publication:** `population_figures` holds proposed census counts for a town (no barangay) or a barangay, with the same rules as finance figures: pending until someone other than the person who entered it verifies it, a reason to return, a reason to correct a verified count, stale-edit refusal, one write per submission, an official HTTPS psa.gov.ph source, limits in `cagayan.population`. A newer proposal for the same place and year supersedes an older pending one.
+- **Publication writes the existing read tables:** a verified town count updates `town_facts`; a verified barangay count updates `barangays.population`, never replacing a newer census year. Every existing query keeps working.
+- **Maps read the database, files keep shapes:** the Home census explorer and the Capitol dashboard map take counts and shades from `barangays` (`BarangayAtlasQuery`), and use `data/barangays/maps/*.json` only for boundaries, so a verified count shows without a rebuild. `barangays:import` and `towns:import` stay for bulk loads from the committed CSVs.

@@ -1,5 +1,6 @@
 import {
     ClipboardPen,
+    UsersRound,
     LayoutDashboard,
     Search,
     MessageSquare,
@@ -45,6 +46,7 @@ import type { LucideIcon } from 'lucide-react';
 export const icons = {
     dashboard: LayoutDashboard,
     dataEntry: ClipboardPen,
+    population: UsersRound,
     wishes: MessageSquare,
     logs: ScrollText,
     profile: UserRound,

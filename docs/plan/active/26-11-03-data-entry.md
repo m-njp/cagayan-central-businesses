@@ -44,7 +44,7 @@ Step 2 of 4 agreed on "26-11-03". Data entry is scattered and slow: finances tak
 - [x] Businesses and Business Categories use the same action placement, no field help icons, one toast saying where the data appears after sign-off. Every data page puts its primary action top right in the header with the hub's verbs: Enter Report and Upload Report, Add Business, Add Category or Add Business Type.
 
 **Phase 4 Population**
-- [ ] Population stored in the database by place and census year, entered through the same grid with independent verification; maps read it without a rebuild.
+- [x] Population stored in the database by place and census year, entered through the same grid with independent verification; maps read it without a rebuild (D43). Population page in the sidebar, hub row and review rows; PSA link prefilled from the year's record.
 
 ## Deferred or Excluded
 
@@ -55,6 +55,7 @@ New datasets, OCR, public data entry other than the existing wish form, Docker c
 | Date | Change | Reason / Reference |
 | :- | :- | :- |
 | "26-11-03" | Plan created | Owner answers in this session |
+| "26-11-03" | Phases 3 and 4 built | Header actions with the hub's verbs, no help icon, plain save messages; `population_figures`, `SubmitPopulation`, `ReviewPopulation`, `PopulationQuery`, population page, maps read counts from the database (D43). Tests deferred to the end by the owner |
 | "26-11-03" | Phase 2 built, plus owner corrections: clickable rows with chevrons instead of underlines, density tokens, report source as buttons, one-hue stacked charts, stripes only on finance tables | `DataEntryQuery`, `row-link.tsx`, `app.css` density tokens; design.md "Dense Data Rule" |
 | "26-11-03" | Phase 1 built | `SubmitFinanceEntries`, `FinanceEntryCells`, `finance-report-grid.tsx`; `RecordFinanceFigure`, `StoreFinanceFigureRequest` and `finance-entry-form.tsx` removed |
 

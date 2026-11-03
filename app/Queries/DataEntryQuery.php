@@ -38,6 +38,12 @@ final class DataEntryQuery
                 $user->can('add-business') ? 'Add Business' : null,
                 $user->can('add-business') ? route('capitol.businesses.create', absolute: false) : null),
         ];
+        $population = DB::table('population_figures as p')
+            ->when($towns, fn (Builder $query) => $query->whereIn('p.municipality_id', $towns));
+        $datasets[] = new DataEntryDataset('population', 'Population', ['Home Map', 'Dashboard Map', 'About the Data'],
+            route('capitol.population.index', absolute: false),
+            (clone $population)->where('p.status', 'pending')->count(), $this->date((clone $population)->max('p.updated_at')),
+            'Enter Census', route('capitol.population.index', absolute: false));
         if ($user->can('manage-categories')) {
             // Category changes apply on save (D39), so there is nothing pending to count.
             $datasets[] = new DataEntryDataset('categories', 'Business Categories', ['Business Directory', 'Wish Form'], route('capitol.categories.index', absolute: false),
@@ -59,18 +65,29 @@ final class DataEntryQuery
         $businessRows = (clone $businesses)
             ->where('b.record_status', 'submitted')
             ->selectRaw("'businesses' as dataset, b.business_name as item, b.public_id::text as ref, null::integer as year, 1 as count, b.updated_at as since");
-        $review = DB::query()->fromSub($financeRows->unionAll($businessRows), 'r')
+        $populationRows = (clone $population)
+            ->join('municipalities as m', 'm.id', '=', 'p.municipality_id')
+            ->where('p.status', 'pending')
+            ->selectRaw("'population' as dataset, m.name as item, m.psgc_code as ref, p.year as year, count(*) as count, min(p.updated_at) as since")
+            ->groupBy('m.name', 'm.psgc_code', 'p.year');
+        $review = DB::query()->fromSub($financeRows->unionAll($businessRows)->unionAll($populationRows), 'r')
             ->orderBy('since')->orderBy('item')
             ->paginate((int) config('cagayan.finances.per_page'), ['*'], 'page', $page)->withQueryString();
 
         return new DataEntry($datasets, array_values(array_map(fn (stdClass $row) => new DataEntryReviewRow(
-            $row->dataset === 'finances' ? 'Government Finances' : 'Businesses',
-            $row->dataset === 'finances' ? "{$row->item} Report {$row->year}" : (string) $row->item,
+            match ($row->dataset) {
+                'finances' => 'Government Finances', 'population' => 'Population', default => 'Businesses',
+            },
+            match ($row->dataset) {
+                'finances' => "{$row->item} Report {$row->year}", 'population' => "{$row->item} Census {$row->year}", default => (string) $row->item,
+            },
             (int) $row->count,
             (string) $this->date($row->since),
-            $row->dataset === 'finances'
-                ? route('capitol.finances.show', ['town' => $row->ref, 'year' => $row->year], absolute: false)
-                : route('capitol.businesses.show', $row->ref, absolute: false),
+            match ($row->dataset) {
+                'finances' => route('capitol.finances.show', ['town' => $row->ref, 'year' => $row->year], absolute: false),
+                'population' => route('capitol.population.show', ['town' => $row->ref, 'year' => $row->year], absolute: false),
+                default => route('capitol.businesses.show', $row->ref, absolute: false),
+            },
         ), $review->items())), Pagination::from($review));
     }
 

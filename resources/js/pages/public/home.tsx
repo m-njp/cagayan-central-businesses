@@ -116,6 +116,7 @@ export default function Home({ overview }: Props) {
                     </h2>
                     <BarangayAtlas
                         towns={overview.atlas.towns}
+                        counts={overview.barangays}
                         mapStyle={mapStyle}
                     />
                 </div>
