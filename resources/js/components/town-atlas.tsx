@@ -1,5 +1,6 @@
 import { router, usePage } from '@inertiajs/react';
 import { Grip, Square } from 'lucide-react';
+import { useState } from 'react';
 import {
     FinanceMapControls,
     FinanceMapFigures,
@@ -12,8 +13,9 @@ import {
 } from '@/lib/finance-map';
 import { observationLabel } from '@/lib/performance-format';
 import type { FinanceMap } from '@/types/finance-map';
+import { HomeFocusView } from '@/components/home-focus-view';
 import { LazyProvinceMap } from '@/components/lazy-province-map';
-import type { MapStyle } from '@/components/province-map';
+import type { MapStyle, ProvinceMapProps } from '@/components/province-map';
 import {
     Select,
     SelectContent,
@@ -40,6 +42,7 @@ export function TownAtlas({
     onMapStyleChange: (style: MapStyle) => void;
 }) {
     const { url } = usePage();
+    const [expanded, setExpanded] = useState(false);
     const params = pageSearchParams(url);
     const townCode = params.get('town');
     const selection = financeMapSelection(finances, params);
@@ -58,44 +61,85 @@ export function TownAtlas({
         });
     };
     const choose = (code: string | null) => change({ town: code });
+    // The province, then each municipality, in a loop.
+    const order = [null, ...atlas.towns.map((item) => item.code)];
+    const step = (direction: -1 | 1) =>
+        choose(
+            order[
+                (order.indexOf(town?.code ?? null) + direction + order.length) %
+                    order.length
+            ],
+        );
+
+    // One definition of the map for the hero and the full screen view.
+    const map: ProvinceMapProps = {
+        mapStyle,
+        water: true,
+        zoomable: true,
+        label: `Government Income by municipality and city in Cagayan for ${selection.year ?? 'the latest available year'}`,
+        shades: Object.fromEntries(
+            atlas.towns.map((item) => [
+                item.code,
+                financeMapShade(
+                    finances,
+                    item.code,
+                    selection.year,
+                    MAP_MEASURE,
+                ),
+            ]),
+        ),
+        highlight: town ? [town.code] : [],
+        describe: (code, name) => {
+            const point = financeMapObservation(
+                finances,
+                code,
+                selection.year,
+                MAP_MEASURE,
+            );
+            return (
+                <span className="flex flex-col gap-0.5">
+                    <span className="font-medium">{name}</span>
+                    <span className="tabular-nums opacity-80">
+                        {observationLabel(point, 'php')}
+                    </span>
+                </span>
+            );
+        },
+        onSelect: choose,
+    };
+    const figures = (
+        <>
+            <div className="flex flex-col gap-1">
+                <p className="type-label text-foreground">
+                    {shown.kind === 'province'
+                        ? 'Province'
+                        : shown.kind === 'city'
+                          ? 'City'
+                          : 'Municipality'}
+                </p>
+                <h2 className="type-title">
+                    {shown.kind === 'province'
+                        ? 'Cagayan Province'
+                        : shown.name}
+                </h2>
+            </div>
+
+            <FinanceMapFigures
+                finances={finances}
+                code={shown.code}
+                {...selection}
+                population={shown.population}
+                aggregate={shown.kind === 'province'}
+            />
+        </>
+    );
 
     return (
         <div className="dark grid gap-6 text-foreground lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
             <div className="h-[28rem] md:h-[36rem] lg:h-[44rem]">
                 <LazyProvinceMap
-                    mapStyle={mapStyle}
-                    water
-                    zoomable
-                    label={`Government Income by municipality and city in Cagayan for ${selection.year ?? 'the latest available year'}`}
-                    shades={Object.fromEntries(
-                        atlas.towns.map((item) => [
-                            item.code,
-                            financeMapShade(
-                                finances,
-                                item.code,
-                                selection.year,
-                                MAP_MEASURE,
-                            ),
-                        ]),
-                    )}
-                    highlight={town ? [town.code] : []}
-                    describe={(code, name) => {
-                        const point = financeMapObservation(
-                            finances,
-                            code,
-                            selection.year,
-                            MAP_MEASURE,
-                        );
-                        return (
-                            <span className="flex flex-col gap-0.5">
-                                <span className="font-medium">{name}</span>
-                                <span className="tabular-nums opacity-80">
-                                    {observationLabel(point, 'php')}
-                                </span>
-                            </span>
-                        );
-                    }}
-                    onSelect={choose}
+                    {...map}
+                    onExpand={() => setExpanded(true)}
                     className="size-full"
                 />
             </div>
@@ -163,33 +207,28 @@ export function TownAtlas({
                 />
 
                 <section
-                    aria-labelledby="town-figures-heading"
+                    aria-label="Figures"
                     className="flex flex-col gap-4 rounded-lg border border-current/15 p-4"
                 >
-                    <div className="flex flex-col gap-1">
-                        <p className="type-label text-foreground">
-                            {shown.kind === 'province'
-                                ? 'Province'
-                                : shown.kind === 'city'
-                                  ? 'City'
-                                  : 'Municipality'}
-                        </p>
-                        <h2 id="town-figures-heading" className="type-title">
-                            {shown.kind === 'province'
-                                ? 'Cagayan Province'
-                                : shown.name}
-                        </h2>
-                    </div>
-
-                    <FinanceMapFigures
-                        finances={finances}
-                        code={shown.code}
-                        {...selection}
-                        population={shown.population}
-                        aggregate={shown.kind === 'province'}
-                    />
+                    {figures}
                 </section>
             </aside>
+            <HomeFocusView
+                open={expanded}
+                onOpenChange={setExpanded}
+                map={map}
+                figures={figures}
+                finances={finances}
+                area={{
+                    code: shown.code,
+                    name:
+                        shown.kind === 'province'
+                            ? 'Cagayan Province'
+                            : shown.name,
+                }}
+                townCode={town?.code ?? null}
+                onStep={step}
+            />
         </div>
     );
 }
