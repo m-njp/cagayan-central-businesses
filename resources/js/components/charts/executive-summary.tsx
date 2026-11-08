@@ -1,9 +1,7 @@
 import { lazy } from 'react';
 import { SourceLine } from '@/components/analytics/source-line';
 import { Figure } from '@/components/charts/finance-panel';
-import { ObservationChange } from '@/components/charts/observation-change';
 import PerformanceVisual from '@/components/charts/performance-visual';
-import { RESULT_METRIC } from '@/components/charts/trend-mark';
 import {
     Table,
     TableBody,
@@ -29,9 +27,7 @@ const FinancialConditionChart = lazy(
 
 const numberCell =
     'px-1.5 text-right font-mono whitespace-nowrap tabular-nums sm:px-2';
-// The sticky Item cell takes its row's shade (table.tsx default) so scrolled years pass behind it.
-const labelCell =
-    'sticky left-0 z-10 h-auto min-w-36 bg-inherit py-1.5 font-normal whitespace-normal';
+const labelCell = 'h-auto py-1.5 font-normal whitespace-normal';
 
 /** The note every cell of a row shares, such as a line loaded for one town only; none when the cells differ. */
 function rowNote(history: FinancialHistory, metricId: string): string | null {
@@ -79,9 +75,6 @@ export function ExecutiveSummary({
             </p>
         );
 
-    // Change compares the newest year with the year before; Net Income itself carries no arrow.
-    const hasChange = years.length > 1;
-    const columns = years.length + (hasChange ? 2 : 1);
     const results = sections.find((section) => section.id === 'totals');
     const position = sections.find((section) => section.id === 'position');
     // Reports in year order, then page order, however the sections cite them.
@@ -103,14 +96,7 @@ export function ExecutiveSummary({
             <Table data-striped className="type-data sm:type-body">
                 <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                        <TableHead
-                            className={labelCell.replace(
-                                'bg-inherit',
-                                'bg-card',
-                            )}
-                        >
-                            Item
-                        </TableHead>
+                        <TableHead className={labelCell}>Item</TableHead>
                         {years.map((year) => (
                             <TableHead
                                 key={year}
@@ -135,11 +121,6 @@ export function ExecutiveSummary({
                                 </button>
                             </TableHead>
                         ))}
-                        {hasChange && (
-                            <TableHead className={numberCell} scope="col">
-                                Change
-                            </TableHead>
-                        )}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -151,15 +132,14 @@ export function ExecutiveSummary({
                         >
                             <TableHead
                                 scope="colgroup"
-                                colSpan={columns}
-                                className="sticky left-0 h-auto bg-card pt-3 pb-1 type-item"
+                                colSpan={years.length + 1}
+                                className="h-auto bg-card pt-3 pb-1 type-item"
                             >
                                 {title}
                             </TableHead>
                         </TableRow>,
                         ...history.metrics.map((metric) => {
                             const note = rowNote(history, metric.id);
-                            const latest = history.rows.at(-1);
                             return (
                                 <TableRow key={metric.id} className="bg-card">
                                     <TableHead
@@ -184,23 +164,10 @@ export function ExecutiveSummary({
                                                 }
                                                 metric={metric}
                                                 alwaysShort={!exactFits}
+                                                withChange
                                             />
                                         </TableCell>
                                     ))}
-                                    {hasChange && (
-                                        <TableCell className={numberCell}>
-                                            {metric.id !== RESULT_METRIC && (
-                                                <ObservationChange
-                                                    point={
-                                                        latest?.observations[
-                                                            metric.id
-                                                        ]
-                                                    }
-                                                    unit={metric.unit}
-                                                />
-                                            )}
-                                        </TableCell>
-                                    )}
                                 </TableRow>
                             );
                         }),

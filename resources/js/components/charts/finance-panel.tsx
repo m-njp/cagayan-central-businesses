@@ -2,7 +2,6 @@ import { lazy } from 'react';
 import type { ReactNode } from 'react';
 import { SourceLine } from '@/components/analytics/source-line';
 import { ExactAmount } from '@/components/charts/exact-amount';
-import { ObservationChange } from '@/components/charts/observation-change';
 import PerformanceVisual from '@/components/charts/performance-visual';
 import { RESULT_METRIC, TrendMark } from '@/components/charts/trend-mark';
 import {
@@ -19,6 +18,7 @@ import {
     citationLinks,
     observationLabel,
     observationNote,
+    percentChangeLabel,
 } from '@/lib/performance-format';
 import { trendOf } from '@/lib/trend';
 import type {
@@ -60,14 +60,18 @@ export function Figure({
             : null;
     if (trend && point) {
         // Accounting style: a fall reads in parentheses, a rise as a plain amount; no words or plus sign.
+        const percent = percentChangeLabel(point, metric.unit);
         const change = changeLabel(point, metric.unit);
         return (
             <ExactAmount
                 exact={exact}
-                detail={`Change from ${point.comparisonYear}: ${change}`}
+                detail={`Change from ${point.comparisonYear}: ${change}${percent ? `, ${percent}` : ''}`}
             >
                 <span className="inline-flex items-center gap-1">
-                    {alwaysShort ? short : exact}
+                    <span className="hidden sm:inline">
+                        {alwaysShort ? short : exact}
+                    </span>
+                    <span className="sm:hidden">{short}</span>
                     <span className={trend.tone}>
                         <TrendMark trend={trend} />
                     </span>
@@ -224,9 +228,6 @@ export default function FinancePanel({
                         <TableHead className={numberCell}>
                             {annualYear}
                         </TableHead>
-                        <TableHead className="px-1.5 text-right sm:px-2">
-                            Change
-                        </TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -255,12 +256,10 @@ export default function FinancePanel({
                                     />
                                 </TableCell>
                                 <TableCell className={numberCell}>
-                                    <Figure point={point} metric={metric} />
-                                </TableCell>
-                                <TableCell className="px-1.5 text-right sm:px-2">
-                                    <ObservationChange
+                                    <Figure
                                         point={point}
-                                        unit={metric.unit}
+                                        metric={metric}
+                                        withChange
                                     />
                                 </TableCell>
                             </TableRow>

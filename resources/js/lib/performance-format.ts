@@ -170,6 +170,17 @@ export function observationLabel(
     return formatMetricValue(point.value, unit);
 }
 
+/** The change as a share of the year before, such as "+4.2%"; none for percent lines or a zero base. */
+export function percentChangeLabel(
+    point?: EconomicObservation,
+    unit: MetricUnit = 'php',
+): string | null {
+    const percent = point?.percentageChange;
+    if (unit === 'percent' || percent === null || percent === undefined)
+        return null;
+    return `${signedNumber.format(percent)}%`;
+}
+
 /** The change from the year before; a rise carries +, a fall in pesos sits in parentheses. */
 export function changeLabel(
     point?: EconomicObservation,

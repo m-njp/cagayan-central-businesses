@@ -5,6 +5,7 @@ import { ExecutiveSummary } from '@/components/charts/executive-summary';
 import FinancePanel, { Figure } from '@/components/charts/finance-panel';
 import { FinanceTrends } from '@/components/charts/finance-trends';
 import { RESULT_METRIC } from '@/components/charts/trend-mark';
+import { Surface } from '@/components/ui/surface';
 import {
     latestYear,
     selectedBusiness,
@@ -95,8 +96,6 @@ export function AnalyticsPanels({
 }) {
     const finance = selectedFinance(catalog, filters);
     const business = selectedBusiness(catalog, filters);
-    const panel =
-        'flex min-w-0 flex-col gap-2 rounded-sm border bg-card p-panel';
     const shown = {
         catalog,
         presentation: filters.presentation,
@@ -107,7 +106,7 @@ export function AnalyticsPanels({
 
     return (
         <>
-            <section aria-labelledby="finance-heading" className={panel}>
+            <Surface padded aria-labelledby="finance-heading">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-baseline gap-3">
                         <h2 id="finance-heading" className="type-heading">
@@ -147,9 +146,9 @@ export function AnalyticsPanels({
                 ) : (
                     <Unavailable />
                 )}
-            </section>
+            </Surface>
             {catalog.businesses && (
-                <section aria-labelledby="business-heading" className={panel}>
+                <Surface padded aria-labelledby="business-heading">
                     <div className="flex items-start justify-between gap-3">
                         <h2 id="business-heading" className="type-heading">
                             Business Trends
@@ -162,7 +161,7 @@ export function AnalyticsPanels({
                     ) : (
                         <Unavailable />
                     )}
-                </section>
+                </Surface>
             )}
         </>
     );

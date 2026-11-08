@@ -170,8 +170,13 @@ await test('formatting retains combined notes, puts falls in parentheses and nev
             return nextResolve(specifier, context);
         },
     });
-    const { changeLabel, observationLabel, observationNote, citationLinks } =
-        await import('../../resources/js/lib/performance-format.ts');
+    const {
+        changeLabel,
+        observationLabel,
+        observationNote,
+        citationLinks,
+        percentChangeLabel,
+    } = await import('../../resources/js/lib/performance-format.ts');
     const change = point('15', {
         comparable: true,
         change: '5',
@@ -184,6 +189,16 @@ await test('formatting retains combined notes, puts falls in parentheses and nev
         '(₱1.5M)',
     );
     assert.equal(changeLabel(change, 'php'), '₱5.00');
+    assert.equal(percentChangeLabel(change, 'php'), '+50%');
+    assert.equal(
+        percentChangeLabel({ ...change, percentageChange: -4.25 }, 'php'),
+        '-4.25%',
+    );
+    assert.equal(percentChangeLabel(change, 'percent'), null);
+    assert.equal(
+        percentChangeLabel({ ...change, percentageChange: null }, 'php'),
+        null,
+    );
     assert.equal(
         observationLabel(point('-275749956.23'), 'php', true),
         '(₱275.75M)',
