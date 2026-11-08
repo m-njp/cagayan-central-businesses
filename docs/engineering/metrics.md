@@ -328,7 +328,7 @@ Retired 26-11-03 by the owner. Income and Expenses per Resident are no longer co
 
 ### M27. Sum of Reporting Towns
 
-- **Label:** a total across towns for one line and year is always labeled "Sum of Reporting Towns", never provincial government finances.
+- **Label:** a total across towns for one line and year is always labeled "Sum of Reporting Towns", never provincial government finances. The Capitol dashboard map panel drops the heading and the "N of M towns reporting" line (owner, 26-11-04); its figures sit under the area name and the COA Annual Audit Reports source.
 - **Coverage:** always stated, for example "13 of 29 towns".
 - **Year-over-year change (M26):** computed only over the towns shown in both years, and that matched count is stated.
 - **Comparing towns:** use the median of the reporting towns. Missing towns are listed last and unranked, as in M5.

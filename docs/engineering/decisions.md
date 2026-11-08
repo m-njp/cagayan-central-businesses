@@ -349,7 +349,7 @@ Approved 26-11-03 by the owner ([finance report redesign plan](../plan/active/26
 
 ## D43. Population Entry and Database Counts on Maps
 
-Approved 26-11-03 by the owner ([Data Entry plan](../plan/active/26-11-03-data-entry.md), Phase 4).
+Approved 26-11-03 by the owner ([Data Entry plan](../plan/archive/26-11-03-data-entry.md), Phase 4).
 
 - **Proposals, then publication:** `population_figures` holds proposed census counts for a town (no barangay) or a barangay, with the same rules as finance figures: pending until someone other than the person who entered it verifies it, a reason to return, a reason to correct a verified count, stale-edit refusal, one write per submission, an official HTTPS psa.gov.ph source, limits in `cagayan.population`. A newer proposal for the same place and year supersedes an older pending one.
 - **Publication writes the existing read tables:** a verified town count updates `town_facts`; a verified barangay count updates `barangays.population`, never replacing a newer census year. Every existing query keeps working.

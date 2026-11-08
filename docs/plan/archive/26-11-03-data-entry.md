@@ -1,8 +1,8 @@
 ---
 title: "Data Entry"
 created: "26-11-03"
-updated: "26-11-03"
-status: in-progress
+updated: "26-11-09"
+status: completed
 branch: feat/finance-report-redesign
 base: feat/data-ingestion-rebuild at 869cf87 (baseline 2b96ff4)
 predecessor: 26-11-03-finance-report-redesign.md
@@ -54,6 +54,8 @@ New datasets, OCR, public data entry other than the existing wish form, Docker c
 
 | Date | Change | Reason / Reference |
 | :- | :- | :- |
+| "26-11-09" | Completed and archived at the owner's request; the Population, Data Entry and Government Finances redesign continues in [Capitol Entry Redesign](../active/26-11-09-capitol-entry-redesign.md) | Owner called Population and Data Entry poorly designed and asked to finish and archive this plan |
+| "26-11-04" | Capitol polish: one `Surface` card and `PageHeader` on every page, neutral stone page background, finance table without scrolling or a Change column (arrow and percent per year cell), Population and finance grids lock verified cells behind a pen with Returned status, Business Categories as one table with icon search and pen edits, dashboard ledger, towns ranking and Waiting for Review, coverage line removed from the Capitol map panel | Owner review in this session; design.md "Surfaces and Page Headers" |
 | "26-11-03" | Plan created | Owner answers in this session |
 | "26-11-03" | Phases 3 and 4 built | Header actions with the hub's verbs, no help icon, plain save messages; `population_figures`, `SubmitPopulation`, `ReviewPopulation`, `PopulationQuery`, population page, maps read counts from the database (D43). Tests deferred to the end by the owner |
 | "26-11-03" | Phase 2 built, plus owner corrections: clickable rows with chevrons instead of underlines, density tokens, report source as buttons, one-hue stacked charts, stripes only on finance tables | `DataEntryQuery`, `row-link.tsx`, `app.css` density tokens; design.md "Dense Data Rule" |
@@ -62,3 +64,7 @@ New datasets, OCR, public data entry other than the existing wish form, Docker c
 ## Verification and Handoff
 
 Phase 1 "26-11-03": 7 new safeguard tests (stale-edit test proven to fail without its check), 33 finance review tests moved to the grid payload with every assertion kept; Capitol, Finances and Public suites 197 passed, 1 failing only for the pending human sign-off. PHPStan, lint, TypeScript and build pass. Browser: grid prefilled with formatted amounts, Executive Summary as default source, a verified correction without a reason refused with nothing written.
+
+"26-11-04": Capitol, workspace and population tests 41 passed (new: Returned note, Waiting for Review by role), Capitol suite 135 passed before the final edits, test:analytics (percent label), test:trend and test:categories pass, PHPStan not yet rerun, npm check and types:check pass. Browser (Admin demo role, light): dashboard ledger arrows, ranking and no coverage line; Population verified cells locked, pen unlocks one cell; Business Categories toolbar controls present. Full `composer ci:check` and a dark-mode, 375px pass remain.
+
+"26-11-09" (closing): Capitol tests 128 passed, PHPStan clean, `npm run check`, `types:check` and `build` pass after the redesign that follows this plan. Not run: the full `composer ci:check` (a known pending sign-off test fails for the unsigned committed figures), and the dark-mode and 375px browser passes listed on "26-11-04"; the owner asked for no browser screenshot checks in this session. Those two remain open limitations, carried into the successor plan.

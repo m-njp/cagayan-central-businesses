@@ -176,10 +176,13 @@ A COA report uploaded on Capitol Finances (D42).
 | `status` | string(10) | `App\Enums\FinanceUploadStatus`: queued, running, done, failed |
 | `figures` | int | Figures left waiting for sign-off |
 | `issues` | jsonb, nullable | Parser errors and warnings |
+| `progress` | jsonb, nullable | Bounded parser snapshot: attempt UUID, stage, timestamps, scan counts, provisional figures, issues and recent activity. Null for uploads made before live progress. Never a published figure or a raw process log. |
 | `message` | string(500), nullable | A short outcome for the page; never an exception |
 | `uploaded_by` | foreign key to `users`, nullable | Null on delete |
 
 Unique `(municipality_id, fiscal_year, kind, sha256)`, so the same file is read once.
+
+Failed or interrupted uploads can retry the same private file. The retry changes the attempt UUID under a row lock; every progress write and final transaction checks ownership. Timeouts are shorter than the queue reservation. Snapshot bounds and polling interval live in `cagayan.finances.uploads`.
 
 #### finance_figures
 

@@ -59,6 +59,34 @@ Every visible sentence must add information needed to understand the data, compl
 - Selecting a town in the dropdown or map must preserve entered text, focus where practical, and scroll position. Do not request the entire form payload to update a count.
 - Update only the count in the background when the selection supports it. Skip unchanged selections, reuse cached counts, cancel superseded requests, and handle failures without replacing the form with a loading state.
 
+### Show Parsing Progress as a Status Overlay
+
+Owner corrections, "26-11-08", after two rejected versions of the finance upload progress view.
+
+- A full-page Gaussian blur (`bg-background/60 backdrop-blur-md`) over the page that stays visible, with bare content centered on it. No card, no scrollbar.
+- Geist Mono throughout. One status line, a thin scan bar and a fixed seven-line log: time (24-hour Philippine), source location, line label, exact amount, then an icon. The newest line spins; finished lines draw an animated check.
+- Print what happened in plain words and figures, not raw event text. Show no all-caps headings, hint text, "Discovered Figures" counts, badges, results tables or expandable history.
+- Prefer deleting code to adding it. Server events carry facts; the browser formats them.
+
+### Focus Overlay
+
+Owner direction, "26-11-08" and "26-11-09". One reusable component, `components/ui/focus-dialog.tsx`, serves the parsing progress and the Home map view. Do not rebuild the blur by hand.
+
+- The page stays visible under a Gaussian blur that fades in slowly and out quickly (reduced motion skips it). Content sits bare in the middle: no card, border or shadow. Children bring their own title (`sr-only` is fine).
+- The Home view opens from one expand icon in the map controls (not a click on the map, which already selects a municipality). It is a full-screen comparison view, not a details dialog. Four bare areas on a 2 by 2 grid with no visible grid lines: top left the map, top right the area's figures, bottom left the Income, Expenses and Net Income trend, bottom right the same figures as a table with years as columns.
+- With a municipality chosen, the map shows that municipality alone, drawn from its barangay file with its barangay boundaries and names on hover, and no figure per barangay (one shade, the municipality's). With none chosen it shows the province. It uses the same URL selection and cached data as the hero, so opening it requests nothing new, and it has no second style or year control.
+- The overlay uses the ink look (`bg-brand/70` overlay, `dark` content), because the map shades and hero tokens exist only there. Token colors only.
+- Previous and next chevrons step through the province and then each municipality in a loop, changing the same URL selection.
+- Close with an icon button (40px) or Escape; focus returns to the expand button. Below `md` it is one scrolling column.
+- Where else it could help, ranked, not built: 1) the wish cloud and ranking, for more real labels at full size; 2) finance charts on Economy and Capitol Analytics (one shared `AnalyticsPanels`); 3) the Capitol Dashboard map, preferring MapLibre's own fullscreen control over a second WebGL instance. Do not use it for tables, entry forms, Population, Data Entry, Businesses, the finance review dialog or upload.
+
+### Tabs and Municipality
+
+- One tab row for every filter tab: `components/capitol/tab-row.tsx`, the Businesses look (filled pill for the active tab, mono labels for years, no underline). Government Finances years, Businesses review states and Population census years all use it inside a `Surface padded`.
+- The word is Municipality in every label, header and placeholder. Never Town, City, "Town or City" or both. Code names and routes keep `town`.
+- Entered figures show one status cell (`FigureStatus`: dot and word, "by you", the Returned note inline) and one entry cell (`EntryCell`, compact `h-7`). Times in Data Entry read `MM-DD-YY HH:mm` in Philippine time through `formatEntryTimestamp`.
+- Population is the table on the left and the municipality's barangay map on the right. The map is the shared `ProvinceMap` in its solid style, as on the Dashboard, shaded by the barangay file. Choosing a barangay on the map selects its row and the reverse. All rows share one font size; the municipality total is only medium weight.
+
 ### Validate the Result and Leave a Clear Handoff
 
 - Review the diff against the actual request and the removals above. A deleted feature is not permission to recreate it under a different label.
@@ -414,7 +442,7 @@ Repeated patterns to avoid: expanding a source credit into cards, adding subtitl
 
 The bottom bar has one single-row Account dropdown beside the appearance toggle. Profile and Sign Out stay inside the dropdown. Do not use a two-line name/role block or expose identity details in the sidebar (user correction "26-10-28").
 
-Government Finances index uses report-year navigation tabs, newest available year first and selected by default. Show one year at a time. Do not repeat Report Year in the right-hand filters or every table row. Town and Status remain in the filter panel; Clear Filters preserves the active year.
+Government Finances index uses report-year tabs (`TabRow`), newest available year first and selected by default. Show one year at a time. Do not repeat Report Year in the right-hand filters or every table row. Municipality and Status remain in the filter panel; Clear Filters preserves the active year.
 
 
 ### Analytics Clarity "26-10-28"
@@ -449,20 +477,20 @@ User correction after reviewing Analytics Clarity: the Yearly Summary repeated s
 Government Finances                                      [Help]
 View [Yearly Summary]  Show [Government Totals]  Fiscal Year [2025]
 
-Item                    2024            2025      Change
-Government Revenue      ₱1,465,722,146.22   ₱1,679,019,473.60   ▲ +14.6%
-Government Expenses     ₱1,184,642,113.21   ₱1,403,269,517.37   ▲ +18.5%
-Surplus or Deficit      ▲ ₱281,080,033.01   ▲ ₱275,749,956.23   ▼ -1.9%
+Item                    2024                2025
+Government Revenue      ₱1,465,722,146.22   ₱1,679,019,473.60 ↑
+Government Expenses     ₱1,184,642,113.21   ₱1,403,269,517.37 ↑
+Surplus or Deficit      ₱281,080,033.01     ₱275,749,956.23
 
 Source
 Executive Summary 2025 p. 2
 ```
 
-- **Yearly Summary** is a table of the year before beside the selected fiscal year, then the change, so a 2025 filter reads 2024 then 2025 (oldest to newest, as Trends does; corrected 26-10-28). The previous year and the change are always shown, so there is no Compare control. Item labels wrap; amounts are right-aligned `font-mono tabular-nums`; the change is the triangle and the short amount, no percentage (corrected 26-10-29; `text-trend-up`, `text-trend-down`), direction only, never a rating (M26).
+- **Yearly Summary** is a table of the year before beside the selected fiscal year, so a 2025 filter reads 2024 then 2025 (oldest to newest, as Trends does; corrected 26-10-28). The previous year and the change are always shown, so there is no Compare control. Item labels wrap; amounts are right-aligned `font-mono tabular-nums`; the selected year carries its arrow, compared with the year before, and there is no Change column (26-11-04). The arrow is direction only, never a rating (M26).
 - **Trends** is the existing chart, then the same table with the period's years as columns. Years are underlined buttons: choosing one opens the Yearly Summary for that year with local history, which is the way from a trend to its source. The table uses the short peso form (₱1.68B), with the exact figure kept for screen readers.
-- **Exact amounts on hover.** Every abbreviated peso figure (the short form on a phone and every Trends cell) and every Change cell is an `ExactAmount`: hover, focus or tap shows the exact peso amount, such as "-₱58,651,101.96 from 2024". Tooltips never carry sources. The trigger is a real button with the exact text as its accessible name.
-- **Surplus or Deficit, one display.** `lib/trend.ts` and `components/charts/trend-mark.tsx` are the only place that decides it: a surplus is green with a ▲, a deficit is red with a ▼, zero, missing and hidden figures are neutral with no triangle. `ObservationChange`, `ResultFigure`, the Yearly Summary and Trends rows, the chart tooltip and the map panels all use them with the `--trend-up` and `--trend-down` tokens. Never write the triangle or its color inline. It marks direction and sign, not a rating.
-- **Trends changes.** Each year cell shows the amount with its tooltip and the triangle beside it, the exact change on hover (no percent since 26-10-29; none for a year without a comparable year before).
+- **Exact amounts on hover.** Every abbreviated peso figure (the short form on a phone and every Trends cell) and every figure with a change arrow is an `ExactAmount`: hover, focus or tap shows the exact peso amount, such as "-₱58,651,101.96 from 2024". Tooltips never carry sources. The trigger is a real button with the exact text as its accessible name.
+- **Surplus or Deficit, one display.** `lib/trend.ts` and `components/charts/trend-mark.tsx` are the only place that decides it: a surplus is green with a ▲, a deficit is red with a ▼, zero, missing and hidden figures are neutral with no triangle. `Figure`, the Yearly Summary and Trends rows, the chart tooltip and the map panels all use them with the `--trend-up` and `--trend-down` tokens. Never write the triangle or its color inline. It marks direction and sign, not a rating.
+- **Trends changes.** Each year cell shows the amount with its tooltip and the triangle beside it, the exact change and its percent on hover (26-11-04; none for a year without a comparable year before). The Executive Summary and the dashboard ledger do the same.
 - **Phones** keep the same four columns: amounts use the short form below the `sm` breakpoint (exact figure for screen readers), cell padding and type shrink, and the table never overflows the page.
 - **Missing, hidden and not available.** A cell reads "Not available" or "Hidden to protect individual businesses", never `0`. The reason (not published by COA, workbook not loaded, awaiting sign-off, census, restated, coverage) prints once under the table when every row shares it, otherwise under its own item label.
 
@@ -479,10 +507,10 @@ Do not restore: per-row Source Details buttons, a Source footer in every panel, 
 
 ### Business Categories "26-10-28"
 
-Approved by the user, recorded in D38 and reworked by D39 ("Category, Business Type, Business"). The Capitol Business Categories page has two URL tabs, Categories and Business Types, one table each, and the right-hand filter panel (Search, Category and Industry on the types tab, Clear Filters, then Add a Category or Add a Business Type). Do not restore the old four-column table with an Edit Tags drawer, or Focus Tags.
+Approved by the user, recorded in D38 and reworked by D39 ("Category, Business Type, Business"). The Capitol Business Categories page is one Business Types table in one `Surface` (26-11-04). The toolbar holds a magnifier that opens into a search box, Category and Industry menus and Clear Filters; the page header holds Categories (a sheet listing categories with their own pen and Add Category) and Add Business Type. Ten rows a page through the shared `Pagination` in the surface footer. Do not restore the old four-column table with an Edit Tags drawer, or Focus Tags.
 
 - **Tree.** Category, then Business Type, then the registered Business by name. A Business Type has exactly one Category. Industry (PSIC) is a label on the type, not a level.
-- **Columns.** Categories: Category chip, Business Types, Registered with its year, Edit. Business Types: Business Type, Category chip, Industry, Registered with its year, Edit. Counts are right-aligned mono and link to the Businesses directory filtered by that type or category. Long industry names wrap, and the table scrolls inside its own surface on phones.
+- **Columns.** Business Type, Category chip, Industry, Registered with its year, and a pen icon button to edit. Counts are right-aligned mono and link to the Businesses directory filtered by that type or category. Long industry names wrap, and the table scrolls inside its own surface on phones.
 - **Sorting and paging.** Headers are buttons with `aria-sort`, and a count that is not available sorts last in either direction. Ten rows a page with the quiet Previous, Page n of m, Next control. Every row is loaded, so sort, search, filters and pages are local history with zero requests; typing in Search replaces the URL entry instead of adding one per keystroke.
 - **Category chips.** A tinted background with a saturated dot and foreground text, always with the category name (`CategoryChip`, palette in `lib/category-colors.ts`). Colors are the `--category-1` to `--category-10` tokens in both modes. This is the approved exception to "hue is reserved for data": a category color never carries meaning alone. Use only the palette, never a typed color or a color package.
 - **Forms.** One right-side Sheet for add and edit. Name is stored as typed. When it differs from Title Case the form offers one underlined suggestion, "Title Case: Sari-Sari Store", that the person can accept. Acronyms and mixed-case brands are kept. A duplicate name is flagged as they type. A type chooses one Category and one Industry. Editing a category adds a named color picker; a new category gets its color automatically.
@@ -521,7 +549,7 @@ User corrections from screenshots of the profile, the directory and Economy. The
 - **No New, no Valid.** No New badge, New This Year filter or sparkle icon. A valid permit has no badge; Expiring, Expired and No Permit on File keep theirs.
 - **Directory.** Filters in one grid row: Town, Search with a leading search icon, Barangay, Category, then BIR Registered. Rows show the category icon and the name only, with two fixed right slots (milestone mark, BIR shield) so rows align. From `lg` the list and map share one fixed-height panel; the list scrolls inside it with Show More at its end.
 - **Map area.** The chosen barangay has a solid primary outline and a name tag in the top left; the rest of the town is dimmed.
-- **Changes.** No percentages. Trends cells show the figure with the triangle beside it; a Change column shows the triangle and the short amount; the exact amount stays on hover through `ExactAmount`. Negative pesos read in accounting style, (₱58.65M), and keep their red down triangle.
+- **Changes.** Arrow per cell, percent on hover (26-11-04). Trends cells show the figure with the triangle beside it; every year cell shows the arrow against the year before; the exact amount and the percent stay on hover through `ExactAmount`. Negative pesos read in accounting style, (₱58.65M), and keep their red down triangle.
 - **Economy.** Panels use 12px padding and tighter charts. Business Trends shows counts only: Declared Sales and Share of Town were removed. The right column is sticky and holds the Town Explorer map and Community Wishes, so no empty strip remains.
 - **Community Wishes.** On Economy, one compact ranked list with thin horizontal bars and every wish, no view switcher.
 - **Home wish cloud.** The Home wish card holds the `@visx/wordcloud` word cloud (`WishCloud`) between its heading, with the Sample Data label, and Share Your Wish: horizontal words packed on an archimedean spiral with a fixed generator, sized on a log scale, the most wished in brand blue, then teal, then muted. No counts on the words; hover, focus or tap shows the original `WishTooltip` (label, town, wishes). A layout that cannot place every word is redone with smaller sizes, so no wish is dropped. Lazy loaded. The Economy action becomes one row below it: heading left, Explore the Economy right.
@@ -541,9 +569,9 @@ User-approved simplification for public Economy and Capitol Analytics. It supers
 **The question.** What did this town's government own, owe, earn, spend and budget each year, as COA printed it?
 
 - **Default view.** View offers Executive Summary (default), Yearly Summary and Trends. Executive Summary has no Show or Fiscal Year picker; Period (3Y, 5Y, Max, default Max) sits beside the year range.
-- **One table.** Item, then one column per fiscal year, oldest to newest. Three sections in COA's order, each a `type-label` row: Financial Condition (Assets, Liabilities, Government Equity), Results of Operation (Income, Expenses, Net Income), Budget Execution (Current Appropriations, Current Allotments, Continuing Allotments, Current Obligations, Continuing Obligations). The Item column is sticky; the table scrolls inside its card, never the page.
+- **One table.** Item, then one column per fiscal year, oldest to newest. Three sections in COA's order, each a `type-label` row: Financial Condition (Assets, Liabilities, Government Equity), Results of Operation (Income, Expenses, Net Income), Budget Execution (Current Appropriations, Current Allotments, Continuing Allotments, Current Obligations, Continuing Obligations). The table fits its card with no scrolling and no sticky column: the Item column takes the free width and the years share the rest (26-11-04).
 - **Amounts.** Exact pesos when three years or fewer are shown. Longer periods use the short form (₱1.68B) with the exact amount on hover, focus or tap through `ExactAmount`, as Trends does. A year heading opens that year's Yearly Summary with local history.
-- **Net Income.** Income minus Expenses (M19). A loss reads in accounting parentheses, (₱6.54M), with no triangle and no green or red, everywhere: the table, Yearly Summary, Trends, chart tooltips and both economic map panels. Triangles remain only on Change cells and Trends change marks, as direction, never a rating.
+- **Net Income.** Income minus Expenses (M19). A loss reads in accounting parentheses, (₱6.54M), with no triangle and no green or red, everywhere: the table, Yearly Summary, Trends, chart tooltips and both economic map panels. Arrows remain only beside year cells, as direction, never a rating.
 - **Words.** Income, Expenses and Net Income under the Government Finances heading; "Government Income" on map legends, which have no such heading. The Show group formerly called Government Totals is Results of Operation.
 - **Charts.** Below the table, side by side from `lg`: Results of Operation (Income and Expenses lines) and Financial Condition (Liabilities and Government Equity stacked, so each bar is Assets), with `--chart-*` tokens, lazy loaded, the table as their alternative.
 - **Missing.** A row a town lacks reads Not available in every cell with the reason once under its label, such as "Loaded for Tuguegarao City only" (M35). Never `0`.
@@ -556,7 +584,7 @@ Owner-approved polish of the Executive Summary View after the rejected rebuild w
 **The question.** How did this town's government do year after year, in COA's own words?
 
 - **Header.** One row beside Government Finances: Show (only in Charts or one year), 3Y 5Y All chips, a Year select that opens the Yearly Summary, an icon Table or Charts toggle (Charts is the former Trends) and an icon Help button. No year-range caption; years appear only in column headings and axes. Every control is local history.
-- **Table.** Visible column lines, alternating solid row shades (`bg-card`, `bg-muted`; the sticky Item cell repeats its row's shade), Title Case section rows in `type-item`, and a trailing Change column comparing the newest year with the year before. Net Income has no Change mark.
+- **Table.** Visible column lines, alternating solid row shades (`bg-card`, `bg-muted`), Title Case section rows in `type-item`, and an arrow in each year cell comparing it with the year before. Net Income has no arrow.
 - **Change marks.** Green up arrow ↑ and red down arrow ↓ from `lib/trend.ts`, direction only, never a rating.
 - **Charts.** Results of Operation shows Income and Expenses as paired bars with Net Income as a line over the zero line; Financial Condition keeps its stacked bars. Both share one compact tooltip card (year, then swatch, label and exact amount per series) and hover the same year together.
 - **Source.** One wrapping line of links, never a vertical stack.
@@ -568,10 +596,10 @@ Owner-approved polish of the Executive Summary View after the rejected rebuild w
 Owner correction after the Trends view showed a 2x2 grid of padded figure tiles with a 3xl amount, a year and an arrow under each. Never build that again, on any screen.
 
 - **Rows, not tiles.** Several figures for the same years go in one table row each, with the years as columns. Never a grid of cards, one figure per card, an oversized amount, or the year repeated under every figure.
-- **Every table is the shared `components/ui/table.tsx`.** It draws the outer border and the column lines by default. Alternating solid row shades are only for finance tables beside charts (`<Table data-striped>`: Executive Summary, the Charts view table, Yearly Summary); other workspace tables are not striped (owner, 26-11-03). A section heading row passes `data-plain` so it is never shaded. A sticky first column uses `bg-inherit` to take its row's shade. Wrappers around a table add no second border.
+- **Every table is the shared `components/ui/table.tsx`.** It draws the outer border and the column lines by default. Alternating solid row shades are only for finance tables beside charts (`<Table data-striped>`: Executive Summary, the Charts view table, Yearly Summary); other workspace tables are not striped (owner, 26-11-03). A section heading row passes `data-plain` so it is never shaded. Put it inside a `Surface`, which draws the one border (the table's own is removed there).
 - **Clickable rows, not underlined links.** A row that opens something puts `RowLink` (`components/row-link.tsx`) in its first cell and `RowChevron` in a narrow last cell. The whole row is the click and keyboard target, with hover and focus on the row. Buttons inside such a row sit above it with `relative z-10`. Underlines stay only on links inside text, such as a Source line.
 - **Density tokens.** Spacing comes from `--spacing-panel` (inside cards and panels), `--spacing-cell-x`, `--spacing-cell-y` and `--spacing-row` (table header height) in `resources/css/app.css`, used as `p-panel`, `px-cell-x`, `py-cell-y` and `h-row`. Tighten or loosen the whole app there, never per screen.
-- **One tooltip per figure.** A short amount and its change arrow are one control (`Figure` with `withChange`): the tooltip reads the exact amount, then "Change from 2024:" and the exact change in accounting style: a fall in parentheses, a rise as a plain amount, no words and no plus sign. Every change label follows this. Never a separate hover target for the arrow.
+- **One tooltip per figure.** A short amount and its change arrow are one control (`Figure` with `withChange`): the tooltip reads the exact amount, then "Change from 2024:" the exact change in accounting style (a fall in parentheses, a rise as a plain amount, no words and no plus sign), then its percent such as "-4.2%" when the year before is not zero. Every change label follows this. Never a separate hover target for the arrow.
 - **Maximize rows.** Compact cell padding, `type-data` on phones, no empty space reserved for decoration. Padding exists to separate content, not to fill a card.
 
 ## Finance Charts "26-11-03"
@@ -601,3 +629,13 @@ User correction supersedes the custom hexagonal ribbon medals in Businesses and 
 ## Original Achievements Restored "26-10-30"
 
 Latest user correction supersedes both attempted external badge packs and the generic icon panels. Retain the original compact hexagonal medals and ribbon tails, original colors, titles, values and details. Refinement is limited to a continuous quiet inner outline, slightly lighter ribbons and more breathing room within the medal face. The original card and wrapping arrangement remain. No external artwork, new dependency, metric or eligibility changes.
+
+## Surfaces and Page Headers "26-11-04"
+
+Owner correction: tables, tabs and titles sat straight on the page background, so nothing looked like a card.
+
+- **Everything sits on a card.** `components/ui/surface.tsx` is the one card: a bordered `bg-card` surface with an optional heading row (`title`, `toolbar`), a `footer` (pagination, save actions) and `padded` for forms. Tables go in flush; the surface draws the border. Tab rows (`TabRow`) and filter rows are a `Surface padded` too. Never `rounded-sm border bg-card` by hand.
+- **Page header.** Every Capitol page starts with `components/capitol/page-header.tsx`: the title in its own card with the page actions on the right. The breadcrumb strip is a card bar as well.
+- **Page background.** `--background` is a neutral stone one step darker than white cards (light) and one step darker than the card slate (dark), so a surface always lifts off the page. No blue cast in light mode.
+- **Icon actions.** Row edit is a pen icon button (`components/capitol/edit-button.tsx`, named for screen readers), never the word Edit. Search in a toolbar is a magnifier (`components/capitol/search-field.tsx`).
+- **Verified is locked.** In a bulk entry grid a verified figure shows as text with a pen; the pen unlocks that one cell and asks for a reason. Pending and empty cells stay inputs (`components/capitol/entry-cell.tsx`). Status words come from `FIGURE_STATUS` in `lib/registry.ts`: Pending, Verified, Returned.

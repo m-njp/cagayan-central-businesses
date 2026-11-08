@@ -170,7 +170,7 @@ Implemented the map-first three-role workspace with economic context, explicit b
 
 Status: completed as the [Finance Ledger and Analytics Program](../plan/archive/26-10-27-finance-ledger-analytics-program.md), started 26-10-27. Completed 26-10-28. Phases 0 to 4 merged through PRs #22 to #25; Phases 3, 5 and 6 travel in one combined pull request. Every loaded COA figure is signed off after a reliability review; workbook breakdowns load for Tuguegarao City only. Collecting the remaining COA workbooks and loading other towns' breakdowns are follow-ups (see the archived record).
 
-A Python parser reads the COA Executive Summaries and audit-report workbooks into a reviewed finance ledger. Admins can also enter and correct figures in the Capitol. A figure is published only after a person signs it off (D34, D35). The Analytics pages show these figures over fiscal years 2019 to 2025:
+A Python parser reads the COA Executive Summaries and audit-report workbooks into a reviewed finance ledger. Admins can also enter and correct figures in the Capitol. A figure is published only after a person signs it off (D34, D35). Live upload progress and retry are being verified under [Live Finance Parsing](../plan/active/26-11-08-live-finance-parsing.md). The Analytics pages show these figures over fiscal years 2019 to 2025:
 
 - Government Revenue, Government Expenses, and Surplus or Deficit
 - budget utilization
