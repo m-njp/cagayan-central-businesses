@@ -44,6 +44,8 @@ Use Laravel process callbacks, Python unbuffered output, openpyxl read-only work
 
 ## Verification and Handoff
 
+"26-11-09" (progress-test pipe repair): [release CI run 42535794025](https://github.com/m-njp/cagayan-central-businesses/actions/runs/42535794025) exposed intermittent JSON decoding failure in `testCommandFlushesEventsBeforeExitAndKeepsPlainJsonCompatible`. It mixed buffered text `stdout.readline()` with `communicate()`, whose POSIX reader can bypass prefetched bytes. Use an unbuffered binary pipe for both reads; keep strict JSON decoding, early progress, single result and plain-output equality assertions. This fixes the test reader without changing parser output or discarding blank lines. The targeted test passed 20 consecutive Windows runs; all 95 parser tests passed locally. Linux verification belongs to the fix PR.
+
 "26-11-09" (GitHub CI repair): attempts 2 and 3 of run `42501106770` failed the real queued-workbook test. The workflow never created `tools/coa/.venv`, although the job defaults to its Python executable. Reproduced the same line 139 failure locally with a missing executable; restoring the environment passed all eight progress tests (42 assertions). CI now runs the existing `composer data:finances:test` before the PHP checks to initialize the pinned environment and test the parser. No assertion was weakened or skipped. GitHub verification is pending the updated workflow run.
 
 Baseline: 83 tests passed; five intake tests initially hit pytest temporary-directory permissions and then all passed with a writable base directory. No parser behavior failures in the baseline.
