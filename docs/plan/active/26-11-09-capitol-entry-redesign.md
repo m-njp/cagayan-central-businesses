@@ -45,3 +45,5 @@ No new packages (the row checkbox stays native). Public pages keep their wording
 
 "26-11-09" (sign-off gap): the committed-data import test required zero pending figures, but 12 Tuguegarao City fs_workbook revenue lines (grants, other, total revenue for 2023 to 2025) were extracted on 26-11-02 and never signed off, so `composer ci:check` failed and the pre-push hook refused the push. Owner said to fix or remove the test. It now requires that every pending figure is a parsed, unreviewed one (nothing half reviewed) and the reviewed figures still import verified. This weakens the old check; the 12 still need a human sign-off in the app, then `php artisan finances:export`, after which the zero-pending check should return. Pending figures stay withheld from every screen.
 
+"26-11-09" (CI rerun): `composer ci:check` passed on `355e6fd`: frontend formatting/lint, TypeScript, all 29 frontend tests, Pint, PHPStan and all 377 PHP tests (2,714 assertions). The finance-import test fix was already present; no further code changes were needed. The outstanding human sign-offs and browser checks above remain unresolved.
+

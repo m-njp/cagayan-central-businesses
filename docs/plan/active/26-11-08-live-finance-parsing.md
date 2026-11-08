@@ -44,6 +44,8 @@ Use Laravel process callbacks, Python unbuffered output, openpyxl read-only work
 
 ## Verification and Handoff
 
+"26-11-09" (GitHub CI repair): attempts 2 and 3 of run `42501106770` failed the real queued-workbook test. The workflow never created `tools/coa/.venv`, although the job defaults to its Python executable. Reproduced the same line 139 failure locally with a missing executable; restoring the environment passed all eight progress tests (42 assertions). CI now runs the existing `composer data:finances:test` before the PHP checks to initialize the pinned environment and test the parser. No assertion was weakened or skipped. GitHub verification is pending the updated workflow run.
+
 Baseline: 83 tests passed; five intake tests initially hit pytest temporary-directory permissions and then all passed with a writable base directory. No parser behavior failures in the baseline.
 
 "26-11-08": Before the pacing revision, all 94 Python tests and 21 targeted PostGIS tests passed, with PHPStan, frontend formatting/lint, TypeScript and build green. Full CI ran 373 PHP tests: 372 passed; the existing committed-data sign-off test found 12 pending figures rather than zero. Its test and finance CSVs are unchanged, and the predecessor Data Entry plan already records the outstanding human sign-off. No sign-offs were fabricated to clear this test.

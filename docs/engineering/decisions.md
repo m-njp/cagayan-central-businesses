@@ -262,6 +262,8 @@ Approved 26-10-27 by the user for the [Finance Ledger and Analytics Program](../
 
 **26-11-03:** superseded in part by D42. The queue worker now runs the same parser on one uploaded file. A clean clone still works without Python; only report uploads need it.
 
+**26-11-09:** CI initializes the pinned Python environment and runs the parser tests through `composer data:finances:test` before the PHP checks. The real queued-workbook integration test requires the same parser runtime as report uploads.
+
 ## D35. Finance Ledger
 
 Approved 26-10-27. Government finance figures leave `town_facts` and move into one ledger:
