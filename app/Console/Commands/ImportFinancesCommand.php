@@ -38,7 +38,7 @@ final class ImportFinancesCommand extends Command
 
     public const array DOCUMENT_COLUMNS = ['psgc_code', 'town', 'fiscal_year', 'kind', 'availability', 'file', 'source_url', 'sha256', 'checked_on'];
 
-    public const array EXTRACTED_COLUMNS = ['psgc_code', 'town', 'reported_in_year', 'document_kind', 'fiscal_year', 'line_code', 'basis', 'value', 'definition_variant', 'source_label', 'location', 'document_sha256', 'extractor_version'];
+    public const array EXTRACTED_COLUMNS = ['psgc_code', 'town', 'reported_in_year', 'document_kind', 'fiscal_year', 'line_code', 'basis', 'value', 'definition_variant', 'source_label', 'location', 'document_sha256', 'extractor_version', 'input_values'];
 
     public const array REVIEW_COLUMNS = ['psgc_code', 'reported_in_year', 'document_kind', 'line_code', 'fiscal_year', 'basis', 'value', 'decision', 'reviewed_on', 'note'];
 
@@ -67,7 +67,11 @@ final class ImportFinancesCommand extends Command
         $loads = fn (string $town, string $kind, string $availability = 'available') => $kind === FinanceDocumentKind::ExecutiveSummary->value
             || $availability !== 'available' || in_array($town, $workbookTowns, true);
         $documents = array_values(array_filter($documents, fn (array $item) => $loads($item['row']['psgc_code'], $item['row']['kind'], $item['row']['availability'])));
-        $extracted = array_values(array_filter($extracted, fn (array $item) => $loads($item['row']['psgc_code'], $item['row']['document_kind'])));
+        // Executive Summary lines beyond the totals load only for the configured towns (metrics.md M35).
+        $detailTowns = (array) config('cagayan.finances.summary_detail_towns');
+        $detailLines = (array) config('cagayan.finances.summary_detail_lines');
+        $extracted = array_values(array_filter($extracted, fn (array $item) => $loads($item['row']['psgc_code'], $item['row']['document_kind'])
+            && (! in_array($item['row']['line_code'], $detailLines, true) || in_array($item['row']['psgc_code'], $detailTowns, true))));
         $reviews = $this->read("{$folder}/reviews.csv", self::REVIEW_COLUMNS, required: false);
         $manual = $this->read("{$folder}/manual-figures.csv", self::MANUAL_COLUMNS, required: false);
 
@@ -174,8 +178,10 @@ final class ImportFinancesCommand extends Command
      */
     private function writeParsed(array $extracted, array $towns, array $documentIds, CarbonInterface $now): array
     {
+        // Figures read from Capitol uploads are not in the CSVs, so the import never treats them as stale.
         $existing = FinanceFigure::query()
             ->where('entry_method', FinanceEntryMethod::Parsed)
+            ->whereDoesntHave('document', fn ($document) => $document->uploaded())
             ->get(['id', 'finance_document_id', 'line_code', 'fiscal_year', 'basis', 'value', 'definition_variant', 'status'])
             ->keyBy(fn (FinanceFigure $figure) => "{$figure->finance_document_id} {$figure->line_code} {$figure->fiscal_year} {$figure->basis->value}");
 
@@ -190,6 +196,7 @@ final class ImportFinancesCommand extends Command
             $details = [
                 'source_label' => $row['source_label'] ?: null, 'location' => $row['location'] ?: null,
                 'extractor_version' => $row['extractor_version'] ?: null,
+                'inputs' => FinanceFigure::cleanInputs(json_decode($row['input_values'] ?: '[]', true, flags: JSON_THROW_ON_ERROR)),
             ];
             $figure = $existing->get($key);
 
@@ -217,7 +224,7 @@ final class ImportFinancesCommand extends Command
         }
 
         foreach (array_chunk($inserts, 500) as $chunk) {
-            FinanceFigure::query()->insert($chunk);
+            FinanceFigure::query()->insert(array_map(fn (array $row) => [...$row, 'inputs' => $row['inputs'] === null ? null : json_encode($row['inputs'], JSON_THROW_ON_ERROR)], $chunk));
         }
 
         $stale = $existing->reject(fn (FinanceFigure $figure, string $key) => isset($seen[$key]));
@@ -332,7 +339,7 @@ final class ImportFinancesCommand extends Command
                 FinanceBasis::tryFrom($row['basis']) === null => "unknown basis {$row['basis']}",
                 ! ctype_digit($row['fiscal_year']) => "fiscal_year {$row['fiscal_year']} is not a year",
                 ! is_numeric($row['value']) => "value {$row['value']} is not a number",
-                mb_strlen($row['location']) > 60 => 'location is longer than 60 characters',
+                mb_strlen($row['location']) > config('cagayan.finances.location_max') => 'location is longer than '.config('cagayan.finances.location_max').' characters',
                 mb_strlen($row['source_label']) > 300 => 'source_label is longer than 300 characters',
                 isset($seen[$key]) => "repeats line {$seen[$key]}",
                 default => null,

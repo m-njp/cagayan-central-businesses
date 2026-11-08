@@ -37,17 +37,9 @@ final class AnalyticsCatalogQuery
         'annex_c1' => 'annex_workbook',
     ];
 
-    /** The document behind each derived line's inputs. */
-    private const array DERIVED_KINDS = [
-        'revenue.remaining' => 'fs_workbook',
-        'revenue.local_share' => 'fs_workbook',
-        'sector.development_fund.utilization' => 'fs_workbook',
-        'sector.economic_services.utilization' => 'fs_workbook',
-    ];
-
     public function __construct(private BusinessTrendsQuery $businesses, private FinanceEvidenceQuery $evidence) {}
 
-    public function get(bool $public): AnalyticsCatalog
+    public function get(): AnalyticsCatalog
     {
         $years = range((int) config('cagayan.performance.first_year'), app(FinanceYears::class)->publishedLastYear());
         $groups = config('cagayan.finances.groups');
@@ -80,10 +72,12 @@ final class AnalyticsCatalogQuery
         }
 
         $finances = [];
+        $detailTowns = (array) config('cagayan.finances.summary_detail_towns');
         // Union, not spread: spreading would renumber the municipality ids that key the stats.
         foreach ([0 => self::ALL_TOWNS] + $towns->pluck('psgc_code', 'id')->all() as $id => $code) {
             if ($stats->has($id)) {
-                $finances[$code] = $lines->map(fn (Collection $group) => $this->history($group, $stats[$id], $years, $id, $documents, $pending, $evidence['references']))->all();
+                $detailLoaded = $id === 0 || in_array($code, $detailTowns, true);
+                $finances[$code] = $lines->map(fn (Collection $group) => $this->history($group, $stats[$id], $years, $id, $documents, $pending, $evidence['references'], $detailLoaded))->all();
             }
         }
 
@@ -94,7 +88,7 @@ final class AnalyticsCatalogQuery
             periods: ['all' => $years[0], 'recent' => (int) config('cagayan.performance.recent_first_year')],
             lastYear: end($years),
             finances: $finances,
-            businesses: $this->businesses->get($public),
+            businesses: $this->businesses->get(),
             guide: $guide,
             sources: $evidence['sources'],
         );
@@ -129,14 +123,15 @@ final class AnalyticsCatalogQuery
      * @param  array<string, true>  $pending
      * @param  array<string, list<string>>  $references
      */
-    private function history(Collection $lines, Collection $stats, array $years, int $townId, array $documents, array $pending, array $references): FinancialHistory
+    private function history(Collection $lines, Collection $stats, array $years, int $townId, array $documents, array $pending, array $references, bool $detailLoaded): FinancialHistory
     {
+        $detailLines = (array) config('cagayan.finances.summary_detail_lines');
         $byKey = $stats->keyBy(fn (stdClass $row) => "{$row->metric} {$row->fiscal_year}");
-        $rows = array_map(fn (int $year) => ['year' => $year, 'observations' => $lines->mapWithKeys(function (FinanceLine $line) use ($byKey, $year, $townId, $documents, $pending, $references) {
+        $rows = array_map(fn (int $year) => ['year' => $year, 'observations' => $lines->mapWithKeys(function (FinanceLine $line) use ($byKey, $year, $townId, $documents, $pending, $references, $detailLoaded, $detailLines) {
             $row = $byKey->get("{$line->code} {$year}");
             if ($row === null) {
-                $kind = self::SOURCE_KINDS[$line->source] ?? self::DERIVED_KINDS[$line->code] ?? 'executive_summary';
-                $reason = match ($documents["{$townId} {$year} {$kind}"] ?? null) {
+                $kind = self::SOURCE_KINDS[$line->source] ?? 'executive_summary';
+                $reason = ! $detailLoaded && in_array($line->code, $detailLines, true) ? 'not_loaded' : match ($documents["{$townId} {$year} {$kind}"] ?? null) {
                     FinanceAvailability::Available => isset($pending["{$townId} {$year} {$line->code}"]) ? 'pending_review' : 'not_reported',
                     FinanceAvailability::NotPublished => 'not_published',
                     null => 'not_collected',
@@ -154,7 +149,6 @@ final class AnalyticsCatalogQuery
                 comparisonYear: $row->comparable ? $year - 1 : null,
                 coverage: $row->reporting_towns === null ? null
                     : ['reporting' => (int) $row->reporting_towns, 'total' => (int) $row->total_towns, 'matched' => (int) $row->matched_towns],
-                censusYear: $row->census_year === null ? null : (int) $row->census_year,
                 restatedIn: $row->restated_in === null ? null : (int) $row->restated_in,
                 sourceRefs: $references["{$townId} {$year} {$line->code}"] ?? [],
             )];

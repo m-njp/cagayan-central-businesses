@@ -8,7 +8,8 @@ final readonly class BusinessProfile
     /**
      * @param  array{code: string, name: string, color: int}  $category
      * @param  int  $streak  M33 Renewal Streak in years
-     * @param  array{lng: float, lat: float}  $location
+     * @param  int|null  $milestone  M34 Operating Milestone in years
+     * @param  array{lng: float, lat: float}|null  $location
      * @param  list<array{year: int, number: string|null, validFrom: string, validUntil: string}>  $permits
      * @param  list<array{publicId: string, kind: string, label: string, name: string, issuedOn: ?string, expiresOn: ?string}>  $documents
      * @param  list<array{year: int, status: string}>  $history
@@ -32,9 +33,9 @@ final readonly class BusinessProfile
         public ?string $birVerifiedOn,
         public string $permitStatus,
         public ?string $permitValidUntil,
-        public bool $isNew,
         public int $streak,
-        public array $location,
+        public ?int $milestone,
+        public ?array $location,
         public string $recordStatus,
         public ?string $submittedBy,
         public ?string $submittedAt,

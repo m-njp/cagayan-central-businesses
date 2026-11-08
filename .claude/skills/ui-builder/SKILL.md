@@ -17,7 +17,7 @@ What to build: $ARGUMENTS
 
 5. **Start from what exists.** If the screen already has a layout, keep it and change only what was asked. Otherwise sketch the layout from the patterns in design.md, "Layout": what goes in the first screen, what peeks in below, what moves into a `Sheet` on phones.
    - Read design.md, "Working on Existing Screens", before proposing additions. Check the session's explicit removals and avoid repeating headings, placeholders, or controls in helper paragraphs.
-6. **Build with tokens only.** Surplus, deficit and change marks come from `ResultFigure` and `TrendMark`, and abbreviated peso figures from `ExactAmount` (design.md, "Government Finances Ledger Table"). Business Category colors are the `--category-N` palette through `CategoryChip`, nothing else (design.md, "Business Categories").
+6. **Build with tokens only.** Change marks come from `TrendMark` and `ObservationChange`, Net Income has no mark (a loss reads in parentheses), and abbreviated peso figures come from `ExactAmount` (design.md, "Executive Summary View"). Business Category colors are the `--category-N` palette through `CategoryChip`, nothing else (design.md, "Business Categories").
    - Colors: token classes. Hue only for data, brass only for a choice.
    - Type: `type-*` roles. Sans for words, `font-mono tabular-nums` for numbers, `type-label` for small labels.
    - Space: `gap-section`, `px-gutter`, and the gaps in design.md, "Space".

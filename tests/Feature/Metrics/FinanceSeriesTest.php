@@ -2,6 +2,7 @@
 
 use App\Enums\TownMeasure;
 use App\Models\FinanceFigure;
+use App\Models\FinanceLine;
 use App\Models\Municipality;
 use App\Models\TownFact;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,25 @@ it('computes surplus and changes only between consecutive comparable years (M19,
         ->and(series($this->town, 'performance.surplus')[2024]->value)->toBe('30.00');
 });
 
+it('stores Financial Condition and allotments as reported, with Net Income as Income minus Expenses (M19, M35)', function () {
+    foreach (['position.assets' => 'position', 'budget.allotments_continuing' => 'budget'] as $code => $group) {
+        FinanceLine::factory()->create(['code' => $code, 'group' => $group]);
+    }
+    signed($this->town, 'position.assets', 2024, '4909278026.68');
+    signed($this->town, 'position.assets', 2025, '5157038108.96');
+    signed($this->town, 'budget.allotments_continuing', 2025, '569397448.57');
+    signed($this->town, 'performance.revenue', 2025, '1679019473.60');
+    signed($this->town, 'performance.expenses', 2025, '1403269517.37');
+
+    $this->artisan('metrics:refresh')->assertSuccessful();
+
+    // Tuguegarao 2025: 5,157,038,108.96 - 4,909,278,026.68 = 247,760,082.28, as the report's change column prints.
+    // Net Income: 1,679,019,473.60 - 1,403,269,517.37 = 275,749,956.23, as the report prints.
+    expect(series($this->town, 'position.assets')[2025]->change)->toBe('247760082.28')
+        ->and(series($this->town, 'budget.allotments_continuing')[2025]->value)->toBe('569397448.57')
+        ->and(series($this->town, 'performance.surplus')[2025]->value)->toBe('275749956.23');
+});
+
 it('leaves a gap year without change and a zero base without percent (M26)', function () {
     signed($this->town, 'performance.expenses', 2021, '0.00');
     signed($this->town, 'performance.expenses', 2022, '40.00');
@@ -66,37 +86,20 @@ it('reads a deeper deficit as a fall and a smaller one as a gain, over the size 
         ->and([$surplus[2025]->change, $surplus[2025]->percent_change])->toBe(['15.00', '300.0']);
 });
 
-it('derives the locally generated share unless local taxes may include the national share (M21)', function () {
+it('derives only Net Income; the retired shares, rates and per resident figures are never computed', function () {
+    TownFact::factory()->verified()->for($this->town)->measure(TownMeasure::Population, 2024, 2000)->create();
     signed($this->town, 'performance.revenue', 2024, '1000.00');
+    signed($this->town, 'performance.expenses', 2024, '800.00');
     signed($this->town, 'revenue.tax', 2024, '150.00');
     signed($this->town, 'revenue.service_business', 2024, '50.00');
     signed($this->town, 'revenue.national_share', 2024, '700.00');
-    $other = Municipality::factory()->create();
-    signed($other, 'performance.revenue', 2024, '1000.00');
-    signed($other, 'revenue.tax', 2024, '900.00', ['definition_variant' => 'may_include_national_share']);
-    signed($other, 'revenue.service_business', 2024, '50.00');
 
     $this->artisan('metrics:refresh')->assertSuccessful();
 
-    // (150 + 50) / 1000 x 100 = 20.00 percent; other revenue is 1000 - 150 - 700 - 50 = 100.
-    expect(series($this->town, 'revenue.local_share')[2024]->value)->toBe('20.00')
-        ->and(series($this->town, 'revenue.remaining')[2024]->value)->toBe('100.00')
-        ->and(series($other, 'revenue.local_share'))->toBe([]);
-});
-
-it('divides by the latest census at or before the fiscal year (M25)', function () {
-    TownFact::factory()->verified()->for($this->town)->measure(TownMeasure::Population, 2020, 1000)->create();
-    TownFact::factory()->verified()->for($this->town)->measure(TownMeasure::Population, 2024, 2000)->create();
-    signed($this->town, 'performance.revenue', 2019, '5000.00');
-    signed($this->town, 'performance.revenue', 2023, '6000.00');
-    signed($this->town, 'performance.revenue', 2024, '8000.00');
-
-    $this->artisan('metrics:refresh')->assertSuccessful();
-    $perResident = series($this->town, 'per_capita.revenue');
-
-    // 2019 and 2023 use the 2020 census (5.00, 6.00); 2024 uses the 2024 census (8000 / 2000 = 4.00).
-    expect(array_map(fn ($row) => [$row->value, $row->census_year], $perResident))
-        ->toBe([2019 => ['5.00', 2020], 2023 => ['6.00', 2020], 2024 => ['4.00', 2024]]);
+    expect(series($this->town, 'performance.surplus')[2024]->value)->toBe('200.00');
+    foreach (['revenue.remaining', 'revenue.local_share', 'budget.utilization', 'per_capita.revenue', 'per_capita.expenses'] as $retired) {
+        expect(series($this->town, $retired))->toBe([]);
+    }
 });
 
 it('sums reporting towns and computes change over towns present in both years (M27)', function () {

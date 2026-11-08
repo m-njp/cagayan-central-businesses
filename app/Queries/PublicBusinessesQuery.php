@@ -10,6 +10,7 @@ use App\Data\SelectOption;
 use App\Enums\PermitStatus;
 use App\Models\Business;
 use App\Services\BusinessVisibility;
+use App\Services\OperatingMilestone;
 use App\Services\RenewalStreak;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
@@ -33,9 +34,9 @@ final class PublicBusinessesQuery
     public function town(string $code): PublicTownBusinesses
     {
         $rows = $this->base()->where('m.psgc_code', $code)
-            ->leftJoinLateral($this->latestYear(), 'latest')
             ->orderByRaw('lower(b.business_name)')
-            ->select('b.public_id', 'b.business_name', 'c.code as category', 'g.psgc_code as barangay', 'latest.status', 'b.bir_verified_on', 'b.is_storefront')
+            ->select('b.public_id', 'b.business_name', 'c.code as category', 'g.psgc_code as barangay', 'b.bir_verified_on', 'b.is_storefront')
+            ->selectRaw(OperatingMilestone::SQL.' as milestone', OperatingMilestone::bindings())
             ->selectRaw('round(ST_X(b.location)::numeric, 5) as lng, round(ST_Y(b.location)::numeric, 5) as lat')
             ->get();
 
@@ -43,8 +44,8 @@ final class PublicBusinessesQuery
             town: $code,
             townName: (string) DB::table('municipalities')->where('psgc_code', $code)->value('name'),
             rows: array_values($rows->map(fn (stdClass $row) => new PublicBusinessRow(
-                $row->public_id, $row->business_name, $row->category, $row->barangay, $row->status === 'new',
-                $row->bir_verified_on !== null,
+                $row->public_id, $row->business_name, $row->category, $row->barangay,
+                $row->bir_verified_on !== null, $row->milestone === null ? null : (int) $row->milestone,
                 $row->is_storefront ? [(float) $row->lng, (float) $row->lat] : null,
             ))->all()),
             barangays: array_values(DB::table('barangays as g')->join('municipalities as m', 'm.id', '=', 'g.municipality_id')
@@ -56,13 +57,12 @@ final class PublicBusinessesQuery
     public function profile(Business $business): PublicBusinessProfile
     {
         $row = $this->base()->where('b.id', $business->id)
-            ->leftJoinLateral($this->latestYear(), 'latest')
             ->select('b.business_name', 't.name as type', 'c.code as category_code', 'c.name as category', 'g.id as barangay_id',
                 'g.name as barangay', 'g.psgc_code as barangay_code', 'm.name as town', 'm.psgc_code as town_code', 'b.description',
-                'b.year_established', 'b.is_storefront', 'b.business_phone', 'b.business_email', 'b.bir_verified_on', 'permit.valid_until',
-                'latest.status')
+                'b.year_established', 'b.is_storefront', 'b.business_phone', 'b.business_email', 'b.bir_verified_on', 'permit.valid_until')
             ->selectRaw(PermitStatus::SQL.' as permit_status', PermitStatus::bindings())
             ->selectRaw(RenewalStreak::SQL.' as streak', RenewalStreak::bindings())
+            ->selectRaw(OperatingMilestone::SQL.' as milestone', OperatingMilestone::bindings())
             ->selectRaw('ST_X(b.location) as lng, ST_Y(b.location) as lat')
             ->first() ?? abort(404);
 
@@ -82,8 +82,8 @@ final class PublicBusinessesQuery
             birVerifiedOn: $row->bir_verified_on,
             permitStatus: $row->permit_status,
             permitValidUntil: $row->valid_until,
-            isNew: $row->status === 'new',
             streak: (int) $row->streak,
+            milestone: $row->milestone === null ? null : (int) $row->milestone,
             location: $row->is_storefront ? ['lng' => (float) $row->lng, 'lat' => (float) $row->lat] : null,
             nearby: array_values($this->base()->where('b.barangay_id', $row->barangay_id)->where('b.id', '!=', $business->id)
                 ->orderByRaw('(c.code = ?) desc', [$row->category_code])->orderBy('b.business_name')->limit(6)
@@ -111,12 +111,5 @@ final class PublicBusinessesQuery
                 DB::table('business_permits as p')->whereColumn('p.business_id', 'b.id')->orderByDesc('p.year')->limit(1)->select('p.valid_until'),
                 'permit',
             );
-    }
-
-    /** "New" means first registered in the latest data year. */
-    private function latestYear(): Builder
-    {
-        return DB::table('business_years as y')->whereColumn('y.business_id', 'b.id')
-            ->where('y.year', (int) config('cagayan.data.latest_year'))->select('y.status');
     }
 }

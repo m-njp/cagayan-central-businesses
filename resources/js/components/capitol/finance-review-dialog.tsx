@@ -53,7 +53,7 @@ export function FinanceReviewDialog({
             >
                 <DialogHeader>
                     <DialogTitle>
-                        {reject ? 'Reject Figures' : 'Sign Off Figures'}
+                        {reject ? 'Return Figures' : 'Verify Figures'}
                     </DialogTitle>
                     <DialogDescription>
                         {ids.length} selected for {report.town.label}, fiscal
@@ -111,7 +111,7 @@ export function FinanceReviewDialog({
                             disabled={form.processing}
                         >
                             {form.processing && <Spinner />}
-                            {reject ? 'Reject Selected' : 'Sign Off Selected'}
+                            {reject ? 'Return Selected' : 'Verify Selected'}
                         </Button>
                     </DialogFooter>
                 </form>

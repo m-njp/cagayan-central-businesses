@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers\Capitol;
 
-use App\Actions\RecordFinanceFigure;
+use App\Actions\SubmitFinanceEntries;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreFinanceFigureRequest;
+use App\Http\Requests\SubmitFinanceEntriesRequest;
 use App\Models\Municipality;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
 final class FinanceFigureController extends Controller
 {
-    public function store(StoreFinanceFigureRequest $request, Municipality $town, RecordFinanceFigure $record): RedirectResponse
+    public function store(SubmitFinanceEntriesRequest $request, Municipality $town, SubmitFinanceEntries $submit): RedirectResponse
     {
-        $record->handle($request->user(), $town, $request->reportYear(), $request->figure());
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Figure saved. It waits for another reviewer to sign it off.']);
+        $saved = $submit->handle($request->user(), $town, $request->reportYear(), $request->entries());
+        Inertia::flash('toast', $saved === null
+            ? ['type' => 'warning', 'message' => 'These changes were already saved.']
+            : ['type' => 'success', 'message' => sprintf(
+                '%d %s sent for review. They appear on Economy and Analytics once someone else verifies them.',
+                $saved, $saved === 1 ? 'figure' : 'figures',
+            )]);
 
         return to_route('capitol.finances.show', ['town' => $town->psgc_code, 'year' => $request->reportYear()]);
     }

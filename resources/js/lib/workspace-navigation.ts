@@ -1,7 +1,8 @@
-import { analytics, dashboard } from '@/routes/capitol';
+import { analytics, dashboard, dataEntry } from '@/routes/capitol';
 import { index as businesses } from '@/routes/capitol/businesses';
 import { index as categories } from '@/routes/capitol/categories';
 import { index as finances } from '@/routes/capitol/finances';
+import { index as population } from '@/routes/capitol/population';
 import { index as wishes } from '@/routes/capitol/wishes';
 import { index as logs } from '@/routes/capitol/logs';
 import { show as profile } from '@/routes/capitol/profile';
@@ -25,6 +26,13 @@ export function workspaceNavigation(workspace: Workspace) {
             visible: true,
         },
         {
+            label: 'Data Entry',
+            group: 'Workspace',
+            href: dataEntry(),
+            icon: icons.dataEntry,
+            visible: true,
+        },
+        {
             label: 'Analytics',
             group: 'Workspace',
             href: analytics(),
@@ -43,6 +51,13 @@ export function workspaceNavigation(workspace: Workspace) {
             group: 'Workspace',
             href: finances(),
             icon: icons.finances,
+            visible: true,
+        },
+        {
+            label: 'Population',
+            group: 'Workspace',
+            href: population(),
+            icon: icons.population,
             visible: true,
         },
         {

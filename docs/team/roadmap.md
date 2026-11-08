@@ -2,6 +2,8 @@
 
 The plan from today to the submission, and the status of every feature. Update the status lines in the same pull request that finishes the work.
 
+Executive Summary view, 26-10-29: Economy and Analytics open on COA's Executive Summary lines (Financial Condition, Results of Operation, Budget Execution) as rows with fiscal years as columns, plus two charts. COA's words Income, Expenses and Net Income replace Government Revenue, Government Expenses and Surplus or Deficit, and a loss reads in parentheses. Assets, Liabilities, Government Equity, Allotments and Continuing Obligations load for Tuguegarao City only (M35). See [the plan](../plan/active/26-10-29-executive-summary-view.md).
+
 Local preview integration, 26-10-28: quick sign in, wish-cloud polishing, and the finance-review screens are available together on port 8000 using the existing finance preview database. Combined CI passes (201 tests). See [Client Facing Polishing](../plan/archive/26-10-27-client-facing-polishing.md).
 
 Government Finances correction, 26-10-28: one aligned report table, right-hand fiscal-year selector, compact linked citations, on-demand review controls, centralized breadcrumbs/required markers, and quiet shared pagination. Web and manual CSV input checks are strict and share configured limits. CI passes 224 tests (1,343 assertions); desktop light/dark flows are checked. See [Finance Ledger and Analytics Program](../plan/archive/26-10-27-finance-ledger-analytics-program.md).
@@ -168,7 +170,7 @@ Implemented the map-first three-role workspace with economic context, explicit b
 
 Status: completed as the [Finance Ledger and Analytics Program](../plan/archive/26-10-27-finance-ledger-analytics-program.md), started 26-10-27. Completed 26-10-28. Phases 0 to 4 merged through PRs #22 to #25; Phases 3, 5 and 6 travel in one combined pull request. Every loaded COA figure is signed off after a reliability review; workbook breakdowns load for Tuguegarao City only. Collecting the remaining COA workbooks and loading other towns' breakdowns are follow-ups (see the archived record).
 
-A Python parser reads the COA Executive Summaries and audit-report workbooks into a reviewed finance ledger. Admins can also enter and correct figures in the Capitol. A figure is published only after a person signs it off (D34, D35). The Analytics pages show these figures over fiscal years 2019 to 2025:
+A Python parser reads the COA Executive Summaries and audit-report workbooks into a reviewed finance ledger. Admins can also enter and correct figures in the Capitol. A figure is published only after a person signs it off (D34, D35). Live upload progress and retry are being verified under [Live Finance Parsing](../plan/active/26-11-08-live-finance-parsing.md). The Analytics pages show these figures over fiscal years 2019 to 2025:
 
 - Government Revenue, Government Expenses, and Surplus or Deficit
 - budget utilization
@@ -249,3 +251,11 @@ Dynamic Economic Map verification: final CI passed 270 PHP tests (1,827 assertio
 ## October 28 No Simulated Data and Ledger Table
 
 On `feat/analytics-clarity`: simulated business records are off by default behind `CAGAYAN_SIMULATED` (D37), so Economy and Capitol Analytics show only real COA figures and labeled sample wishes. The Yearly Summary becomes one ledger table with one Source line linking the stored PDF at the cited page (new public route), a short Help sheet, and Tuguegarao City only measures marked in the Show list. Plan: [Finance Ledger Table Redesign](../plan/archive/26-10-28-finance-ledger-redesign.md). Completed the same day with polish: the Home About the Data map loads again, the Yearly Summary reads the year before then the selected year, Surplus or Deficit is one shared green up and red down display, abbreviated amounts and Change cells show the exact amount on hover, Trends shows the change under each year, and the M26 percent divides by the size of the prior value.
+
+## October 30 Home Navigation and Data Labels
+
+Text-only desktop navigation with a filled active tab, no navbar simulated label, and red badges at the upper right of the wish cards. Public business labels remain with the content. Frontend checks and build pass; full CI stops in Pint at an unreadable Python cache directory. Verification: [Home Navigation and Data Labels](../plan/archive/26-10-30-home-navigation-data-labels.md).
+
+26-10-30 achievement follow-up: replaced rejected icon panels with the initial illustrated trophy and medal assets (superseded by Kenney Medals at the user's direction) in the shared profile Achievements card. Local assets and license recorded; frontend checks/build passed and public desktop dark/phone light reviewed. See the active Business Registry Records plan for verification limits.
+
+26-10-30 latest achievement correction supersedes the external-asset follow-up: restored the original compact hexagonal medals with small outline and number-spacing refinements. Both external badge packs are removed from the project. Existing profile placement, directory marks and recognition rules remain.

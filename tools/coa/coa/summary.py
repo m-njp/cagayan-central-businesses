@@ -1,12 +1,15 @@
+import logging
 import re
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
 
 import pdfplumber
+import pypdfium2
 
 from .lines import Alias, Line, match
-from .numbers import AMOUNT, DASH, PERCENT, TOKEN, parse_amount
+from .numbers import AMOUNT, DASH, PERCENT, TOKEN, parseAmount
+from .progress import Progress, preview, report
 
 START = re.compile(r"financial highlights|highlights of financial|financial information", re.I)
 END = re.compile(
@@ -20,15 +23,19 @@ ROW = re.compile(
 )
 CORE = ("position.assets", "position.liabilities", "position.equity", "performance.revenue", "performance.expenses")
 LABEL_LINES = 4
+# pdfplumber keeps table rows on one line; pdfium is a separate text engine used to confirm the digits and as a fallback.
+ENGINES = ("pdfplumber", "pdfium")
+
+log = logging.getLogger("coa")
 
 
 @dataclass(frozen=True)
 class Figure:
     code: str
-    fiscal_year: int
+    fiscalYear: int
     value: Decimal
     variant: str | None
-    source_label: str
+    sourceLabel: str
     page: int
 
 
@@ -48,18 +55,106 @@ class Result:
     changes: dict[str, Decimal]
 
 
-def read_lines(path: Path) -> list[tuple[int, str]]:
-    with pdfplumber.open(path) as pdf:
-        return [
-            (number, text.strip())
-            for number, page in enumerate(pdf.pages, start=1)
-            for text in (page.extract_text() or "").split("\n")
-            if text.strip()
-        ]
+def readLines(path: Path, engine: str = "pdfplumber") -> list[tuple[int, str]]:
+    return [(number, line.strip()) for number, text in readPages(path, engine) for line in text.splitlines() if line.strip()]
 
 
-def parse_summary(path: Path, report_year: int, lines: dict[str, Line], aliases: list[Alias]) -> Result:
-    text = read_lines(path)
+def readPages(path: Path, engine: str, progress: Progress = None) -> list[tuple[int, str]]:
+    pages = []
+    if engine == "pdfplumber":
+        with pdfplumber.open(path) as pdf:
+            for number, page in enumerate(pdf.pages, start=1):
+                report(progress, "scan", stage="scanning", message=f"Reading page {number} of {len(pdf.pages)}.", location=f"page {number}", current=number, total=len(pdf.pages), engine=engine)
+                pages.append((number, page.extract_text() or ""))
+                page.close()
+        return pages
+    document = pypdfium2.PdfDocument(path)
+    try:
+        for number in range(1, len(document) + 1):
+            report(progress, "scan", stage="checking", message=f"Confirming digits on page {number} of {len(document)}.", location=f"page {number}", current=number, total=len(document), engine=engine)
+            page = document[number - 1]
+            try:
+                textPage = page.get_textpage()
+                try:
+                    pages.append((number, textPage.get_text_range()))
+                finally:
+                    textPage.close()
+            finally:
+                page.close()
+        return pages
+    finally:
+        document.close()
+
+
+def parseSummary(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias], progress: Progress = None) -> Result:
+    """Read with pdfplumber; reread with pdfium only when pdfplumber misses a core line or fails outright."""
+    pageCache: dict[str, list[tuple[int, str]] | Exception] = {}
+
+    def cachedPages(engine: str) -> list[tuple[int, str]]:
+        if engine not in pageCache:
+            try:
+                pageCache[engine] = readPages(path, engine) if progress is None else readPages(path, engine, progress)
+            except Exception as error:
+                pageCache[engine] = error
+        cached = pageCache[engine]
+        if isinstance(cached, Exception):
+            raise cached
+        return cached
+
+    def parseEngine(engine: str) -> Result:
+        text = [(number, line.strip()) for number, page in cachedPages(engine) for line in page.splitlines() if line.strip()]
+        return parseText(text, reportYear, lines, aliases, progress)
+
+    try:
+        primary = parseEngine(ENGINES[0])
+    except Exception as error:
+        log.exception("%s: %s failed", path.name, ENGINES[0])
+        primary = Result([], [Issue("error", "engine_failed", "", f"{ENGINES[0]}: {type(error).__name__}: {error}")], {})
+    if not missingCore(primary):
+        report(progress, "stage", stage="checking", message="Confirming digits with the second PDF reader.")
+        return confirmDigits(primary, path, ENGINES[1], cachedPages)
+
+    log.warning("%s: %s missed %s, retrying with %s", path.name, ENGINES[0], ", ".join(missingCore(primary)) or "the table", ENGINES[1])
+    report(progress, "stage", stage="checking", message="Checking missing lines with the fallback PDF reader.")
+    try:
+        fallback = parseEngine(ENGINES[1])
+    except Exception as error:
+        log.exception("%s: %s failed", path.name, ENGINES[1])
+        primary.issues.append(Issue("error", "engine_failed", "", f"{ENGINES[1]}: {type(error).__name__}: {error}"))
+        return primary
+    if len(missingCore(fallback)) >= len(missingCore(primary)):
+        log.warning("%s: %s found no more core lines; keeping the %s reading", path.name, ENGINES[1], ENGINES[0])
+        return confirmDigits(primary, path, ENGINES[1], cachedPages)
+    log.warning("%s: read with the fallback engine %s", path.name, ENGINES[1])
+    fallback.issues += [issue for issue in primary.issues if issue.kind == "engine_failed"]
+    fallback.issues.append(Issue("warning", "read_with_fallback_engine", "", f"{ENGINES[0]} missed core lines; values read with {ENGINES[1]}"))
+    return confirmDigits(fallback, path, ENGINES[0], cachedPages)
+
+
+def missingCore(result: Result) -> list[str]:
+    foundCodes = {figure.code for figure in result.figures}
+    return [code for code in CORE if code not in foundCodes]
+
+
+def confirmDigits(result: Result, path: Path, engine: str, pageReader=None) -> Result:
+    """Every value must also be printed on its page as the other engine reads it. This proves digits, not rows."""
+    try:
+        sourcePages = pageReader(engine) if pageReader else readPages(path, engine)
+        pages = {number: re.sub(r"\s+", "", text) for number, text in sourcePages}
+    except Exception as error:
+        log.exception("%s: %s could not confirm the digits", path.name, engine)
+        result.issues.append(Issue("warning", "digits_unconfirmed", "", f"{engine}: {type(error).__name__}: {error}"))
+        return result
+    for figure in result.figures:
+        printed = f"{abs(figure.value):,.2f}"
+        candidates = (printed, printed[:-1]) if printed.endswith("0") else (printed,)
+        if not any(candidate in pages.get(figure.page, "") for candidate in candidates):
+            log.error("%s: %s %s %s is not on page %s in %s", path.name, figure.code, figure.fiscalYear, printed, figure.page, engine)
+            result.issues.append(Issue("error", "engine_disagreement", figure.code, f"{figure.fiscalYear}: {printed} is not on page {figure.page} as {engine} reads it", figure.page))
+    return result
+
+
+def parseText(text: list[tuple[int, str]], reportYear: int, lines: dict[str, Line], aliases: list[Alias], progress: Progress = None) -> Result:
     issues: list[Issue] = []
     start = next((index for index, (_, line) in enumerate(text) if START.search(line)), None)
     if start is None:
@@ -68,13 +163,13 @@ def parse_summary(path: Path, report_year: int, lines: dict[str, Line], aliases:
     years: tuple[int, int] | None = None
     found: dict[str, tuple[list[Decimal | None], str | None, str, int]] = {}
     buffer: list[str] = []
-    ended = False
+    hasEnded = False
 
     region = text[start + 1 :]
     for index, (page, line) in enumerate(region):
-        if not ended and END.search(line) and found:
-            ended = True
-        if ended and all(code in found for code in CORE):
+        if not hasEnded and END.search(line) and found:
+            hasEnded = True
+        if hasEnded and all(code in found for code in CORE):
             break
         if years is None and not found and (header := HEADER_YEARS.search(line)):
             years = (int(header.group(1)), int(header.group(2)))
@@ -84,20 +179,20 @@ def parse_summary(path: Path, report_year: int, lines: dict[str, Line], aliases:
         if not row:
             buffer = (buffer + [line])[-LABEL_LINES:]
             continue
-        amounts = [parse_amount(token) for token in TOKEN.findall(row.group("amounts"))]
+        amounts = [parseAmount(token) for token in TOKEN.findall(row.group("amounts"))]
         following = []
         for _, after in region[index + 1 : index + 1 + LABEL_LINES]:
             if ROW.match(after):
                 break
             following.append(after)
-        hit = label_match(row.group("label"), buffer, following, lines, aliases)
+        hit = labelMatch(row.group("label"), buffer, following, lines, aliases)
         buffer = []
         if hit is None:
             continue
         code, variant, label = hit
-        if ended and code not in CORE:
+        if hasEnded and code not in CORE:
             continue
-        if ended:
+        if hasEnded:
             issues.append(Issue("warning", "found_after_section_end", code, "Row read after the next section heading", page))
         if code in found:
             if found[code][0][:2] != amounts[:2]:
@@ -108,9 +203,9 @@ def parse_summary(path: Path, report_year: int, lines: dict[str, Line], aliases:
     if years is None or years[0] == years[1]:
         kind = "header_years_missing" if years is None else "header_years_repeated"
         issues.append(Issue("warning", kind, "", "Column years unreadable; assumed current year then prior year"))
-        years = (report_year, report_year - 1)
-    if sorted(years) != [report_year - 1, report_year]:
-        issues.append(Issue("error", "header_year_mismatch", "", f"Columns are {years[0]} and {years[1]}, report year is {report_year}"))
+        years = (reportYear, reportYear - 1)
+    if sorted(years) != [reportYear - 1, reportYear]:
+        issues.append(Issue("error", "header_year_mismatch", "", f"Columns are {years[0]} and {years[1]}, report year is {reportYear}"))
 
     figures: list[Figure] = []
     changes: dict[str, Decimal] = {}
@@ -118,6 +213,7 @@ def parse_summary(path: Path, report_year: int, lines: dict[str, Line], aliases:
         for year, value in zip(years, amounts[:2]):
             if value is not None:
                 figures.append(Figure(code, year, value, variant, label, page))
+                preview(progress, figures[-1])
         if len(amounts) > 2 and amounts[2] is not None:
             changes[code] = amounts[2]
     for code in CORE:
@@ -126,13 +222,13 @@ def parse_summary(path: Path, report_year: int, lines: dict[str, Line], aliases:
     return Result(figures, issues, changes)
 
 
-def label_match(same_line: str, buffer: list[str], following: list[str], lines: dict[str, Line], aliases: list[Alias]):
+def labelMatch(sameLine: str, buffer: list[str], following: list[str], lines: dict[str, Line], aliases: list[Alias]):
     """Try the row's label with wrapped lines above it, longest first, then with the line below.
 
     Some tables center the numbers in a two-line cell, so the label reads "Government", numbers, "Equity".
     """
-    candidates = [" ".join(buffer[index:] + [same_line]).strip() for index in range(len(buffer))]
-    candidates.append(same_line.strip())
+    candidates = [" ".join(buffer[index:] + [sameLine]).strip() for index in range(len(buffer))]
+    candidates.append(sameLine.strip())
     if following:
         candidates += [f"{candidate} {following[0]}" for candidate in candidates[-2:]]
     for candidate in candidates:
@@ -143,6 +239,11 @@ def label_match(same_line: str, buffer: list[str], following: list[str], lines: 
                     break
                 longer = " ".join([candidate, *following[:count]])
                 if longer.count("(") <= longer.count(")") and (completed := match(longer, aliases, "executive_summary", lines)):
+                    return completed[0], completed[1], longer
+            # "Appropriations" with "– Current" below the numbers (Tuguegarao 2021, 2022) is not an unspecified period.
+            if hit[1] == "unspecified_period" and following:
+                longer = f"{candidate} {following[0]}"
+                if (completed := match(longer, aliases, "executive_summary", lines)) and completed[0] == hit[0] and completed[1] is None:
                     return completed[0], completed[1], longer
             return hit[0], hit[1], candidate
     return None

@@ -1,86 +1,144 @@
 import {
+    Area,
     Bar,
     CartesianGrid,
-    Cell,
     ComposedChart,
     Line,
     ReferenceLine,
     XAxis,
     YAxis,
 } from 'recharts';
-import { RESULT_METRIC, ResultFigure } from '@/components/charts/trend-mark';
+import { FinanceTooltip } from '@/components/charts/finance-tooltip';
+import { RESULT_METRIC } from '@/components/charts/trend-mark';
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import { financeChartSeries } from '@/lib/finance-chart';
-import { formatMetricTick, observationLabel } from '@/lib/performance-format';
-import { trendOf } from '@/lib/trend';
-import type { FinancialHistory } from '@/types/economic-performance';
+import { formatMetricTick } from '@/lib/performance-format';
+import type {
+    EconomicObservation,
+    FinancialHistory,
+} from '@/types/economic-performance';
 
+/**
+ * How a series reads (design.md, "Finance Charts"):
+ * - lines: separate amounts, such as business taxes; definition changes break the line.
+ * - outcome: Income and Expenses as overlapping areas with Net Income as a line over zero (Results of Operation).
+ * - stacked: parts that add up to a reported total, such as revenue sources.
+ * - bars: amounts compared side by side each year, such as appropriations, allotments and obligations.
+ * - result: Net Income alone as bars.
+ */
+export type FinanceChartVariant =
+    | 'lines'
+    | 'outcome'
+    | 'stacked'
+    | 'bars'
+    | 'result';
+
+function amount(point?: EconomicObservation): number | null {
+    return point?.state === 'shown' && point.value !== null
+        ? Number(point.value)
+        : null;
+}
+
+const contrast = (index: number) => `var(--chart-${(index % 5) + 1})`;
+// Parts of one total read as layers of one hue, darkest at the base, never as unrelated colors (26-11-03).
+const layer = (index: number) => `var(--map-${5 - (index % 5)})`;
+const RESULT_COLOR = 'var(--foreground)';
+
+/** Annual finance series; a missing year stays a gap, never a zero. */
 export default function FinanceHistoryChart({
     history,
-    result = false,
+    variant = 'lines',
     legend = true,
 }: {
     history: FinancialHistory;
-    result?: boolean;
+    variant?: FinanceChartVariant;
     legend?: boolean;
 }) {
-    const metrics = history.metrics;
-    const unit = metrics[0]?.unit ?? 'php';
-    const segments = financeChartSeries(history);
+    const resultMetric =
+        variant === 'outcome' || variant === 'result'
+            ? history.metrics.find((metric) => metric.id === RESULT_METRIC)
+            : undefined;
+    const metrics =
+        variant === 'result'
+            ? []
+            : history.metrics.filter((metric) => metric.id !== RESULT_METRIC);
+    const unit = (metrics[0] ?? history.metrics[0])?.unit ?? 'php';
+    const color = variant === 'stacked' ? layer : contrast;
+    const segments =
+        variant === 'lines' ? financeChartSeries({ ...history, metrics }) : [];
+    const series = [
+        ...metrics.map((metric, index) => ({ metric, color: color(index) })),
+        ...(resultMetric
+            ? [
+                  {
+                      metric: resultMetric,
+                      color: variant === 'result' ? color(0) : RESULT_COLOR,
+                  },
+              ]
+            : []),
+    ];
     const config = Object.fromEntries(
-        metrics.map((metric, index) => [
+        series.map(({ metric, color: swatch }, index) => [
             `series${index}`,
-            { label: metric.label, color: `var(--chart-${(index % 5) + 1})` },
+            { label: metric.label, color: swatch },
         ]),
     );
-    const data = history.rows.map((row, position) => {
-        const point = row.observations[RESULT_METRIC];
-        return {
-            year: row.year,
-            result:
-                point?.state === 'shown' && point.value !== null
-                    ? Number(point.value)
-                    : null,
-            ...Object.fromEntries(
-                segments.map((segment, index) => [
-                    `segment${index}`,
-                    segment.values[position],
-                ]),
-            ),
-        };
-    });
+    const data = history.rows.map((row, position) => ({
+        year: row.year,
+        result: amount(row.observations[RESULT_METRIC]),
+        ...Object.fromEntries(
+            metrics.map((metric, index) => [
+                `value${index}`,
+                amount(row.observations[metric.id]),
+            ]),
+        ),
+        ...Object.fromEntries(
+            segments.map((segment, index) => [
+                `segment${index}`,
+                segment.values[position],
+            ]),
+        ),
+    }));
+    const category = variant === 'bars' || variant === 'result';
     return (
         <div className="flex min-w-0 flex-col gap-2">
             <ChartContainer
                 config={config}
-                className={`aspect-auto w-full font-mono tabular-nums ${result ? 'h-44 sm:h-48' : 'h-72 sm:h-80'}`}
+                className={`aspect-auto w-full font-mono tabular-nums ${variant === 'result' ? 'h-32 sm:h-36' : 'h-48 sm:h-56'}`}
                 role="group"
-                aria-label={`${metrics.map((metric) => metric.label).join(' and ')} by year. Exact values are listed in the table.`}
+                aria-label={`${series.map(({ metric }) => metric.label).join(' and ')} by year. Exact values are listed in the table.`}
             >
                 <ComposedChart
                     data={data}
-                    margin={{ top: 16, right: 16, bottom: 8, left: 0 }}
+                    margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
                     accessibilityLayer
-                    syncId="finance-trends"
+                    barGap={2}
+                    barCategoryGap="24%"
                 >
                     <CartesianGrid vertical={false} stroke="var(--border)" />
                     <XAxis
                         dataKey="year"
-                        type="number"
+                        type={category ? 'category' : 'number'}
                         domain={
-                            history.rows.length === 1
-                                ? [
-                                      history.rows[0].year - 0.5,
-                                      history.rows[0].year + 0.5,
-                                  ]
-                                : ['dataMin', 'dataMax']
+                            category
+                                ? undefined
+                                : history.rows.length === 1
+                                  ? [
+                                        history.rows[0].year - 0.5,
+                                        history.rows[0].year + 0.5,
+                                    ]
+                                  : ['dataMin', 'dataMax']
                         }
-                        ticks={history.rows.map((row) => row.year)}
+                        ticks={
+                            category
+                                ? undefined
+                                : history.rows.map((row) => row.year)
+                        }
                         tickLine={false}
                         axisLine={false}
                         tickMargin={12}
-                        minTickGap={24}
-                        padding={{ left: 20, right: 20 }}
+                        minTickGap={category ? 0 : 24}
+                        padding={category ? undefined : { left: 16, right: 16 }}
                     />
                     <YAxis
                         domain={[
@@ -94,77 +152,90 @@ export default function FinanceHistoryChart({
                         tickLine={false}
                         axisLine={false}
                     />
-                    {result && (
+                    {resultMetric && (
                         <ReferenceLine y={0} stroke="var(--muted-foreground)" />
                     )}
                     <ChartTooltip
-                        cursor={{
-                            stroke: 'var(--muted-foreground)',
-                            strokeDasharray: '3 3',
-                        }}
-                        content={({ active, label }) => {
-                            const row = history.rows.find(
-                                (item) => item.year === Number(label),
-                            );
-                            return active && row ? (
-                                <div className="grid max-w-80 gap-2 rounded-sm border bg-popover p-3 text-popover-foreground shadow-md">
-                                    <p className="type-label">{row.year}</p>
-                                    {metrics.map((metric) => {
-                                        const point =
-                                            row.observations[metric.id];
-                                        const value = observationLabel(
-                                            point,
-                                            metric.unit,
-                                        );
-                                        return (
-                                            <div
-                                                key={metric.id}
-                                                className="grid gap-1 border-t pt-2 type-data"
-                                            >
-                                                <span className="font-sans">
-                                                    {metric.label}
-                                                </span>
-                                                {metric.id === RESULT_METRIC ? (
-                                                    <ResultFigure point={point}>
-                                                        {value}
-                                                    </ResultFigure>
-                                                ) : (
-                                                    <span>{value}</span>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            ) : null;
-                        }}
+                        cursor={
+                            category
+                                ? { fill: 'var(--muted)' }
+                                : {
+                                      stroke: 'var(--muted-foreground)',
+                                      strokeDasharray: '3 3',
+                                  }
+                        }
+                        content={({ active, label }) =>
+                            active ? (
+                                <FinanceTooltip
+                                    history={history}
+                                    label={label}
+                                    series={series}
+                                />
+                            ) : null
+                        }
                     />
-                    {result ? (
+                    {variant === 'result' && (
                         <Bar
                             dataKey="result"
-                            name="Surplus or Deficit"
+                            name={resultMetric?.label}
+                            fill={color(0)}
                             maxBarSize={32}
                             isAnimationActive={false}
-                        >
-                            {data.map((row) => (
-                                <Cell
-                                    key={row.year}
-                                    fill="currentColor"
-                                    className={
-                                        trendOf(row.result)?.tone ??
-                                        'text-muted-foreground'
-                                    }
-                                />
-                            ))}
-                        </Bar>
-                    ) : (
+                        />
+                    )}
+                    {variant === 'bars' &&
+                        metrics.map((metric, index) => (
+                            <Bar
+                                key={metric.id}
+                                dataKey={`value${index}`}
+                                name={metric.label}
+                                fill={color(index)}
+                                maxBarSize={24}
+                                isAnimationActive={false}
+                            />
+                        ))}
+                    {(variant === 'outcome' || variant === 'stacked') &&
+                        metrics.map((metric, index) => (
+                            <Area
+                                key={metric.id}
+                                dataKey={`value${index}`}
+                                name={metric.label}
+                                type="linear"
+                                stackId={
+                                    variant === 'stacked' ? 'parts' : undefined
+                                }
+                                stroke={color(index)}
+                                strokeWidth={variant === 'stacked' ? 1.5 : 2}
+                                fill={color(index)}
+                                fillOpacity={variant === 'stacked' ? 0.3 : 0.12}
+                                dot={false}
+                                activeDot={{ r: 4 }}
+                                connectNulls={false}
+                                isAnimationActive={false}
+                            />
+                        ))}
+                    {variant === 'outcome' && resultMetric && (
+                        <Line
+                            dataKey="result"
+                            name={resultMetric.label}
+                            type="linear"
+                            stroke={RESULT_COLOR}
+                            strokeWidth={2}
+                            dot={{ r: 3, fill: 'var(--card)' }}
+                            activeDot={{ r: 5 }}
+                            connectNulls={false}
+                            isAnimationActive={false}
+                        />
+                    )}
+                    {variant === 'lines' &&
                         segments.map((segment, index) => (
                             <Line
                                 key={index}
                                 dataKey={`segment${index}`}
                                 name={segment.metric.label}
                                 type="linear"
-                                stroke={`var(--color-series${segment.index})`}
-                                strokeWidth={3}
+                                stroke={color(segment.index)}
+                                strokeWidth={2}
                                 strokeDasharray={
                                     segment.index % 2 ? '6 4' : undefined
                                 }
@@ -177,33 +248,43 @@ export default function FinanceHistoryChart({
                                 connectNulls={false}
                                 isAnimationActive={false}
                             />
-                        ))
-                    )}
+                        ))}
                 </ComposedChart>
             </ChartContainer>
-            {legend && metrics.length > 1 && (
+            {legend && series.length > 1 && (
                 <ul
                     aria-label="Legend"
                     className="flex flex-wrap justify-center gap-x-4 gap-y-1"
                 >
-                    {metrics.map((metric, index) => (
+                    {series.map(({ metric, color: swatch }, index) => (
                         <li
                             key={metric.id}
                             className="flex items-center gap-2 type-meta"
                         >
-                            <svg width="24" height="8" aria-hidden="true">
-                                <line
-                                    x1="0"
-                                    y1="4"
-                                    x2="24"
-                                    y2="4"
-                                    stroke={`var(--chart-${(index % 5) + 1})`}
-                                    strokeWidth="3"
-                                    strokeDasharray={
-                                        index % 2 ? '6 4' : undefined
-                                    }
+                            {variant === 'lines' ||
+                            metric.id === RESULT_METRIC ? (
+                                <svg width="24" height="8" aria-hidden="true">
+                                    <line
+                                        x1="0"
+                                        y1="4"
+                                        x2="24"
+                                        y2="4"
+                                        stroke={swatch}
+                                        strokeWidth="3"
+                                        strokeDasharray={
+                                            variant === 'lines' && index % 2
+                                                ? '6 4'
+                                                : undefined
+                                        }
+                                    />
+                                </svg>
+                            ) : (
+                                <span
+                                    aria-hidden="true"
+                                    className="size-2.5 rounded-sm"
+                                    style={{ background: swatch }}
                                 />
-                            </svg>
+                            )}
                             {metric.label}
                         </li>
                     ))}

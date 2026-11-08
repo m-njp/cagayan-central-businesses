@@ -14,7 +14,7 @@ export function SourceLine({
     const summed = town === ALL_TOWNS;
     if (!summed && links.length === 0) return null;
     return (
-        <div className="grid gap-1 type-meta">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 type-meta">
             <span>Source</span>
             {summed ? (
                 <span>COA Annual Audit Reports</span>

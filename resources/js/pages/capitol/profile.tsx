@@ -1,4 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
+import { PageHeader } from '@/components/capitol/page-header';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -16,7 +17,7 @@ export default function Profile({ profile }: { profile: AccountProfile }) {
     return (
         <>
             <Head title="Profile" />
-            <h1 className="type-heading">Profile</h1>
+            <PageHeader title="Profile" />
             <form
                 className="flex max-w-measure flex-col gap-4 rounded-sm border bg-card p-4"
                 onSubmit={(event) => {

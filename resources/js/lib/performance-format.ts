@@ -16,17 +16,6 @@ const pesos = new Intl.NumberFormat(LOCALE, {
     currency: 'PHP',
     minimumFractionDigits: 2,
 });
-const signedPesos = new Intl.NumberFormat(LOCALE, {
-    style: 'currency',
-    currency: 'PHP',
-    signDisplay: 'exceptZero',
-    minimumFractionDigits: 2,
-});
-const percent = new Intl.NumberFormat(LOCALE, {
-    signDisplay: 'exceptZero',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-});
 const compact = new Intl.NumberFormat(LOCALE, {
     notation: 'compact',
     maximumFractionDigits: 1,
@@ -45,6 +34,7 @@ const REASONS: Record<string, string> = {
     not_published: 'COA has not published this report',
     not_reported: 'Not in the COA report for this year',
     not_collected: 'The COA workbook for this year has not been added yet',
+    not_loaded: 'Loaded for Tuguegarao City only',
     pending_review: 'Awaiting sign-off',
     small_group: 'Too few businesses in this group',
     dominance: 'One business holds most of this total',
@@ -76,7 +66,6 @@ export function observationNote(point?: EconomicObservation): string | null {
         if (point.change !== null)
             notes.push(`Change over ${matched} reporting both years`);
     }
-    if (point?.censusYear) notes.push(`Using the ${point.censusYear} census`);
     if (point?.restatedIn)
         notes.push(`Restated in the ${point.restatedIn} report`);
     const reason = reasonLabel(point);
@@ -84,8 +73,16 @@ export function observationNote(point?: EconomicObservation): string | null {
     return notes.length ? notes.join('. ') : null;
 }
 
+/** Pesos in accounting style: a negative amount sits in parentheses, (₱58.65M), never behind a minus sign. */
+function pesoText(value: number, short = false): string {
+    const text = short
+        ? `₱${shortPesos.format(Math.abs(value))}`
+        : pesos.format(Math.abs(value));
+    return value < 0 ? `(${text})` : text;
+}
+
 export function formatExactPesos(value: string): string {
-    return pesos.format(Number(value));
+    return pesoText(Number(value));
 }
 
 export function formatFinanceSource(
@@ -169,16 +166,26 @@ export function observationLabel(
     if (point?.state === 'hidden') return HIDDEN_FIGURE;
     if (point?.band) return point.band;
     if (point?.state !== 'shown' || point.value === null) return NOT_AVAILABLE;
-    if (short && unit === 'php') {
-        const value = Number(point.value);
-        return `${value < 0 ? '-' : ''}₱${shortPesos.format(Math.abs(value))}`;
-    }
+    if (short && unit === 'php') return pesoText(Number(point.value), true);
     return formatMetricValue(point.value, unit);
 }
 
+/** The change as a share of the year before, such as "+4.2%"; none for percent lines or a zero base. */
+export function percentChangeLabel(
+    point?: EconomicObservation,
+    unit: MetricUnit = 'php',
+): string | null {
+    const percent = point?.percentageChange;
+    if (unit === 'percent' || percent === null || percent === undefined)
+        return null;
+    return `${signedNumber.format(percent)}%`;
+}
+
+/** The change from the year before; a rise carries +, a fall in pesos sits in parentheses. */
 export function changeLabel(
     point?: EconomicObservation,
     unit: MetricUnit = 'php',
+    short = false,
 ): string {
     if (point?.state === 'hidden') return HIDDEN_FIGURE;
     if (point?.state !== 'shown' || !point.comparable || point.change === null)
@@ -186,14 +193,6 @@ export function changeLabel(
     const change = Number(point.change);
     if (unit === 'percent') return `${signedNumber.format(change)} points`;
     if (unit === 'count') return signedNumber.format(change);
-    return signedPesos.format(change);
-}
-
-export function percentageLabel(point?: EconomicObservation): string {
-    if (point?.state === 'hidden') return HIDDEN_FIGURE;
-    return point?.state === 'shown' &&
-        point.comparable &&
-        point.percentageChange !== null
-        ? `${percent.format(point.percentageChange)}%`
-        : NOT_AVAILABLE;
+    // Accounting style: a fall reads in parentheses, a rise as a plain amount (26-11-03).
+    return pesoText(change, short);
 }

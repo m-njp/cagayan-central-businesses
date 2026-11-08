@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Surface } from '@/components/ui/surface';
 
 export function WorkspaceFilters({
     children,
@@ -8,12 +9,13 @@ export function WorkspaceFilters({
     title?: string;
 }) {
     return (
-        <aside
+        <Surface
+            padded
+            title={title}
             aria-label={title ?? 'Filters'}
-            className="order-first flex flex-col gap-4 rounded-sm border bg-card p-4 lg:order-last"
+            className="order-first lg:order-last"
         >
-            {title && <h2 className="type-item">{title}</h2>}
             {children}
-        </aside>
+        </Surface>
     );
 }

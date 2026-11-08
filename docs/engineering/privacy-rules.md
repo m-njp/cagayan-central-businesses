@@ -108,7 +108,7 @@ The form collects no resident name, contact, or account. It may store the named 
 
 Every screen and every export that shows business records carries a visible "Simulated data" label while the dataset is simulated. Simulated records are off by default (`CAGAYAN_SIMULATED`, decisions.md, D37): with the flag off no business figure is produced at all, so no label is needed, and the label is never shown without records behind it.
 
-- Enforce: the label is part of the shared layout and the export templates, driven by one config value, not added page by page.
+- Enforce: the shared config-driven SimulatedLabel is rendered by the Capitol layout and the public cards containing business records. Public navigation has no label (user correction 26-10-30). Export templates retain the label.
 - Test: every page that shows business data renders the label. Every export contains it. With the flag off, no response carries business figures (`BusinessTrendsPrivacyTest`).
 
 ### P14. Logs and errors carry no protected data

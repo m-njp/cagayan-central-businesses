@@ -54,7 +54,7 @@ final class BusinessCategoryController extends Controller
 
     private function saved(string $message): RedirectResponse
     {
-        Inertia::flash('toast', ['type' => 'success', 'message' => $message]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => $message.' It shows in the Business Directory and the Wish Form.']);
 
         return back();
     }

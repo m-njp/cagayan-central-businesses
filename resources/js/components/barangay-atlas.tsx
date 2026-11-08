@@ -19,15 +19,19 @@ import {
 } from '@/lib/map-data';
 import { pageSearchParams, replaceLocalQuery } from '@/lib/navigation';
 import { home } from '@/routes';
-import type { TownProfile } from '@/types/data';
+import type { BarangayProfile, TownProfile } from '@/types/data';
 
 export function BarangayAtlas({
     towns,
+    counts,
     mapStyle,
 }: {
     towns: TownProfile[];
+    // Published counts from the database win over the boundary file, so a verified count needs no rebuild.
+    counts: BarangayProfile[];
     mapStyle: MapStyle;
 }) {
+    const published = new Map(counts.map((item) => [item.code, item]));
     const { url } = usePage();
     const requested = pageSearchParams(url).get('barangayTown');
     const town =
@@ -61,9 +65,21 @@ export function BarangayAtlas({
     const current =
         (townCode ? loadedTownBoundaries(townCode) : undefined) ??
         (fetched && fetched.code === townCode ? fetched.census : undefined);
-    const findBarangay = (code: string) =>
-        current?.features.find((f) => f.properties.psgc_code === code)
-            ?.properties;
+    const findBarangay = (code: string) => {
+        const properties = current?.features.find(
+            (f) => f.properties.psgc_code === code,
+        )?.properties;
+        const count = published.get(code);
+        return properties && count
+            ? {
+                  ...properties,
+                  population: count.population
+                      ? Number(count.population.value)
+                      : null,
+                  shade: count.shade,
+              }
+            : properties;
+    };
     const picked = chosen ? findBarangay(chosen) : undefined;
     if (!town)
         return <p className="type-body">No town population is available.</p>;
@@ -125,7 +141,7 @@ export function BarangayAtlas({
                             shades={Object.fromEntries(
                                 current.features.map(({ properties: p }) => [
                                     p.psgc_code,
-                                    p.shade ?? null,
+                                    findBarangay(p.psgc_code)?.shade ?? null,
                                 ]),
                             )}
                             highlight={chosen ? [chosen] : []}

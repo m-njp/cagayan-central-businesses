@@ -9,8 +9,11 @@ use App\Http\Controllers\Capitol\BusinessDocumentController;
 use App\Http\Controllers\Capitol\BusinessReviewController;
 use App\Http\Controllers\Capitol\CommunityWishController;
 use App\Http\Controllers\Capitol\DashboardController;
+use App\Http\Controllers\Capitol\DataEntryController;
 use App\Http\Controllers\Capitol\FinanceFigureController;
 use App\Http\Controllers\Capitol\FinanceReviewController;
+use App\Http\Controllers\Capitol\FinanceUploadController;
+use App\Http\Controllers\Capitol\PopulationController;
 use App\Http\Controllers\Capitol\ProfileController;
 use App\Http\Controllers\Capitol\SessionActivityController;
 use App\Http\Middleware\PreventIndexing;
@@ -19,6 +22,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware([PreventIndexing::class, 'auth', 'can:capitol'])
     ->prefix('capitol')->name('capitol.')->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
+        Route::get('data-entry', DataEntryController::class)->name('data-entry');
+        Route::get('population', [PopulationController::class, 'index'])->name('population.index');
+        Route::get('population/{town:psgc_code}/{year?}', [PopulationController::class, 'show'])->whereNumber('year')->name('population.show');
+        Route::post('population/{town:psgc_code}/{year}', [PopulationController::class, 'store'])->whereNumber('year')->middleware('throttle:population-writes')->name('population.store');
+        Route::post('population/{town:psgc_code}/{year}/reviews', [PopulationController::class, 'review'])->whereNumber('year')->middleware('can:finance-review')->name('population.reviews.store');
         Route::post('session-activity', SessionActivityController::class)->middleware('throttle:workspace-activity')->name('session.activity');
         Route::get('community-wishes', CommunityWishController::class)->middleware('can:community-wishes')->name('wishes.index');
         Route::get('activity-logs', ActivityLogController::class)->middleware('can:activity-logs')->name('logs.index');
@@ -41,7 +49,10 @@ Route::middleware([PreventIndexing::class, 'auth', 'can:capitol'])
         Route::get('analytics', AnalyticsController::class)->name('analytics');
         Route::get('finances', [FinanceReviewController::class, 'index'])->name('finances.index');
         Route::get('finances/{town:psgc_code}/{year}', [FinanceReviewController::class, 'show'])->whereNumber('year')->name('finances.show');
-        Route::post('finances/{town:psgc_code}/{year}/figures', [FinanceFigureController::class, 'store'])->whereNumber('year')->name('finances.figures.store');
+        Route::post('finances/{town:psgc_code}/{year}/figures', [FinanceFigureController::class, 'store'])->whereNumber('year')->middleware('throttle:finance-writes')->name('finances.figures.store');
+        Route::post('finances/{town:psgc_code}/{year}/uploads', [FinanceUploadController::class, 'store'])->whereNumber('year')->middleware('throttle:finance-writes')->name('finances.uploads.store');
+        Route::get('finances/{town:psgc_code}/{year}/uploads/{upload:public_id}', [FinanceUploadController::class, 'show'])->whereNumber('year')->name('finances.uploads.show');
+        Route::post('finances/{town:psgc_code}/{year}/uploads/{upload:public_id}/retries', [FinanceUploadController::class, 'retry'])->whereNumber('year')->middleware('throttle:finance-writes')->name('finances.uploads.retry');
         Route::post('finances/{town:psgc_code}/{year}/reviews', [FinanceReviewController::class, 'store'])->whereNumber('year')->middleware('can:finance-review')->name('finances.reviews.store');
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');

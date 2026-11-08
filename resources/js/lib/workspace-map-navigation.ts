@@ -26,25 +26,37 @@ export async function navigateDashboard(
         }).url,
         preserveScroll: true,
         preserveState: true,
-        props: (props) => ({
-            ...props,
-            map: {
-                ...(props.map as WorkspaceMap),
-                barangays:
-                    census?.features.map(({ properties: p }) => ({
-                        code: p.psgc_code,
-                        name: p.name,
-                        population:
-                            p.population == null
-                                ? null
-                                : {
-                                      value: String(p.population),
-                                      year: census.year,
-                                      sourceUrl: census.source,
-                                  },
-                        shade: p.shade ?? null,
-                    })) ?? [],
-            },
-        }),
+        props: (props) => {
+            const map = props.map as WorkspaceMap;
+            return {
+                ...props,
+                map: {
+                    ...map,
+                    // Shapes from the boundary file, counts from the database (Data Entry, Phase 4).
+                    barangays:
+                        census?.features.map(({ properties: p }) => {
+                            const count = map.counts[p.psgc_code];
+                            return {
+                                code: p.psgc_code,
+                                name: p.name,
+                                population: count
+                                    ? {
+                                          value: String(count.value),
+                                          year: count.year,
+                                          sourceUrl: count.source,
+                                      }
+                                    : p.population == null
+                                      ? null
+                                      : {
+                                            value: String(p.population),
+                                            year: census.year,
+                                            sourceUrl: census.source,
+                                        },
+                                shade: count?.shade ?? p.shade ?? null,
+                            };
+                        }) ?? [],
+                },
+            };
+        },
     });
 }

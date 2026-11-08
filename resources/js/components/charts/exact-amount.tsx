@@ -8,15 +8,17 @@ import {
 } from '@/components/ui/tooltip';
 
 /**
- * A short or rounded figure that shows the exact amount on hover, focus or tap. The exact text is also the
- * accessible name, so nothing depends on the pointer.
+ * A short or rounded figure that shows the exact amount on hover, focus or tap, with an optional second line such as
+ * its change, so a figure and its arrow share one tooltip. The text is also the accessible name.
  */
 export function ExactAmount({
     exact,
+    detail,
     label,
     children,
 }: {
     exact: string;
+    detail?: string | null;
     label?: string;
     children: ReactNode;
 }) {
@@ -27,7 +29,9 @@ export function ExactAmount({
                 <TooltipTrigger asChild>
                     <button
                         type="button"
-                        aria-label={label ?? exact}
+                        aria-label={
+                            label ?? [exact, detail].filter(Boolean).join('. ')
+                        }
                         className="min-h-6 cursor-help rounded-sm underline decoration-dotted underline-offset-4"
                         onClick={(event) => {
                             event.preventDefault();
@@ -37,8 +41,9 @@ export function ExactAmount({
                         {children}
                     </button>
                 </TooltipTrigger>
-                <TooltipContent className="font-mono type-body tabular-nums">
-                    {exact}
+                <TooltipContent className="grid gap-0.5 font-mono type-body tabular-nums">
+                    <span>{exact}</span>
+                    {detail && <span className="font-sans">{detail}</span>}
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

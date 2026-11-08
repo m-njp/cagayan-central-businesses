@@ -102,3 +102,10 @@ it('seeds registry records in every review state, with permits and private docum
         ->and(DB::table('businesses')->whereNotNull('bir_verified_on')->where('record_status', '<>', 'approved')->count())->toBe(0)
         ->and(Storage::disk('local')->exists(DB::table('business_documents')->value('path')))->toBeTrue();
 });
+
+it('keeps each barangay within its cap with names unique inside it', function () {
+    $perBarangay = DB::table('businesses')->groupBy('barangay_id')->selectRaw('count(*) as total, count(distinct business_name) as names')->get();
+
+    expect($perBarangay->max('total'))->toBeLessThanOrEqual(config('cagayan.simulation.max_per_barangay'))
+        ->and($perBarangay->every(fn ($row) => $row->total === $row->names))->toBeTrue();
+});

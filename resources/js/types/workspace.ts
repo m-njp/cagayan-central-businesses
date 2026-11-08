@@ -18,6 +18,11 @@ export type WorkspaceMap = {
     atlas: TownAtlas;
     barangays: BarangayProfile[];
     finances: FinanceMap;
+    // Published barangay counts by PSGC code; the boundary files carry only shapes.
+    counts: Record<
+        string,
+        { value: number; year: number; source: string | null; shade: number }
+    >;
 };
 export type WorkspaceTable = {
     rows: Record<string, string | number | null>[];
@@ -126,9 +131,9 @@ export type BusinessProfile = {
     birVerifiedOn: string | null;
     permitStatus: string;
     permitValidUntil: string | null;
-    isNew: boolean;
     streak: number;
-    location: { lng: number; lat: number };
+    milestone: number | null;
+    location: { lng: number; lat: number } | null;
     recordStatus: string;
     submittedBy: string | null;
     submittedAt: string | null;

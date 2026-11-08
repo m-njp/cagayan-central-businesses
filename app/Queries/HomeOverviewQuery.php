@@ -13,6 +13,7 @@ final class HomeOverviewQuery
         private TownAtlasQuery $atlas,
         private BarangayAtlasQuery $barangays,
         private FinanceMapQuery $finances,
+        private SampleWishesQuery $wishes,
     ) {}
 
     public function get(): HomeOverview
@@ -42,6 +43,7 @@ final class HomeOverviewQuery
             atlas: $this->atlas->get(),
             barangays: $this->barangays->get(),
             finances: $this->finances->get(),
+            wishes: $this->wishes->get(),
         );
     }
 }

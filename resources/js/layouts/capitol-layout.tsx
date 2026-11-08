@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { AppearanceToggle } from '@/components/appearance-toggle';
 import { WorkspaceStatus } from '@/components/capitol/workspace-status';
 import { WorkspaceBreadcrumbs } from '@/components/capitol/workspace-breadcrumbs';
+import { KitaLogo } from '@/components/kita-logo';
 import { SimulatedLabel } from '@/components/privacy/simulated-label';
 import {
     DropdownMenu,
@@ -58,9 +59,9 @@ export default function CapitolLayout({ children }: { children: ReactNode }) {
                 <div className="flex h-14 items-center justify-between gap-3 border-b px-4">
                     <Link
                         href={dashboard()}
-                        className="type-item focus-visible:outline-ring"
+                        className="rounded-sm focus-visible:outline-ring"
                     >
-                        {props.name}
+                        <KitaLogo label={props.name} className="h-6 w-auto" />
                     </Link>
                     <Button
                         variant="ghost"
@@ -166,7 +167,7 @@ export default function CapitolLayout({ children }: { children: ReactNode }) {
                 </div>
             </aside>
             <div className="min-w-0 lg:col-start-2">
-                <div className="flex min-h-12 items-center justify-between gap-3 border-b px-gutter md:px-6">
+                <div className="flex min-h-12 items-center justify-between gap-3 border-b bg-card px-gutter md:px-6">
                     <WorkspaceBreadcrumbs />
                     <SimulatedLabel />
                 </div>

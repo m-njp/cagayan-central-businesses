@@ -111,50 +111,53 @@ export function AnalyticsPickers({
         town: () => (
             <Picker
                 id={`${idPrefix}-town`}
-                label="Town"
+                label="Municipality"
                 value={filters.town}
                 options={catalog.towns}
                 onChange={(town) => onChange({ town })}
             />
         ),
-        measure: () => (
-            <Picker
-                id={`${idPrefix}-measure`}
-                label="Show"
-                help={topic?.summary}
-                value={filters.measure}
-                options={catalog.measures.map((measure) => {
-                    const covered = measureCovers(measure, filters.town);
-                    // The sum of reporting towns also has the measure, but it is not a town to name.
-                    const towns = (measure.towns ?? []).filter(
-                        (code) => code !== ALL_TOWNS,
-                    );
-                    const only =
-                        towns.length === 1
-                            ? catalog.towns.find(
-                                  (town) => town.value === towns[0],
-                              )?.label
-                            : null;
-                    return {
-                        value: measure.value,
-                        label: measure.label,
-                        disabled: !covered,
-                        hint: covered
-                            ? undefined
-                            : only
-                              ? ` ${only} Only`
-                              : ' Not Loaded for This Town',
-                    };
-                })}
-                onChange={(measure) => onChange({ measure })}
-            />
-        ),
+        // The Executive Summary always shows its fixed sections, so it has no Show picker.
+        measure: () =>
+            filters.presentation !== 'statement' && (
+                <Picker
+                    id={`${idPrefix}-measure`}
+                    label="Show"
+                    help={topic?.summary}
+                    value={filters.measure}
+                    options={catalog.measures.map((measure) => {
+                        const covered = measureCovers(measure, filters.town);
+                        // The sum of reporting towns also has the measure, but it is not a town to name.
+                        const towns = (measure.towns ?? []).filter(
+                            (code) => code !== ALL_TOWNS,
+                        );
+                        const only =
+                            towns.length === 1
+                                ? catalog.towns.find(
+                                      (town) => town.value === towns[0],
+                                  )?.label
+                                : null;
+                        return {
+                            value: measure.value,
+                            label: measure.label,
+                            disabled: !covered,
+                            hint: covered
+                                ? undefined
+                                : only
+                                  ? ` ${only} Only`
+                                  : ' Not Loaded for This Municipality',
+                        };
+                    })}
+                    onChange={(measure) => onChange({ measure })}
+                />
+            ),
         presentation: () => (
             <Picker
                 id={`${idPrefix}-presentation`}
                 label="View"
                 value={filters.presentation}
                 options={[
+                    { value: 'statement', label: 'Executive Summary' },
                     { value: 'summary', label: 'Yearly Summary' },
                     { value: 'trends', label: 'Trends' },
                 ]}

@@ -4,8 +4,8 @@ export type PublicBusinessRow = {
     name: string;
     category: string;
     barangay: string;
-    isNew: boolean;
     bir: boolean;
+    milestone: number | null;
     point: [number, number] | null;
 };
 
@@ -21,7 +21,6 @@ export type BusinessView = {
     q: string;
     barangay: string | null;
     category: string | null;
-    isNew: boolean;
     bir: boolean;
     map: boolean;
     shown: number;
@@ -48,7 +47,6 @@ export function parseBusinessView(
         category: categories.some((item) => item.code === category)
             ? category
             : null,
-        isNew: params.get('new') === '1',
         bir: params.get('bir') === '1',
         map: params.get('show') === 'map',
         shown:
@@ -64,7 +62,6 @@ export function businessQuery(view: BusinessView): Record<string, string> {
     if (view.q) query.q = view.q;
     if (view.barangay) query.barangay = view.barangay;
     if (view.category) query.category = view.category;
-    if (view.isNew) query.new = '1';
     if (view.bir) query.bir = '1';
     if (view.map) query.show = 'map';
     if (view.shown > PAGE_SIZE) query.more = String(view.shown / PAGE_SIZE - 1);
@@ -81,7 +78,6 @@ export function visibleBusinesses(
             (!term || row.name.toLocaleLowerCase().includes(term)) &&
             (!view.barangay || row.barangay === view.barangay) &&
             (!view.category || row.category === view.category) &&
-            (!view.isNew || row.isNew) &&
             (!view.bir || row.bir),
     );
 }

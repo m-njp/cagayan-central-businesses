@@ -1,7 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { FieldHelp } from '@/components/capitol/field-help';
+import { PageHeader } from '@/components/capitol/page-header';
 import type { Point } from '@/components/map/business-map';
 import { LazyBusinessMap } from '@/components/map/lazy-business-map';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -215,9 +215,9 @@ export default function BusinessFormPage({
     return (
         <>
             <Head title={page.publicId ? 'Edit Business' : 'Add a Business'} />
-            <h1 className="type-heading">
-                {page.publicId ? 'Edit Business' : 'Add a Business'}
-            </h1>
+            <PageHeader
+                title={page.publicId ? 'Edit Business' : 'Add a Business'}
+            />
             {page.reviewNote && (
                 <Alert>
                     <AlertTitle>Returned for Resubmission</AlertTitle>
@@ -369,15 +369,7 @@ export default function BusinessFormPage({
                     </Group>
 
                     <fieldset className="flex flex-col gap-3 rounded-sm border bg-card p-4">
-                        <legend className="flex items-center gap-1 px-1 type-label">
-                            Documents
-                            <FieldHelp label="Documents">
-                                PDF, JPG or PNG up to{' '}
-                                {Math.round(page.limits.documentMaxKb / 1024)}{' '}
-                                MB each. A BIR Certificate of Registration earns
-                                the BIR Registered badge once approved.
-                            </FieldHelp>
-                        </legend>
+                        <legend className="px-1 type-label">Documents</legend>
                         {page.documents.length > 0 && (
                             <ul className="flex flex-col gap-1 type-meta">
                                 {page.documents.map((document, position) => (
@@ -539,7 +531,7 @@ export default function BusinessFormPage({
                 <aside className="flex flex-col gap-4 lg:sticky lg:top-6">
                     <fieldset className="grid gap-4 rounded-sm border bg-card p-4">
                         <legend className="px-1 type-label">Location</legend>
-                        {choose('town', 'Town', page.towns, (value) =>
+                        {choose('town', 'Municipality', page.towns, (value) =>
                             form.setData((previous) => ({
                                 ...previous,
                                 town: value,

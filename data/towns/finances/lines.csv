@@ -1,23 +1,23 @@
 code,parent_code,label,group,unit,displayed,source,aliases
-position.assets,,Assets,checks,php,0,executive_summary,(total )?assets
-position.liabilities,,Liabilities,checks,php,0,executive_summary,(total )?liabilities
-position.equity,,Government Equity,checks,php,0,executive_summary,(total )?(government|gov't|govt\.?) equity;(total )?(net assets/ ?)?equity
-performance.revenue,,Government Revenue,totals,php,1,executive_summary,(total )?(income|revenues?)
-performance.expenses,,Government Expenses,totals,php,1,executive_summary,(total )?expenses?
-performance.net_income,,Surplus or Deficit,checks,php,0,executive_summary,net income;surplus ?\(deficit\)( for the period)?;surplus
+position.assets,,Assets,position,php,1,executive_summary,(total )?assets
+position.liabilities,,Liabilities,position,php,1,executive_summary,(total )?liabilities
+position.equity,,Government Equity,position,php,1,executive_summary,(total )?(government|gov't|govt\.?) equity;(total )?(net assets/ ?)?equity
+performance.revenue,,Income,totals,php,1,executive_summary,(total )?(income|revenues?)
+performance.expenses,,Expenses,totals,php,1,executive_summary,(total )?expenses?
+performance.net_income,,Net Income as Printed,checks,php,0,executive_summary,net income;surplus ?\(deficit\)( for the period)?;surplus
 budget.appropriations_current,,Current Appropriations,budget,php,1,executive_summary,(total )?appropriations? ?- ?current;(total )?appropriations?@unspecified_period
 budget.appropriations_continuing,,Continuing Appropriations,checks,php,0,executive_summary,(total )?appropriations? ?- ?continuing
-budget.allotments_current,,Current Allotments,checks,php,0,executive_summary,(total )?allotments? ?- ?current;(total )?allotments?@unspecified_period
-budget.allotments_continuing,,Continuing Allotments,checks,php,0,executive_summary,(total )?allotments? ?- ?continuing
+budget.allotments_current,,Current Allotments,budget,php,1,executive_summary,(total )?allotments? ?- ?current;(total )?allotments?@unspecified_period
+budget.allotments_continuing,,Continuing Allotments,budget,php,1,executive_summary,(total )?allotments? ?- ?continuing
 budget.obligations_current,,Current Obligations,budget,php,1,executive_summary,(total )?obligations? ?- ?current;(total )?obligations?@unspecified_period
-budget.obligations_continuing,,Continuing Obligations,checks,php,0,executive_summary,(total )?obligations? ?- ?continuing
-revenue.tax,performance.revenue,Local Taxes,revenue_sources,php,1,fs_workbook,tax revenue
-revenue.national_share,performance.revenue,National Tax Allotment Share,revenue_sources,php,1,fs_workbook,share from national collections;share from (the )?(national )?internal revenue (collections|allotment)( \(ira\))?;share (from|on) national taxes
-revenue.other_national_share,performance.revenue,Other National Tax Shares,checks,php,0,fs_workbook,other shares? from national tax(es| collections);share from national wealth
-revenue.service_business,performance.revenue,Fees and Business Income,revenue_sources,php,1,fs_workbook,service and business income
-revenue.grants,performance.revenue,Grants and Donations,checks,php,0,fs_workbook,"shares?, grants and donations;shares?, grants,? and donations"
-revenue.other,performance.revenue,Other Revenue,checks,php,0,fs_workbook,other income;gains;miscellaneous income
-fs.total_revenue,,Total Revenue in the Financial Statements,checks,php,0,fs_totals,total revenues?
+budget.obligations_continuing,,Continuing Obligations,budget,php,1,executive_summary,(total )?obligations? ?- ?continuing
+revenue.tax,performance.revenue,Tax Revenue,revenue_sources,php,1,fs_workbook,tax revenue
+revenue.national_share,performance.revenue,Share from National Collections,revenue_sources,php,1,fs_workbook,share from national collections;share from (the )?(national )?internal revenue (collections|allotment)( \(ira\))?;share (from|on) national taxes
+revenue.other_national_share,performance.revenue,Other Shares from National Taxes,revenue_sources,php,1,fs_workbook,other shares? from national tax(es| collections);share from national wealth
+revenue.service_business,performance.revenue,Service and Business Income,revenue_sources,php,1,fs_workbook,service and business income
+revenue.grants,performance.revenue,"Shares, Grants and Donations",revenue_sources,php,1,fs_workbook,"shares?, grants and donations;shares?, grants,? and donations"
+revenue.other,performance.revenue,Other Income,revenue_sources,php,1,fs_workbook,other income;gains;miscellaneous income
+fs.total_revenue,,Total Revenue,checks,php,0,fs_totals,total revenues?
 local.business_tax,,Business Tax,business_taxes,php,1,annex_c1,business tax
 local.real_property_tax,,Real Property Tax,business_taxes,php,1,annex_c1,real property tax ?- ?basic
 local.permit_fees,,Permit Fees,business_taxes,php,1,annex_c1,permit fees
@@ -34,16 +34,16 @@ sector.health,,Health,checks,php,0,fs_scbaa,"health services;health, nutrition a
 sector.social_welfare,,Social Welfare,checks,php,0,fs_scbaa,social services and social welfare;social welfare services?
 sector.housing,,Housing and Community Development,checks,php,0,fs_scbaa,housing and community development
 sector.labor,,Labor and Employment,checks,php,0,fs_scbaa,labor and employment
-sector.economic_services,,Economic Services,development,php,1,fs_scbaa,economic services
-sector.development_fund,,Development Fund,development,php,1,fs_scbaa,20 ?% (development fund|dev't\.? fund|edf)
+sector.economic_services,,Economic Services,development,php,0,fs_scbaa,economic services
+sector.development_fund,,20% Development Fund,development,php,0,fs_scbaa,20 ?% (development fund|dev't\.? fund|edf)
 sector.disaster_fund,,Disaster Risk Fund,checks,php,0,fs_scbaa,(5 ?% )?ldrrmf;5 ?% calamity fund
 sector.aid_to_barangays,,Aid to Barangays,checks,php,0,fs_scbaa,aid to barangays?
 sector.debt_service,,Debt Service,checks,php,0,fs_scbaa,debt servicing;financial service;debt service
-performance.surplus,,Surplus or Deficit,totals,php,1,derived,(?!)
-revenue.remaining,,Other Revenue,revenue_sources,php,1,derived,(?!)
-revenue.local_share,,Locally Generated Share,revenue_share,percent,1,derived,(?!)
-budget.utilization,,Budget Utilization,budget_share,percent,1,derived,(?!)
-sector.development_fund.utilization,,Development Fund Utilization,development_share,percent,1,derived,(?!)
-sector.economic_services.utilization,,Economic Services Utilization,development_share,percent,1,derived,(?!)
-per_capita.revenue,,Revenue per Resident,per_capita,php,1,derived,(?!)
-per_capita.expenses,,Expenses per Resident,per_capita,php,1,derived,(?!)
+performance.surplus,,Net Income,totals,php,1,derived,(?!)
+revenue.remaining,,Other Revenue,checks,php,0,derived,(?!)
+revenue.local_share,,Locally Generated Share,checks,percent,0,derived,(?!)
+budget.utilization,,Budget Utilization,checks,percent,0,derived,(?!)
+sector.development_fund.utilization,,Development Fund Utilization,checks,percent,0,derived,(?!)
+sector.economic_services.utilization,,Economic Services Utilization,checks,percent,0,derived,(?!)
+per_capita.revenue,,Income per Resident,checks,php,0,derived,(?!)
+per_capita.expenses,,Expenses per Resident,checks,php,0,derived,(?!)

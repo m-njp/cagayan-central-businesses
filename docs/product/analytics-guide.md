@@ -1,74 +1,126 @@
 # Understanding Analytics
 
-Reviewed 26-10-28. Shared explanations come from `resources/content/analytics-guide.json`; update that content and this guide together. Metric definitions remain authoritative in `docs/engineering/metrics.md`. The Help sheet on Economy and Analytics shows this content: Measures, then the notes below.
+Reviewed 26-11-03. Per Resident, Locally Generated Share, Budget Utilization and Development Utilization were retired on 26-11-03 because their formulas could not be tied to an official definition. Shared explanations come from `resources/content/analytics-guide.json`; update that content and this guide together. Metric definitions remain authoritative in `docs/engineering/metrics.md`. The Help sheet on Economy and Analytics shows this content: Measures, then the notes below.
 
 Figures come from COA Annual Audit Reports and appear only after sign-off.
 
-## Government Totals
+## Financial Condition
 
-Revenue is income the government recognized. Expenses are its recognized costs, including non-cash ones.
+What the government owned and owed on December 31. Loaded for Tuguegarao City only.
 
-### Government Revenue
+### Assets
 
-Total government revenue for the fiscal year.
-
-Calculation: Reported amount.
-
-### Government Expenses
-
-Total government expenses, including non-cash expenses and transfers.
+Everything the government owns, such as cash, receivables, land, buildings and roads.
 
 Calculation: Reported amount.
 
-### Surplus or Deficit
+### Liabilities
 
-Revenue less expenses. A negative amount is a deficit.
+Everything the government owes, such as payables, loans and funds held for others.
 
-Calculation: Revenue minus Expenses.
+Calculation: Reported amount.
+
+### Government Equity
+
+Assets minus Liabilities. It is not ownership; no one holds shares.
+
+Calculation: Reported amount.
+
+## Results of Operation
+
+Income the government earned and the costs it recognized in the year, including non-cash ones.
+
+### Income
+
+Government income for the fiscal year, including its share of national taxes. Not business income.
+
+Calculation: Reported amount.
+
+### Expenses
+
+Government expenses, including depreciation and transfers. Not cash paid.
+
+Calculation: Reported amount.
+
+### Net Income
+
+Income less Expenses. A loss is shown in parentheses.
+
+Calculation: Income minus Expenses.
 
 ## Budget Execution
 
-Appropriations authorize spending. Obligations are commitments made against that authority, not cash paid.
+Appropriations are the budget the council passed. Allotments release it to offices. Obligations are commitments made, not cash paid.
 
 ### Current Appropriations
 
-Spending authority for the current appropriations period.
+This year's budget, passed by ordinance.
+
+Calculation: Reported amount.
+
+### Current Allotments
+
+The part of this year's budget released to offices. Tuguegarao City only.
+
+Calculation: Reported amount.
+
+### Continuing Allotments
+
+Unused budget from the year before that remains available. Tuguegarao City only.
 
 Calculation: Reported amount.
 
 ### Current Obligations
 
-Commitments recorded against current appropriations.
+Commitments such as contracts and payroll charged to this year's budget.
+
+Calculation: Reported amount.
+
+### Continuing Obligations
+
+Commitments charged to continuing allotments. Tuguegarao City only.
 
 Calculation: Reported amount.
 
 ## Revenue Sources
 
-Where revenue came from. National transfers can move revenue without a change in local business activity.
+Revenue by source as printed in the Statement of Financial Performance. National transfers can move revenue without a change in local business activity.
 
-### Local Taxes
+### Tax Revenue
 
-Tax revenue as reported.
-
-Calculation: Reported amount.
-
-### National Tax Allotment Share
-
-The government share of national tax collections.
+Taxes collected by the local government, as reported.
 
 Calculation: Reported amount.
 
-### Fees and Business Income
+### Share from National Collections
+
+The local government share of national tax collections, as reported.
+
+Calculation: Reported amount.
+
+### Other Shares from National Taxes
+
+Other shares from national taxes, such as national wealth, as reported.
+
+Calculation: Reported amount.
+
+### Service and Business Income
 
 Income from services, fees and government business. Not private-business sales.
 
 Calculation: Reported amount.
 
-### Other Revenue
+### Shares, Grants and Donations
 
-Grants, other national shares and miscellaneous income.
+Shares, grants and donations received, as reported.
 
-Calculation: Revenue minus Local Taxes, National Tax Allotment Share and Fees and Business Income.
+Calculation: Reported amount.
+
+### Other Income
+
+Gains and miscellaneous income, as reported.
+
+Calculation: Reported amount.
 
 ## Business Taxes and Fees
 
@@ -98,74 +150,6 @@ Basic real property tax, net of the reported discount.
 
 Calculation: Basic Real Property Tax minus its discount.
 
-## Development Spending
-
-Actual amounts under the Development Fund and Economic Services headings.
-
-### Development Fund
-
-Actual amounts under the 20% Development Fund heading.
-
-Calculation: Sum of reported actual amounts under the heading.
-
-### Economic Services
-
-Actual amounts for offices such as agriculture, trade and tourism.
-
-Calculation: Sum of reported actual amounts under the heading.
-
-## Budget Utilization
-
-The share of current appropriations recorded as obligations.
-
-### Budget Utilization
-
-Obligations as a percentage of appropriations.
-
-Calculation: Obligations / Appropriations x 100.
-
-## Locally Generated Share
-
-The share of revenue from local taxes plus fees and business income.
-
-### Locally Generated Share
-
-Local taxes plus fees and business income, as a percentage of revenue.
-
-Calculation: (Local Taxes + Fees and Business Income) / Revenue x 100.
-
-## Development Utilization
-
-Actual development amounts against the final budget for the same heading.
-
-### Development Fund Utilization
-
-Development Fund actual as a percentage of its final budget.
-
-Calculation: Actual / final budget x 100.
-
-### Economic Services Utilization
-
-Economic Services actual as a percentage of its final budget.
-
-Calculation: Actual / final budget x 100.
-
-## Per Resident
-
-Government amounts divided by the latest census population at or before the fiscal year.
-
-### Revenue per Resident
-
-Government revenue divided by census population.
-
-Calculation: Revenue / census population.
-
-### Expenses per Resident
-
-Government expenses divided by census population.
-
-Calculation: Expenses / census population.
-
 ## Business Trends
 
 Annual registered business activity for one industry or Business Category. Shown only with simulated records.
@@ -188,31 +172,13 @@ Businesses formally closed in the year.
 
 Calculation: Count of records marked closed.
 
-### Declared Sales
-
-Declared gross sales of the group, after the privacy guard.
-
-Calculation: Sum of declared gross sales.
-
-### Share of Active Businesses
-
-The group share of the town active businesses.
-
-Calculation: Group active / town active x 100.
-
-### Share of Declared Sales
-
-The industry share of town declared sales, where disclosure is permitted.
-
-Calculation: Industry sales / town sales x 100.
-
 ## Reading the Table
 
-Each row shows the selected fiscal year, the year before and the change between them. The Source line opens the COA report at the cited page. Change compares consecutive comparable years and does not rate performance. A missing figure says why.
+The Executive Summary lists each line as COA prints it, one column per fiscal year; a year opens its Yearly Summary. The Yearly Summary shows that year, the year before and the change between them. A loss or a fall in pesos is shown in parentheses. The Source line opens the COA report at the cited page. Change compares consecutive comparable years and does not rate performance. A missing figure says why.
 
 ## Coverage
 
-Fiscal years 2019 to 2025. Executive Summary totals cover all 29 towns for 2020 to 2024 and 13 towns for 2025. Breakdowns beyond totals are loaded for Tuguegarao City only. Full-year 2026 waits for a released report.
+Fiscal years 2019 to 2025. Executive Summary totals cover all 29 towns for 2020 to 2024 and 13 towns for 2025. Financial Condition, Allotments, Continuing Obligations and breakdowns beyond totals are loaded for Tuguegarao City only. Full-year 2026 waits for a released report.
 
 ## Sum of Reporting Towns
 

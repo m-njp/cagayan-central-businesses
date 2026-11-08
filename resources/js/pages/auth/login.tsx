@@ -1,5 +1,5 @@
 import { Form, Head, usePage } from '@inertiajs/react';
-import { Landmark } from 'lucide-react';
+import { KitaLogo } from '@/components/kita-logo';
 import { lazy, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,10 +27,12 @@ export default function Login() {
             </Head>
             <main className="grid min-h-screen bg-background lg:grid-cols-2">
                 <div className="hidden flex-col justify-between gap-10 bg-brand p-10 text-brand-foreground lg:flex">
-                    <p className="flex items-center gap-3 type-item">
-                        <Landmark className="size-5" aria-hidden="true" />
-                        {props.name}
-                    </p>
+                    <KitaLogo
+                        variant="stacked"
+                        reverse
+                        label={props.name}
+                        className="w-28"
+                    />
                     <Suspense fallback={null}>
                         <ProvinceMap
                             label="Map of the towns of Cagayan"

@@ -1,4 +1,5 @@
 // Mirrors of the PHP Data objects in app/Data, field for field.
+import type { CommunityWishSnapshot } from '@/types/economic-performance';
 import type { FinanceMap } from '@/types/finance-map';
 
 export type SelectOption = {
@@ -18,6 +19,7 @@ export type HomeOverview = {
     atlas: TownAtlas;
     barangays: BarangayProfile[];
     finances: FinanceMap;
+    wishes: CommunityWishSnapshot | null;
 };
 
 export type WishTally = {

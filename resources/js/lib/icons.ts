@@ -1,5 +1,8 @@
 import {
+    ClipboardPen,
+    UsersRound,
     LayoutDashboard,
+    Search,
     MessageSquare,
     ScrollText,
     UserRound,
@@ -24,9 +27,6 @@ import {
     Pencil,
     BedDouble,
     Briefcase,
-    CalendarCheck,
-    CalendarClock,
-    CalendarX,
     CookingPot,
     Fish,
     Flame,
@@ -36,16 +36,21 @@ import {
     Palmtree,
     Scissors,
     ShoppingBag,
-    Sparkles,
     Sprout,
     UtensilsCrossed,
     Wrench,
     ArrowLeft,
+    Check,
+    TriangleAlert,
+    Maximize2,
+    ChevronLeft,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export const icons = {
     dashboard: LayoutDashboard,
+    dataEntry: ClipboardPen,
+    population: UsersRound,
     wishes: MessageSquare,
     logs: ScrollText,
     profile: UserRound,
@@ -68,12 +73,14 @@ export const icons = {
     email: Mail,
     add: Plus,
     edit: Pencil,
-    isNew: Sparkles,
     streak: Flame,
-    permitValid: CalendarCheck,
-    permitExpiring: CalendarClock,
-    permitExpired: CalendarX,
     back: ArrowLeft,
+    search: Search,
+    parsed: Check,
+    warning: TriangleAlert,
+    fullscreen: Maximize2,
+    previous: ChevronLeft,
+    next: ChevronRight,
 } as const;
 
 // One icon per starter Business Category; a category added later falls back to the store icon.

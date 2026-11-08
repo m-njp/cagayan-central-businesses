@@ -101,6 +101,56 @@ export function selectedFinance(
     };
 }
 
+/** The Executive Summary's sections in COA's order (metrics.md M19, M20, M35). */
+export const STATEMENT_GROUPS = ['position', 'totals', 'budget'] as const;
+
+function hasValue(row: FinancialHistory['rows'][number]): boolean {
+    return Object.values(row.observations).some(
+        (point) => point.state === 'shown' && point.value !== null,
+    );
+}
+
+/**
+ * The Executive Summary sections for the town, sharing one year range: the period ends at the latest year any section
+ * reports and starts at the first year with a figure, so every section lines up under the same columns.
+ */
+export function executiveSummary(
+    catalog: AnalyticsCatalog,
+    filters: AnalyticsFilters,
+): { id: string; title: string; history: FinancialHistory }[] {
+    const histories = catalog.finances[filters.town];
+    const sections = STATEMENT_GROUPS.flatMap((id) => {
+        const history = histories?.[id];
+        const title = catalog.measures.find((item) => item.value === id)?.label;
+        return history && title ? [{ id, title, history }] : [];
+    });
+    const years = sections.flatMap(({ history }) =>
+        history.rows.filter(hasValue).map((row) => row.year),
+    );
+    if (years.length === 0) return [];
+    const periods = sections.map((section) => ({
+        ...section,
+        history: periodHistory(
+            section.history,
+            catalog,
+            filters.period,
+            Math.max(...years),
+        ),
+    }));
+    const first = Math.min(
+        ...periods.flatMap(({ history }) =>
+            history.rows.filter(hasValue).map((row) => row.year),
+        ),
+    );
+    return periods.map((section) => ({
+        ...section,
+        history: {
+            ...section.history,
+            rows: section.history.rows.filter((row) => row.year >= first),
+        },
+    }));
+}
+
 export function selectedBusiness(
     catalog: AnalyticsCatalog,
     filters: AnalyticsFilters,
@@ -113,32 +163,17 @@ export function selectedBusiness(
         : groups[0]?.value;
     if (!key) return null;
     const dataset = businesses.datasets[key];
-    const end = latestYear(dataset.counts);
     return {
         key,
         groups,
         dataset:
             filters.presentation === 'trends'
-                ? {
-                      counts: periodHistory(
-                          dataset.counts,
-                          catalog,
-                          filters.period,
-                          end,
-                      ),
-                      sales: periodHistory(
-                          dataset.sales,
-                          catalog,
-                          filters.period,
-                          end,
-                      ),
-                      share: periodHistory(
-                          dataset.share,
-                          catalog,
-                          filters.period,
-                          end,
-                      ),
-                  }
+                ? periodHistory(
+                      dataset,
+                      catalog,
+                      filters.period,
+                      latestYear(dataset),
+                  )
                 : dataset,
     };
 }

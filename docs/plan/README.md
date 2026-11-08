@@ -6,15 +6,31 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 
 ## Active and Deferred
 
+
+
 | Plan | Status | Scope |
 | :- | :- | :- |
-| [Finance Trends People Can Understand](active/26-10-29-finance-trends.md) | In progress | Shared chart-led finance view, local 3Y / 5Y / Max, focused breakdowns and annual changes |
+| [Live Finance Parsing](active/26-11-08-live-finance-parsing.md) | In progress | Faster shared Python readers, blur overlay live upload task, durable progress and failed-upload retry |
+| [Capitol Entry Redesign](active/26-11-09-capitol-entry-redesign.md) | In progress | One tab row, one status and entry cell, shared Waiting for Review table, Data Entry timestamps, compact Population with a barangay map, Municipality wording |
+| [Home Focus View](active/26-11-09-home-focus-view.md) | In progress | Reusable blur focus dialog and the Home 2 by 2 full-screen view, with the shortlist of other places |
+| [Kita Promo Production](active/26-11-05-kita-promo-production.md) | In review | Four cuts and stage mixes with the replacement drums and bass score verified 26-11-06; captions, stills and editable music supplied; strict native 60 fps source capture remains unresolved |
+| [Government Finances Report Redesign](active/26-11-03-finance-report-redesign.md) | Planned | Step 1 after the revert: Executive Summary polish, column lines and row shading, arrows, range chips and icon toggles, better tooltips, Capitol figure strip, retired indicators |
+| [Executive Summary View and Net Income](active/26-10-29-executive-summary-view.md) | In progress | Default Executive Summary table with charts, COA words Income, Expenses and Net Income, Financial Condition and Allotments for Tuguegarao City; CI and design checks pending |
 | [Business Registry Records](active/26-10-28-business-registry-records.md) | In progress | Staff prepare and Admins review, record profile, form with map pin and documents, BIR and permit badges, public directory, presentation trend seeder |
 
 ## Archive
 
+[Home Navigation and Data Labels](archive/26-10-30-home-navigation-data-labels.md): completed 26-10-30. Frontend checks and build passed; full CI stopped at an unreadable Python cache directory.
+
 | Plan | Status | Reference |
 | :- | :- | :- |
+| [Data Entry](archive/26-11-03-data-entry.md) | Completed 26-11-09 | Finance report grid with zero-trust safeguards, Data Entry hub and review queue, consistent forms, population in the database; Capitol tests 128 passed; full CI, dark mode and 375px not run |
+| [Kita Showcase Fast Cut](archive/26-11-05-showcase-fast-cut.md) | Completed 26-11-05 | New 72 second 1080p60 cut with two original illustrations, new full-screen motion areas, fresh interactions, glyph morphing, state feedback and 140 BPM sound; decoded media checked |
+| [Kita Showcase Motion Rebuild](archive/26-11-05-showcase-motion-rebuild.md) | Superseded 26-11-05 | Rejected for slow pacing, arbitrary zooming and reused compositions; replacement continues in Showcase Fast Cut |
+| [Kita Showcase Reel](archive/26-11-05-showcase-reel.md) | Superseded 26-11-05 | Technically verified export rejected as a screenshot slideshow with boring music; replacement continues in Showcase Motion Rebuild |
+| [Data Ingestion Rebuild](archive/26-11-02-data-ingestion-rebuild.md) | Abandoned 26-11-03 | Owner rejected the redesign and scope; reverted to `2b96ff4`, work kept in a stash |
+| [Finance Trends People Can Understand](archive/26-10-29-finance-trends.md) | Superseded 26-10-29 | Chart-led Trends default; Trends stays a view under the Executive Summary View plan |
+| [COA Parser Hardening](archive/26-10-29-coa-parser-hardening.md) | Completed 26-10-29 | Two PDF engines with fallback and digit confirmation, crash isolation and run log, wrapped Appropriations label fix, all 201 Tuguegarao cells tested, camelCase Python; 77 parser tests passed |
 | [Business Categories Revamp](archive/26-10-28-business-categories.md) | Completed 26-10-28, Focus Tag model superseded in part by D39 | Editable Business Types and Focus Tags, registered counts, local sort, search and paging, ten-color tag palette without a package (D38); full suite not run, light mode and edit forms not browser-checked |
 | [Finance Ledger Table Redesign and No Simulated Data](archive/26-10-28-finance-ledger-redesign.md) | Completed 26-10-28 | Simulated data off by default, one evidence store, stored PDF links, ledger table, short Help, and the polish: About the Data fix, year order, shared surplus and deficit display, exact amounts on hover, M26 percent over the prior magnitude; Capitol Analytics checked; 306 PHP tests passed |
 | [Make Analytics Understandable](archive/26-10-28-analytics-clarity.md) | Superseded 26-10-28 | Periods, local history and metrics stayed; layout, sources, Help and Compare replaced by the ledger redesign |

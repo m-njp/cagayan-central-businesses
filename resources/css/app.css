@@ -40,6 +40,11 @@
     --workspace-sidebar-width: 13rem;
     --workspace-map-height: clamp(22rem, 57dvh, 38rem);
     --spacing-gutter: 1rem;
+    /* Density (26-11-03): compact by default so screens show rows, not padding. */
+    --spacing-panel: 0.5rem;
+    --spacing-cell-x: 0.5rem;
+    --spacing-cell-y: 0.25rem;
+    --spacing-row: 2rem;
 
     /* Motion. One easing for everything, three speeds. */
     --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -53,6 +58,14 @@
     --animate-rise: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     --animate-fade: fade 0.8s ease-out both;
     --animate-nudge: nudge 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    --animate-draw: draw 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+    /* Strokes a check mark in; pair with a stroke-dasharray at least as long as the path. */
+    @keyframes draw {
+        from {
+            stroke-dashoffset: 24;
+        }
+    }
 
     @keyframes nudge {
         50% {
@@ -161,7 +174,8 @@
  * neutral scale for everything else (design.md, "Color").
  */
 :root {
-    --background: oklch(0.985 0.003 90);
+    /* A neutral stone, one step darker than the white cards, so every surface visibly lifts off the page. */
+    --background: oklch(0.955 0.002 95);
     --foreground: oklch(0.23 0.02 250);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.23 0.02 250);
@@ -222,7 +236,7 @@
 }
 
 .dark {
-    --background: oklch(0.27 0.022 245);
+    --background: oklch(0.23 0.022 245);
     --foreground: oklch(0.95 0.005 90);
     --card: oklch(0.3 0.024 245);
     --card-foreground: oklch(0.95 0.005 90);

@@ -8,6 +8,7 @@ final readonly class PublicBusinessProfile
     /**
      * @param  array{code: string, name: string}  $category
      * @param  int  $streak  M33 Renewal Streak in years
+     * @param  int|null  $milestone  M34 Operating Milestone in years
      * @param  array{lng: float, lat: float}|null  $location  Storefronts only
      * @param  list<array{id: string, name: string, category: array{code: string, name: string}}>  $nearby
      * @param  list<array{id: string, point: array{0: float, 1: float}}>  $neighbors  Storefronts in the same barangay, for the map
@@ -28,8 +29,8 @@ final readonly class PublicBusinessProfile
         public ?string $birVerifiedOn,
         public string $permitStatus,
         public ?string $permitValidUntil,
-        public bool $isNew,
         public int $streak,
+        public ?int $milestone,
         public ?array $location,
         public array $nearby,
         public array $neighbors,

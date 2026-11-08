@@ -10,19 +10,28 @@ use Illuminate\Support\Facades\File;
 
 final class WorkspaceMapQuery
 {
-    public function __construct(private TownAtlasQuery $atlas, private FinanceMapQuery $finances) {}
+    public function __construct(private TownAtlasQuery $atlas, private FinanceMapQuery $finances, private BarangayAtlasQuery $populations) {}
 
     public function get(?string $town, bool $drill): WorkspaceMap
     {
         $census = $town && $drill ? $this->census($town) : null;
-        $barangays = array_map(fn (array $f) => new BarangayProfile(
-            $f['properties']['psgc_code'],
-            $f['properties']['name'],
-            TownFigure::fromNullable($f['properties']['population'], $census['year'], $census['source']),
-            $f['properties']['shade'],
-        ), $census['features'] ?? []);
+        $counts = $this->populations->counts();
+        // The map file names the barangays and draws them; the published database count wins over the file's census
+        // value, so a verified count shows without a rebuild (D43).
+        $barangays = array_map(function (array $f) use ($census, $counts) {
+            $count = $counts[$f['properties']['psgc_code']] ?? null;
 
-        return new WorkspaceMap($this->atlas->get(), $barangays, $this->finances->get());
+            return new BarangayProfile(
+                $f['properties']['psgc_code'],
+                $f['properties']['name'],
+                $count === null
+                    ? TownFigure::fromNullable($f['properties']['population'], $census['year'], $census['source'])
+                    : TownFigure::fromNullable($count['value'], $count['year'], $count['source']),
+                $count['shade'] ?? $f['properties']['shade'],
+            );
+        }, $census['features'] ?? []);
+
+        return new WorkspaceMap($this->atlas->get(), $barangays, $this->finances->get(), $counts);
     }
 
     /** @return array{year: int, source: string, features: list<array{properties: array{psgc_code: string, name: string, population: int|null, shade: int|null}}>} | null */

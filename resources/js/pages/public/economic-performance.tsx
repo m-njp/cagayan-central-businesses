@@ -1,10 +1,10 @@
 import { Head, Link } from '@inertiajs/react';
-import { ChartBar, Cloud, MessageSquarePlus } from 'lucide-react';
+import { MessageSquarePlus } from 'lucide-react';
 import { AnalyticsPanels } from '@/components/analytics/analytics-panels';
 import { AnalyticsPickers } from '@/components/analytics/analytics-pickers';
-import { ChartViewSwitcher } from '@/components/charts/chart-view-switcher';
-import WishesPanel from '@/components/charts/wishes-panel';
+import WishRankingChart from '@/components/charts/wish-ranking-chart';
 import { LazyProvinceMap } from '@/components/lazy-province-map';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { pushFilters, withCoveredMeasure } from '@/lib/analytics';
 import { economicPerformance } from '@/routes/public';
@@ -13,11 +13,6 @@ import type {
     EconomicPerformance,
     PerformanceFilters,
 } from '@/types/economic-performance';
-
-const wishViews = [
-    { value: 'cloud', label: 'Word Cloud', icon: Cloud },
-    { value: 'bars', label: 'Ranked Bars', icon: ChartBar },
-] as const;
 
 export default function EconomicPerformancePage({
     performance,
@@ -58,23 +53,12 @@ export default function EconomicPerformancePage({
                     />
                 </div>
             </header>
-            <div className="grid min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_18rem]">
+            <div className="grid min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_20rem]">
                 <div className="flex min-w-0 flex-col gap-3">
                     <AnalyticsPanels
                         catalog={catalog}
                         filters={filters}
                         onChange={change}
-                        financeControls={
-                            <div className="grid gap-3 sm:grid-cols-3">
-                                <AnalyticsPickers
-                                    idPrefix="performance"
-                                    catalog={catalog}
-                                    filters={filters}
-                                    fields={['presentation', 'measure', 'year']}
-                                    onChange={change}
-                                />
-                            </div>
-                        }
                         businessControls={
                             <div className="grid gap-3 sm:grid-cols-2 lg:w-2/3">
                                 <AnalyticsPickers
@@ -88,43 +72,46 @@ export default function EconomicPerformancePage({
                         }
                     />
                 </div>
-                <aside
-                    aria-label="Town Explorer"
-                    className="dark flex min-w-0 flex-col gap-2 rounded-sm bg-brand p-3 text-brand-foreground sm:p-4"
-                >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                        <h2 className="type-heading">Cagayan</h2>
-                        <span className="type-meta text-brand-foreground">
-                            {townName}
-                        </span>
-                    </div>
-                    <div className="h-64 sm:h-72 lg:h-96">
-                        <LazyProvinceMap
-                            mapStyle="solid"
-                            label="Choose a Town in Cagayan"
-                            highlight={[filters.town]}
-                            onSelect={(town) => change({ town })}
-                            water
-                            className="size-full"
-                        />
-                    </div>
-                </aside>
-            </div>
-            <section
-                aria-labelledby="wishes-heading"
-                className="flex min-w-0 flex-col gap-3 rounded-sm border bg-card p-3 sm:p-4"
-            >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-baseline gap-3">
-                        <h2 id="wishes-heading" className="type-heading">
-                            Community Wishes
-                        </h2>
-                        {wishes && (
-                            <span className="type-label">{wishes.source}</span>
-                        )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button asChild variant="outline">
+                <div className="flex min-w-0 flex-col gap-3 lg:sticky lg:top-4">
+                    <aside
+                        aria-label="Town Explorer"
+                        className="dark flex min-w-0 flex-col gap-2 rounded-sm bg-brand p-panel text-brand-foreground"
+                    >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <h2 className="type-heading">Cagayan</h2>
+                            <span className="type-meta text-brand-foreground">
+                                {townName}
+                            </span>
+                        </div>
+                        <div className="h-64">
+                            <LazyProvinceMap
+                                mapStyle="solid"
+                                label="Choose a Town in Cagayan"
+                                highlight={[filters.town]}
+                                onSelect={(town) => change({ town })}
+                                water
+                                className="size-full"
+                            />
+                        </div>
+                    </aside>
+                    <section
+                        aria-labelledby="wishes-heading"
+                        className="flex min-w-0 flex-col gap-2 rounded-sm border bg-card p-panel"
+                    >
+                        <div className="flex items-start justify-between gap-3">
+                            <h2 id="wishes-heading" className="type-item">
+                                Community Wishes
+                            </h2>
+                            {wishes && (
+                                <Badge
+                                    variant="outline"
+                                    className="ml-auto border-destructive-foreground/30 bg-destructive-foreground/10 type-pin text-destructive-foreground"
+                                >
+                                    {wishes.source}
+                                </Badge>
+                            )}
+                        </div>
+                        <Button asChild variant="outline" size="sm">
                             <Link
                                 href={suggestions({
                                     query: { town: filters.town },
@@ -137,26 +124,17 @@ export default function EconomicPerformancePage({
                                 Share Your Wish
                             </Link>
                         </Button>
-                        <ChartViewSwitcher
-                            label="Wishes View"
-                            value={filters.wishView}
-                            options={wishViews}
-                            onChange={(wishView) => change({ wishView })}
-                        />
-                    </div>
+                        {wishes ? (
+                            <WishRankingChart snapshot={wishes} />
+                        ) : (
+                            <p role="status" className="py-4 type-meta">
+                                Community wishes are not available for this town
+                                yet.
+                            </p>
+                        )}
+                    </section>
                 </div>
-                {wishes ? (
-                    <WishesPanel
-                        key={`${filters.town}-${filters.wishView}`}
-                        snapshot={wishes}
-                        view={filters.wishView}
-                    />
-                ) : (
-                    <p role="status" className="py-6 type-meta">
-                        Community wishes are not available for this town yet.
-                    </p>
-                )}
-            </section>
+            </div>
         </div>
     );
 }

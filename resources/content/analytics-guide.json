@@ -2,29 +2,57 @@
     "introduction": "Figures come from COA Annual Audit Reports and appear only after sign-off.",
     "topics": [
         {
+            "id": "position",
+            "title": "Financial Condition",
+            "summary": "What the government owned and owed on December 31. Loaded for Tuguegarao City only.",
+            "metrics": [
+                {
+                    "id": "position.assets",
+                    "label": "Assets",
+                    "meaning": "Everything the government owns, such as cash, receivables, land, buildings and roads.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "position.liabilities",
+                    "label": "Liabilities",
+                    "meaning": "Everything the government owes, such as payables, loans and funds held for others.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "position.equity",
+                    "label": "Government Equity",
+                    "meaning": "Assets minus Liabilities. It is not ownership; no one holds shares.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                }
+            ]
+        },
+        {
             "id": "totals",
-            "title": "Government Totals",
-            "summary": "Revenue is income the government recognized. Expenses are its recognized costs, including non-cash ones.",
+            "title": "Results of Operation",
+            "summary": "Income the government earned and the costs it recognized in the year, including non-cash ones.",
             "metrics": [
                 {
                     "id": "performance.revenue",
-                    "label": "Government Revenue",
-                    "meaning": "Total government revenue for the fiscal year.",
+                    "label": "Income",
+                    "meaning": "Government income for the fiscal year, including its share of national taxes. Not business income.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "performance.expenses",
-                    "label": "Government Expenses",
-                    "meaning": "Total government expenses, including non-cash expenses and transfers.",
+                    "label": "Expenses",
+                    "meaning": "Government expenses, including depreciation and transfers. Not cash paid.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "performance.surplus",
-                    "label": "Surplus or Deficit",
-                    "meaning": "Revenue less expenses. A negative amount is a deficit.",
-                    "formula": "Revenue minus Expenses.",
+                    "label": "Net Income",
+                    "meaning": "Income less Expenses. A loss is shown in parentheses.",
+                    "formula": "Income minus Expenses.",
                     "inputs": ["performance.revenue", "performance.expenses"]
                 }
             ]
@@ -32,19 +60,40 @@
         {
             "id": "budget",
             "title": "Budget Execution",
-            "summary": "Appropriations authorize spending. Obligations are commitments made against that authority, not cash paid.",
+            "summary": "Appropriations are the budget the council passed. Allotments release it to offices. Obligations are commitments made, not cash paid.",
             "metrics": [
                 {
                     "id": "budget.appropriations_current",
                     "label": "Current Appropriations",
-                    "meaning": "Spending authority for the current appropriations period.",
+                    "meaning": "This year's budget, passed by ordinance.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "budget.allotments_current",
+                    "label": "Current Allotments",
+                    "meaning": "The part of this year's budget released to offices. Tuguegarao City only.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "budget.allotments_continuing",
+                    "label": "Continuing Allotments",
+                    "meaning": "Unused budget from the year before that remains available. Tuguegarao City only.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "budget.obligations_current",
                     "label": "Current Obligations",
-                    "meaning": "Commitments recorded against current appropriations.",
+                    "meaning": "Commitments such as contracts and payroll charged to this year's budget.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "budget.obligations_continuing",
+                    "label": "Continuing Obligations",
+                    "meaning": "Commitments charged to continuing allotments. Tuguegarao City only.",
                     "formula": "Reported amount.",
                     "inputs": []
                 }
@@ -53,40 +102,49 @@
         {
             "id": "revenue_sources",
             "title": "Revenue Sources",
-            "summary": "Where revenue came from. National transfers can move revenue without a change in local business activity.",
+            "summary": "Revenue by source as printed in the Statement of Financial Performance. National transfers can move revenue without a change in local business activity.",
             "metrics": [
                 {
                     "id": "revenue.tax",
-                    "label": "Local Taxes",
-                    "meaning": "Tax revenue as reported.",
+                    "label": "Tax Revenue",
+                    "meaning": "Taxes collected by the local government, as reported.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "revenue.national_share",
-                    "label": "National Tax Allotment Share",
-                    "meaning": "The government share of national tax collections.",
+                    "label": "Share from National Collections",
+                    "meaning": "The local government share of national tax collections, as reported.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "revenue.other_national_share",
+                    "label": "Other Shares from National Taxes",
+                    "meaning": "Other shares from national taxes, such as national wealth, as reported.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "revenue.service_business",
-                    "label": "Fees and Business Income",
+                    "label": "Service and Business Income",
                     "meaning": "Income from services, fees and government business. Not private-business sales.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
-                    "id": "revenue.remaining",
-                    "label": "Other Revenue",
-                    "meaning": "Grants, other national shares and miscellaneous income.",
-                    "formula": "Revenue minus Local Taxes, National Tax Allotment Share and Fees and Business Income.",
-                    "inputs": [
-                        "performance.revenue",
-                        "revenue.tax",
-                        "revenue.national_share",
-                        "revenue.service_business"
-                    ]
+                    "id": "revenue.grants",
+                    "label": "Shares, Grants and Donations",
+                    "meaning": "Shares, grants and donations received, as reported.",
+                    "formula": "Reported amount.",
+                    "inputs": []
+                },
+                {
+                    "id": "revenue.other",
+                    "label": "Other Income",
+                    "meaning": "Gains and miscellaneous income, as reported.",
+                    "formula": "Reported amount.",
+                    "inputs": []
                 }
             ]
         },
@@ -126,110 +184,6 @@
             ]
         },
         {
-            "id": "development",
-            "title": "Development Spending",
-            "summary": "Actual amounts under the Development Fund and Economic Services headings.",
-            "metrics": [
-                {
-                    "id": "sector.development_fund",
-                    "label": "Development Fund",
-                    "meaning": "Actual amounts under the 20% Development Fund heading.",
-                    "formula": "Sum of reported actual amounts under the heading.",
-                    "inputs": []
-                },
-                {
-                    "id": "sector.economic_services",
-                    "label": "Economic Services",
-                    "meaning": "Actual amounts for offices such as agriculture, trade and tourism.",
-                    "formula": "Sum of reported actual amounts under the heading.",
-                    "inputs": []
-                }
-            ]
-        },
-        {
-            "id": "budget_share",
-            "title": "Budget Utilization",
-            "summary": "The share of current appropriations recorded as obligations.",
-            "metrics": [
-                {
-                    "id": "budget.utilization",
-                    "label": "Budget Utilization",
-                    "meaning": "Obligations as a percentage of appropriations.",
-                    "formula": "Obligations / Appropriations x 100.",
-                    "inputs": [
-                        "budget.obligations_current",
-                        "budget.appropriations_current"
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "revenue_share",
-            "title": "Locally Generated Share",
-            "summary": "The share of revenue from local taxes plus fees and business income.",
-            "metrics": [
-                {
-                    "id": "revenue.local_share",
-                    "label": "Locally Generated Share",
-                    "meaning": "Local taxes plus fees and business income, as a percentage of revenue.",
-                    "formula": "(Local Taxes + Fees and Business Income) / Revenue x 100.",
-                    "inputs": [
-                        "revenue.tax",
-                        "revenue.service_business",
-                        "performance.revenue"
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "development_share",
-            "title": "Development Utilization",
-            "summary": "Actual development amounts against the final budget for the same heading.",
-            "metrics": [
-                {
-                    "id": "sector.development_fund.utilization",
-                    "label": "Development Fund Utilization",
-                    "meaning": "Development Fund actual as a percentage of its final budget.",
-                    "formula": "Actual / final budget x 100.",
-                    "inputs": [
-                        "sector.development_fund",
-                        "sector.development_fund:budget_final"
-                    ]
-                },
-                {
-                    "id": "sector.economic_services.utilization",
-                    "label": "Economic Services Utilization",
-                    "meaning": "Economic Services actual as a percentage of its final budget.",
-                    "formula": "Actual / final budget x 100.",
-                    "inputs": [
-                        "sector.economic_services",
-                        "sector.economic_services:budget_final"
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "per_capita",
-            "title": "Per Resident",
-            "summary": "Government amounts divided by the latest census population at or before the fiscal year.",
-            "metrics": [
-                {
-                    "id": "per_capita.revenue",
-                    "label": "Revenue per Resident",
-                    "meaning": "Government revenue divided by census population.",
-                    "formula": "Revenue / census population.",
-                    "inputs": ["performance.revenue"]
-                },
-                {
-                    "id": "per_capita.expenses",
-                    "label": "Expenses per Resident",
-                    "meaning": "Government expenses divided by census population.",
-                    "formula": "Expenses / census population.",
-                    "inputs": ["performance.expenses"]
-                }
-            ]
-        },
-        {
             "id": "business",
             "title": "Business Trends",
             "summary": "Annual registered business activity for one industry or Business Category. Shown only with simulated records.",
@@ -254,27 +208,6 @@
                     "meaning": "Businesses formally closed in the year.",
                     "formula": "Count of records marked closed.",
                     "inputs": []
-                },
-                {
-                    "id": "sales",
-                    "label": "Declared Sales",
-                    "meaning": "Declared gross sales of the group, after the privacy guard.",
-                    "formula": "Sum of declared gross sales.",
-                    "inputs": []
-                },
-                {
-                    "id": "count_share",
-                    "label": "Share of Active Businesses",
-                    "meaning": "The group share of the town active businesses.",
-                    "formula": "Group active / town active x 100.",
-                    "inputs": []
-                },
-                {
-                    "id": "sales_share",
-                    "label": "Share of Declared Sales",
-                    "meaning": "The industry share of town declared sales, where disclosure is permitted.",
-                    "formula": "Industry sales / town sales x 100.",
-                    "inputs": []
                 }
             ]
         }
@@ -283,12 +216,12 @@
         {
             "id": "reading",
             "title": "Reading the Table",
-            "text": "Each row shows the selected fiscal year, the year before and the change between them. The Source line opens the COA report at the cited page. Change compares consecutive comparable years and does not rate performance. A missing figure says why."
+            "text": "The Executive Summary lists each line as COA prints it, one column per fiscal year; a year opens its Yearly Summary. The Yearly Summary shows that year, the year before and the change between them. A loss or a fall in pesos is shown in parentheses. The Source line opens the COA report at the cited page. Change compares consecutive comparable years and does not rate performance. A missing figure says why."
         },
         {
             "id": "coverage",
             "title": "Coverage",
-            "text": "Fiscal years 2019 to 2025. Executive Summary totals cover all 29 towns for 2020 to 2024 and 13 towns for 2025. Breakdowns beyond totals are loaded for Tuguegarao City only. Full-year 2026 waits for a released report."
+            "text": "Fiscal years 2019 to 2025. Executive Summary totals cover all 29 towns for 2020 to 2024 and 13 towns for 2025. Financial Condition, Allotments, Continuing Obligations and breakdowns beyond totals are loaded for Tuguegarao City only. Full-year 2026 waits for a released report."
         },
         {
             "id": "sum",

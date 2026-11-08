@@ -10,6 +10,7 @@ use App\Http\Requests\ReviewFinanceRequest;
 use App\Models\Municipality;
 use App\Queries\FinanceReportQuery;
 use App\Queries\FinanceReviewListQuery;
+use App\Queries\FinanceUploadQuery;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -24,10 +25,11 @@ final class FinanceReviewController extends Controller
         )]);
     }
 
-    public function show(FinanceReportRequest $request, Municipality $town, FinanceReportQuery $query): Response
+    public function show(FinanceReportRequest $request, Municipality $town, FinanceReportQuery $query, FinanceUploadQuery $uploads): Response
     {
         return Inertia::render('capitol/finances/show', [
-            'report' => $query->get($request->user(), $town, $request->reportYear()),
+            'report' => fn () => $query->get($request->user(), $town, $request->reportYear()),
+            'uploadStatuses' => Inertia::optional(fn () => $uploads->listing($town, $request->reportYear())),
             'breadcrumbs' => [
                 ['label' => 'Government Finances', 'href' => route('capitol.finances.index', absolute: false)],
                 ['label' => $town->name],
@@ -42,7 +44,7 @@ final class FinanceReviewController extends Controller
         $result = $review->handle($request->user(), $town, $request->reportYear(), $decision,
             $request->figureIds(), $request->filled('note') ? $request->string('note')->toString() : null);
 
-        $message = sprintf('%d %s %s.', $result['done'], $result['done'] === 1 ? 'figure' : 'figures', $decision === 'verified' ? 'signed off' : 'rejected');
+        $message = sprintf('%d %s %s.', $result['done'], $result['done'] === 1 ? 'figure' : 'figures', $decision === 'verified' ? 'verified' : 'returned');
         if ($result['skipped'] > 0) {
             $message .= sprintf(' %d you entered %s for another reviewer.', $result['skipped'], $result['skipped'] === 1 ? 'needs' : 'need');
         }

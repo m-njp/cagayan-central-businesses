@@ -1,4 +1,5 @@
 import { Minus, Plus, RotateCcw } from 'lucide-react';
+import { icons } from '@/lib/icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import townsSource from '../../../data/boundaries/cagayan-municipalities.geojson?raw';
@@ -120,6 +121,8 @@ export type ProvinceMapProps = {
     water?: boolean;
     // Zoom buttons, Ctrl or pinch with the wheel, and drag to pan. Plain scrolling still scrolls the page.
     zoomable?: boolean;
+    // Adds a full screen button to the zoom controls (zoomable maps only).
+    onExpand?: () => void;
     className?: string;
 };
 
@@ -135,6 +138,7 @@ export default function ProvinceMap({
     onSelect,
     water = false,
     zoomable = false,
+    onExpand,
     className,
 }: ProvinceMapProps) {
     const animate = useRef(!source || !preparedMaps.has(source)).current;
@@ -378,6 +382,17 @@ export default function ProvinceMap({
         <div className={cn('relative', className)}>
             {map}
             <div className="absolute top-2 right-2 flex flex-col gap-1">
+                {onExpand && (
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        aria-label="Full screen"
+                        onClick={onExpand}
+                        className="size-10"
+                    >
+                        <icons.fullscreen aria-hidden="true" />
+                    </Button>
+                )}
                 <Button
                     variant="outline"
                     size="icon"

@@ -1,8 +1,11 @@
 import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { FinanceEntryForm } from '@/components/capitol/finance-entry-form';
 import { FinanceFiguresTable } from '@/components/capitol/finance-figures-table';
+import { PageHeader } from '@/components/capitol/page-header';
+import { FinanceReportGrid } from '@/components/capitol/finance-report-grid';
+import { FinanceUploads } from '@/components/capitol/finance-upload';
+import { FinanceParsingTask } from '@/components/capitol/finance-parsing-task';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,6 +34,12 @@ export default function FinanceReportPage({
 }) {
     const { url } = usePage();
     const [entering, setEntering] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [uploadId, setUploadId] = useState<string | null>(null);
+    const openUpload = (id: string | null) => {
+        setUploadId(id);
+        setUploading(true);
+    };
     const years = [
         ...new Set([
             report.year,
@@ -56,9 +65,35 @@ export default function FinanceReportPage({
     return (
         <>
             <Head title={`${report.town.label} ${report.year}`} />
-            <header className="flex flex-wrap items-center justify-between gap-3">
-                <h1 className="type-heading">{report.town.label}</h1>
-            </header>
+            <PageHeader title={report.town.label}>
+                <Sheet open={entering} onOpenChange={setEntering}>
+                    <SheetTrigger asChild>
+                        <Button>Enter Report</Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-full overflow-y-auto sm:max-w-3xl">
+                        <SheetHeader>
+                            <SheetTitle>Enter Report</SheetTitle>
+                            <SheetDescription>
+                                {report.town.label} {report.year}
+                            </SheetDescription>
+                        </SheetHeader>
+                        <FinanceReportGrid
+                            report={report}
+                            onSaved={() => setEntering(false)}
+                        />
+                    </SheetContent>
+                </Sheet>
+                <Button variant="outline" onClick={() => openUpload(null)}>
+                    Upload Report
+                </Button>
+            </PageHeader>
+            <FinanceParsingTask
+                report={report}
+                id={uploadId}
+                open={uploading}
+                onOpenChange={setUploading}
+                onUploaded={openUpload}
+            />
             <div
                 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 type-meta"
                 aria-label="Sources"
@@ -151,25 +186,11 @@ export default function FinanceReportPage({
                             ))}
                         </SelectContent>
                     </Select>
-                    <Sheet open={entering} onOpenChange={setEntering}>
-                        <SheetTrigger asChild>
-                            <Button className="w-full">Enter a Figure</Button>
-                        </SheetTrigger>
-                        <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
-                            <SheetHeader>
-                                <SheetTitle>Enter a Figure</SheetTitle>
-                                <SheetDescription>
-                                    {report.town.label}
-                                </SheetDescription>
-                            </SheetHeader>
-                            <FinanceEntryForm
-                                key={year}
-                                report={report}
-                                fiscalYear={year}
-                                onSaved={() => setEntering(false)}
-                            />
-                        </SheetContent>
-                    </Sheet>
+                    <FinanceUploads
+                        report={report}
+                        onOpen={openUpload}
+                        watching={uploading && uploadId !== null}
+                    />
                 </WorkspaceFilters>
             </div>
         </>

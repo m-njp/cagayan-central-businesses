@@ -39,7 +39,8 @@ export type BusinessMapProps = {
     onPick?: (point: Point) => void;
 };
 
-// One map for the directory, both profiles and the form: dashed barangay outlines, the chosen barangay framed and tinted.
+// One map for the directory, both profiles and the form: dashed barangay outlines; the chosen barangay framed with a
+// solid outline and named, the rest of the town dimmed.
 export default function BusinessMap({
     townCode,
     barangay,
@@ -63,8 +64,9 @@ export default function BusinessMap({
             selected: mapColor('--highlight', resolvedAppearance),
             ring: mapColor('--background', resolvedAppearance),
             line: mapColor('--muted-foreground', resolvedAppearance),
-            chosen: mapColor('--foreground', resolvedAppearance),
+            chosen: mapColor('--primary', resolvedAppearance),
             fill: mapColor('--highlight', resolvedAppearance),
+            dim: mapColor('--background', resolvedAppearance),
         }),
         [resolvedAppearance],
     );
@@ -203,23 +205,34 @@ export default function BusinessMap({
                             id="barangay-fill"
                             type="fill"
                             paint={{
-                                'fill-color': colors.fill,
-                                'fill-opacity': ['case', chosen, 0.12, 0],
+                                'fill-color': [
+                                    'case',
+                                    chosen,
+                                    colors.fill,
+                                    colors.dim,
+                                ],
+                                'fill-opacity': barangay
+                                    ? ['case', chosen, 0.12, 0.55]
+                                    : 0,
                             }}
                         />
                         <Layer
                             id="barangay-lines"
                             type="line"
                             paint={{
-                                'line-color': [
-                                    'case',
-                                    chosen,
-                                    colors.chosen,
-                                    colors.line,
-                                ],
-                                'line-width': ['case', chosen, 2, 0.8],
+                                'line-color': colors.line,
+                                'line-width': 0.8,
                                 'line-dasharray': [3, 2],
                                 'line-opacity': 0.7,
+                            }}
+                        />
+                        <Layer
+                            id="barangay-chosen"
+                            type="line"
+                            filter={chosen}
+                            paint={{
+                                'line-color': colors.chosen,
+                                'line-width': 2.5,
                             }}
                         />
                     </Source>
@@ -268,6 +281,11 @@ export default function BusinessMap({
                 )}
                 <NavigationControl position="top-right" showCompass={false} />
             </Map>
+            {framed && barangay && (
+                <p className="pointer-events-none absolute top-2 left-2 rounded-sm border bg-background px-2 py-1 type-meta font-medium text-foreground">
+                    {framed.features[0].properties.name}
+                </p>
+            )}
             {plain && (
                 <p className="absolute bottom-8 left-2 max-w-measure rounded-sm bg-background p-2 type-meta">
                     Basemap unavailable. Local boundaries remain available.

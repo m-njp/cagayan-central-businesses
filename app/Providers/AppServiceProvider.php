@@ -85,6 +85,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('wishes', fn (Request $request) => Limit::perHour((int) config('cagayan.wishes.per_hour_per_ip'))->by((string) $request->ip()));
         RateLimiter::for('finance-sources', fn (Request $request) => Limit::perMinute((int) config('cagayan.finances.source_requests_per_minute'))->by((string) $request->ip()));
         RateLimiter::for('registry-documents', fn (Request $request) => Limit::perMinute((int) config('cagayan.registry.document_requests_per_minute'))->by((string) $request->user()?->getAuthIdentifier()));
+        RateLimiter::for('population-writes', fn (Request $request) => Limit::perMinute((int) config('cagayan.population.writes_per_minute'))->by((string) $request->user()?->getAuthIdentifier()));
+        RateLimiter::for('finance-writes', fn (Request $request) => Limit::perMinute((int) config('cagayan.finances.writes_per_minute'))->by((string) $request->user()?->getAuthIdentifier()));
         RateLimiter::for('workspace-activity', fn (Request $request) => Limit::perMinute((int) config('cagayan.admin.activity_requests_per_minute'))->by((string) $request->user()?->getAuthIdentifier()));
     }
 

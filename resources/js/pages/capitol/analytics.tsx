@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { AnalyticsPanels } from '@/components/analytics/analytics-panels';
 import { AnalyticsPickers } from '@/components/analytics/analytics-pickers';
+import { PageHeader } from '@/components/capitol/page-header';
 import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { pushFilters, withCoveredMeasure } from '@/lib/analytics';
 import { analytics } from '@/routes/capitol';
@@ -27,15 +28,14 @@ export default function Analytics({
     return (
         <>
             <Head title="Analytics" />
-            <header>
-                <h1 className="type-heading">Analytics</h1>
-            </header>
+            <PageHeader title="Analytics" />
             <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
                 <div className="flex min-w-0 flex-col gap-4">
                     <AnalyticsPanels
                         catalog={catalog}
                         filters={filters}
                         onChange={change}
+                        figures
                     />
                 </div>
                 <WorkspaceFilters>
@@ -43,14 +43,7 @@ export default function Analytics({
                         idPrefix="analytics"
                         catalog={catalog}
                         filters={filters}
-                        fields={[
-                            'town',
-                            'presentation',
-                            'measure',
-                            'year',
-                            'dimension',
-                            'group',
-                        ]}
+                        fields={['town', 'dimension', 'group']}
                         onChange={change}
                     />
                 </WorkspaceFilters>

@@ -26,6 +26,7 @@ Agreed 26-10-29 (D40, D41):
 - [x] BIR Registered badge: our own badge when an approved record has a COR on file.
 - [x] Public directory and profile: approved records only (P15), public fields plus business contact, storefront pins only, local filters.
 - [x] Presentation seeder: food near schools and online businesses grow every year, one barangay declines (requirement 7), records in every review state, permits and placeholder documents; amber Simulated data tag.
+- [x] Polish from the user's screenshots (26-10-29): mm-dd-yyyy dates; profile header aligned with a back link, no category icon, no New or Valid; ruled field grid; Achievements medals (M34 Operating Milestone, M33 streak, BIR); directory filter row with search icon, name-only rows with fixed mark slots, one fixed-height list and map panel, solid barangay outline with name tag; seeder capped at 20 per barangay with unique local-style names and street-style pins; Economy without percentages, accounting parentheses, compact charts, counts-only Business Trends, sticky map and Community Wishes bars.
 - [ ] Browser check at desktop and 375px, light and dark, and the Staff to Admin walkthrough.
 - [ ] Privacy review across P1 to P15.
 
@@ -49,7 +50,29 @@ Agreed 26-10-29 (D40, D41):
 | "26-10-28" | Deferred plan written | The user asked that the future registry shape this plan's design |
 | "26-10-29" | Plan started and approved with the user's answers: public name, badges and business contact; Staff prepare and Admins review; pin first; own BIR badge; trend story; permit, DTI SEC CDA, TIN and RDO fields | User request for the seeded presentation set and the Registered Businesses UI |
 | "26-10-29" | Slices 1 to 4 built: schema and seeder, Capitol record and review, form with pin and uploads, public directory and profile | This branch |
+| "26-10-29" | Businesses and Economy polish; Declared Sales and Share of Town removed from Business Trends (query, Data, Help); word cloud and wishView removed; M34 added | User screenshot review; plan check-the-images-in-steady-teacup |
 
 ## Verification and Handoff
 
 26-10-29: the seeder, directory, profile, form and public test files pass. The full PHP suite passed 324 of 325 before the type count fix; the taxonomy test then passed. PHPStan reports no errors. `npm run check`, `npm run types:check` and `npm run build` pass. The browser check and privacy review are still open.
+
+26-10-29 polish: seeder, public directory, privacy business trends and Economy tests pass (new M34 and seeder cap tests); frontend unit tests, `npm run check`, `npm run types:check` and `npm run build` pass. Browser checked desktop dark and 375px light for directory, profile and Economy, with zero app requests for local filters and Back. Full `composer ci:check` not run, at the user's request.
+
+### Achievements Redesign "26-10-30"
+
+Question: What operating milestones and registration recognition has this business earned? The user rejected the custom medals and asked for package-based visuals. Replace hand-drawn hexagons and ribbons with the installed lucide-react Award, Flame and ShieldCheck icons, registered through lib/icons.ts. Use one consistent responsive set of compact bordered panels inside the existing Achievements card. Keep the same eligibility, values, dates, empty-state omission, profile placement and directory marks. No new dependencies or data changes. Final verification pending.
+
+### Illustrated Achievements Correction "26-10-30"
+
+The user rejected the Lucide panels, requested designed badge assets, and approved the detailed previous illustrated pack direction. This supersedes the preceding Achievements Redesign proposal. The shared component now uses the five selected trophy/medal PNGs from previous illustrated pack's free pack. Milestone artwork maps existing awarded values 5, 10 and 20 to progressively detailed trophy illustrations; this mapping is presentation only and changes no eligibility rules. Streak and BIR use distinct illustrations with the same factual labels and dates. The card is three centered badges without nested panels. No package added. Source, original filenames and license are recorded in public/brand/achievements/LICENSE.txt. Official freebie license permits websites and applications; assets are bundled only as part of the app. Final verification pending.
+
+Illustrated achievements verification "26-10-30": npm run check, npm run types:check and npm run build passed (existing large-chunk advisory only). Browser verified the public profile at 1440px dark and 375px light: all three illustrations loaded from local files at 112px/80px, no horizontal overflow, no console errors. Shared public/Capitol callers and empty-card omission were inspected; Capitol was not separately browser-tested. Design Check found no must-fix issue in the achievement changes. No metric, data, route, authorization or eligibility changes; no new behavior tests needed. Full CI was not repeated after its earlier unreadable tools/coa/.pytest_cache failure. git diff --check passed. Overall registry acceptance and privacy review remain open. No commit or push.
+
+### Kenney Medals Correction "26-10-30"
+
+The user rejected the previous illustrated pack and requested the other researched option, Kenney Medals. Removed all five rejected PNGs and replaced their license with Kenney's original CC0 license. New filenames prevent cached rejected artwork from appearing. Bronze/silver/gold illustrate the existing 5/10/20-year milestones, a gold star medal represents Renewal Streak, and a silver seal represents BIR Registered. No eligibility, metric, data or route changes. Source: https://kenney.nl/assets/medals. Earlier illustrated-pack implementation and verification are superseded. Final verification pending.
+### Original Achievements Restored "26-10-30"
+
+The latest user instruction rejects both external asset directions and asks to keep the original design with a small enhancement. Restored the original hexagonal SVG medals, tails, colors, labels and wrapping layout. The inner ring is continuous rather than dashed; the outer outline/ribbon opacity and number spacing are slightly quieter. Both downloaded asset sets and their bundled license files are removed from the project, and the empty achievement asset directory is removed. Earlier icon-panel and asset-pack proposals are superseded. The app's original brand logos remain untouched. No packages, eligibility, metrics, data or route changes. Final checks pending.
+
+Restoration verification "26-10-30": npm run check, npm run types:check and npm run build pass, with only the existing bundle-size advisory. Browser refreshed after build: original medals render on the public profile; zero external achievement images; 375px layout has no horizontal overflow. Design Check found no must-fix finding in the small refinements. git diff --check passed. No new behavior tests or repeated full CI run for this styling-only restoration; the earlier Python-cache permission blocker remains. Overall registry checks remain open.

@@ -13,7 +13,7 @@ final class AnalyticsController extends Controller
     public function __invoke(AnalyticsRequest $request, AnalyticsCatalogQuery $query): Response
     {
         return Inertia::render('capitol/analytics', [
-            'catalog' => $query->get(public: false),
+            'catalog' => $query->get(),
             'filters' => $request->analyticsFilters(),
         ]);
     }

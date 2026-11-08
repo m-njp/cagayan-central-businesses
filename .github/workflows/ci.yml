@@ -114,6 +114,10 @@ jobs:
         # Also generates the Wayfinder route files that the TypeScript check reads.
         run: npm run build
 
+      - name: Prepare and test the COA parser
+        # The queued workbook integration test needs the pinned Python environment.
+        run: composer data:finances:test
+
       - name: Run CI checks
         run: composer ci:check
 

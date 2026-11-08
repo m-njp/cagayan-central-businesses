@@ -12,6 +12,5 @@ final readonly class CommunityWishSnapshot
         public string $period,
         public string $source,
         public array $items,
-        public int $cloudLimit,
     ) {}
 }

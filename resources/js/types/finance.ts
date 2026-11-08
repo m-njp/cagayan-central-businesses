@@ -65,6 +65,51 @@ export type FinanceDocumentLink = {
     sourceUrl: string | null;
 };
 
+export type FinanceUploadRow = {
+    id: string;
+    name: string;
+    kind: string;
+    status: 'queued' | 'running' | 'done' | 'failed';
+    statusLabel: string;
+    figures: number;
+    message: string | null;
+    uploadedAt: string;
+};
+
+export type FinanceUploadTask = {
+    id: string;
+    name: string;
+    status: FinanceUploadRow['status'];
+    saved: number;
+    message: string | null;
+    pollMs: number;
+    // Only what the parsing overlay reads; the server snapshot carries more.
+    progress: {
+        attempt: string;
+        current: number | null;
+        total: number | null;
+        found: number | null;
+        startedAt: string | null;
+        updatedAt: string;
+        finishedAt: string | null;
+        rows: {
+            line: string;
+            label: string;
+            value: string;
+            location: string;
+        }[];
+        issues: { severity: string }[];
+        activity: {
+            sequence: number;
+            kind: 'stage' | 'scan' | 'figure' | 'issue';
+            line?: string;
+            message: string;
+            location: string | null;
+            at: string;
+        }[];
+    };
+};
+
 export type FinanceReport = {
     town: SelectOption;
     year: number;
@@ -72,7 +117,21 @@ export type FinanceReport = {
     figures: FinanceFigureRow[];
     issues: FinanceIssue[];
     documents: FinanceDocumentLink[];
-    lines: (SelectOption & { bases: ('actual' | 'budget_final')[] })[];
+    lines: (SelectOption & {
+        bases: ('actual' | 'budget_final')[];
+        group: string;
+        groupLabel: string;
+    })[];
+    entryYears: number[];
+    cells: {
+        line: string;
+        fiscalYear: number;
+        basis: 'actual' | 'budget_final';
+        value: string;
+        status: FinanceFigureStatus;
+    }[];
+    uploads: FinanceUploadRow[];
+    uploadKinds: SelectOption[];
     limits: {
         firstYear: number;
         lastYear: number;
@@ -80,5 +139,7 @@ export type FinanceReport = {
         valueMax: string;
         sourceUrlMax: number;
         reviewBatchMax: number;
+        uploadMaxKb: number;
+        changesMax: number;
     };
 };

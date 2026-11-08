@@ -20,5 +20,6 @@ final readonly class HomeOverview
         public TownAtlas $atlas,
         public array $barangays,
         public FinanceMap $finances,
+        public ?CommunityWishSnapshot $wishes,
     ) {}
 }

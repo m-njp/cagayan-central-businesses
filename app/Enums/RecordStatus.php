@@ -14,9 +14,9 @@ enum RecordStatus: string
     {
         return match ($this) {
             self::Draft => 'Draft',
-            self::Submitted => 'For Review',
+            self::Submitted => 'Pending',
             self::Returned => 'Returned',
-            self::Approved => 'Approved',
+            self::Approved => 'Verified',
         };
     }
 }

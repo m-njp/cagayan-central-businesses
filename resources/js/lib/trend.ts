@@ -1,13 +1,14 @@
-// The one place that decides how a rise or fall looks: green up for positive, red down for negative (design.md,
-// "Government Finances Ledger Table"). The colors are the --trend-up and --trend-down tokens. Direction only, never a rating (M26).
+// The one place that decides how a change looks: a green up arrow for a rise, a red down arrow for a fall (design.md,
+// "Executive Summary View"). The colors are the --trend-up and --trend-down tokens. Direction only, never a rating (M26).
+// Net Income itself carries no mark; a loss reads in parentheses.
 export type Trend = {
     direction: 1 | -1 | 0;
     tone: string;
-    glyph: '▲' | '▼' | '=';
+    glyph: '↑' | '↓' | '=';
 };
 
-const UP: Trend = { direction: 1, tone: 'text-trend-up', glyph: '▲' };
-const DOWN: Trend = { direction: -1, tone: 'text-trend-down', glyph: '▼' };
+const UP: Trend = { direction: 1, tone: 'text-trend-up', glyph: '↑' };
+const DOWN: Trend = { direction: -1, tone: 'text-trend-down', glyph: '↓' };
 const FLAT: Trend = {
     direction: 0,
     tone: 'text-muted-foreground',
@@ -25,7 +26,6 @@ export function trendOf(
 }
 
 export const CHANGE_WORDS = ['Increased', 'Decreased', 'Unchanged'] as const;
-export const RESULT_WORDS = ['Surplus', 'Deficit', 'Break even'] as const;
 
 export function trendWord(
     trend: Trend,

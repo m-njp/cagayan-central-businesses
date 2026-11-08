@@ -1,11 +1,14 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { ReactNode } from 'react';
-import { BusinessBadges } from '@/components/business-badges';
-import { CategoryIcon } from '@/components/category-icon';
+import { Achievements } from '@/components/business-badges';
 import { DetailField, DetailGrid } from '@/components/detail-field';
 import { LazyBusinessMap } from '@/components/map/lazy-business-map';
 import { ProfileSection } from '@/components/profile-section';
-import { RecordBadge, StatusBadge } from '@/components/registry-badges';
+import {
+    PermitBadge,
+    RecordBadge,
+    StatusBadge,
+} from '@/components/registry-badges';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -51,21 +54,17 @@ export default function BusinessShow({
     return (
         <>
             <Head title={business.name} />
-            <header className="flex flex-col gap-4 rounded-sm border bg-card p-4 sm:flex-row sm:items-start">
-                <CategoryIcon {...business.category} className="mt-1 size-8" />
-                <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <header className="flex flex-col gap-3 rounded-sm border bg-card p-panel sm:flex-row sm:items-start">
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <h1 className="type-heading">{business.name}</h1>
                     <p className="type-body text-muted-foreground">
                         {business.barangay}, {business.town}
                     </p>
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-2 empty:hidden">
                         <RecordBadge status={business.recordStatus} />
-                        <BusinessBadges
-                            bir={business.birVerifiedOn}
-                            permit={business.permitStatus}
+                        <PermitBadge
+                            status={business.permitStatus}
                             validUntil={business.permitValidUntil}
-                            isNew={business.isNew}
-                            streak={business.streak}
                         />
                     </div>
                 </div>
@@ -98,9 +97,21 @@ export default function BusinessShow({
                                         ? 'Storefront'
                                         : 'Home based',
                                 ],
+                                [
+                                    'BIR Registration',
+                                    business.birVerifiedOn &&
+                                        `Certificate checked ${formatDate(business.birVerifiedOn)}`,
+                                ],
                             ]}
                         />
                     </ProfileSection>
+
+                    <Achievements
+                        milestone={business.milestone}
+                        since={business.yearEstablished}
+                        streak={business.streak}
+                        bir={business.birVerifiedOn}
+                    />
 
                     <div className="grid gap-4 xl:grid-cols-2">
                         {admin && (
@@ -307,7 +318,7 @@ export default function BusinessShow({
                                     onClick={() => decide('approved')}
                                 >
                                     {form.processing && <Spinner />}
-                                    Approve and Publish
+                                    Verify and Publish
                                 </Button>
                                 <Field data-invalid={!!form.errors.note}>
                                     <FieldLabel htmlFor="review-note" required>

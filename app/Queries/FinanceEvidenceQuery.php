@@ -4,7 +4,7 @@ namespace App\Queries;
 
 use App\Enums\FinanceFigureStatus;
 use App\Models\FinanceFigure;
-use App\Models\TownFact;
+use App\Models\FinanceUpload;
 use Illuminate\Support\Collection;
 use stdClass;
 
@@ -32,19 +32,13 @@ final class FinanceEvidenceQuery
                 'reportYear' => $figure->document?->fiscal_year,
                 'page' => $this->page($figure->location),
                 'location' => $figure->location,
-                'url' => $figure->document?->file === null ? null : route('public.finance-sources.show', $key, absolute: false),
+                // Contributing cells and amounts, so a summed figure can be checked against the workbook.
+                'inputs' => FinanceFigure::cleanInputs($figure->inputs) ?? [],
+                // Uploaded reports stay private (D42), so they get no public link.
+                'url' => $figure->document?->file === null || str_starts_with($figure->document->file, FinanceUpload::FOLDER.'/')
+                    ? null : route('public.finance-sources.show', $key, absolute: false),
             ];
             $inputs["{$figure->municipality_id} {$figure->fiscal_year} {$figure->line_code}:{$figure->basis->value}"] = $key;
-        }
-        $census = [];
-        foreach (TownFact::query()->where('measure', 'population')->whereNotNull('checked_on')->with('municipality')->get() as $fact) {
-            $key = "census:{$fact->municipality_id}:{$fact->year}";
-            $sources[$key] = [
-                'kind' => 'census', 'label' => 'Census Population', 'town' => $fact->municipality->name,
-                'fiscalYear' => $fact->year, 'reportYear' => null, 'page' => null, 'location' => null,
-                'url' => $fact->source_url,
-            ];
-            $census["{$fact->municipality_id} {$fact->year}"] = $key;
         }
         $references = [];
         foreach ($stats->whereNotNull('municipality_id') as $row) {
@@ -52,12 +46,6 @@ final class FinanceEvidenceQuery
             foreach ($dependencies[$row->metric] ?? [$row->metric] as $input) {
                 $input = str_contains($input, ':') ? $input : "$input:actual";
                 $key = $inputs["{$row->municipality_id} {$row->fiscal_year} {$input}"] ?? null;
-                if ($key !== null) {
-                    $refs[] = $key;
-                }
-            }
-            if ($row->census_year !== null) {
-                $key = $census["{$row->municipality_id} {$row->census_year}"] ?? null;
                 if ($key !== null) {
                     $refs[] = $key;
                 }

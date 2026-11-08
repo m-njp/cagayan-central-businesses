@@ -10,6 +10,7 @@ import {
     pushFilters,
     measureCovers,
     withCoveredMeasure,
+    executiveSummary,
 } from '../../resources/js/lib/analytics.ts';
 
 const point = (value = '10', overrides = {}) => ({
@@ -89,25 +90,19 @@ await test('bands count as shown and fully unavailable histories do not invent a
     assert.deepEqual(periodHistory(empty, catalog, '3y'), empty);
 });
 
-await test('business counts, banded sales and shares use the same business period even when finance ends earlier', () => {
+await test('business counts use the business period even when finance ends earlier', () => {
     const counts = history([
         [2023, point()],
         [2024, point()],
         [2025, point()],
         [2026, point()],
     ]);
-    const sales = history([
-        [2023, point(null, { band: 'Band' })],
-        [2024, point(null, { state: 'hidden' })],
-        [2025, point(null, { band: 'Band' })],
-        [2026, point(null, { band: 'Band' })],
-    ]);
     const businessCatalog = {
         ...catalog,
         businesses: {
             townCode: 'town',
             groups: { industry: [{ value: 'industry:A' }], category: [] },
-            datasets: { 'industry:A': { counts, sales, share: counts } },
+            datasets: { 'industry:A': counts },
         },
     };
     const selected = selectedBusiness(businessCatalog, {
@@ -115,14 +110,9 @@ await test('business counts, banded sales and shares use the same business perio
         period: '2y',
         presentation: 'trends',
     });
-    for (const item of Object.values(selected.dataset))
-        assert.deepEqual(
-            item.rows.map((row) => row.year),
-            [2025, 2026],
-        );
-    assert.equal(
-        selected.dataset.sales.rows[0].observations.amount.value,
-        null,
+    assert.deepEqual(
+        selected.dataset.rows.map((row) => row.year),
+        [2025, 2026],
     );
     assert.deepEqual(
         selectedFinance(catalog, {
@@ -167,7 +157,7 @@ await test('local history retains explicit year and resets only an incompatible 
     assert.equal(router.push.mock.callCount(), calls);
 });
 
-await test('formatting retains combined notes and distinguishes percentage points without inventing comparisons', async () => {
+await test('formatting retains combined notes, puts falls in parentheses and never invents comparisons', async () => {
     const { registerHooks } = await import('node:module');
     const hooks = registerHooks({
         resolve(specifier, context, nextResolve) {
@@ -180,8 +170,13 @@ await test('formatting retains combined notes and distinguishes percentage point
             return nextResolve(specifier, context);
         },
     });
-    const { changeLabel, percentageLabel, observationNote, citationLinks } =
-        await import('../../resources/js/lib/performance-format.ts');
+    const {
+        changeLabel,
+        observationLabel,
+        observationNote,
+        citationLinks,
+        percentChangeLabel,
+    } = await import('../../resources/js/lib/performance-format.ts');
     const change = point('15', {
         comparable: true,
         change: '5',
@@ -189,13 +184,27 @@ await test('formatting retains combined notes and distinguishes percentage point
         comparisonYear: 2024,
     });
     assert.equal(changeLabel(change, 'percent'), '+5 points');
-    assert.equal(percentageLabel(change), '+50.0%');
     assert.equal(
-        changeLabel({ ...change, comparable: false }, 'php'),
-        'Not available',
+        changeLabel({ ...change, change: '-1500000' }, 'php', true),
+        '(₱1.5M)',
+    );
+    assert.equal(changeLabel(change, 'php'), '₱5.00');
+    assert.equal(percentChangeLabel(change, 'php'), '+50%');
+    assert.equal(
+        percentChangeLabel({ ...change, percentageChange: -4.25 }, 'php'),
+        '-4.25%',
+    );
+    assert.equal(percentChangeLabel(change, 'percent'), null);
+    assert.equal(
+        percentChangeLabel({ ...change, percentageChange: null }, 'php'),
+        null,
     );
     assert.equal(
-        percentageLabel({ ...change, percentageChange: null }),
+        observationLabel(point('-275749956.23'), 'php', true),
+        '(₱275.75M)',
+    );
+    assert.equal(
+        changeLabel({ ...change, comparable: false }, 'php'),
         'Not available',
     );
     assert.equal(
@@ -205,11 +214,10 @@ await test('formatting retains combined notes and distinguishes percentage point
     assert.equal(
         observationNote({
             ...change,
-            censusYear: 2024,
             restatedIn: 2025,
             coverage: { reporting: 13, total: 29, matched: 12 },
         }),
-        '13 of 29 towns. Change over 12 reporting both years. Using the 2024 census. Restated in the 2025 report',
+        '13 of 29 towns. Change over 12 reporting both years. Restated in the 2025 report',
     );
     assert.equal(
         observationNote(
@@ -376,4 +384,57 @@ await test('finance metric and range selections use local history and skip repea
     assert.equal(calls.length, 1);
     pushFilters(next, { measure: 'budget' }, url, props);
     assert.equal(calls[1].props({}).filters.metric, null);
+});
+
+await test('the Executive Summary lines up its sections under one year range in COA order', () => {
+    const sections = {
+        position: history([
+            [2019, point(null, { state: 'unavailable' })],
+            [2020, point()],
+            [2021, point()],
+        ]),
+        totals: history([
+            [2019, point()],
+            [2020, point()],
+            [2021, point(null, { state: 'unavailable' })],
+        ]),
+        budget: history([
+            [2019, point(null, { state: 'unavailable' })],
+            [2020, point(null, { state: 'unavailable' })],
+            [2021, point(null, { state: 'unavailable' })],
+        ]),
+    };
+    const statement = {
+        periods: { all: 2019, recent: 2020 },
+        measures: [
+            { value: 'totals', label: 'Results of Operation', towns: null },
+            { value: 'budget', label: 'Budget Execution', towns: null },
+            { value: 'position', label: 'Financial Condition', towns: null },
+        ],
+        finances: { town: sections },
+    };
+    const shown = executiveSummary(statement, { ...filters, period: 'all' });
+
+    assert.deepEqual(
+        shown.map((section) => [
+            section.title,
+            section.history.rows.map((row) => row.year),
+        ]),
+        [
+            ['Financial Condition', [2019, 2020, 2021]],
+            ['Results of Operation', [2019, 2020, 2021]],
+            ['Budget Execution', [2019, 2020, 2021]],
+        ],
+    );
+    assert.deepEqual(
+        executiveSummary(statement, {
+            ...filters,
+            period: '2y',
+        })[0].history.rows.map((row) => row.year),
+        [2020, 2021],
+    );
+    assert.deepEqual(
+        executiveSummary(statement, { ...filters, town: 'missing' }),
+        [],
+    );
 });

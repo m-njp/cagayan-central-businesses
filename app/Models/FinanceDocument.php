@@ -6,6 +6,8 @@ use App\Enums\FinanceAvailability;
 use App\Enums\FinanceDocumentKind;
 use Database\Factories\FinanceDocumentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +31,17 @@ class FinanceDocument extends Model
 {
     /** @use HasFactory<FinanceDocumentFactory> */
     use HasFactory;
+
+    /**
+     * Read from a Capitol upload rather than committed under data/towns; it stays out of the CSV import and export.
+     *
+     * @param  Builder<FinanceDocument>  $query
+     */
+    #[Scope]
+    protected function uploaded(Builder $query): void
+    {
+        $query->where('file', 'like', FinanceUpload::FOLDER.'/%');
+    }
 
     /**
      * @return BelongsTo<Municipality, $this>

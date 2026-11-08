@@ -3,7 +3,7 @@ import type { SelectOption } from '@/types/data';
 export type AnalyticsFilters = {
     town: string;
     period: 'all' | 'recent' | '2y' | '3y' | '5y';
-    presentation: 'summary' | 'trends';
+    presentation: 'statement' | 'summary' | 'trends';
     year: number | null;
     measure: string;
     metric: string | null;
@@ -11,9 +11,7 @@ export type AnalyticsFilters = {
     group: string | null;
 };
 
-export type PerformanceFilters = AnalyticsFilters & {
-    wishView: 'cloud' | 'bars';
-};
+export type PerformanceFilters = AnalyticsFilters & {};
 
 export type EconomicObservation = {
     state: 'shown' | 'unavailable' | 'hidden';
@@ -26,6 +24,7 @@ export type EconomicObservation = {
         | 'not_published'
         | 'not_reported'
         | 'not_collected'
+        | 'not_loaded'
         | 'pending_review'
         | 'small_group'
         | 'dominance'
@@ -33,7 +32,6 @@ export type EconomicObservation = {
         | null;
     band?: string | null;
     coverage?: { reporting: number; total: number; matched: number } | null;
-    censusYear?: number | null;
     restatedIn?: number | null;
     sourceRefs?: string[];
 };
@@ -63,21 +61,13 @@ export type CommunityWishSnapshot = {
     period: string;
     source: string;
     items: WishAggregate[];
-    cloudLimit: number;
 };
 
 export type BusinessTrends = {
     townCode: string;
     townName: string;
     groups: Record<AnalyticsFilters['dimension'], SelectOption[]>;
-    datasets: Record<
-        string,
-        {
-            counts: FinancialHistory;
-            sales: FinancialHistory;
-            share: FinancialHistory;
-        }
-    >;
+    datasets: Record<string, FinancialHistory>;
 };
 
 export type AnalyticsCatalog = {
@@ -121,17 +111,13 @@ export type AnalyticsGuide = {
 
 /** The one evidence entry behind a published figure; observations point to it by key. */
 export type FinanceSource = {
-    kind:
-        | 'executive_summary'
-        | 'fs_workbook'
-        | 'annex_workbook'
-        | 'census'
-        | null;
+    kind: 'executive_summary' | 'fs_workbook' | 'annex_workbook' | null;
     label: string;
     town: string;
     fiscalYear: number;
     reportYear: number | null;
     page: number | null;
     location: string | null;
+    inputs: { location: string; value: string }[];
     url: string | null;
 };

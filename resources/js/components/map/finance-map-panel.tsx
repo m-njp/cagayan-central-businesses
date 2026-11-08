@@ -5,7 +5,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { RESULT_METRIC, ResultFigure } from '@/components/charts/trend-mark';
 import { financeMapObservation } from '@/lib/finance-map';
 import { formatFigure, formatNumber, sourceName } from '@/lib/format';
 import { financeMapSources, observationLabel } from '@/lib/performance-format';
@@ -61,6 +60,7 @@ export function FinanceMapFigures({
     population,
     aggregate,
     barangay = false,
+    coverage = true,
 }: {
     finances: FinanceMap;
     code: string;
@@ -69,6 +69,8 @@ export function FinanceMapFigures({
     population: TownFigure | null;
     aggregate: boolean;
     barangay?: boolean;
+    // Public Home states how many towns a province sum covers; the Capitol dashboard does not.
+    coverage?: boolean;
 }) {
     const rows = barangay
         ? []
@@ -119,7 +121,7 @@ export function FinanceMapFigures({
                 </p>
             ) : (
                 <>
-                    {aggregate && (
+                    {aggregate && coverage && (
                         <div>
                             <h3 className="type-item">
                                 Sum of Reporting Towns
@@ -137,26 +139,17 @@ export function FinanceMapFigures({
                             <div key={metric.id}>
                                 <dt className="type-label">{metric.label}</dt>
                                 <dd className="font-mono type-body tabular-nums">
-                                    {metric.id === RESULT_METRIC ? (
-                                        <ResultFigure
-                                            point={point}
-                                            className="justify-start"
-                                        >
-                                            {observationLabel(
-                                                point,
-                                                metric.unit,
-                                            )}
-                                        </ResultFigure>
-                                    ) : (
-                                        observationLabel(point, metric.unit)
-                                    )}
+                                    {observationLabel(point, metric.unit)}
                                 </dd>
-                                {!sharedCoverage && point?.coverage && (
-                                    <dd className="type-meta">
-                                        {point.coverage.reporting} of{' '}
-                                        {point.coverage.total} towns reporting
-                                    </dd>
-                                )}
+                                {coverage &&
+                                    !sharedCoverage &&
+                                    point?.coverage && (
+                                        <dd className="type-meta">
+                                            {point.coverage.reporting} of{' '}
+                                            {point.coverage.total} towns
+                                            reporting
+                                        </dd>
+                                    )}
                             </div>
                         ))}
                     </dl>

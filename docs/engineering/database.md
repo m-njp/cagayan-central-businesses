@@ -137,13 +137,58 @@ A COA report for one town and fiscal year, or the record that COA had not publis
 | `sha256` | char(64), nullable | Checksum of the file as downloaded |
 | `checked_on` | date | When the file or its absence was checked |
 
-Unique `(municipality_id, fiscal_year, kind)`.
+Unique `(municipality_id, fiscal_year, kind)`. A document read from a Capitol upload has `file` under `finance-uploads/` on the private disk and stays out of the CSV import and export (D42).
+
+#### population_figures
+
+Proposed census counts (D43). Read by the Population page and the review; maps read the published `town_facts` and `barangays` values.
+
+| Column | Type | Notes |
+| :- | :- | :- |
+| `id` | id | |
+| `public_id` | uuid | unique |
+| `municipality_id` | foreign key | restrict on delete |
+| `barangay_id` | foreign key, nullable | Null for the town's own count |
+| `year` | smallint | Census year |
+| `value` | unsigned bigint | Persons; at most `cagayan.population.value_max` |
+| `source_url` | string(500) | Official HTTPS psa.gov.ph link |
+| `status` | string(12) | `pending`, `verified`, `rejected` (shown as Returned), `superseded` |
+| `entered_by`, `reviewed_by` | foreign keys to `users`, nullable | Null on delete. Nobody reviews their own entry |
+| `reviewed_on` | date, nullable | |
+| `note` | string(500), nullable | Reason for a correction or a return |
+
+Index `(municipality_id, year, status)`.
+
+#### finance_uploads
+
+A COA report uploaded on Capitol Finances (D42).
+
+| Column | Type | Notes |
+| :- | :- | :- |
+| `id` | id | |
+| `public_id` | uuid | unique |
+| `municipality_id` | foreign key | restrict on delete |
+| `fiscal_year` | smallint | The report year |
+| `kind` | string(20) | A key of `cagayan.finances.uploads.kinds`: `executive_summary`, `fs_workbook`, `annex_workbook` or `archive` |
+| `path` | string(255) | On the private `local` disk under `finance-uploads/` |
+| `original_name` | string(255) | As uploaded |
+| `sha256`, `size` | char(64), bigint | Checksum and bytes |
+| `status` | string(10) | `App\Enums\FinanceUploadStatus`: queued, running, done, failed |
+| `figures` | int | Figures left waiting for sign-off |
+| `issues` | jsonb, nullable | Parser errors and warnings |
+| `progress` | jsonb, nullable | Bounded parser snapshot: attempt UUID, stage, timestamps, scan counts, provisional figures, issues and recent activity. Null for uploads made before live progress. Never a published figure or a raw process log. |
+| `message` | string(500), nullable | A short outcome for the page; never an exception |
+| `uploaded_by` | foreign key to `users`, nullable | Null on delete |
+
+Unique `(municipality_id, fiscal_year, kind, sha256)`, so the same file is read once.
+
+Failed or interrupted uploads can retry the same private file. The retry changes the attempt UUID under a row lock; every progress write and final transaction checks ownership. Timeouts are shorter than the queue reservation. Snapshot bounds and polling interval live in `cagayan.finances.uploads`.
 
 #### finance_figures
 
 One figure, parsed from a report or entered by hand.
 
-Manual-entry validation is centralized in `config/cagayan.php` under `finances` and enforced server-side. The browser receives the same year, amount, source-length, note-length and review-batch limits. New form entries require a displayed catalog line, a supported fiscal year no later than the selected report, a non-negative amount with at most two decimal places within `value_max`, a matching basis from the line's catalog group, and a plain-text note up to `note_max`. Only Development Spending permits Final Budget. These 13 stored lines do not include the derived surplus/deficit, so negative entries are rejected without changing M19.
+Manual-entry validation is centralized in `config/cagayan.php` under `finances` and enforced server-side. The browser receives the same year, amount, source-length, note-length and review-batch limits. New form entries require a displayed catalog line, a supported fiscal year no later than the selected report, a non-negative amount with at most two decimal places within `value_max`, a matching basis from the line's catalog group, and a plain-text note up to `note_max`. Only Budget and Actual Amounts permits Final Budget. These 13 stored lines do not include the derived surplus/deficit, so negative entries are rejected without changing M19.
 
 Sources must be an existing report for the selected town/report year or an HTTPS URL whose actual host is `coa.gov.ph` or a subdomain. Credentials, alternate ports and lookalike domains are rejected. `OfficialCoaUrl` is shared by the form and CSV import. Manual CSV replay enforces the same amount, year, basis, source and text-length limits; historical empty notes can still round-trip. Structural database checks continue to enforce references, source presence and the unique verified observation. This UI correction changes no schema and does not certify a source's contents automatically.
 
@@ -159,7 +204,9 @@ Sources must be an existing report for the selected town/report year or an HTTPS
 | `definition_variant` | string(60), nullable | Set when the source label states another definition. M26 does not compute change across a variant |
 | `finance_document_id` | foreign key, nullable | The report read. Required for parsed figures |
 | `source_url` | string(500), nullable | For a manual figure without a document |
-| `source_label`, `location` | string, nullable | The label as printed and the page or cell, for reviewers |
+| `source_label` | string, nullable | The label as printed, for reviewers |
+| `location` | string(255), nullable | The page, or every contributing cell such as `11 - SCBAA!K61; 11 - SCBAA!K62`. Limit in `cagayan.finances.location_max` (26-11-03) |
+| `inputs` | jsonb, nullable | Each contributing cell and its amount, `[{location, value}]`, so a summed figure can be checked against the workbook (26-11-03) |
 | `entry_method` | enum `parsed`, `manual` | `App\Enums\FinanceEntryMethod` |
 | `extractor_version` | string(10), nullable | Parser rules that produced a parsed figure |
 | `status` | enum `pending`, `verified`, `rejected`, `superseded`, default `pending` | `App\Enums\FinanceFigureStatus` |
@@ -410,7 +457,7 @@ Signed-off government finance series and their derived lines (metrics.md M19 to 
 - `municipality_id`, nullable. Null rows are the Sum of Reporting Towns (M27), for peso lines only.
 - `fiscal_year`, `metric` (a `finance_lines.code`), `value` decimal(20, 2), `definition_variant`
 - `change` decimal(20, 2), `percent_change` decimal(10, 1), `comparable` boolean (M26)
-- `census_year`, for per-resident lines (M25)
+- `census_year`, always null since per-resident lines were retired on 26-11-03 (M25); kept to avoid a destructive migration
 - `restated_in`, the report year of a figure that replaced a different earlier figure (M26)
 - `reporting_towns`, `total_towns`, `matched_towns`, for Sum of Reporting Towns rows
 
@@ -447,14 +494,15 @@ The simulated dataset must make the demo walkthrough work every time. It is seed
 6. At least one barangay where one business exceeds the dominance threshold.
 7. At least one barangay and one business type with non-renewals rising two years in a row (early warning).
 8. At least one barangay clearly below its peer median.
-9. Every business point inside its barangay's boundary.
+9. Every business point inside its barangay's boundary, placed like a town: shops along a main street through the barangay's center on alternating sides, farms along a longer cross street (26-10-29). No random points.
 10. Wishes for several types, with at least one type wished for often and rarely registered.
 11. One administrator for the demo, with the password from `.env`, never in code.
 
 12. The presentation story in `cagayan.simulation.trends`: new food businesses near schools and new online businesses grow every year, and the declining barangay meets item 7.
 13. Records in every review state (draft, submitted, returned), with no history, so they stay out of every statistic; permits for every active year; placeholder documents reading "Simulated data".
+14. At most `simulation.max_per_barangay` (20) records per barangay, pending ones included, each with a local-style name unique in its barangay (26-10-29).
 
-Items 5 through 7, 9, 12 and 13 each have a test, so a seeder change cannot silently break the demo.
+Items 5 through 7, 9, 12, 13 and 14 each have a test, so a seeder change cannot silently break the demo.
 
 ### Transactional Finance Publication "26-10-28"
 

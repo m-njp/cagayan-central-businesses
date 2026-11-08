@@ -71,3 +71,15 @@ test('the home page works before any town is loaded', function () {
             ->where('overview.atlas.towns', [])
             ->where('overview.atlas.province.population', null));
 });
+
+test('the home page gives the sample wish cloud its aggregates and no raw submissions', function () {
+    $town = Municipality::factory()->create(['psgc_code' => '0201529000']);
+    Wish::factory()->for($town)->create(['specific_business' => 'PRIVATE COMPANY SENTINEL', 'reason' => 'PRIVATE REASON SENTINEL']);
+
+    $this->get(route('home'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('overview.wishes.source', 'Sample Data')
+            ->has('overview.wishes.items', 21)
+            ->where('overview.wishes.items.0', ['id' => 'types:pharmacy', 'label' => 'Pharmacy', 'count' => 18]))
+        ->assertDontSee('PRIVATE COMPANY SENTINEL')->assertDontSee('PRIVATE REASON SENTINEL');
+});
