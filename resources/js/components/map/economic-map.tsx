@@ -120,7 +120,7 @@ export default memo(function EconomicMap({
 
     return (
         <div
-            className="relative h-full overflow-hidden rounded-sm border"
+            className="relative h-full overflow-hidden rounded-sm border bg-card"
             role="region"
             aria-label="Economic map of Cagayan"
         >

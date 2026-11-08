@@ -12,6 +12,7 @@ import {
     useInBrowser,
     VisualErrorBoundary,
 } from '@/components/lazy-province-map';
+import { PageHeader } from '@/components/capitol/page-header';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -21,6 +22,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Surface } from '@/components/ui/surface';
 import {
     FinanceMapControls,
     FinanceMapFigures,
@@ -134,14 +136,10 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
 
     return (
         <section
-            className="flex min-w-0 flex-col gap-3"
-            aria-labelledby="economic-map-heading"
+            className="flex min-w-0 flex-col gap-4"
+            aria-label="Economic Map"
         >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <h1 id="economic-map-heading" className="type-heading">
-                    Economic Map
-                </h1>
-            </div>
+            <PageHeader title="Economic Map" />
             <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
                 <div
                     className="relative h-(--workspace-map-height)"
@@ -208,10 +206,10 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                         </VisualErrorBoundary>
                     )}
                 </div>
-                <aside className="flex flex-col gap-4 rounded-sm border bg-card p-4">
+                <Surface padded aria-label="Selected area">
                     <div className="flex flex-col gap-2">
                         <label id="town-label" className="type-label">
-                            Town or City
+                            Municipality
                         </label>
                         <Select
                             value={townCode ?? 'all'}
@@ -302,6 +300,7 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                             population={shown.population}
                             aggregate={!town && !barangay}
                             barangay={drilling}
+                            coverage={false}
                         />
                     </div>
                     <div className="flex flex-wrap items-center gap-2 border-t pt-3 type-meta">
@@ -323,7 +322,7 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                         </div>
                         <span>High</span>
                     </div>
-                </aside>
+                </Surface>
             </div>
         </section>
     );

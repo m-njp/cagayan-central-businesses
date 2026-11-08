@@ -45,8 +45,14 @@ export async function navigateDashboard(
                                           year: count.year,
                                           sourceUrl: count.source,
                                       }
-                                    : null,
-                                shade: count?.shade ?? null,
+                                    : p.population == null
+                                      ? null
+                                      : {
+                                            value: String(p.population),
+                                            year: census.year,
+                                            sourceUrl: census.source,
+                                        },
+                                shade: count?.shade ?? p.shade ?? null,
                             };
                         }) ?? [],
                 },

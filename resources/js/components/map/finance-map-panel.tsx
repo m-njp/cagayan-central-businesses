@@ -60,6 +60,7 @@ export function FinanceMapFigures({
     population,
     aggregate,
     barangay = false,
+    coverage = true,
 }: {
     finances: FinanceMap;
     code: string;
@@ -68,6 +69,8 @@ export function FinanceMapFigures({
     population: TownFigure | null;
     aggregate: boolean;
     barangay?: boolean;
+    // Public Home states how many towns a province sum covers; the Capitol dashboard does not.
+    coverage?: boolean;
 }) {
     const rows = barangay
         ? []
@@ -118,7 +121,7 @@ export function FinanceMapFigures({
                 </p>
             ) : (
                 <>
-                    {aggregate && (
+                    {aggregate && coverage && (
                         <div>
                             <h3 className="type-item">
                                 Sum of Reporting Towns
@@ -138,12 +141,15 @@ export function FinanceMapFigures({
                                 <dd className="font-mono type-body tabular-nums">
                                     {observationLabel(point, metric.unit)}
                                 </dd>
-                                {!sharedCoverage && point?.coverage && (
-                                    <dd className="type-meta">
-                                        {point.coverage.reporting} of{' '}
-                                        {point.coverage.total} towns reporting
-                                    </dd>
-                                )}
+                                {coverage &&
+                                    !sharedCoverage &&
+                                    point?.coverage && (
+                                        <dd className="type-meta">
+                                            {point.coverage.reporting} of{' '}
+                                            {point.coverage.total} towns
+                                            reporting
+                                        </dd>
+                                    )}
                             </div>
                         ))}
                     </dl>
