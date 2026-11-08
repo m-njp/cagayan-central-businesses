@@ -19,7 +19,8 @@ class MunicipalityFactory extends Factory
     public function definition(): array
     {
         return [
-            'psgc_code' => '02015'.fake()->unique()->numerify('##').'000',
+            // 01 to 99: 00 would equal the province code 0201500000 and collide with the all-towns row.
+            'psgc_code' => '02015'.sprintf('%02d', fake()->unique()->numberBetween(1, 99)).'000',
             'name' => fake()->unique()->city(),
             'kind' => MunicipalityKind::Municipality,
             'is_connected' => false,
