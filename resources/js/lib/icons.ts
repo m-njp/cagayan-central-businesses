@@ -40,6 +40,10 @@ import {
     UtensilsCrossed,
     Wrench,
     ArrowLeft,
+    Check,
+    TriangleAlert,
+    Maximize2,
+    ChevronLeft,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -72,6 +76,11 @@ export const icons = {
     streak: Flame,
     back: ArrowLeft,
     search: Search,
+    parsed: Check,
+    warning: TriangleAlert,
+    fullscreen: Maximize2,
+    previous: ChevronLeft,
+    next: ChevronRight,
 } as const;
 
 // One icon per starter Business Category; a category added later falls back to the store icon.

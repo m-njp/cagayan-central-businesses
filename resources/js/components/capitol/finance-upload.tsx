@@ -1,4 +1,4 @@
-import { useForm, usePoll } from '@inertiajs/react';
+import { router, useForm, usePoll } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ export function FinanceUploadForm({
     onSaved,
 }: {
     report: FinanceReport;
-    onSaved: () => void;
+    onSaved: (id: string) => void;
 }) {
     const form = useForm<{ kind: string; file: File | null }>({
         kind: report.uploadKinds[0]?.value ?? '',
@@ -38,11 +38,14 @@ export function FinanceUploadForm({
         event.preventDefault();
         form.post(store({ town: report.town.value, year: report.year }).url, {
             forceFormData: true,
-            onSuccess: onSaved,
+            onSuccess: (page) => {
+                const id = page.flash.financeUpload;
+                if (typeof id === 'string') onSaved(id);
+            },
         });
     };
     return (
-        <form onSubmit={submit} className="flex flex-col gap-4 px-4 pb-6">
+        <form onSubmit={submit} className="flex flex-col gap-4">
             <Field className="gap-1">
                 <FieldLabel htmlFor="upload-kind">Report</FieldLabel>
                 <Select
@@ -64,6 +67,11 @@ export function FinanceUploadForm({
                     <FieldError>{form.errors.kind}</FieldError>
                 )}
             </Field>
+            {form.progress && (
+                <div role="status" className="font-mono type-meta tabular-nums">
+                    Uploading {form.progress.percentage}%
+                </div>
+            )}
             <Field className="gap-1">
                 <FieldLabel htmlFor="upload-file">File</FieldLabel>
                 <Input
@@ -90,29 +98,61 @@ export function FinanceUploadForm({
 }
 
 /** The latest uploads for this report, refreshed in the background only while one is still being read. */
-export function FinanceUploads({ report }: { report: FinanceReport }) {
+export function FinanceUploads({
+    report,
+    onOpen,
+    watching = false,
+}: {
+    report: FinanceReport;
+    onOpen: (id: string) => void;
+    watching?: boolean;
+}) {
     const reading = report.uploads.some(
         (upload) => upload.status === 'queued' || upload.status === 'running',
     );
     const { start, stop } = usePoll(
         3000,
-        { only: ['report'], headers: { 'X-Workspace-Background': 'true' } },
+        {
+            only: ['uploadStatuses'],
+            headers: { 'X-Workspace-Background': 'true' },
+            onSuccess: (page) => {
+                const statuses = page.props.uploadStatuses;
+                if (
+                    Array.isArray(statuses) &&
+                    statuses.some((status) => {
+                        const previous = report.uploads.find(
+                            (upload) => upload.id === status.id,
+                        );
+                        return previous && previous.status !== status.status;
+                    })
+                )
+                    router.reload({
+                        only: ['report'],
+                        headers: { 'X-Workspace-Background': 'true' },
+                    });
+            },
+        },
         { autoStart: false },
     );
     useEffect(() => {
-        if (reading) start();
+        if (reading && !watching) start();
         else stop();
         return stop;
-    }, [reading, start, stop]);
+    }, [reading, watching, start, stop]);
 
     if (report.uploads.length === 0) return null;
     return (
         <ul aria-label="Uploaded Reports" className="flex flex-col gap-2">
             {report.uploads.map((upload) => (
                 <li key={upload.id} className="flex flex-col gap-1 type-meta">
-                    <span className="truncate" title={upload.name}>
+                    <button
+                        type="button"
+                        onClick={() => onOpen(upload.id)}
+                        className="truncate text-left underline underline-offset-4"
+                        title={upload.name}
+                    >
                         {upload.name}
-                    </span>
+                    </button>
                     <span className="flex flex-wrap items-center gap-2">
                         <Badge
                             variant={
