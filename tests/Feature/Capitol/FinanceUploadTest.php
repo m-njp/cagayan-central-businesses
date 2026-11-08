@@ -11,6 +11,7 @@ use App\Models\FinanceLine;
 use App\Models\FinanceUpload;
 use App\Models\Municipality;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Queue;
@@ -34,12 +35,12 @@ function uploadReport(User $user, Municipality $town, string $contents = 'workbo
 /** What `python -m coa.intake` prints for one Financial Statements workbook. */
 function intakeOutput(string $value = '99846291.10'): string
 {
-    return json_encode(['parser_version' => '1.1.0', 'issues' => [], 'children' => [], 'figures' => [[
+    return json_encode(['type' => 'result', 'result' => ['parser_version' => '1.1.0', 'issues' => [], 'children' => [], 'figures' => [[
         'line_code' => 'sector.economic_services', 'fiscal_year' => 2025, 'basis' => 'actual', 'value' => $value,
         'source_label' => 'Economic Services', 'location' => '11 - SCBAA!K61; 11 - SCBAA!K62', 'definition_variant' => null,
         'inputs' => [['location' => '11 - SCBAA!K61', 'value' => '69065950.52'], ['location' => '11 - SCBAA!K62', 'value' => '30780340.58']],
         'document_kind' => 'fs_workbook', 'member' => null,
-    ]]], JSON_THROW_ON_ERROR);
+    ]]]], JSON_THROW_ON_ERROR)."\n";
 }
 
 it('refuses an upload from staff not assigned to the town and keeps no file', function () {
@@ -141,4 +142,33 @@ it('keeps only each cell and amount and never rewrites a signed-off citation', f
         ->and($signed->fresh()->inputs)->toBeNull()
         ->and(FinanceFigure::cleanInputs([['location' => 'A1', 'value' => '1.00', 'path' => 'C:\secret'], ['location' => 'A2']]))
         ->toBe([['location' => 'A1', 'value' => '1.00']]);
+});
+
+it('keeps readable figures pending when another section has an error', function () {
+    $event = json_decode(intakeOutput(), true, flags: JSON_THROW_ON_ERROR);
+    $event['result']['issues'][] = ['severity' => 'error', 'kind' => 'sheet_not_found', 'code' => '', 'message' => 'The other statement could not be found.'];
+    Process::fake(['*' => Process::result(json_encode($event, JSON_THROW_ON_ERROR)."\n")]);
+    $upload = FinanceUpload::factory()->for($this->town)->create();
+
+    (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class));
+
+    expect($upload->fresh()->status)->toBe(FinanceUploadStatus::Done);
+    expect($upload->fresh()->issues[0]['severity'])->toBe('error');
+    $this->assertDatabaseHas('finance_figures', ['line_code' => 'sector.economic_services', 'value' => '99846291.10', 'status' => 'pending']);
+    Process::assertRan(fn ($process) => in_array('--events', $process->command, true));
+});
+
+it('rolls back every figure and document when final persistence fails', function () {
+    $event = json_decode(intakeOutput(), true, flags: JSON_THROW_ON_ERROR);
+    $event['result']['figures'][] = $event['result']['figures'][0];
+    Process::fake(['*' => Process::result(json_encode($event, JSON_THROW_ON_ERROR)."\n")]);
+    $upload = FinanceUpload::factory()->for($this->town)->create();
+
+    expect(fn () => (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class)))
+        ->toThrow(QueryException::class);
+
+    $this->assertDatabaseCount('finance_figures', 0);
+    $this->assertDatabaseCount('finance_documents', 0);
+    expect($upload->fresh()->status)->toBe(FinanceUploadStatus::Failed);
+    Process::assertRan(fn ($process) => in_array('--events', $process->command, true));
 });

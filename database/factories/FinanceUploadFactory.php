@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\FinanceUploadStatus;
 use App\Models\FinanceUpload;
 use App\Models\Municipality;
+use App\Services\FinanceParsingProgress;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -30,6 +31,7 @@ class FinanceUploadFactory extends Factory
             'sha256' => hash('sha256', $publicId),
             'size' => 1024,
             'status' => FinanceUploadStatus::Queued,
+            'progress' => FinanceParsingProgress::initial((string) Str::uuid()),
         ];
     }
 }

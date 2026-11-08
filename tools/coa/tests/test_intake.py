@@ -29,10 +29,12 @@ def testArchiveUsesFixedChildNamesAndIgnoresUnrecognizedMembers(tmp_path):
     }]
     assert sorted(path.name for path in output.iterdir()) == ["fs_workbook.xlsx"]
     assert not (tmp_path.parent / "unrelated.txt").exists()
-    obligation = next((row for row in result["figures"] if row["line_code"] == "sector.economic_services" and row["basis"] == "actual"), None)
-    assert obligation is not None
-    assert obligation["value"] == "99846291.10"
-    assert [item["location"] for item in obligation["inputs"]] == [f"11 - SCBAA!K{row}" for row in [61, 62, 63, 64]]
+    taxRevenue = next((row for row in result["figures"] if row["line_code"] == "revenue.tax" and row["fiscal_year"] == 2025), None)
+    assert taxRevenue is not None
+    assert taxRevenue["value"] == "430895820.24"
+    assert [item["location"] for item in taxRevenue["inputs"]] == ["8 - Financial Performance 2025!D9"]
+    # Lines withdrawn from display, such as Budget and Actual Amounts (metrics.md M23), never enter an upload.
+    assert not any(row["line_code"] == "sector.economic_services" for row in result["figures"])
 
 
 @pytest.mark.parametrize(("members", "expanded"), [(1, 100_000_000), (10, 1)])

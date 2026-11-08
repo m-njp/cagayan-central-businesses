@@ -15,6 +15,7 @@ from openpyxl.utils import get_column_letter
 
 from .lines import Alias, Line, match, normalize
 from .summary import Issue
+from .progress import Progress, preview, report
 
 CENTS = Decimal("0.01")
 TITLE_ROWS = 12
@@ -99,13 +100,20 @@ def statedYear(rows: list[tuple]) -> int | None:
 
 
 def pickSheet(book, score) -> tuple[str, list[tuple]] | None:
-    best = None
-    for sheet in book.worksheets:
+    return pickSheets(book, {"sheet": score})["sheet"]
+
+
+def pickSheets(book, scores: dict, progress: Progress = None) -> dict:
+    """Score all required statement types in one pass; keep only the best sheet for each."""
+    best = {}
+    for number, sheet in enumerate(book.worksheets, start=1):
+        report(progress, "scan", stage="scanning", message=f"Scanning sheet {number} of {len(book.sheetnames)}.", location=sheet.title, current=number, total=len(book.sheetnames))
         rows = grid(sheet)
-        points = score(sheet.title, rows)
-        if points > 0 and (best is None or points > best[0]):
-            best = (points, sheet.title, rows)
-    return (best[1], best[2]) if best else None
+        for kind, score in scores.items():
+            points = score(sheet.title, rows)
+            if points > 0 and (kind not in best or points > best[kind][0]):
+                best[kind] = (points, sheet.title, rows)
+    return {kind: (best[kind][1], best[kind][2]) if kind in best else None for kind in scores}
 
 
 def performanceScore(name: str, rows: list[tuple]) -> int:
@@ -160,7 +168,7 @@ def budgetScore(name: str, rows: list[tuple]) -> int:
     return 2 if "comparison of budget" in text or re.search(r"scb?a?baa", text) else 0
 
 
-def readLines(rows, columns, sheet, file, source, lines, aliases):
+def readLines(rows, columns, sheet, file, source, lines, aliases, progress: Progress = None):
     """Keep the exact cell and signed amount for every year and summed component."""
     found = {}
     for number, row in enumerate(rows, start=1):
@@ -182,6 +190,11 @@ def readLines(rows, columns, sheet, file, source, lines, aliases):
             found[hit[0]] = (values, f"{earlierLabel} + {labelled[0]}", inputs)
         else:
             found[hit[0]] = (values, labelled[0], inputs)
+        if progress is not None:
+            for year, value in found[hit[0]][0].items():
+                location = citation(found[hit[0]][2][year])
+                report(progress, "scan", stage="scanning", message=f"Reading {lines[hit[0]].label}.", location=location, current=number, total=len(rows))
+                preview(progress, Found(hit[0], year, value, "actual", hit[1], labelled[0], location))
     return found
 
 
@@ -189,15 +202,20 @@ def citation(inputs):
     return "; ".join(item["location"] for item in inputs)
 
 
-def readFs(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias]) -> Result:
+def readFs(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias], progress: Progress = None) -> Result:
     result = Result()
     book = load(path)
-    performance = pickSheet(book, performanceScore)
+    try:
+        selected = pickSheets(book, {"performance": performanceScore, "budget": budgetScore}, progress)
+    finally:
+        book.close()
+    performance = selected["performance"]
+    report(progress, "stage", stage="checking", message="Matching statement lines and checking totals.")
     if performance is None:
         result.issues.append(Issue("error", "sheet_not_found", "", f"{path.name}: no Statement of Financial Performance sheet"))
     else:
-        readPerformance(result, path.name, *performance, reportYear, lines, aliases)
-    budget = pickSheet(book, budgetScore)
+        readPerformance(result, path.name, *performance, reportYear, lines, aliases, progress)
+    budget = selected["budget"]
     if budget is None:
         result.issues.append(Issue("warning", "sheet_not_found", "", f"{path.name}: no budget and actual (SCBAA) sheet"))
     else:
@@ -205,14 +223,14 @@ def readFs(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Al
     return result
 
 
-def readPerformance(result: Result, file: str, sheet: str, rows, reportYear, lines, aliases) -> None:
+def readPerformance(result: Result, file: str, sheet: str, rows, reportYear, lines, aliases, progress: Progress = None) -> None:
     columns = yearColumns(rows, reportYear)
     if reportYear not in columns:
         result.issues.append(Issue("error", "year_columns_missing", "", f"{file}!{sheet}: no {reportYear} column"))
         return
     if (year := statedYear(rows)) not in (None, reportYear):
         result.issues.append(Issue("warning", "sheet_year_mismatch", "", f"{file}!{sheet}: title says {year}"))
-    found = readLines(rows, columns, sheet, file, "fs_workbook", lines, aliases)
+    found = readLines(rows, columns, sheet, file, "fs_workbook", lines, aliases, progress)
     totals = readLines(rows, columns, sheet, file, "fs_totals", lines, aliases)
 
     if "revenue.national_share" not in found and "revenue.tax" in found:
@@ -295,9 +313,14 @@ def readSectors(result: Result, file: str, sheet: str, rows, reportYear, lines, 
 
 
 
-def readAnnex(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias]) -> Result:
+def readAnnex(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias], progress: Progress = None) -> Result:
     result = Result()
-    picked = pickSheet(load(path), lambda name, rows: annexScore(name, rows, reportYear))
+    book = load(path)
+    try:
+        picked = pickSheets(book, {"annex": lambda name, rows: annexScore(name, rows, reportYear)}, progress)["annex"]
+    finally:
+        book.close()
+    report(progress, "stage", stage="checking", message="Matching General Fund lines and checking amounts.")
     if picked is None:
         result.issues.append(Issue("warning", "sheet_not_found", "", f"{path.name}: no detailed General Fund performance sheet"))
         return result
@@ -306,7 +329,7 @@ def readAnnex(path: Path, reportYear: int, lines: dict[str, Line], aliases: list
     if reportYear not in columns:
         result.issues.append(Issue("error", "year_columns_missing", "", f"{path.name}!{sheet}: no {reportYear} column"))
         return result
-    found = readLines(rows, columns, sheet, path.name, "annex_c1", lines, aliases)
+    found = readLines(rows, columns, sheet, path.name, "annex_c1", lines, aliases, progress)
     discount = found.pop("annex.rpt_discount", None)
     for code, (values, label, inputs) in found.items():
         for year, value in values.items():

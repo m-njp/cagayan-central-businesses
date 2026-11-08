@@ -81,6 +81,10 @@
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py test"
         ],
+        "data:finances:parse": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py intake"
+        ],
         "doctor": [
             "@php artisan app:doctor"
         ],

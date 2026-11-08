@@ -9,6 +9,7 @@ import pypdfium2
 
 from .lines import Alias, Line, match
 from .numbers import AMOUNT, DASH, PERCENT, TOKEN, parseAmount
+from .progress import Progress, preview, report
 
 START = re.compile(r"financial highlights|highlights of financial|financial information", re.I)
 END = re.compile(
@@ -58,41 +59,76 @@ def readLines(path: Path, engine: str = "pdfplumber") -> list[tuple[int, str]]:
     return [(number, line.strip()) for number, text in readPages(path, engine) for line in text.splitlines() if line.strip()]
 
 
-def readPages(path: Path, engine: str) -> list[tuple[int, str]]:
+def readPages(path: Path, engine: str, progress: Progress = None) -> list[tuple[int, str]]:
+    pages = []
     if engine == "pdfplumber":
         with pdfplumber.open(path) as pdf:
-            return [(number, page.extract_text() or "") for number, page in enumerate(pdf.pages, start=1)]
+            for number, page in enumerate(pdf.pages, start=1):
+                report(progress, "scan", stage="scanning", message=f"Reading page {number} of {len(pdf.pages)}.", location=f"page {number}", current=number, total=len(pdf.pages), engine=engine)
+                pages.append((number, page.extract_text() or ""))
+                page.close()
+        return pages
     document = pypdfium2.PdfDocument(path)
     try:
-        return [(number, document[number - 1].get_textpage().get_text_range()) for number in range(1, len(document) + 1)]
+        for number in range(1, len(document) + 1):
+            report(progress, "scan", stage="checking", message=f"Confirming digits on page {number} of {len(document)}.", location=f"page {number}", current=number, total=len(document), engine=engine)
+            page = document[number - 1]
+            try:
+                textPage = page.get_textpage()
+                try:
+                    pages.append((number, textPage.get_text_range()))
+                finally:
+                    textPage.close()
+            finally:
+                page.close()
+        return pages
     finally:
         document.close()
 
 
-def parseSummary(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias]) -> Result:
+def parseSummary(path: Path, reportYear: int, lines: dict[str, Line], aliases: list[Alias], progress: Progress = None) -> Result:
     """Read with pdfplumber; reread with pdfium only when pdfplumber misses a core line or fails outright."""
+    pageCache: dict[str, list[tuple[int, str]] | Exception] = {}
+
+    def cachedPages(engine: str) -> list[tuple[int, str]]:
+        if engine not in pageCache:
+            try:
+                pageCache[engine] = readPages(path, engine) if progress is None else readPages(path, engine, progress)
+            except Exception as error:
+                pageCache[engine] = error
+        cached = pageCache[engine]
+        if isinstance(cached, Exception):
+            raise cached
+        return cached
+
+    def parseEngine(engine: str) -> Result:
+        text = [(number, line.strip()) for number, page in cachedPages(engine) for line in page.splitlines() if line.strip()]
+        return parseText(text, reportYear, lines, aliases, progress)
+
     try:
-        primary = parseText(readLines(path, ENGINES[0]), reportYear, lines, aliases)
+        primary = parseEngine(ENGINES[0])
     except Exception as error:
         log.exception("%s: %s failed", path.name, ENGINES[0])
         primary = Result([], [Issue("error", "engine_failed", "", f"{ENGINES[0]}: {type(error).__name__}: {error}")], {})
     if not missingCore(primary):
-        return confirmDigits(primary, path, ENGINES[1])
+        report(progress, "stage", stage="checking", message="Confirming digits with the second PDF reader.")
+        return confirmDigits(primary, path, ENGINES[1], cachedPages)
 
     log.warning("%s: %s missed %s, retrying with %s", path.name, ENGINES[0], ", ".join(missingCore(primary)) or "the table", ENGINES[1])
+    report(progress, "stage", stage="checking", message="Checking missing lines with the fallback PDF reader.")
     try:
-        fallback = parseText(readLines(path, ENGINES[1]), reportYear, lines, aliases)
+        fallback = parseEngine(ENGINES[1])
     except Exception as error:
         log.exception("%s: %s failed", path.name, ENGINES[1])
         primary.issues.append(Issue("error", "engine_failed", "", f"{ENGINES[1]}: {type(error).__name__}: {error}"))
         return primary
     if len(missingCore(fallback)) >= len(missingCore(primary)):
         log.warning("%s: %s found no more core lines; keeping the %s reading", path.name, ENGINES[1], ENGINES[0])
-        return confirmDigits(primary, path, ENGINES[1])
+        return confirmDigits(primary, path, ENGINES[1], cachedPages)
     log.warning("%s: read with the fallback engine %s", path.name, ENGINES[1])
     fallback.issues += [issue for issue in primary.issues if issue.kind == "engine_failed"]
     fallback.issues.append(Issue("warning", "read_with_fallback_engine", "", f"{ENGINES[0]} missed core lines; values read with {ENGINES[1]}"))
-    return confirmDigits(fallback, path, ENGINES[0])
+    return confirmDigits(fallback, path, ENGINES[0], cachedPages)
 
 
 def missingCore(result: Result) -> list[str]:
@@ -100,10 +136,11 @@ def missingCore(result: Result) -> list[str]:
     return [code for code in CORE if code not in foundCodes]
 
 
-def confirmDigits(result: Result, path: Path, engine: str) -> Result:
+def confirmDigits(result: Result, path: Path, engine: str, pageReader=None) -> Result:
     """Every value must also be printed on its page as the other engine reads it. This proves digits, not rows."""
     try:
-        pages = {number: re.sub(r"\s+", "", text) for number, text in readPages(path, engine)}
+        sourcePages = pageReader(engine) if pageReader else readPages(path, engine)
+        pages = {number: re.sub(r"\s+", "", text) for number, text in sourcePages}
     except Exception as error:
         log.exception("%s: %s could not confirm the digits", path.name, engine)
         result.issues.append(Issue("warning", "digits_unconfirmed", "", f"{engine}: {type(error).__name__}: {error}"))
@@ -117,7 +154,7 @@ def confirmDigits(result: Result, path: Path, engine: str) -> Result:
     return result
 
 
-def parseText(text: list[tuple[int, str]], reportYear: int, lines: dict[str, Line], aliases: list[Alias]) -> Result:
+def parseText(text: list[tuple[int, str]], reportYear: int, lines: dict[str, Line], aliases: list[Alias], progress: Progress = None) -> Result:
     issues: list[Issue] = []
     start = next((index for index, (_, line) in enumerate(text) if START.search(line)), None)
     if start is None:
@@ -176,6 +213,7 @@ def parseText(text: list[tuple[int, str]], reportYear: int, lines: dict[str, Lin
         for year, value in zip(years, amounts[:2]):
             if value is not None:
                 figures.append(Figure(code, year, value, variant, label, page))
+                preview(progress, figures[-1])
         if len(amounts) > 2 and amounts[2] is not None:
             changes[code] = amounts[2]
     for code in CORE:

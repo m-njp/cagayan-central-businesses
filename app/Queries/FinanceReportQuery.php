@@ -8,7 +8,6 @@ use App\Data\FinanceFigureRow;
 use App\Data\FinanceIssue;
 use App\Data\FinanceLineOption;
 use App\Data\FinanceReport;
-use App\Data\FinanceUploadRow;
 use App\Data\SelectOption;
 use App\Enums\FinanceAvailability;
 use App\Enums\FinanceDocumentKind;
@@ -75,11 +74,7 @@ final class FinanceReportQuery
             cells: array_values($this->cells->current($town->id, $entryYears)->map(fn (FinanceFigure $figure) => new FinanceEntryCell(
                 $figure->line_code, $figure->fiscal_year, $figure->basis->value, (string) $figure->value, $figure->status->value,
             ))->all()),
-            uploads: array_values($uploads->map(fn (FinanceUpload $upload) => new FinanceUploadRow(
-                $upload->public_id, $upload->original_name, (string) config("cagayan.finances.uploads.kinds.{$upload->kind}.label"),
-                $upload->status->value, $upload->status->label(), $upload->figures, $upload->message,
-                $upload->created_at->timezone((string) config('cagayan.display_timezone'))->format('Y-m-d H:i'),
-            ))->all()),
+            uploads: array_values($uploads->map(fn (FinanceUpload $upload) => app(FinanceUploadQuery::class)->row($upload))->all()),
             uploadKinds: array_map(fn (string $kind, array $item) => new SelectOption($kind, $item['label']),
                 array_keys((array) config('cagayan.finances.uploads.kinds')), (array) config('cagayan.finances.uploads.kinds')),
             limits: [

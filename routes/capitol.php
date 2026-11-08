@@ -51,6 +51,8 @@ Route::middleware([PreventIndexing::class, 'auth', 'can:capitol'])
         Route::get('finances/{town:psgc_code}/{year}', [FinanceReviewController::class, 'show'])->whereNumber('year')->name('finances.show');
         Route::post('finances/{town:psgc_code}/{year}/figures', [FinanceFigureController::class, 'store'])->whereNumber('year')->middleware('throttle:finance-writes')->name('finances.figures.store');
         Route::post('finances/{town:psgc_code}/{year}/uploads', [FinanceUploadController::class, 'store'])->whereNumber('year')->middleware('throttle:finance-writes')->name('finances.uploads.store');
+        Route::get('finances/{town:psgc_code}/{year}/uploads/{upload:public_id}', [FinanceUploadController::class, 'show'])->whereNumber('year')->name('finances.uploads.show');
+        Route::post('finances/{town:psgc_code}/{year}/uploads/{upload:public_id}/retries', [FinanceUploadController::class, 'retry'])->whereNumber('year')->middleware('throttle:finance-writes')->name('finances.uploads.retry');
         Route::post('finances/{town:psgc_code}/{year}/reviews', [FinanceReviewController::class, 'store'])->whereNumber('year')->middleware('can:finance-review')->name('finances.reviews.store');
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');

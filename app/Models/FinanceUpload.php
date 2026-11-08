@@ -29,10 +29,12 @@ use Illuminate\Support\Carbon;
  * @property string|null $message
  * @property int|null $uploaded_by
  * @property Carbon $created_at
+ * @property array<string, mixed>|null $progress
+ * @property Carbon $updated_at
  */
 #[Fillable([
     'public_id', 'municipality_id', 'fiscal_year', 'kind', 'path', 'original_name', 'sha256', 'size',
-    'status', 'figures', 'issues', 'message', 'uploaded_by',
+    'status', 'figures', 'issues', 'message', 'uploaded_by', 'progress',
 ])]
 class FinanceUpload extends Model
 {
@@ -69,6 +71,7 @@ class FinanceUpload extends Model
             'figures' => 'integer',
             'status' => FinanceUploadStatus::class,
             'issues' => 'array',
+            'progress' => 'array',
         ];
     }
 }

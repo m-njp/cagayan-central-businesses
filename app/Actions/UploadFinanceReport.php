@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\FinanceUpload;
 use App\Models\Municipality;
 use App\Models\User;
+use App\Services\FinanceParsingProgress;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -35,12 +36,13 @@ final class UploadFinanceReport
                 'public_id' => $publicId, 'municipality_id' => $town->id, 'fiscal_year' => $reportYear, 'kind' => $kind,
                 'path' => $path, 'original_name' => mb_substr($file->getClientOriginalName(), 0, 255), 'sha256' => $sha256,
                 'size' => $file->getSize(), 'status' => FinanceUploadStatus::Queued, 'uploaded_by' => $user->id,
+                'progress' => FinanceParsingProgress::initial((string) Str::uuid()),
             ]);
             ActivityLog::record('finance_report_uploaded', $user->id);
 
             return $upload;
         });
-        ExtractFinanceUpload::dispatch($upload->id)->afterCommit();
+        ExtractFinanceUpload::dispatch($upload->id, $upload->progress['attempt'])->afterCommit();
 
         return ['upload' => $upload, 'repeated' => false];
     }
