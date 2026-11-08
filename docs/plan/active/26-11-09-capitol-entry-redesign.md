@@ -42,3 +42,6 @@ No new packages (the row checkbox stays native). Public pages keep their wording
 ## Verification and Handoff
 
 "26-11-09": Capitol tests 128 passed (new: Data Entry sends Philippine time instants), PHPStan clean, `npm run check`, `types:check` and `build` pass. No browser verification. Full `composer ci:check` not run. Pending sign-off test failure is unrelated (see the archived Data Entry plan).
+
+"26-11-09" (sign-off gap): the committed-data import test required zero pending figures, but 12 Tuguegarao City fs_workbook revenue lines (grants, other, total revenue for 2023 to 2025) were extracted on 26-11-02 and never signed off, so `composer ci:check` failed and the pre-push hook refused the push. Owner said to fix or remove the test. It now requires that every pending figure is a parsed, unreviewed one (nothing half reviewed) and the reviewed figures still import verified. This weakens the old check; the 12 still need a human sign-off in the app, then `php artisan finances:export`, after which the zero-pending check should return. Pending figures stay withheld from every screen.
+
