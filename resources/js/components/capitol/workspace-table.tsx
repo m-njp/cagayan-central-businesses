@@ -1,6 +1,7 @@
 import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { router } from '@inertiajs/react';
 import { Pagination } from '@/components/capitol/pagination';
+import { Surface } from '@/components/ui/surface';
 import {
     Select,
     SelectContent,
@@ -41,12 +42,12 @@ export function WorkspaceTable({
     };
     const columns =
         kind === 'wishes'
-            ? ['Town or City', 'Business Type', 'Wishes']
+            ? ['Municipality', 'Business Type', 'Wishes']
             : ['Event', 'Account', 'Date and Time'];
     const filters =
         kind === 'wishes'
             ? [
-                  { key: 'town', label: 'Town or City', options: data.towns },
+                  { key: 'town', label: 'Municipality', options: data.towns },
                   {
                       key: 'category',
                       label: 'Business Type',
@@ -58,7 +59,7 @@ export function WorkspaceTable({
     return (
         <section className="grid min-w-0 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
             <div className="min-w-0 space-y-4">
-                <div className="overflow-hidden rounded-sm bg-card">
+                <Surface footer={<Pagination data={data.pagination} />}>
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -125,8 +126,7 @@ export function WorkspaceTable({
                             )}
                         </TableBody>
                     </Table>
-                </div>
-                <Pagination data={data.pagination} />
+                </Surface>
             </div>
             <WorkspaceFilters>
                 {filters.map(({ key, label, options }) => (

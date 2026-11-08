@@ -44,6 +44,25 @@ export function formatDate(date: string): string {
     return `${month}-${day}-${year}`;
 }
 
+const entryTimestampFormat = new Intl.DateTimeFormat(LOCALE, {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: TIME_ZONE,
+});
+
+// "11-08-26 14:05" from a server instant: month-day-year, then the 24-hour time, in Philippine time.
+export function formatEntryTimestamp(iso: string): string {
+    const parts = entryTimestampFormat.formatToParts(new Date(iso));
+    const part = (type: Intl.DateTimeFormatPartTypes) =>
+        parts.find((p) => p.type === type)?.value ?? '';
+
+    return `${part('month')}-${part('day')}-${part('year')} ${part('hour')}:${part('minute')}`;
+}
+
 const decimalFormat = new Intl.NumberFormat(LOCALE, {
     maximumFractionDigits: 1,
 });

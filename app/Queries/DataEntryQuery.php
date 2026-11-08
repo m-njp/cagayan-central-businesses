@@ -21,13 +21,7 @@ final class DataEntryQuery
 {
     public function get(User $user, int $page): DataEntry
     {
-        $towns = $user->isCapitolAdmin() ? null : $user->assignedTowns()->select('municipalities.id');
-        $finances = DB::table('finance_figures as f')
-            ->join('finance_lines as l', fn ($join) => $join->on('l.code', '=', 'f.line_code')->where('l.displayed', true))
-            ->when($towns, fn (Builder $query) => $query->whereIn('f.municipality_id', $towns));
-        $businesses = BusinessVisibility::apply(DB::table('businesses as b'))
-            ->join('barangays as g', 'g.id', '=', 'b.barangay_id')
-            ->when($towns, fn (Builder $query) => $query->whereIn('g.municipality_id', $towns));
+        [$finances, $businesses, $population] = $this->scoped($user);
 
         $datasets = [
             new DataEntryDataset('finances', 'Government Finances', ['Economy', 'Analytics', 'Home Map'], route('capitol.finances.index', absolute: false),
@@ -38,8 +32,6 @@ final class DataEntryQuery
                 $user->can('add-business') ? 'Add Business' : null,
                 $user->can('add-business') ? route('capitol.businesses.create', absolute: false) : null),
         ];
-        $population = DB::table('population_figures as p')
-            ->when($towns, fn (Builder $query) => $query->whereIn('p.municipality_id', $towns));
         $datasets[] = new DataEntryDataset('population', 'Population', ['Home Map', 'Dashboard Map', 'About the Data'],
             route('capitol.population.index', absolute: false),
             (clone $population)->where('p.status', 'pending')->count(), $this->date((clone $population)->max('p.updated_at')),
@@ -51,9 +43,22 @@ final class DataEntryQuery
                 'Add Category', route('capitol.categories.index', absolute: false));
         }
 
+        $waiting = $this->waiting($user, $page);
+
+        return new DataEntry($datasets, $waiting['rows'] ?? null, $waiting['pagination'] ?? null);
+    }
+
+    /**
+     * Pending items across datasets for someone who can review, oldest first; null for everyone else.
+     *
+     * @return array{rows: list<DataEntryReviewRow>, pagination: Pagination}|null
+     */
+    public function waiting(User $user, int $page): ?array
+    {
         if (! $user->can('finance-review')) {
-            return new DataEntry($datasets, null, null);
+            return null;
         }
+        [$finances, $businesses, $population] = $this->scoped($user);
 
         $reportYear = 'coalesce(d.fiscal_year, f.fiscal_year)';
         $financeRows = (clone $finances)
@@ -74,7 +79,7 @@ final class DataEntryQuery
             ->orderBy('since')->orderBy('item')
             ->paginate((int) config('cagayan.finances.per_page'), ['*'], 'page', $page)->withQueryString();
 
-        return new DataEntry($datasets, array_values(array_map(fn (stdClass $row) => new DataEntryReviewRow(
+        return ['rows' => array_values(array_map(fn (stdClass $row) => new DataEntryReviewRow(
             match ($row->dataset) {
                 'finances' => 'Government Finances', 'population' => 'Population', default => 'Businesses',
             },
@@ -88,11 +93,31 @@ final class DataEntryQuery
                 'population' => route('capitol.population.show', ['town' => $row->ref, 'year' => $row->year], absolute: false),
                 default => route('capitol.businesses.show', $row->ref, absolute: false),
             },
-        ), $review->items())), Pagination::from($review));
+        ), $review->items())), 'pagination' => Pagination::from($review)];
+    }
+
+    /**
+     * The finance, business and population rows this person may see: all of them for Capitol admins, assigned towns for Staff.
+     *
+     * @return array{0: Builder, 1: Builder, 2: Builder}
+     */
+    private function scoped(User $user): array
+    {
+        $towns = $user->isCapitolAdmin() ? null : $user->assignedTowns()->select('municipalities.id');
+        $finances = DB::table('finance_figures as f')
+            ->join('finance_lines as l', fn ($join) => $join->on('l.code', '=', 'f.line_code')->where('l.displayed', true))
+            ->when($towns, fn (Builder $query) => $query->whereIn('f.municipality_id', $towns));
+        $businesses = BusinessVisibility::apply(DB::table('businesses as b'))
+            ->join('barangays as g', 'g.id', '=', 'b.barangay_id')
+            ->when($towns, fn (Builder $query) => $query->whereIn('g.municipality_id', $towns));
+        $population = DB::table('population_figures as p')
+            ->when($towns, fn (Builder $query) => $query->whereIn('p.municipality_id', $towns));
+
+        return [$finances, $businesses, $population];
     }
 
     private function date(mixed $value): ?string
     {
-        return $value === null ? null : Carbon::parse((string) $value)->timezone((string) config('cagayan.display_timezone'))->toDateString();
+        return $value === null ? null : Carbon::parse((string) $value)->timezone((string) config('cagayan.display_timezone'))->toIso8601String();
     }
 }

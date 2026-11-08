@@ -6,9 +6,11 @@ import {
     BusinessCategoryForm,
     BusinessTypeForm,
 } from '@/components/capitol/category-forms';
-import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
+import { EditButton } from '@/components/capitol/edit-button';
+import { PageHeader } from '@/components/capitol/page-header';
+import { Pagination } from '@/components/capitol/pagination';
+import { SearchField } from '@/components/capitol/search-field';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -22,6 +24,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
+import { Surface } from '@/components/ui/surface';
 import {
     Table,
     TableBody,
@@ -34,7 +37,6 @@ import {
     categoryQuery,
     paginate,
     parseCategoryView,
-    visibleCategories,
     visibleTypes,
 } from '@/lib/category-table';
 import type { CategoryView } from '@/lib/category-table';
@@ -47,21 +49,30 @@ import type { BusinessCategories } from '@/types/workspace';
 const count = (value: number | null) =>
     value === null ? NOT_AVAILABLE : formatCount(value);
 
+type Panel = { kind: 'type' | 'category' | 'categories'; code: string | null };
+
+// The URL carries only what differs from the one table's defaults, so the fixed view is left out.
+function urlQuery(state: CategoryView) {
+    const query = categoryQuery(state);
+    delete query.view;
+    return query;
+}
+
 export default function BusinessCategoriesPage({
     categories,
 }: {
     categories: BusinessCategories;
 }) {
     const { url } = usePage();
+    // One table of Business Types: the old view parameter is ignored.
+    const params = pageSearchParams(url);
+    params.set('view', 'types');
     const state = parseCategoryView(
-        pageSearchParams(url),
+        params,
         categories.categories,
         categories.industries,
     );
-    const [sheet, setSheet] = useState<{
-        kind: 'type' | 'category';
-        code: string | null;
-    } | null>(null);
+    const [sheet, setSheet] = useState<Panel | null>(null);
     const [search, setSearch] = useState(state.q);
     const byCode = Object.fromEntries(
         categories.categories.map((item) => [item.code, item]),
@@ -69,19 +80,12 @@ export default function BusinessCategoriesPage({
     const names = Object.fromEntries(
         categories.categories.map((item) => [item.code, item.name]),
     );
-    const typePage = paginate(
+    const page = paginate(
         visibleTypes(categories.types, state, names),
         state.page,
         categories.pageSize,
     );
-    const categoryPage = paginate(
-        visibleCategories(categories.categories, state),
-        state.page,
-        categories.pageSize,
-    );
-    const page = state.view === 'types' ? typePage : categoryPage;
     const filtered = !!(state.q || state.category || state.industry);
-    const noun = state.view === 'types' ? 'Business Types' : 'Categories';
     const editingType =
         categories.types.find((item) => item.code === sheet?.code) ?? null;
     const editingCategory =
@@ -89,9 +93,8 @@ export default function BusinessCategoriesPage({
 
     // Every row is loaded, so sorting, filters and pages only change local history.
     const go = (patch: Partial<CategoryView>, replace = false) => {
-        const query = categoryQuery({ ...state, page: 1, ...patch });
-        if (JSON.stringify(query) === JSON.stringify(categoryQuery(state)))
-            return;
+        const query = urlQuery({ ...state, page: 1, ...patch });
+        if (JSON.stringify(query) === JSON.stringify(urlQuery(state))) return;
         const visit = {
             url: index({ query }).url,
             preserveState: true,
@@ -157,352 +160,169 @@ export default function BusinessCategoriesPage({
             </TableHead>
         );
     };
-    const registered =
-        categories.year === null
-            ? 'Registered'
-            : `Registered (${categories.year})`;
-    const actions = (
-        <TableHead className="w-24">
-            <span className="sr-only">Actions</span>
-        </TableHead>
+    const filter = (
+        label: string,
+        value: string | null,
+        options: { value: string; label: string }[],
+        onChange: (value: string | null) => void,
+    ) => (
+        <Select
+            value={value ?? 'all'}
+            onValueChange={(next) => onChange(next === 'all' ? null : next)}
+        >
+            <SelectTrigger aria-label={label} className="h-8 w-40">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="all">{`All ${label}`}</SelectItem>
+                {options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
     );
 
     return (
         <>
             <Head title="Business Categories" />
-            <header className="flex flex-wrap items-center justify-between gap-3">
-                <h1 className="type-heading">Business Categories</h1>
-                <div className="flex flex-wrap items-center gap-2">
-                    <div
-                        role="tablist"
-                        aria-label="View"
-                        className="flex gap-1"
-                    >
-                        {(['categories', 'types'] as const).map((view) => (
+            <PageHeader title="Business Categories">
+                <Button
+                    variant="outline"
+                    onClick={() => setSheet({ kind: 'categories', code: null })}
+                >
+                    Categories
+                </Button>
+                <Button onClick={() => setSheet({ kind: 'type', code: null })}>
+                    Add Business Type
+                </Button>
+            </PageHeader>
+            <Surface
+                toolbar={
+                    <>
+                        <SearchField value={search} onChange={setSearch} />
+                        {filter(
+                            'Categories',
+                            state.category,
+                            categories.categories.map((item) => ({
+                                value: item.code,
+                                label: item.name,
+                            })),
+                            (category) => go({ category }),
+                        )}
+                        {filter(
+                            'Industries',
+                            state.industry,
+                            categories.industries,
+                            (industry) => go({ industry }),
+                        )}
+                        {filtered && (
                             <Button
-                                key={view}
-                                role="tab"
-                                aria-selected={state.view === view}
-                                variant={
-                                    state.view === view ? 'default' : 'outline'
-                                }
+                                variant="ghost"
                                 size="sm"
-                                onClick={() =>
-                                    go({ view, sort: 'name', dir: 'asc' })
-                                }
+                                onClick={() => {
+                                    setSearch('');
+                                    go({
+                                        q: '',
+                                        category: null,
+                                        industry: null,
+                                    });
+                                }}
                             >
-                                {view === 'categories'
-                                    ? 'Categories'
-                                    : 'Business Types'}
+                                Clear Filters
                             </Button>
+                        )}
+                    </>
+                }
+                footer={
+                    <Pagination
+                        data={page}
+                        onPage={(target) => go({ page: target })}
+                    />
+                }
+            >
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <SortHead label="Business Type" field="name" />
+                            <SortHead label="Category" field="category" />
+                            <SortHead label="Industry" field="industry" />
+                            <SortHead
+                                label={
+                                    categories.year === null
+                                        ? 'Registered'
+                                        : `Registered (${categories.year})`
+                                }
+                                field="registered"
+                                align="right"
+                            />
+                            <TableHead className="w-12">
+                                <span className="sr-only">Actions</span>
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {page.total === 0 && (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={5}
+                                    className="py-8 text-center text-muted-foreground"
+                                >
+                                    {filtered
+                                        ? 'No Business Types match.'
+                                        : 'No Business Types yet.'}
+                                </TableCell>
+                            </TableRow>
+                        )}
+                        {page.rows.map((row) => (
+                            <TableRow key={row.code}>
+                                <TableCell className="whitespace-normal">
+                                    {row.name}
+                                </TableCell>
+                                <TableCell>
+                                    {byCode[row.category] && (
+                                        <CategoryChip
+                                            name={byCode[row.category].name}
+                                            color={byCode[row.category].color}
+                                        />
+                                    )}
+                                </TableCell>
+                                <TableCell className="max-w-52 whitespace-normal text-muted-foreground">
+                                    {row.industry}
+                                </TableCell>
+                                <TableCell className="text-right font-mono tabular-nums">
+                                    {row.registered === null ? (
+                                        count(row.registered)
+                                    ) : (
+                                        <Link
+                                            href={
+                                                businesses({
+                                                    query: { type: row.code },
+                                                }).url
+                                            }
+                                            className="underline underline-offset-2"
+                                        >
+                                            {count(row.registered)}
+                                        </Link>
+                                    )}
+                                </TableCell>
+                                <TableCell className="w-12 px-1 text-right">
+                                    <EditButton
+                                        label={`Edit ${row.name}`}
+                                        onClick={() =>
+                                            setSheet({
+                                                kind: 'type',
+                                                code: row.code,
+                                            })
+                                        }
+                                    />
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </div>
-                    <Button
-                        onClick={() =>
-                            setSheet({
-                                kind:
-                                    state.view === 'types'
-                                        ? 'type'
-                                        : 'category',
-                                code: null,
-                            })
-                        }
-                    >
-                        {state.view === 'types'
-                            ? 'Add Business Type'
-                            : 'Add Category'}
-                    </Button>
-                </div>
-            </header>
-            <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-                <div className="min-w-0 space-y-4">
-                    <div className="overflow-x-auto rounded-sm bg-card">
-                        <Table>
-                            <TableHeader>
-                                {state.view === 'types' ? (
-                                    <TableRow>
-                                        <SortHead
-                                            label="Business Type"
-                                            field="name"
-                                        />
-                                        <SortHead
-                                            label="Category"
-                                            field="category"
-                                        />
-                                        <SortHead
-                                            label="Industry"
-                                            field="industry"
-                                        />
-                                        <SortHead
-                                            label={registered}
-                                            field="registered"
-                                            align="right"
-                                        />
-                                        {actions}
-                                    </TableRow>
-                                ) : (
-                                    <TableRow>
-                                        <SortHead
-                                            label="Category"
-                                            field="name"
-                                        />
-                                        <SortHead
-                                            label="Business Types"
-                                            field="types"
-                                            align="right"
-                                        />
-                                        <SortHead
-                                            label={registered}
-                                            field="registered"
-                                            align="right"
-                                        />
-                                        {actions}
-                                    </TableRow>
-                                )}
-                            </TableHeader>
-                            <TableBody>
-                                {page.total === 0 && (
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={5}
-                                            className="py-8 text-center text-muted-foreground"
-                                        >
-                                            {filtered
-                                                ? `No ${noun} match.`
-                                                : `No ${noun} yet.`}
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                                {state.view === 'types' &&
-                                    typePage.rows.map((row) => (
-                                        <TableRow key={row.code}>
-                                            <TableCell className="whitespace-normal">
-                                                {row.name}
-                                            </TableCell>
-                                            <TableCell>
-                                                {byCode[row.category] && (
-                                                    <CategoryChip
-                                                        name={
-                                                            byCode[row.category]
-                                                                .name
-                                                        }
-                                                        color={
-                                                            byCode[row.category]
-                                                                .color
-                                                        }
-                                                    />
-                                                )}
-                                            </TableCell>
-                                            <TableCell className="max-w-52 whitespace-normal text-muted-foreground">
-                                                {row.industry}
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono tabular-nums">
-                                                {row.registered === null ? (
-                                                    count(row.registered)
-                                                ) : (
-                                                    <Link
-                                                        href={
-                                                            businesses({
-                                                                query: {
-                                                                    type: row.code,
-                                                                },
-                                                            }).url
-                                                        }
-                                                        className="underline underline-offset-2"
-                                                    >
-                                                        {count(row.registered)}
-                                                    </Link>
-                                                )}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    aria-label={`Edit ${row.name}`}
-                                                    onClick={() =>
-                                                        setSheet({
-                                                            kind: 'type',
-                                                            code: row.code,
-                                                        })
-                                                    }
-                                                >
-                                                    Edit
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                {state.view === 'categories' &&
-                                    categoryPage.rows.map((row) => (
-                                        <TableRow key={row.code}>
-                                            <TableCell>
-                                                <CategoryChip
-                                                    name={row.name}
-                                                    color={row.color}
-                                                />
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono tabular-nums">
-                                                {formatCount(row.types)}
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono tabular-nums">
-                                                {row.registered === null ? (
-                                                    count(row.registered)
-                                                ) : (
-                                                    <Link
-                                                        href={
-                                                            businesses({
-                                                                query: {
-                                                                    category:
-                                                                        row.code,
-                                                                },
-                                                            }).url
-                                                        }
-                                                        className="underline underline-offset-2"
-                                                    >
-                                                        {count(row.registered)}
-                                                    </Link>
-                                                )}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    aria-label={`Edit ${row.name}`}
-                                                    onClick={() =>
-                                                        setSheet({
-                                                            kind: 'category',
-                                                            code: row.code,
-                                                        })
-                                                    }
-                                                >
-                                                    Edit
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                    {page.lastPage > 1 && (
-                        <nav
-                            aria-label="Pagination"
-                            className="flex items-center justify-end gap-2 border-t pt-2"
-                        >
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                disabled={page.page <= 1}
-                                onClick={() => go({ page: page.page - 1 })}
-                            >
-                                Previous
-                            </Button>
-                            <span className="type-meta">
-                                Page{' '}
-                                <span className="font-mono tabular-nums">
-                                    {page.page}
-                                </span>{' '}
-                                of{' '}
-                                <span className="font-mono tabular-nums">
-                                    {page.lastPage}
-                                </span>
-                            </span>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                disabled={page.page >= page.lastPage}
-                                onClick={() => go({ page: page.page + 1 })}
-                            >
-                                Next
-                            </Button>
-                        </nav>
-                    )}
-                </div>
-                <WorkspaceFilters>
-                    <label className="flex flex-col gap-2 type-label">
-                        Search
-                        <Input
-                            type="search"
-                            value={search}
-                            maxLength={60}
-                            onChange={(event) => setSearch(event.target.value)}
-                        />
-                    </label>
-                    {state.view === 'types' && (
-                        <>
-                            <label id="category-label" className="type-label">
-                                Category
-                            </label>
-                            <Select
-                                value={state.category ?? 'all'}
-                                onValueChange={(value) =>
-                                    go({
-                                        category:
-                                            value === 'all' ? null : value,
-                                    })
-                                }
-                            >
-                                <SelectTrigger
-                                    aria-labelledby="category-label"
-                                    className="w-full"
-                                >
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All</SelectItem>
-                                    {categories.categories.map((item) => (
-                                        <SelectItem
-                                            key={item.code}
-                                            value={item.code}
-                                        >
-                                            {item.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <label id="industry-label" className="type-label">
-                                Industry
-                            </label>
-                            <Select
-                                value={state.industry ?? 'all'}
-                                onValueChange={(value) =>
-                                    go({
-                                        industry:
-                                            value === 'all' ? null : value,
-                                    })
-                                }
-                            >
-                                <SelectTrigger
-                                    aria-labelledby="industry-label"
-                                    className="w-full"
-                                >
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All</SelectItem>
-                                    {categories.industries.map((industry) => (
-                                        <SelectItem
-                                            key={industry.value}
-                                            value={industry.value}
-                                        >
-                                            {industry.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </>
-                    )}
-                    {filtered && (
-                        <Button
-                            variant="ghost"
-                            onClick={() => {
-                                setSearch('');
-                                go({ q: '', category: null, industry: null });
-                            }}
-                        >
-                            Clear Filters
-                        </Button>
-                    )}
-                </WorkspaceFilters>
-            </div>
+                    </TableBody>
+                </Table>
+            </Surface>
             <Sheet
                 open={sheet !== null}
                 onOpenChange={(open) => !open && setSheet(null)}
@@ -510,11 +330,68 @@ export default function BusinessCategoriesPage({
                 <SheetContent className="w-full overflow-y-auto sm:max-w-md">
                     <SheetHeader>
                         <SheetTitle>
-                            {sheet?.kind === 'category'
-                                ? (editingCategory?.name ?? 'Add Category')
-                                : (editingType?.name ?? 'Add Business Type')}
+                            {sheet?.kind === 'categories'
+                                ? 'Categories'
+                                : sheet?.kind === 'category'
+                                  ? (editingCategory?.name ?? 'Add Category')
+                                  : (editingType?.name ?? 'Add Business Type')}
                         </SheetTitle>
                     </SheetHeader>
+                    {sheet?.kind === 'categories' && (
+                        <div className="flex flex-col gap-3 px-4 pb-4">
+                            <Button
+                                className="self-end"
+                                onClick={() =>
+                                    setSheet({ kind: 'category', code: null })
+                                }
+                            >
+                                Add Category
+                            </Button>
+                            <Surface>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Category</TableHead>
+                                            <TableHead className="text-right">
+                                                Business Types
+                                            </TableHead>
+                                            <TableHead className="w-12">
+                                                <span className="sr-only">
+                                                    Actions
+                                                </span>
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {categories.categories.map((item) => (
+                                            <TableRow key={item.code}>
+                                                <TableCell>
+                                                    <CategoryChip
+                                                        name={item.name}
+                                                        color={item.color}
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="text-right font-mono tabular-nums">
+                                                    {formatCount(item.types)}
+                                                </TableCell>
+                                                <TableCell className="w-12 px-1 text-right">
+                                                    <EditButton
+                                                        label={`Edit ${item.name}`}
+                                                        onClick={() =>
+                                                            setSheet({
+                                                                kind: 'category',
+                                                                code: item.code,
+                                                            })
+                                                        }
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </Surface>
+                        </div>
+                    )}
                     {sheet?.kind === 'type' && (
                         <BusinessTypeForm
                             key={sheet.code ?? 'new'}
@@ -528,7 +405,9 @@ export default function BusinessCategoriesPage({
                             key={sheet.code ?? 'new'}
                             category={editingCategory}
                             categories={categories}
-                            onSaved={() => setSheet(null)}
+                            onSaved={() =>
+                                setSheet({ kind: 'categories', code: null })
+                            }
                         />
                     )}
                 </SheetContent>

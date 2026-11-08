@@ -167,7 +167,7 @@ export default function CapitolLayout({ children }: { children: ReactNode }) {
                 </div>
             </aside>
             <div className="min-w-0 lg:col-start-2">
-                <div className="flex min-h-12 items-center justify-between gap-3 border-b px-gutter md:px-6">
+                <div className="flex min-h-12 items-center justify-between gap-3 border-b bg-card px-gutter md:px-6">
                     <WorkspaceBreadcrumbs />
                     <SimulatedLabel />
                 </div>

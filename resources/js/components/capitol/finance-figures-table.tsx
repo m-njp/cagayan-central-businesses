@@ -2,6 +2,7 @@ import { Fragment, useRef, useState } from 'react';
 import { FinanceReviewDialog } from '@/components/capitol/finance-review-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Surface } from '@/components/ui/surface';
 import {
     Table,
     TableBody,
@@ -14,14 +15,8 @@ import {
     formatExactPesos,
     formatFinanceSource,
 } from '@/lib/performance-format';
-import type { FinanceFigureRow, FinanceReport } from '@/types/finance';
-
-const STATUS: Record<FinanceFigureRow['status'], string> = {
-    pending: 'Pending',
-    verified: 'Verified',
-    rejected: 'Returned',
-    superseded: 'Superseded',
-};
+import { FIGURE_STATUS } from '@/lib/registry';
+import type { FinanceReport } from '@/types/finance';
 
 export function FinanceFiguresTable({
     report,
@@ -103,7 +98,7 @@ export function FinanceFiguresTable({
                     </Button>
                 </div>
             )}
-            <div className="overflow-hidden rounded-sm bg-card">
+            <Surface>
                 <Table className="w-full min-w-[40rem] table-fixed">
                     <colgroup>
                         {reviewing && <col className="w-10" />}
@@ -256,7 +251,11 @@ export function FinanceFiguresTable({
                                                               : 'secondary'
                                                     }
                                                 >
-                                                    {STATUS[figure.status]}
+                                                    {
+                                                        FIGURE_STATUS[
+                                                            figure.status
+                                                        ]
+                                                    }
                                                 </Badge>
                                                 {figure.enteredByYou &&
                                                     figure.status ===
@@ -292,7 +291,7 @@ export function FinanceFiguresTable({
                         })}
                     </TableBody>
                 </Table>
-            </div>
+            </Surface>
             {decision && (
                 <FinanceReviewDialog
                     key={decision}

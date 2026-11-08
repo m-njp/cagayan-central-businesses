@@ -9,6 +9,7 @@ export type PopulationRow = {
     source: string | null;
     pendingId: string | null;
     enteredByYou: boolean;
+    returnedNote: string | null;
 };
 
 export type PopulationPage = {
@@ -18,5 +19,10 @@ export type PopulationPage = {
     years: number[];
     rows: PopulationRow[];
     canReview: boolean;
-    limits: { valueMax: number; changesMax: number };
+    limits: {
+        valueMax: number;
+        changesMax: number;
+        noteMax: number;
+        sourceUrlMax: number;
+    };
 };

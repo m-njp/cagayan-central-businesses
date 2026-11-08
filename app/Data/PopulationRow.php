@@ -13,5 +13,6 @@ final readonly class PopulationRow
         public ?string $source,
         public ?string $pendingId,
         public bool $enteredByYou,
+        public ?string $returnedNote,
     ) {}
 }

@@ -22,6 +22,13 @@ it('allows all three roles to see the dashboard without wishes or protected fiel
         ->assertDontSee('Private reason sentinel')->assertDontSee('Private company sentinel');
 })->with(UserRole::cases());
 
+it('sends the Waiting for Review table to reviewers only', function (UserRole $role) {
+    $this->actingAs(User::factory()->create(['role' => $role]))->get(route('capitol.dashboard'))
+        ->assertInertia(fn (Assert $page) => $role === UserRole::Staff
+            ? $page->where('waiting', null)
+            : $page->has('waiting', 0));
+})->with(UserRole::cases());
+
 it('enforces the wishes and logs permission matrix on direct requests', function (UserRole $role) {
     $this->actingAs(User::factory()->create(['role' => $role]));
     $this->get(route('capitol.wishes.index'))->assertStatus($role === UserRole::Staff ? 403 : 200);

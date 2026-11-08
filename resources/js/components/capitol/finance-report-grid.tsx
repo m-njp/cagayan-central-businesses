@@ -1,5 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { EntryCell } from '@/components/capitol/entry-cell';
+import { FigureStatus } from '@/components/registry-badges';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -18,10 +20,6 @@ import { store } from '@/routes/capitol/finances/figures';
 import type { FinanceReport } from '@/types/finance';
 
 const OTHER_SOURCE = 'other';
-const STATUS_LABELS: Record<string, string> = {
-    pending: 'Pending',
-    verified: 'Verified',
-};
 
 /** Pasted amounts often carry thousands separators; the server takes plain digits. */
 const plain = (value: string) => value.replace(/[,\s₱]/g, '');
@@ -56,6 +54,8 @@ export function FinanceReportGrid({
             .map((cell) => [cellKey(cell.line, cell.fiscalYear), cell]),
     );
     const [values, setValues] = useState<Record<string, string>>({});
+    // Verified figures stay read-only until their pen is used.
+    const [unlocked, setUnlocked] = useState<string[]>([]);
     const form = useForm({
         submission: crypto.randomUUID(),
         document_kind: sources[0]?.kind ?? OTHER_SOURCE,
@@ -109,6 +109,7 @@ export function FinanceReportGrid({
             preserveScroll: true,
             onSuccess: () => {
                 setValues({});
+                setUnlocked([]);
                 form.reset();
                 form.setData('submission', crypto.randomUUID());
                 onSaved();
@@ -249,14 +250,29 @@ export function FinanceReportGrid({
                                                 key={year}
                                                 className="p-1"
                                             >
-                                                <Input
-                                                    aria-label={`${line.label} ${year}`}
-                                                    aria-invalid={
-                                                        error ? true : undefined
+                                                <EntryCell
+                                                    locked={
+                                                        current.get(key)
+                                                            ?.status ===
+                                                            'verified' &&
+                                                        !unlocked.includes(key)
                                                     }
-                                                    title={error}
+                                                    display={shown.format(
+                                                        Number(
+                                                            current.get(key)
+                                                                ?.value,
+                                                        ),
+                                                    )}
+                                                    label={`${line.label} ${year}`}
+                                                    onUnlock={() =>
+                                                        setUnlocked([
+                                                            ...unlocked,
+                                                            key,
+                                                        ])
+                                                    }
                                                     inputMode="decimal"
-                                                    className={`h-8 min-w-36 text-right font-mono tabular-nums ${changed ? 'border-primary bg-accent' : ''}`}
+                                                    changed={changed}
+                                                    error={error}
                                                     value={
                                                         values[key] ??
                                                         (current.has(key)
@@ -269,21 +285,22 @@ export function FinanceReportGrid({
                                                               )
                                                             : '')
                                                     }
-                                                    onChange={(event) =>
+                                                    onChange={(value) =>
                                                         setValues({
                                                             ...values,
-                                                            [key]: event.target
-                                                                .value,
+                                                            [key]: value,
                                                         })
                                                     }
                                                 />
                                             </TableCell>
                                         );
                                     })}
-                                    <TableCell className="type-meta">
-                                        {latest
-                                            ? STATUS_LABELS[latest.status]
-                                            : null}
+                                    <TableCell>
+                                        {latest && (
+                                            <FigureStatus
+                                                status={latest.status}
+                                            />
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             );

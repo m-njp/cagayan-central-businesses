@@ -9,7 +9,7 @@ final readonly class PopulationPage
      * @param  list<SelectOption>  $towns
      * @param  list<int>  $years
      * @param  list<PopulationRow>  $rows
-     * @param  array{valueMax: int, changesMax: int}  $limits
+     * @param  array{valueMax: int, changesMax: int, noteMax: int, sourceUrlMax: int}  $limits
      */
     public function __construct(
         public array $towns,

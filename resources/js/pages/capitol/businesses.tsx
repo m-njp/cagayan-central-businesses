@@ -1,12 +1,15 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { CategoryChip } from '@/components/capitol/category-chip';
+import { PageHeader } from '@/components/capitol/page-header';
 import { Pagination } from '@/components/capitol/pagination';
+import { TabRow } from '@/components/capitol/tab-row';
 import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { PermitBadge, RecordBadge } from '@/components/registry-badges';
 import { RowChevron, RowLink } from '@/components/row-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Surface } from '@/components/ui/surface';
 import {
     Select,
     SelectContent,
@@ -148,45 +151,30 @@ export default function Businesses({
     return (
         <>
             <Head title="Businesses" />
-            <header className="flex flex-wrap items-center justify-between gap-3">
-                <h1 className="type-heading">Businesses</h1>
+            <PageHeader title="Businesses">
                 {directory.canAdd && (
                     <Button asChild>
                         <Link href={create()}>Add Business</Link>
                     </Button>
                 )}
-            </header>
-            <div
-                role="tablist"
-                aria-label="Review State"
-                className="flex flex-wrap gap-2"
-            >
-                {TABS.map((tab) => {
-                    const count = tab ? directory.recordCounts[tab] : undefined;
-                    return (
-                        <Button
-                            key={tab ?? 'all'}
-                            role="tab"
-                            aria-selected={filters.record === tab}
-                            variant={
-                                filters.record === tab ? 'secondary' : 'ghost'
-                            }
-                            size="sm"
-                            onClick={() => go({ record: tab })}
-                        >
-                            {tab ? RECORD_STATUS[tab] : 'All'}
-                            {count ? (
-                                <span className="font-mono text-muted-foreground tabular-nums">
-                                    {count}
-                                </span>
-                            ) : null}
-                        </Button>
-                    );
-                })}
-            </div>
+            </PageHeader>
+            <Surface padded>
+                <TabRow
+                    label="Review State"
+                    value={filters.record}
+                    tabs={TABS.map((tab) => ({
+                        value: tab,
+                        label: tab ? RECORD_STATUS[tab] : 'All',
+                        count: tab ? directory.recordCounts[tab] : undefined,
+                    }))}
+                    onChange={(record) => go({ record })}
+                />
+            </Surface>
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
                 <div className="min-w-0 space-y-4">
-                    <div className="overflow-x-auto rounded-sm bg-card">
+                    <Surface
+                        footer={<Pagination data={directory.pagination} />}
+                    >
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -279,8 +267,7 @@ export default function Businesses({
                                 ))}
                             </TableBody>
                         </Table>
-                    </div>
-                    <Pagination data={directory.pagination} />
+                    </Surface>
                 </div>
                 <WorkspaceFilters>
                     <label className="flex flex-col gap-2 type-label">

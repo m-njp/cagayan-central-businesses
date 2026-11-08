@@ -20,6 +20,21 @@ export const PERMIT_STATUS: Record<string, { label: string; dot: string }> = {
     none: { label: 'No Permit on File', dot: 'bg-muted-foreground' },
 };
 
+// The words for an entered figure everywhere it appears: finance lines and census counts.
+export const FIGURE_STATUS: Record<string, string> = {
+    pending: 'Pending',
+    verified: 'Verified',
+    rejected: 'Returned',
+    superseded: 'Superseded',
+};
+
+export const FIGURE_STATUS_DOTS: Record<string, string> = {
+    pending: 'bg-muted-foreground',
+    verified: 'bg-status-new',
+    rejected: 'bg-status-closed',
+    superseded: 'bg-muted-foreground',
+};
+
 export const RECORD_STATUS: Record<string, string> = {
     draft: 'Draft',
     submitted: 'Pending',

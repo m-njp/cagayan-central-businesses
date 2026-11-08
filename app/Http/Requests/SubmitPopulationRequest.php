@@ -10,16 +10,18 @@ final class SubmitPopulationRequest extends PopulationRequest
     /** @return array<string, mixed> */
     public function rules(): array
     {
+        $digits = strlen((string) config('cagayan.population.value_max'));
+
         return [
             ...parent::rules(),
             'submission' => ['required', 'uuid'],
-            'source_url' => ['required', 'string', 'max:500', 'url:https', new OfficialPsaUrl],
-            'reason' => ['nullable', 'string', 'max:500', 'not_regex:/[\p{Cc}\p{Cf}<>]/u'],
+            'source_url' => ['required', 'string', 'max:'.config('cagayan.population.source_url_max'), 'url:https', new OfficialPsaUrl],
+            'reason' => ['nullable', 'string', 'max:'.config('cagayan.population.note_max'), 'not_regex:/[\p{Cc}\p{Cf}<>]/u'],
             'changes' => ['required', 'array', 'min:1', 'max:'.config('cagayan.population.changes_max')],
             'changes.*' => ['array:place,value,base'],
             'changes.*.place' => ['required', 'string', 'max:10', 'regex:/^(town|\d{10})$/'],
-            'changes.*.value' => ['required', 'string', 'regex:/^\d{1,8}$/', 'integer', 'between:0,'.config('cagayan.population.value_max')],
-            'changes.*.base' => ['nullable', 'string', 'regex:/^\d{1,8}$/'],
+            'changes.*.value' => ['required', 'string', 'regex:/^\d{1,'.$digits.'}$/', 'integer', 'between:0,'.config('cagayan.population.value_max')],
+            'changes.*.base' => ['nullable', 'string', 'regex:/^\d{1,'.$digits.'}$/'],
         ];
     }
 

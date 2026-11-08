@@ -1,6 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
+import { PageHeader } from '@/components/capitol/page-header';
 import type { Point } from '@/components/map/business-map';
 import { LazyBusinessMap } from '@/components/map/lazy-business-map';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -214,9 +215,9 @@ export default function BusinessFormPage({
     return (
         <>
             <Head title={page.publicId ? 'Edit Business' : 'Add a Business'} />
-            <h1 className="type-heading">
-                {page.publicId ? 'Edit Business' : 'Add a Business'}
-            </h1>
+            <PageHeader
+                title={page.publicId ? 'Edit Business' : 'Add a Business'}
+            />
             {page.reviewNote && (
                 <Alert>
                     <AlertTitle>Returned for Resubmission</AlertTitle>
@@ -530,7 +531,7 @@ export default function BusinessFormPage({
                 <aside className="flex flex-col gap-4 lg:sticky lg:top-6">
                     <fieldset className="grid gap-4 rounded-sm border bg-card p-4">
                         <legend className="px-1 type-label">Location</legend>
-                        {choose('town', 'Town', page.towns, (value) =>
+                        {choose('town', 'Municipality', page.towns, (value) =>
                             form.setData((previous) => ({
                                 ...previous,
                                 town: value,

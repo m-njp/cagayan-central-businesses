@@ -111,7 +111,7 @@ export function AnalyticsPickers({
         town: () => (
             <Picker
                 id={`${idPrefix}-town`}
-                label="Town"
+                label="Municipality"
                 value={filters.town}
                 options={catalog.towns}
                 onChange={(town) => onChange({ town })}
@@ -145,7 +145,7 @@ export function AnalyticsPickers({
                                 ? undefined
                                 : only
                                   ? ` ${only} Only`
-                                  : ' Not Loaded for This Town',
+                                  : ' Not Loaded for This Municipality',
                         };
                     })}
                     onChange={(measure) => onChange({ measure })}

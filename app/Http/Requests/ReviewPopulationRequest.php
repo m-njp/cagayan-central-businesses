@@ -18,7 +18,7 @@ final class ReviewPopulationRequest extends PopulationRequest
             'decision' => ['required', 'in:verified,rejected'],
             'figures' => ['required', 'array', 'min:1', 'max:'.config('cagayan.population.changes_max')],
             'figures.*' => ['required', 'uuid'],
-            'note' => ['nullable', 'required_if:decision,rejected', 'prohibited_if:decision,verified', 'string', 'max:500', 'not_regex:/[\p{Cc}\p{Cf}<>]/u'],
+            'note' => ['nullable', 'required_if:decision,rejected', 'prohibited_if:decision,verified', 'string', 'max:'.config('cagayan.population.note_max'), 'not_regex:/[\p{Cc}\p{Cf}<>]/u'],
         ];
     }
 }

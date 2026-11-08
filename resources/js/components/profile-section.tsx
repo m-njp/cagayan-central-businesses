@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import { Surface } from '@/components/ui/surface';
 
 // One card of a business profile, with a Title Case heading.
 export function ProfileSection({
@@ -12,14 +12,8 @@ export function ProfileSection({
     children: ReactNode;
 }) {
     return (
-        <section
-            className={cn(
-                'flex flex-col gap-2 rounded-sm border bg-card p-panel',
-                className,
-            )}
-        >
-            <h2 className="type-item">{title}</h2>
+        <Surface padded title={title} className={className}>
             {children}
-        </section>
+        </Surface>
     );
 }

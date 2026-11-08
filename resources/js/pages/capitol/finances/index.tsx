@@ -2,9 +2,11 @@ import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { Head, router } from '@inertiajs/react';
 import { RowChevron, RowLink } from '@/components/row-link';
 import { useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
 import { Pagination } from '@/components/capitol/pagination';
+import { TabRow } from '@/components/capitol/tab-row';
+import { PageHeader } from '@/components/capitol/page-header';
 import { Button } from '@/components/ui/button';
+import { Surface } from '@/components/ui/surface';
 import {
     Select,
     SelectContent,
@@ -51,59 +53,45 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
         visit({ ...list.filters, [field]: value === 'all' ? null : value });
     };
     const filters = [
-        { key: 'town', label: 'Town or City', options: list.towns },
+        { key: 'town', label: 'Municipality', options: list.towns },
         { key: 'status', label: 'Status', options: STATUS_OPTIONS },
     ] as const;
     return (
         <>
             <Head title="Government Finances" />
-            <h1 className="type-heading">Government Finances</h1>
-            <nav
-                aria-label="Report Year"
-                className="flex gap-1 overflow-x-auto border-b"
-            >
-                {list.years.map((year) => (
-                    <Button
-                        key={year.value}
-                        variant="ghost"
-                        className={cn(
-                            'shrink-0 rounded-none border-b-2 border-transparent font-mono tabular-nums',
-                            list.filters.year === year.value &&
-                                'border-primary bg-muted font-medium',
-                        )}
-                        aria-current={
-                            list.filters.year === year.value
-                                ? 'page'
-                                : undefined
-                        }
-                        onClick={() => choose('year', year.value)}
-                    >
-                        {year.label}
-                    </Button>
-                ))}
-            </nav>
+            <PageHeader title="Government Finances" />
+            <Surface padded>
+                <TabRow
+                    label="Report Year"
+                    value={list.filters.year}
+                    tabs={list.years.map((year) => ({
+                        value: year.value,
+                        label: year.label,
+                        mono: true,
+                    }))}
+                    onChange={(year) => choose('year', year ?? 'all')}
+                />
+            </Surface>
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
                 <section
                     aria-label="Finance reports"
                     className="flex min-w-0 flex-col gap-3"
                 >
-                    <div className="overflow-hidden rounded-sm bg-card">
+                    <Surface footer={<Pagination data={list.pagination} />}>
                         <Table className="table-fixed">
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-1/3">
-                                        Town or City
-                                    </TableHead>
-                                    <TableHead className="text-right">
+                                    <TableHead>Municipality</TableHead>
+                                    <TableHead className="w-20 text-right">
                                         Pending
                                     </TableHead>
-                                    <TableHead className="text-right">
+                                    <TableHead className="w-20 text-right">
                                         Verified
                                     </TableHead>
-                                    <TableHead className="text-right">
+                                    <TableHead className="w-20 text-right">
                                         Returned
                                     </TableHead>
-                                    <TableHead className="w-0 px-1">
+                                    <TableHead className="w-8 px-1">
                                         <span className="sr-only">Open</span>
                                     </TableHead>
                                 </TableRow>
@@ -131,7 +119,7 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
                                             <TableCell className="text-right font-mono tabular-nums">
                                                 {formatCount(row.rejected)}
                                             </TableCell>
-                                            <TableCell className="w-0 px-1">
+                                            <TableCell className="w-8 px-1">
                                                 <RowChevron />
                                             </TableCell>
                                         </TableRow>
@@ -149,8 +137,7 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
                                 )}
                             </TableBody>
                         </Table>
-                    </div>
-                    <Pagination data={list.pagination} />
+                    </Surface>
                 </section>
                 <WorkspaceFilters title="Filters">
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
