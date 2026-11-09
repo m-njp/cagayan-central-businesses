@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'react';
+import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -18,24 +19,36 @@ export function FocusDialog({
     overlayClassName,
     className,
     closeButton = false,
+    closeClassName,
+    onCloseAutoFocus,
     children,
     ...props
 }: ComponentProps<typeof Dialog> & {
     overlayClassName?: string;
     className?: string;
     closeButton?: boolean;
+    closeClassName?: string;
+    onCloseAutoFocus?: ComponentProps<typeof DialogContent>['onCloseAutoFocus'];
 }) {
+    const close = useRef<HTMLButtonElement>(null);
+
     return (
         <Dialog {...props}>
             <DialogContent
                 showCloseButton={false}
+                onOpenAutoFocus={(event) => {
+                    if (!close.current) return;
+                    event.preventDefault();
+                    close.current.focus();
+                }}
+                onCloseAutoFocus={onCloseAutoFocus}
                 overlayClassName={cn(
                     'bg-background/60 backdrop-blur-md',
                     FADE,
                     overlayClassName,
                 )}
                 className={cn(
-                    'border-0 bg-transparent p-0 shadow-none data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95',
+                    'border-0 bg-transparent p-0 shadow-none',
                     FADE,
                     className,
                 )}
@@ -44,10 +57,14 @@ export function FocusDialog({
                 {closeButton && (
                     <DialogClose asChild>
                         <Button
-                            variant="outline"
-                            size="icon"
+                            ref={close}
+                            variant="subtle"
+                            size="touch"
                             aria-label="Close"
-                            className="absolute top-2 right-2 z-10 size-10"
+                            className={cn(
+                                'absolute top-[max(--spacing(2),env(safe-area-inset-top))] right-[max(--spacing(2),env(safe-area-inset-right))] z-10',
+                                closeClassName,
+                            )}
                         >
                             <icons.close aria-hidden="true" />
                         </Button>

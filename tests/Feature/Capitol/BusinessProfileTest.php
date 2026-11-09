@@ -40,7 +40,7 @@ it('shows the full record with a masked TIN and logs exactly one view per open (
 
     $response = $this->actingAs($admin)->get(route('capitol.businesses.show', $this->business));
 
-    $response->assertInertia(fn (Assert $page) => $page->component('capitol/businesses/show')
+    $response->assertInertia(fn (Assert $page) => $page->component('capitol/businesses/show/index')
         ->where('business.admin.ownerName', 'Profile Owner')
         ->where('business.admin.tin', '***-***-789-000')
         ->where('business.history.0.status', 'renewed'));

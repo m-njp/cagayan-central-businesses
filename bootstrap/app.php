@@ -39,7 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
             if (in_array($response->getStatusCode(), [403, 404, 419, 429, 500, 503], true)
                 && (! $request->expectsJson() || $request->header('X-Inertia'))) {
-                $error = Inertia::render('errors/status', ['status' => $response->getStatusCode()])
+                $error = Inertia::render('errors/status/index', ['status' => $response->getStatusCode()])
                     ->toResponse($request)->setStatusCode($response->getStatusCode());
                 $error->headers->add(['Cache-Control' => 'private, no-store', 'X-Frame-Options' => 'DENY',
                     'X-Content-Type-Options' => 'nosniff', 'Referrer-Policy' => 'no-referrer']);

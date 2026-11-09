@@ -44,20 +44,25 @@ class FinanceUpload extends Model
     /** The private-disk folder for uploaded reports; finance documents read from here cite it in `file`. */
     public const string FOLDER = 'finance-uploads';
 
+    public function isStale(): bool
+    {
+        if ($this->status === FinanceUploadStatus::Queued) {
+            return $this->updated_at->lt(now()->subSeconds((int) config('cagayan.finances.uploads.queued_stale_seconds')));
+        }
+        if ($this->status !== FinanceUploadStatus::Running) {
+            return false;
+        }
+        $started = $this->progress['startedAt'] ?? $this->updated_at->toIso8601String();
+
+        return Carbon::parse($started)->lt(now()->subSeconds((int) config('cagayan.finances.uploads.timeout_seconds') + 30));
+    }
+
     /**
      * @return BelongsTo<Municipality, $this>
      */
     public function municipality(): BelongsTo
     {
         return $this->belongsTo(Municipality::class);
-    }
-
-    /**
-     * @return BelongsTo<User, $this>
-     */
-    public function uploader(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'uploaded_by');
     }
 
     /**

@@ -157,7 +157,26 @@ await test('local history retains explicit year and resets only an incompatible 
     assert.equal(router.push.mock.callCount(), calls);
 });
 
-await test('formatting retains combined notes, puts falls in parentheses and never invents comparisons', async () => {
+await test('one selection switches classification and group together in local history', (t) => {
+    const push = t.mock.method(router, 'push', () => {});
+    const current = { ...filters, group: 'industry:A' };
+    pushFilters(
+        current,
+        { dimension: 'category', group: 'category:retail' },
+        (query) => '?' + new URLSearchParams(query),
+        (props, next) => ({ ...props, filters: next }),
+    );
+    assert.equal(push.mock.callCount(), 1);
+    const [visit] = push.mock.calls[0].arguments;
+    const params = new URLSearchParams(visit.url);
+    assert.equal(params.get('dimension'), 'category');
+    assert.equal(params.get('group'), 'category:retail');
+    const next = visit.props({}).filters;
+    assert.equal(next.group, 'category:retail');
+    assert.equal(next.dimension, 'category');
+});
+
+await test('formatting retains notes and groups deduplicated citations by report year', async () => {
     const { registerHooks } = await import('node:module');
     const hooks = registerHooks({
         resolve(specifier, context, nextResolve) {
@@ -174,7 +193,7 @@ await test('formatting retains combined notes, puts falls in parentheses and nev
         changeLabel,
         observationLabel,
         observationNote,
-        citationLinks,
+        citationReports,
         percentChangeLabel,
     } = await import('../../resources/js/lib/performance-format.ts');
     const change = point('15', {
@@ -240,6 +259,17 @@ await test('formatting retains combined notes, puts falls in parentheses and nev
         a: source({}),
         b: source({ url: '/finance-sources/b' }),
         c: source({ url: '/finance-sources/a' }),
+        older: source({
+            reportYear: 2023,
+            page: 3,
+            location: 'pages 3-4',
+            url: '/finance-sources/older',
+        }),
+        first: source({
+            page: 1,
+            location: 'page 1',
+            url: '/finance-sources/first',
+        }),
         w: source({
             kind: 'fs_workbook',
             label: 'Financial Statements',
@@ -258,13 +288,65 @@ await test('formatting retains combined notes, puts falls in parentheses and nev
     };
     // One link per distinct citation, however many figures share it; a workbook links once per report; an entered figure has none.
     assert.deepEqual(
-        citationLinks(sources, ['a', 'b', 'c', 'w', 'w2', 'none']),
+        citationReports(sources, [
+            'a',
+            'b',
+            'c',
+            'w',
+            'w2',
+            'none',
+            'older',
+            'first',
+        ]),
         [
             {
-                href: '/finance-sources/a#page=2',
-                text: 'Executive Summary 2025 p. 2',
+                year: 2023,
+                reports: [
+                    {
+                        key: 'Town:executive_summary',
+                        label: 'Executive Summary',
+                        links: [
+                            {
+                                href: '/finance-sources/older#page=3',
+                                text: 'pp. 3-4',
+                                page: 3,
+                            },
+                        ],
+                    },
+                ],
             },
-            { href: '/finance-sources/w', text: 'Financial Statements 2025' },
+            {
+                year: 2025,
+                reports: [
+                    {
+                        key: 'Town:executive_summary',
+                        label: 'Executive Summary',
+                        links: [
+                            {
+                                href: '/finance-sources/first#page=1',
+                                text: 'p. 1',
+                                page: 1,
+                            },
+                            {
+                                href: '/finance-sources/a#page=2',
+                                text: 'p. 2',
+                                page: 2,
+                            },
+                        ],
+                    },
+                    {
+                        key: 'Town:fs_workbook',
+                        label: 'Financial Statements',
+                        links: [
+                            {
+                                href: '/finance-sources/w',
+                                text: 'Download Workbook',
+                                page: null,
+                            },
+                        ],
+                    },
+                ],
+            },
         ],
     );
     hooks.deregister();

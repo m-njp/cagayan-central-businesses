@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\FinanceUploadStatus;
 use App\Models\FinanceUpload;
-use Illuminate\Support\Carbon;
 
 final class FinanceParsingProgress
 {
@@ -27,19 +26,6 @@ final class FinanceParsingProgress
             'startedAt' => null, 'updatedAt' => now()->toIso8601String(), 'finishedAt' => null,
             'found' => 0, 'rows' => [], 'issues' => [], 'activity' => [], 'errorCode' => null,
             'sequence' => 0];
-    }
-
-    public static function isStale(FinanceUpload $upload): bool
-    {
-        if ($upload->status === FinanceUploadStatus::Queued) {
-            return $upload->updated_at->lt(now()->subSeconds((int) config('cagayan.finances.uploads.queued_stale_seconds')));
-        }
-        if ($upload->status !== FinanceUploadStatus::Running) {
-            return false;
-        }
-        $started = $upload->progress['startedAt'] ?? $upload->updated_at->toIso8601String();
-
-        return Carbon::parse($started)->lt(now()->subSeconds((int) config('cagayan.finances.uploads.timeout_seconds') + 30));
     }
 
     /** @param array<string, mixed> $event */

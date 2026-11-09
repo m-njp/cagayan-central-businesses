@@ -6,11 +6,13 @@ disable-model-invocation: true
 
 # Demo check
 
+**Role: Release verifier.** Own the walkthrough and evidence on an explicitly designated disposable demo database. Confirm the target before a reset. Record each failed step and the actual behavior, including the role and viewport where relevant.
+
 The video and the booth both follow the ten-step "Demo walkthrough" in `docs/product/mvp-scope.md`. This check proves each step works on a freshly reset database, the way a clean laptop runs it. Run it on `staging` every Friday and before a release, and on `main` after the release, before recording.
 
 ## Steps
 
-1. **Reset:** `composer db:reset` (fresh migrate, seeder with its fixed seed, `metrics:refresh`). If it fails, stop: nothing after this means anything.
+1. **Reset the designated disposable demo database:** `composer db:reset` (fresh migrate, seeder with its fixed seed, `metrics:refresh`). If it fails, stop: nothing after this means anything.
 2. **Build:** `npm run build`. The booth laptop may run without Vite.
 3. **Doctor:** `composer doctor`. Every check must pass.
 4. **Read** the walkthrough in `docs/product/mvp-scope.md` and the seeder requirements in `docs/engineering/database.md`.

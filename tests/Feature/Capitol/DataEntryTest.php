@@ -32,7 +32,7 @@ it('counts only assigned towns for staff and gives them no review list', functio
     PopulationFigure::factory()->create(['municipality_id' => $this->town->id, 'year' => 2024]);
 
     $this->actingAs($staff)->get(route('capitol.data-entry'))->assertInertia(fn (Assert $page) => $page
-        ->component('capitol/data-entry')
+        ->component('capitol/data-entry/index')
         ->where('entry.datasets.0.id', 'finances')
         ->where('entry.datasets.0.pending', 1)
         ->where('entry.datasets.1.pending', 0)

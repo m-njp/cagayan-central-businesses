@@ -165,7 +165,6 @@ export function selectedBusiness(
     const dataset = businesses.datasets[key];
     return {
         key,
-        groups,
         dataset:
             filters.presentation === 'trends'
                 ? periodHistory(
@@ -193,7 +192,11 @@ export function pushFilters<T extends AnalyticsFilters>(
 ) {
     const next = { ...current, ...patch };
     if (patch.measure && patch.measure !== current.measure) next.metric = null;
-    if (patch.dimension && patch.dimension !== current.dimension)
+    if (
+        patch.dimension &&
+        patch.dimension !== current.dimension &&
+        patch.group === undefined
+    )
         next.group = null;
     const keys = Object.keys(next) as (keyof T)[];
     if (keys.every((key) => next[key] === current[key])) return;

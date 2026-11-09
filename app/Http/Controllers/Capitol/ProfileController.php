@@ -15,7 +15,7 @@ final class ProfileController extends Controller
 {
     public function show(Request $request): Response
     {
-        return Inertia::render('capitol/profile', ['profile' => AccountProfile::from($request->user())]);
+        return Inertia::render('capitol/profile/index', ['profile' => AccountProfile::from($request->user())]);
     }
 
     public function update(UpdateProfileRequest $request, UpdateProfile $update): RedirectResponse

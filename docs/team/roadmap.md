@@ -2,6 +2,10 @@
 
 The plan from today to the submission, and the status of every feature. Update the status lines in the same pull request that finishes the work.
 
+Finance filters and business activity redesign completed, 26-11-09. Shared dropdowns, separate Recent Uploads, grouped COA citations and a single business activity picker. [Scope and verification](../plan/archive/26-11-09-finance-filters-business-activity.md).
+
+Maintainability refresh completed, 26-11-09. Home focus and toolbar search, page folders, dependency and code cleanup, project skills, and one frontend test command. Final CI and browser checks passed. [Scope, follow-ups and verification](../plan/archive/26-11-09-maintainability-refresh.md).
+
 Executive Summary view, 26-10-29: Economy and Analytics open on COA's Executive Summary lines (Financial Condition, Results of Operation, Budget Execution) as rows with fiscal years as columns, plus two charts. COA's words Income, Expenses and Net Income replace Government Revenue, Government Expenses and Surplus or Deficit, and a loss reads in parentheses. Assets, Liabilities, Government Equity, Allotments and Continuing Obligations load for Tuguegarao City only (M35). See [the plan](../plan/active/26-10-29-executive-summary-view.md).
 
 Local preview integration, 26-10-28: quick sign in, wish-cloud polishing, and the finance-review screens are available together on port 8000 using the existing finance preview database. Combined CI passes (201 tests). See [Client Facing Polishing](../plan/archive/26-10-27-client-facing-polishing.md).
@@ -152,7 +156,7 @@ Cut from the top of this list down. Never cut the privacy rules, the simulated l
 
 ## Handoff for the Next Session
 
-October 23, 2026. The user's UI corrections are recorded in `docs/engineering/design.md`, "Working on Existing Screens", and summarized in `CLAUDE.md` and `.claude/rules/frontend.md`. Read that section before proposing further public UI changes.
+October 23, 2026. The user's UI corrections are recorded in the design guide and summarized in the shared project instructions and `.claude/rules/frontend.md`. Read the design guide before proposing further public UI changes. [Working on Existing Screens](../engineering/design.md#working-on-existing-screens), [shared project instructions](../../AGENTS.md).
 
 - Home has one shared icon style control, three measures in the main panel, a cached town/barangay explorer, Geist typography, and a muted blue slate dark theme. The shared SVG map supports both dotted and solid presentation.
 - The population datasets cover Cagayan only: 29 towns and 820 barangays from the workbook's Cagayan sheet. Database barangay population currently covers Tuguegarao's 49 barangays. Browser geometry covers all 29 towns; loading PostGIS boundaries for the future business map is still F2/F6 work.

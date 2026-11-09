@@ -23,7 +23,7 @@ final class BusinessController extends Controller
         abort_unless(BusinessVisibility::allows($business), 404);
         $log->handle($request->user(), $business);
 
-        return Inertia::render('capitol/businesses/show', [
+        return Inertia::render('capitol/businesses/show/index', [
             'business' => $query->get($business, $request->user()),
             'breadcrumbs' => [
                 ['label' => 'Businesses', 'href' => route('capitol.businesses.index', absolute: false)],
@@ -36,7 +36,7 @@ final class BusinessController extends Controller
     {
         Gate::authorize('add-business');
 
-        return Inertia::render('capitol/businesses/form', [
+        return Inertia::render('capitol/businesses/form/index', [
             'form' => $query->get($request->user(), null),
             'breadcrumbs' => [
                 ['label' => 'Businesses', 'href' => route('capitol.businesses.index', absolute: false)],
@@ -56,7 +56,7 @@ final class BusinessController extends Controller
         // The form shows owner details, so opening it is a full record view (P9).
         $log->handle($request->user(), $business);
 
-        return Inertia::render('capitol/businesses/form', [
+        return Inertia::render('capitol/businesses/form/index', [
             'form' => $query->get($request->user(), $business),
             'breadcrumbs' => [
                 ['label' => 'Businesses', 'href' => route('capitol.businesses.index', absolute: false)],

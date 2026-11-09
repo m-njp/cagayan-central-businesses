@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\TestResponse;
+use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
     Storage::fake('local');
@@ -66,6 +67,25 @@ it('reads the same file for the same report only once', function () {
     expect(FinanceUpload::query()->count())->toBe(1)
         ->and(FinanceUpload::query()->sole()->path)->toStartWith(FinanceUpload::FOLDER.'/');
     Queue::assertPushed(ExtractFinanceUpload::class, 1);
+});
+
+it('polls only the same recent uploads shown in the finance report', function () {
+    $admin = User::factory()->create(['role' => UserRole::Admin]);
+    $uploads = FinanceUpload::factory()->for($this->town)->count(6)->sequence(
+        fn ($sequence) => ['created_at' => now()->subMinutes($sequence->index)],
+    )->create(['status' => FinanceUploadStatus::Done]);
+    FinanceUpload::factory()->for($this->town)->create(['fiscal_year' => 2024]);
+    FinanceUpload::factory()->create();
+
+    $this->actingAs($admin)
+        ->get(route('capitol.finances.show', ['town' => $this->town->psgc_code, 'year' => 2025]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->missing('uploadStatuses')
+            ->where('report.uploads', fn ($rows) => $rows->pluck('id')->all() === $uploads->take(5)->pluck('public_id')->all())
+            ->reloadOnly('uploadStatuses', fn (Assert $reload) => $reload
+                ->missing('report')
+                ->where('uploadStatuses', $page->toArray()['props']['report']['uploads'])));
 });
 
 it('reads one uploaded workbook into pending figures the uploader cannot sign off', function () {

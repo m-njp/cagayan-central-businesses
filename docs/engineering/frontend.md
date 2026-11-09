@@ -8,8 +8,8 @@ React 19 and TypeScript, rendered by Inertia 3, built by Vite, styled with Tailw
 
 There is no API and no client-side store. The controller is the data layer.
 
-1. A controller returns `Inertia::render('capitol/barangays/show', ['profile' => $profileData])`.
-2. Inertia sends `profile` as a prop to `resources/js/pages/capitol/barangays/show.tsx`.
+1. A controller returns `Inertia::render('capitol/barangays/show/index', ['profile' => $profileData])`.
+2. Inertia sends `profile` as a prop to `resources/js/pages/capitol/barangays/show/index.tsx`.
 3. The page renders it.
 
 Keep selections in the URL, but a URL change does not imply a request. Use local Inertia history for data already loaded. Request new props only when data is missing, stale, explicitly refreshed, or changed by a write.
@@ -32,9 +32,9 @@ Do not add Redux, Zustand, React Query, or Axios. Inertia covers these needs.
 ```
 resources/
   js/
-    pages/            one file per screen, folders follow the route name
-      capitol/          capitol.barangays.show -> capitol/barangays/show.tsx
-      public/           public.map -> public/map.tsx
+    pages/            one folder per screen, with an index.tsx entry
+      capitol/          capitol/barangays/show/index.tsx
+      public/           public/home/index.tsx, with home-only sections beside it
     layouts/          page shells: header, bottom bar, footer, the "Simulated data" label
     components/
       *.tsx             app-wide pieces (page header, figure row, province map)
@@ -42,7 +42,6 @@ resources/
       map/              the map and its layers
       charts/           chart wrappers
       privacy/          guarded figure, hidden notice, simulated label
-    pdf/              PDF templates for @react-pdf/renderer
     hooks/            reusable hooks, named use-*.ts
     lib/              plain functions with no React: formatting, cn()
     types/            TypeScript types that mirror app/Data
@@ -52,7 +51,9 @@ resources/
   content/checklists/ start-a-business guide content
 ```
 
-PDF templates live in `resources/js/pdf/`, one file per document (see "PDF export").
+The Inertia component name matches the entry path without `.tsx`. When moving an entry, update its PHP render calls and existing component assertions together. Keep links on named routes. Bundled fonts and their license live in `resources/fonts/`. Public Kita artwork stays at its stable `public/brand/` URLs. Brand sources and presentation exports live in `docs/brand/`.
+
+The Inertia resolver registers only `pages/**/index.tsx`. Other files in a page folder follow the imports of their owning page. Lazy-load heavy visuals at their usage boundary. The business map and chart placeholders use viewport proximity, then retain the mounted visual while its page is open.
 
 ## Layers inside the front end
 
@@ -67,9 +68,9 @@ Do not split a screen into many tiny files. Each file a reader has to open costs
 
 - **Start inline.** Write the markup in the page.
 - **Extract when it repeats.** If two pages need it, move it to `components/`.
-- **Extract when the page gets long.** Over about 200 lines, pull out a section that has a clear name (`RankingsTable`), keeping it in the same file if only this page uses it.
+- **Extract at a real boundary.** Put a substantial page-only section or hook in the page folder. Use a shared directory when there are real consumers in different screens.
 - **Do not wrap for the sake of it.** No component that only passes props through, no one-line wrappers around a `div`, no `index.ts` re-export files.
-- **Check before adding.** Look in `components/ui/` and `components/` first. If shadcn has it, add it with `npx shadcn@latest add <name>` instead of writing your own.
+- **Check before adding.** Look in `components/ui/` and `components/` first. Reuse installed Radix primitives and semantic Lucide icons. Get approval for any new package.
 - **Folders by feature, only when needed.** Create `components/<feature>/` when a feature has three or more shared components.
 
 ## Types
@@ -104,7 +105,7 @@ export default function Show({ profile }: Props) { ... }
 | A link | `<Link href={show(barangay.psgcCode)}>` |
 | A link with filters | `<Link href={index({ query: { year: 2026 } })}>` |
 | Go somewhere from code | `router.visit(show(barangay.psgcCode))` |
-| Change filters on the current page | `router.get(index(), { year }, { preserveState: true, preserveScroll: true })` |
+| Change filters that need a new server dataset | `router.get(index(), { year }, { preserveState: true, preserveScroll: true })` |
 | A form | `<Form {...store.form()}>`. After it succeeds, the server redirects; do not navigate in `onSuccess`. |
 | A file download (CSV, server export) | a plain `<a href={exportCsv().url}>`, because the response is not an Inertia page |
 - Public pages never link to a Capitol page, not even to its login (decisions.md, D20).
@@ -164,7 +165,7 @@ async function loadMapStyle() {
 - `mapColor()` reads a token from `app.css` and returns a color MapLibre accepts, because map layers cannot use Tailwind classes. Add it to `lib/` with the first map, and use it for every map color. Never a hex value.
 - The map component lives in `components/map/` and is loaded with `React.lazy` (see "Performance").
 - The map is never the only way to reach a barangay. A list or search does the same job (`design.md`).
-- **The province map is different.** `components/province-map.tsx` is a plain SVG of the 29 towns by default, with optional `source` geometry for each town's barangays. Only the province boundary is bundled with the component; barangay datasets load on demand. Pages use `LazyProvinceMap` (`components/lazy-province-map.tsx`), which loads it with `React.lazy` in the browser only and shows a skeleton until then, because a lazy component cannot finish during server rendering. It draws a halftone: same-size dots on one grid (`lib/halftone.ts`), colored by an optional shade per place (`shades`), brass for `highlight`, with `onSelect` on click or keyboard, `water` for sea dots, and `zoomable` for zoom and pan. It never carries business data. The Home hero (`components/town-atlas.tsx`) passes it the public town shades from `TownAtlasQuery`, computed in SQL. Use it for illustration and as a place picker beside a real control, never in place of the MapLibre map.
+- **The province map is different.** `components/map/province-map.tsx` is a plain SVG of the 29 towns by default, with optional `source` geometry for each town's barangays. Only the province boundary is bundled with the component; barangay datasets load on demand. Pages use `LazyProvinceMap` from the same folder to load the map in the browser and show a skeleton during loading. It draws a halftone with same-size dots on one grid (`lib/halftone.ts`), with optional shades, a selected place, keyboard and click selection, sea dots, zoom and pan. The Home hero (`pages/public/home/town-atlas.tsx`) passes public town shades from `TownAtlasQuery`, computed in SQL. Use it for illustration and as a place picker beside a real control.
 
 ## Charts
 
@@ -179,12 +180,12 @@ Recharts through shadcn's Chart component (`components/ui/chart.tsx`). It gives 
 
 ## PDF export
 
-`@react-pdf/renderer` builds the PDF in the browser from the page's own props.
+C14 PDF export is planned. D5 selects `@react-pdf/renderer` for that feature. Install it with its first consumer.
 
 - **Templates** live in `resources/js/pdf/`, one file per document, for example `pdf/barangay-brief.tsx`.
 - **Its own layout system.** A template uses `Document`, `Page`, `View`, `Text`, and `StyleSheet` (flexbox). Tailwind classes, shadcn components, and Recharts do not work inside a PDF. If a brief needs a chart, draw it with the library's `Svg` elements and ask first.
 - **Same data as the screen.** Build the PDF only from the props the page already received. Never fetch extra data for it (privacy-rules.md, P11).
-- **The "Simulated data" label** is on every PDF with business records.
+- **The "Simulated data" label** is on every PDF with simulated business records.
 - **Load it only on click,** because the library is large:
 
 ```tsx
@@ -309,7 +310,7 @@ The explanatory source is `resources/content/analytics-guide.json`, mirrored in 
 Look and words: `design.md`, "Government Finances Ledger Table". Contract:
 
 - **One evidence store.** `catalog.sources[key]` is the only place a source lives: `kind`, `label`, `town`, `fiscalYear`, `reportYear`, `page`, `location` and `url`. `url` is `public.finance-sources.show` for the figure (our stored copy of the COA report), null for a figure entered by hand, and the PSA address for census. Observations carry `sourceRefs` only. `FinancialHistory` has no source; business series carry one fixed `note` (privacy-rules.md, "Words on screen"). Never copy source text into a row, tooltip, chart or footer.
-- **Citations.** `citationLinks(sources, refs)` in `lib/performance-format.ts` returns one `{href, text}` per distinct citation ("Executive Summary 2025 p. 2"; a workbook once per report) and `SourceLine` renders them under the table. A Sum of Reporting Towns (`ALL_TOWNS`) renders the plain line instead. The map panels use `financeMapSources` for the same links.
+- **Citations.** `citationReports(sources, refs)` groups distinct cited pages and workbook downloads by report and year. `SourceLine` renders them inside the inline COA Sources disclosure. A Sum of Reporting Towns (`ALL_TOWNS`) renders plain attribution. Map panels keep `financeMapSources`.
 - **Report route.** `public.finance-sources.show` takes the figure's `public_id`, resolves only verified figures whose ledger document file sits under `data/towns`, streams a PDF inline (the link adds `#page=N`) and downloads a workbook. Throttled by `finance-sources`; anything else is 404.
 - **Selections.** URL state is `presentation`, `year`, `period`, `measure`, `town` (plus the business pair while simulated records are on). No `compare`. `measures[].towns` lists the towns that have a measure; `measureCovers` and `withCoveredMeasure` disable it elsewhere and fall back to Government Totals when the town changes. A year button in Trends calls the same local history push, so no selection makes an application request.
 - **Request counts, measured in the browser 26-10-28.** Opening the page makes one document request. Choosing Trends, choosing a year from the Trends table and browser Back each made zero further application requests.

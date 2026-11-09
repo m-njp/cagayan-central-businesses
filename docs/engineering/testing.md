@@ -4,6 +4,8 @@ How to write tests that are quick to run and that people trust. Read this before
 
 Pest 4 on PostgreSQL with PostGIS. Run one file with `php artisan test --compact tests/Feature/PostgisTest.php`, one test with `--filter="hides sales"`, everything with `php artisan test --compact`.
 
+`composer test:frontend` runs the six Node frontend suites. The targeted `test:analytics`, `test:maps`, `test:categories`, `test:trend`, `test:geo`, and `test:businesses` commands are also available. `composer ci:check` includes this suite.
+
 ## What a good test here looks like
 
 - **Tests behavior, not code.** It calls a route or a class the way real code does, and checks the result: status, redirect, Inertia props, database rows. It survives a refactor that keeps the behavior.

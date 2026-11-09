@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 
-const ProvinceMap = lazy(() => import('@/components/province-map'));
+const ProvinceMap = lazy(() => import('@/components/map/province-map'));
 
 // Posts to its own URL, not a Wayfinder import, so the secret path never enters the bundle (decisions.md, D20).
 // The demo buttons exist only on a local machine (D33).

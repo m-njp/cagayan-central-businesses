@@ -44,8 +44,10 @@ export function FinanceToolbar({
                     onValueChange={(measure) => onChange({ measure })}
                 >
                     <SelectTrigger
+                        variant="quiet"
                         aria-label="Show"
-                        className="h-9 w-auto min-w-40"
+                        size="sm"
+                        className="w-auto min-w-40"
                     >
                         <SelectValue />
                     </SelectTrigger>
@@ -75,8 +77,10 @@ export function FinanceToolbar({
                 disabled={years.length === 0}
             >
                 <SelectTrigger
+                    variant="quiet"
                     aria-label="Fiscal Year"
-                    className="h-9 w-auto gap-1 px-2.5 font-mono tabular-nums"
+                    size="sm"
+                    className="w-auto gap-1 px-2.5 font-mono tabular-nums"
                 >
                     <SelectValue placeholder="Year" />
                 </SelectTrigger>

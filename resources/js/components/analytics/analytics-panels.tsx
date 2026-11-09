@@ -151,7 +151,7 @@ export function AnalyticsPanels({
                 <Surface padded aria-labelledby="business-heading">
                     <div className="flex items-start justify-between gap-3">
                         <h2 id="business-heading" className="type-heading">
-                            Business Trends
+                            Business Activity Over Time
                         </h2>
                         <SimulatedLabel />
                     </div>

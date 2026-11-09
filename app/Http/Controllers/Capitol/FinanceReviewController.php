@@ -27,7 +27,7 @@ final class FinanceReviewController extends Controller
 
     public function show(FinanceReportRequest $request, Municipality $town, FinanceReportQuery $query, FinanceUploadQuery $uploads): Response
     {
-        return Inertia::render('capitol/finances/show', [
+        return Inertia::render('capitol/finances/show/index', [
             'report' => fn () => $query->get($request->user(), $town, $request->reportYear()),
             'uploadStatuses' => Inertia::optional(fn () => $uploads->listing($town, $request->reportYear())),
             'breadcrumbs' => [

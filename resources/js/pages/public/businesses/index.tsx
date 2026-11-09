@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { BirMark, MilestoneMark } from '@/components/business-badges';
 import { CategoryIcon } from '@/components/category-icon';
 import { LazyBusinessMap } from '@/components/map/lazy-business-map';
+import { SearchField } from '@/components/search-field';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Toggle } from '@/components/ui/toggle';
-import { icons } from '@/lib/icons';
 import { pageSearchParams } from '@/lib/navigation';
 import {
     businessQuery,
@@ -61,7 +60,6 @@ export default function PublicBusinesses({
     const barangayName = Object.fromEntries(
         (town?.barangays ?? []).map((b) => [b.value, b.label]),
     );
-    const SearchIcon = icons.search;
     const rows = town ? visibleBusinesses(town.rows, view) : [];
 
     if (businesses) towns.set(businesses.town, businesses);
@@ -122,6 +120,8 @@ export default function PublicBusinesses({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
+    useEffect(() => setSearch(view.q), [view.q]);
+
     const choose = (
         label: string,
         value: string | null,
@@ -134,7 +134,11 @@ export default function PublicBusinesses({
             onValueChange={(next) => onChange(next === 'all' ? null : next)}
             disabled={!town && !!all}
         >
-            <SelectTrigger aria-label={label} className="w-full">
+            <SelectTrigger
+                variant="quiet"
+                aria-label={label}
+                className="w-full min-w-0"
+            >
                 <SelectValue placeholder={label} />
             </SelectTrigger>
             <SelectContent>
@@ -153,58 +157,57 @@ export default function PublicBusinesses({
             <Head title="Businesses" />
             <div className="flex flex-col gap-3">
                 <h1 className="type-title">Businesses</h1>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
-                    <Select
-                        value={view.town ?? undefined}
-                        onValueChange={chooseTown}
-                    >
-                        <SelectTrigger aria-label="Town" className="w-full">
-                            <SelectValue placeholder="Choose a Town" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {directory.towns.map((option) => (
-                                <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                >
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <div className="relative">
-                        <SearchIcon
-                            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                            aria-hidden="true"
-                        />
-                        <Input
-                            type="search"
-                            aria-label="Search by name"
-                            placeholder="Search by name"
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <div className="flex min-w-0 flex-[1_1_17rem] flex-wrap items-center gap-x-2">
+                        <Select
+                            value={view.town ?? undefined}
+                            onValueChange={chooseTown}
+                        >
+                            <SelectTrigger
+                                variant="quiet"
+                                aria-label="Town"
+                                className="min-w-0 flex-1"
+                            >
+                                <SelectValue placeholder="Choose a Town" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {directory.towns.map((option) => (
+                                    <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <SearchField
+                            label="Search by Name"
                             value={search}
-                            maxLength={60}
                             disabled={!town}
-                            className="pl-9"
-                            onChange={(event) => setSearch(event.target.value)}
+                            onChange={setSearch}
+                            expandedClassName="basis-full sm:basis-36 lg:basis-48"
                         />
                     </div>
-                    {choose(
-                        'Barangay',
-                        view.barangay,
-                        town?.barangays ?? [],
-                        (barangay) => go({ barangay }),
-                        'All Barangays',
-                    )}
-                    {choose(
-                        'Category',
-                        view.category,
-                        directory.categories.map((c) => ({
-                            value: c.code,
-                            label: c.name,
-                        })),
-                        (category) => go({ category }),
-                        'All Categories',
-                    )}
+                    <div className="grid min-w-0 flex-[1_1_17rem] grid-cols-2 gap-x-2">
+                        {choose(
+                            'Barangay',
+                            view.barangay,
+                            town?.barangays ?? [],
+                            (barangay) => go({ barangay }),
+                            'All Barangays',
+                        )}
+                        {choose(
+                            'Category',
+                            view.category,
+                            directory.categories.map((c) => ({
+                                value: c.code,
+                                label: c.name,
+                            })),
+                            (category) => go({ category }),
+                            'All Categories',
+                        )}
+                    </div>
                     <div className="flex gap-2">
                         <Toggle
                             variant="outline"

@@ -35,7 +35,10 @@ final class FinanceReportQuery
         'annex_workbook' => 'Annexes',
     ];
 
-    public function __construct(private FinanceEntryCells $cells) {}
+    public function __construct(
+        private FinanceEntryCells $cells,
+        private FinanceUploadQuery $uploadQuery,
+    ) {}
 
     public function get(User $user, Municipality $town, int $year): FinanceReport
     {
@@ -52,8 +55,7 @@ final class FinanceReportQuery
             ->orderBy('l.sort')->orderByDesc('finance_figures.fiscal_year')->orderBy('finance_figures.basis')->orderBy('finance_figures.entry_method')
             ->get();
 
-        $uploads = FinanceUpload::query()->where('municipality_id', $town->id)->where('fiscal_year', $year)
-            ->latest()->limit(5)->get();
+        $uploads = $this->uploadQuery->recent($town, $year);
 
         return new FinanceReport(
             town: new SelectOption($town->psgc_code, $town->name),
@@ -74,7 +76,7 @@ final class FinanceReportQuery
             cells: array_values($this->cells->current($town->id, $entryYears)->map(fn (FinanceFigure $figure) => new FinanceEntryCell(
                 $figure->line_code, $figure->fiscal_year, $figure->basis->value, (string) $figure->value, $figure->status->value,
             ))->all()),
-            uploads: array_values($uploads->map(fn (FinanceUpload $upload) => app(FinanceUploadQuery::class)->row($upload))->all()),
+            uploads: $this->uploadQuery->rows($uploads),
             uploadKinds: array_map(fn (string $kind, array $item) => new SelectOption($kind, $item['label']),
                 array_keys((array) config('cagayan.finances.uploads.kinds')), (array) config('cagayan.finances.uploads.kinds')),
             limits: [

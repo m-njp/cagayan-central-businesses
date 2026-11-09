@@ -1,4 +1,4 @@
-import { LazyProvinceMap } from '@/components/lazy-province-map';
+import { LazyProvinceMap } from '@/components/map/lazy-province-map';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Surface } from '@/components/ui/surface';
 import { useTownShape } from '@/hooks/use-town-shape';

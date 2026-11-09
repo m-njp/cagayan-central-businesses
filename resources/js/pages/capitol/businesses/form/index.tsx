@@ -1,5 +1,4 @@
 import { Head, useForm } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PageHeader } from '@/components/capitol/page-header';
 import type { Point } from '@/components/map/business-map';
@@ -17,18 +16,10 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { containsPoint } from '@/lib/geo';
-import { loadTownBoundaries } from '@/lib/map-data';
-import type { AreaCollection } from '@/lib/map-data';
 import { store, update } from '@/routes/capitol/businesses';
 import type { BusinessForm } from '@/types/workspace';
-
-type Document = {
-    kind: string;
-    file: File | null;
-    issued_on: string;
-    expires_on: string;
-};
+import { BusinessDocuments } from './business-documents';
+import type { DocumentDraft } from './business-documents';
 
 function Group({ title, children }: { title: string; children: ReactNode }) {
     return (
@@ -79,12 +70,11 @@ export default function BusinessFormPage({
         permit_number: text('permit_number'),
         permit_valid_from: text('permit_valid_from'),
         permit_valid_until: text('permit_valid_until'),
-        documents: [] as Document[],
+        documents: [] as DocumentDraft[],
     });
     const { data, setData, errors } = form;
     const error = (key: string) =>
         (errors as Record<string, string | undefined>)[key];
-    const [town, setTown] = useState<AreaCollection | null>(null);
     const point: Point | null =
         data.lng && data.lat
             ? { lng: Number(data.lng), lat: Number(data.lat) }
@@ -93,27 +83,13 @@ export default function BusinessFormPage({
     const types =
         page.categories.find((c) => c.code === data.category)?.types ?? [];
 
-    useEffect(() => {
-        let current = true;
-        if (data.town)
-            loadTownBoundaries(data.town)
-                .then((collection) => current && setTown(collection))
-                .catch(() => current && setTown(null));
-        return () => {
-            current = false;
-        };
-    }, [data.town]);
-
     // A pin dropped in another barangay of the town selects that barangay.
-    const pin = ({ lng, lat }: Point) => {
-        const found = town?.features.find((feature) =>
-            containsPoint(feature.geometry, [lng, lat]),
-        );
+    const pin = ({ lng, lat }: Point, barangay: string | null) => {
         form.setData((previous) => ({
             ...previous,
             lng: lng.toFixed(6),
             lat: lat.toFixed(6),
-            barangay: found?.properties.psgc_code ?? previous.barangay,
+            barangay: barangay ?? previous.barangay,
         }));
     };
 
@@ -204,14 +180,6 @@ export default function BusinessFormPage({
                 </SelectContent>
             </Select>,
         );
-    const setDocument = (index: number, patch: Partial<Document>) =>
-        setData(
-            'documents',
-            data.documents.map((document, position) =>
-                position === index ? { ...document, ...patch } : document,
-            ),
-        );
-
     return (
         <>
             <Head title={page.publicId ? 'Edit Business' : 'Add a Business'} />
@@ -368,164 +336,16 @@ export default function BusinessFormPage({
                         )}
                     </Group>
 
-                    <fieldset className="flex flex-col gap-3 rounded-sm border bg-card p-4">
-                        <legend className="px-1 type-label">Documents</legend>
-                        {page.documents.length > 0 && (
-                            <ul className="flex flex-col gap-1 type-meta">
-                                {page.documents.map((document, position) => (
-                                    <li key={position}>
-                                        {document.label}: {document.name}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                        {data.documents.map((document, index) => (
-                            <div
-                                key={index}
-                                className="grid gap-3 border-t pt-3 sm:grid-cols-2"
-                            >
-                                <Field
-                                    data-invalid={
-                                        !!error(`documents.${index}.kind`)
-                                    }
-                                >
-                                    <FieldLabel
-                                        htmlFor={`document-kind-${index}`}
-                                        required
-                                    >
-                                        Document
-                                    </FieldLabel>
-                                    <Select
-                                        value={document.kind}
-                                        onValueChange={(kind) =>
-                                            setDocument(index, { kind })
-                                        }
-                                    >
-                                        <SelectTrigger
-                                            id={`document-kind-${index}`}
-                                            className="w-full"
-                                        >
-                                            <SelectValue placeholder="Choose" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {page.choices.documents.map(
-                                                (option) => (
-                                                    <SelectItem
-                                                        key={option.value}
-                                                        value={option.value}
-                                                    >
-                                                        {option.label}
-                                                    </SelectItem>
-                                                ),
-                                            )}
-                                        </SelectContent>
-                                    </Select>
-                                    <FieldError>
-                                        {error(`documents.${index}.kind`)}
-                                    </FieldError>
-                                </Field>
-                                <Field
-                                    data-invalid={
-                                        !!error(`documents.${index}.file`)
-                                    }
-                                >
-                                    <FieldLabel
-                                        htmlFor={`document-file-${index}`}
-                                        required
-                                    >
-                                        File
-                                    </FieldLabel>
-                                    <Input
-                                        id={`document-file-${index}`}
-                                        type="file"
-                                        required
-                                        accept=".pdf,.jpg,.jpeg,.png"
-                                        onChange={(event) =>
-                                            setDocument(index, {
-                                                file:
-                                                    event.target.files?.[0] ??
-                                                    null,
-                                            })
-                                        }
-                                    />
-                                    <FieldError>
-                                        {error(`documents.${index}.file`)}
-                                    </FieldError>
-                                </Field>
-                                <Field>
-                                    <FieldLabel
-                                        htmlFor={`document-issued-${index}`}
-                                    >
-                                        Issued On
-                                    </FieldLabel>
-                                    <Input
-                                        id={`document-issued-${index}`}
-                                        type="date"
-                                        value={document.issued_on}
-                                        onChange={(event) =>
-                                            setDocument(index, {
-                                                issued_on: event.target.value,
-                                            })
-                                        }
-                                    />
-                                </Field>
-                                <Field>
-                                    <FieldLabel
-                                        htmlFor={`document-expires-${index}`}
-                                    >
-                                        Expires On
-                                    </FieldLabel>
-                                    <Input
-                                        id={`document-expires-${index}`}
-                                        type="date"
-                                        value={document.expires_on}
-                                        onChange={(event) =>
-                                            setDocument(index, {
-                                                expires_on: event.target.value,
-                                            })
-                                        }
-                                    />
-                                </Field>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    className="justify-self-start"
-                                    onClick={() =>
-                                        setData(
-                                            'documents',
-                                            data.documents.filter(
-                                                (_, position) =>
-                                                    position !== index,
-                                            ),
-                                        )
-                                    }
-                                >
-                                    Remove
-                                </Button>
-                            </div>
-                        ))}
-                        {data.documents.length + page.documents.length <
-                            page.limits.documentsMax && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="self-start"
-                                onClick={() =>
-                                    setData('documents', [
-                                        ...data.documents,
-                                        {
-                                            kind: '',
-                                            file: null,
-                                            issued_on: '',
-                                            expires_on: '',
-                                        },
-                                    ])
-                                }
-                            >
-                                Add a Document
-                            </Button>
-                        )}
-                    </fieldset>
+                    <BusinessDocuments
+                        existing={page.documents}
+                        choices={page.choices.documents}
+                        limit={page.limits.documentsMax}
+                        documents={data.documents}
+                        error={error}
+                        onChange={(documents) =>
+                            setData('documents', documents)
+                        }
+                    />
                 </div>
 
                 <aside className="flex flex-col gap-4 lg:sticky lg:top-6">

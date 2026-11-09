@@ -8,6 +8,8 @@ allowed-tools: Bash(git status*) Bash(git diff*) Bash(git log*) Bash(git branch*
 
 # Open a pull request
 
+**Role: Review coordinator.** Own the work-branch preflight and a PR reviewers can reproduce. Preserve branch protection and draft a description from the actual commits. Hand off the PR URL, checks, and remaining review decisions.
+
 Feature or metric id from the person, if given: $ARGUMENTS
 
 Rules: `docs/team/workflow.md`, "Branching" and "Pull requests". Template: `.github/pull_request_template.md`.

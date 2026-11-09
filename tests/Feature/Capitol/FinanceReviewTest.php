@@ -77,7 +77,7 @@ it('keeps staff out of towns they are not assigned to', function () {
 
 it('shows a report with its figures, documents, and who may review', function () {
     $this->actingAs(User::factory()->create())->get(route('capitol.finances.show', ['town' => '0201501000', 'year' => 2024]))
-        ->assertInertia(fn (Assert $page) => $page->component('capitol/finances/show')
+        ->assertInertia(fn (Assert $page) => $page->component('capitol/finances/show/index')
             ->where('report.canReview', true)
             ->where('report.figures.0.value', '196960688.39')
             ->where('report.figures.0.status', 'pending')

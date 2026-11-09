@@ -159,6 +159,7 @@ export default function Finances({ list }: { list: FinanceReviewList }) {
                                     }
                                 >
                                     <SelectTrigger
+                                        variant="quiet"
                                         aria-labelledby={key + '-label'}
                                         className="w-full"
                                     >

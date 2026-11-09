@@ -17,7 +17,7 @@ it('allows all three roles to see the dashboard without wishes or protected fiel
     $this->actingAs($user)->get(route('capitol.dashboard'))->assertOk()
         ->assertHeader('X-Frame-Options', 'DENY')
         ->assertHeader('Cache-Control', 'max-age=0, no-store, private')
-        ->assertInertia(fn (Assert $page) => $page->component('capitol/dashboard')
+        ->assertInertia(fn (Assert $page) => $page->component('capitol/dashboard/index')
             ->where('workspace.role', $role->label())->missing('wishes')->missing('table')->missing('workspace.birthdayMonth'))
         ->assertDontSee('Private reason sentinel')->assertDontSee('Private company sentinel');
 })->with(UserRole::cases());

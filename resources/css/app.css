@@ -45,6 +45,9 @@
     --spacing-cell-x: 0.5rem;
     --spacing-cell-y: 0.25rem;
     --spacing-row: 2rem;
+    --spacing-control: 2.5rem;
+    --spacing-control-compact: 2rem;
+    --spacing-touch: 2.75rem;
 
     /* Motion. One easing for everything, three speeds. */
     --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -174,6 +177,7 @@
  * neutral scale for everything else (design.md, "Color").
  */
 :root {
+    color-scheme: light;
     /* A neutral stone, one step darker than the white cards, so every surface visibly lifts off the page. */
     --background: oklch(0.955 0.002 95);
     --foreground: oklch(0.23 0.02 250);
@@ -236,6 +240,7 @@
 }
 
 .dark {
+    color-scheme: dark;
     --background: oklch(0.23 0.022 245);
     --foreground: oklch(0.95 0.005 90);
     --card: oklch(0.3 0.024 245);
@@ -330,6 +335,14 @@
 
 @utility type-body {
     @apply text-sm text-pretty;
+}
+
+@utility type-control {
+    @apply text-base md:text-sm;
+}
+
+@utility field-surface {
+    @apply border-input bg-card text-card-foreground;
 }
 
 @utility type-meta {

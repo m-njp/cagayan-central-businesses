@@ -76,7 +76,7 @@ The original single-role decision below is superseded by D28.
 
 ## D14. Laravel Boost
 
-**Decided.** Boost is a development dependency. It gives Claude Code documentation and tools that match the installed versions. It rewrites the `<laravel-boost-guidelines>` block in `CLAUDE.md` and the skills listed in `boost.json` on `composer update`. Project guidance lives outside that block and in skills Boost does not manage.
+**Decided.** Boost is a development dependency. It gives Claude Code documentation and tools that match the installed versions. It rewrites the `<laravel-boost-guidelines>` block in `CLAUDE.md` and the skills listed in `boost.json` on `composer update`. Claude imports the shared project guidance from `AGENTS.md`. Project-owned skills live under `.claude/skills/`. [Shared project instructions](../../AGENTS.md).
 
 ## D15. Keep Inertia and React
 
@@ -173,7 +173,7 @@ Each has a default so work is not blocked.
 
 ## Installed versions
 
-Updated October 24, 2026, from `composer.lock`, `package-lock.json`, and the running database. Update this when a package is added or upgraded.
+Updated October 24, 2026, from `composer.lock`, `package-lock.json`, and the running database. Update this when a package is added, removed, or upgraded.
 
 - PHP 8.3.36 locally (WAMP and standalone CLI), latest patched 8.3 in CI
 - Laravel 13.34.0, Fortify 1.40.0, Wayfinder 0.1.21, Boost 2.10.1, Larastan 3.12.2, Pint 1.32.1
@@ -183,12 +183,12 @@ Updated October 24, 2026, from `composer.lock`, `package-lock.json`, and the run
 - Node 22 in CI. Node 24.22.1 locally.
 - PostgreSQL 17.5, PostGIS 3.5.2
 - Pest 4.7.8, Paratest 7.20.0
-- maplibre-gl 6.15.0, react-map-gl 8.1.3, recharts 3.10.1, @react-pdf/renderer 4.9.0
+- maplibre-gl 6.15.0, react-map-gl 8.1.3, recharts 3.10.1. The PDF renderer has no current consumer and returns with C14 (26-11-09, D5).
 - Not installed yet: TanStack Table (first table)
 
 ## Changes from the starter kit
 
-- `.claude/`, `CLAUDE.md`, `.mcp.json`, and `boost.json` are committed as shared team files. Only `.claude/settings.local.json` and `CLAUDE.local.md` are ignored.
+- `AGENTS.md`, `.claude/`, `CLAUDE.md`, `.mcp.json`, and `boost.json` are shared team files. Keep `.claude/settings.local.json` and `CLAUDE.local.md` local.
 - The formatter in `vite.config.ts` skips Markdown, `data/`, `.claude/`, and the Docker and Boost config files.
 - `composer types:check` runs PHPStan with `--memory-limit=1G`, because WAMP's default limit crashes it.
 - Public registration is off: the Fortify feature, its page, and its links were removed. `tests/Feature/Auth/RegistrationDisabledTest.php` checks it.

@@ -103,13 +103,16 @@
             "Composer\\Config::disableProcessTimeout",
             "npm run check",
             "npm run types:check",
+            "@test:frontend",
+            "@test"
+        ],
+        "test:frontend": [
             "@test:analytics",
             "@test:maps",
             "@test:categories",
             "@test:trend",
             "@test:geo",
-            "@test:businesses",
-            "@test"
+            "@test:businesses"
         ],
         "test:maps": "node --experimental-strip-types --test tests/Frontend/finance-map.test.mjs",
         "test:trend": "node --experimental-strip-types --test tests/Frontend/trend.test.mjs",

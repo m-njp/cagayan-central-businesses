@@ -8,19 +8,35 @@ use App\Models\FinanceLine;
 use App\Models\FinanceUpload;
 use App\Models\Municipality;
 use App\Services\FinanceParsingProgress;
+use Illuminate\Database\Eloquent\Collection;
 
 final class FinanceUploadQuery
 {
     /** @return list<FinanceUploadRow> */
     public function listing(Municipality $town, int $year): array
     {
-        return array_values(FinanceUpload::query()->where('municipality_id', $town->id)->where('fiscal_year', $year)->latest()->limit(5)
-            ->get()->map(fn (FinanceUpload $upload) => $this->row($upload))->all());
+        return $this->rows($this->recent($town, $year));
     }
 
-    public function row(FinanceUpload $upload): FinanceUploadRow
+    /** @return Collection<int, FinanceUpload> */
+    public function recent(Municipality $town, int $year): Collection
     {
-        $stale = FinanceParsingProgress::isStale($upload);
+        return FinanceUpload::query()->where('municipality_id', $town->id)->where('fiscal_year', $year)
+            ->latest()->limit(5)->get();
+    }
+
+    /**
+     * @param  Collection<int, FinanceUpload>  $uploads
+     * @return list<FinanceUploadRow>
+     */
+    public function rows(Collection $uploads): array
+    {
+        return array_values($uploads->map($this->row(...))->all());
+    }
+
+    private function row(FinanceUpload $upload): FinanceUploadRow
+    {
+        $stale = $upload->isStale();
 
         return new FinanceUploadRow($upload->public_id, $upload->original_name, (string) config("cagayan.finances.uploads.kinds.{$upload->kind}.label"),
             $stale ? 'failed' : $upload->status->value, $stale ? 'Failed' : $upload->status->label(), $upload->figures,
@@ -35,7 +51,7 @@ final class FinanceUploadQuery
             $progress['found'] = null;
             $progress['stage'] = $upload->status->value;
         }
-        $stale = FinanceParsingProgress::isStale($upload);
+        $stale = $upload->isStale();
         $labels = FinanceLine::query()->pluck('label', 'code');
         $progress['rows'] = array_values(array_map(fn (array $row) => $row + ['label' => $labels->get($row['line'], $row['line'])], $progress['rows'] ?? []));
         $message = $upload->message;

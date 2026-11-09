@@ -1,6 +1,6 @@
 import { router, usePage } from '@inertiajs/react';
 import { Grip, Square } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
     FinanceMapControls,
     FinanceMapFigures,
@@ -13,9 +13,9 @@ import {
 } from '@/lib/finance-map';
 import { observationLabel } from '@/lib/performance-format';
 import type { FinanceMap } from '@/types/finance-map';
-import { HomeFocusView } from '@/components/home-focus-view';
-import { LazyProvinceMap } from '@/components/lazy-province-map';
-import type { MapStyle, ProvinceMapProps } from '@/components/province-map';
+import { HomeFocusView } from './home-focus-view';
+import { LazyProvinceMap } from '@/components/map/lazy-province-map';
+import type { MapStyle, ProvinceMapProps } from '@/components/map/province-map';
 import {
     Select,
     SelectContent,
@@ -43,6 +43,7 @@ export function TownAtlas({
 }) {
     const { url } = usePage();
     const [expanded, setExpanded] = useState(false);
+    const expandTrigger = useRef<HTMLButtonElement>(null);
     const params = pageSearchParams(url);
     const townCode = params.get('town');
     const selection = financeMapSelection(finances, params);
@@ -110,14 +111,14 @@ export function TownAtlas({
     const figures = (
         <>
             <div className="flex flex-col gap-1">
-                <p className="type-label text-foreground">
+                <p className="type-label">
                     {shown.kind === 'province'
                         ? 'Province'
                         : shown.kind === 'city'
                           ? 'City'
                           : 'Municipality'}
                 </p>
-                <h2 className="type-title">
+                <h2 aria-live="polite" className="type-title">
                     {shown.kind === 'province'
                         ? 'Cagayan Province'
                         : shown.name}
@@ -135,11 +136,14 @@ export function TownAtlas({
     );
 
     return (
-        <div className="dark grid gap-6 text-foreground lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
-            <div className="h-[28rem] md:h-[36rem] lg:h-[44rem]">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
+            <div className="dark h-[28rem] md:h-[36rem] lg:h-[44rem]">
                 <LazyProvinceMap
                     {...map}
-                    onExpand={() => setExpanded(true)}
+                    onExpand={(trigger) => {
+                        expandTrigger.current = trigger;
+                        setExpanded(true);
+                    }}
                     className="size-full"
                 />
             </div>
@@ -153,6 +157,7 @@ export function TownAtlas({
                         }
                     >
                         <SelectTrigger
+                            variant="quiet"
                             aria-label="Choose a town"
                             className="min-w-0 flex-1"
                         >
@@ -169,7 +174,6 @@ export function TownAtlas({
                     </Select>
                     <ToggleGroup
                         type="single"
-                        variant="outline"
                         value={mapStyle}
                         aria-label="Home map style"
                         onValueChange={(value) => {
@@ -180,7 +184,7 @@ export function TownAtlas({
                     >
                         <ToggleGroupItem
                             value="dotted"
-                            className="size-10 p-0 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                            className="size-touch border-b border-transparent p-0 text-brand-foreground/75 hover:bg-brand-foreground/10 hover:text-brand-foreground data-[state=on]:border-current data-[state=on]:bg-transparent data-[state=on]:text-brand-foreground"
                             aria-label="Dotted map"
                             title="Dotted Map"
                         >
@@ -188,7 +192,7 @@ export function TownAtlas({
                         </ToggleGroupItem>
                         <ToggleGroupItem
                             value="solid"
-                            className="size-10 p-0 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                            className="size-touch border-b border-transparent p-0 text-brand-foreground/75 hover:bg-brand-foreground/10 hover:text-brand-foreground data-[state=on]:border-current data-[state=on]:bg-transparent data-[state=on]:text-brand-foreground"
                             aria-label="Solid map"
                             title="Solid Map"
                         >
@@ -208,7 +212,7 @@ export function TownAtlas({
 
                 <section
                     aria-label="Figures"
-                    className="flex flex-col gap-4 rounded-lg border border-current/15 p-4"
+                    className="flex flex-col gap-4 rounded-lg border border-current/15 p-4 [&_.type-meta]:text-brand-foreground/90"
                 >
                     {figures}
                 </section>
@@ -216,6 +220,14 @@ export function TownAtlas({
             <HomeFocusView
                 open={expanded}
                 onOpenChange={setExpanded}
+                onCloseAutoFocus={(event) => {
+                    const trigger = expandTrigger.current;
+                    if (!trigger?.isConnected) return;
+                    event.preventDefault();
+                    requestAnimationFrame(() =>
+                        trigger.focus({ preventScroll: true }),
+                    );
+                }}
                 map={map}
                 figures={figures}
                 finances={finances}

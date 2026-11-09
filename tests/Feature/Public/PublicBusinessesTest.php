@@ -32,7 +32,7 @@ it('lists and shows approved businesses with public fields and the business cont
 
     $index->assertInertia(fn (Assert $page) => $page->component('public/businesses/index')
         ->where('businesses.rows.0.name', 'Open Cafe')->has('businesses.rows.0.point', 2));
-    $profile->assertInertia(fn (Assert $page) => $page->component('public/businesses/show')
+    $profile->assertInertia(fn (Assert $page) => $page->component('public/businesses/show/index')
         ->where('business.businessPhone', '09170000000')->missing('business.admin'));
     foreach ([$index, $profile] as $response) {
         $response->assertDontSee(PUBLIC_OWNER)->assertDontSee(PUBLIC_OWNER_PHONE)->assertDontSee(PUBLIC_TIN)->assertDontSee(PUBLIC_ADDRESS);

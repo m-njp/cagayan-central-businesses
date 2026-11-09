@@ -12,6 +12,6 @@ final class ActivityLogController extends Controller
 {
     public function __invoke(WorkspaceListRequest $request, ActivityLogsQuery $query): Response
     {
-        return Inertia::render('capitol/activity-logs', ['table' => $query->get($request->input('event'))]);
+        return Inertia::render('capitol/activity-logs/index', ['table' => $query->get($request->input('event'))]);
     }
 }

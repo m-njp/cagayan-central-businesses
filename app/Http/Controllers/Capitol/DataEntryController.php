@@ -12,6 +12,6 @@ final class DataEntryController extends Controller
 {
     public function __invoke(DataEntryRequest $request, DataEntryQuery $query): Response
     {
-        return Inertia::render('capitol/data-entry', ['entry' => $query->get($request->user(), $request->page())]);
+        return Inertia::render('capitol/data-entry/index', ['entry' => $query->get($request->user(), $request->page())]);
     }
 }

@@ -78,8 +78,8 @@ class FinanceFigure extends Model
      */
     public function publicFile(): ?string
     {
-        $file = $this->status === FinanceFigureStatus::Verified ? $this->document?->file : null;
-        if ($file === null || str_starts_with($file, FinanceUpload::FOLDER.'/')) {
+        $file = $this->status === FinanceFigureStatus::Verified ? $this->document?->publicSourceFile() : null;
+        if ($file === null) {
             return null;
         }
         $root = realpath(base_path('data/towns'));

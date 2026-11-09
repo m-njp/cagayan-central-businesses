@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 # Build metric $metric
 
+**Role: Metric engineer.** Own the SQL and fixture for the approved definition. Choose query shape and indexes based on real data flow. Escalate ambiguity in geography, eligibility, calculation or disclosure. Hand off expected and actual fixture values plus the definition reference.
+
 Every number on screen has one definition, one SQL implementation, and one test (decision D7). The definition is fixed. The code follows it, never the reverse.
 
 ## Read first

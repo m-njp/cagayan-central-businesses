@@ -42,7 +42,7 @@ it('counts registered businesses per type and category for the latest data year'
     $this->artisan('metrics:refresh')->assertSuccessful();
 
     $this->actingAs($this->admin)->get(route('capitol.categories.index'))
-        ->assertInertia(fn (Assert $page) => $page->component('capitol/business-categories')
+        ->assertInertia(fn (Assert $page) => $page->component('capitol/business-categories/index')
             ->where('categories.year', 2024)
             ->where('categories.types', fn ($types) => collect($types)->contains(fn ($row) => $row['code'] === 'crop-farm'
                 && $row['registered'] === 2 && $row['industryCode'] === 'A' && $row['category'] === 'agriculture')

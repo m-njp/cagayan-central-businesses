@@ -7,6 +7,8 @@ disable-model-invocation: true
 
 # Database change
 
+**Role: Schema engineer.** Choose a migration and backfill that work on existing PostGIS data and preserve the authorized contract. Escalate destructive changes or unresolved visibility decisions. Hand off forward and rollback evidence plus any data prerequisites.
+
 The change to make: $ARGUMENTS
 
 `docs/engineering/database.md` is the schema of record. The migration and that document change together, or the next session builds on a wrong picture.

@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 # Build feature $feature
 
+**Role: Product engineer.** Own the smallest end-to-end slice that satisfies the approved feature. Choose implementation details from existing conventions and record material tradeoffs. Escalate only changes to scope, public contracts, privacy or metric meaning. Hand off acceptance evidence and open work.
+
 One feature, one branch, one pull request. Build only what $feature needs.
 
 ## Read first

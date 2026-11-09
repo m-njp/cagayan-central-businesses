@@ -150,7 +150,7 @@ Basic real property tax, net of the reported discount.
 
 Calculation: Basic Real Property Tax minus its discount.
 
-## Business Trends
+## Business Activity Over Time
 
 Annual registered business activity for one industry or Business Category. Shown only with simulated records.
 

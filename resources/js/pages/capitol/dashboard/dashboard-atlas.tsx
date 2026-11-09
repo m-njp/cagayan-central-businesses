@@ -7,11 +7,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import townsRaw from '../../../../data/boundaries/cagayan-municipalities.geojson?raw';
-import {
-    useInBrowser,
-    VisualErrorBoundary,
-} from '@/components/lazy-province-map';
+import townsRaw from '../../../../../data/boundaries/cagayan-municipalities.geojson?raw';
 import { PageHeader } from '@/components/capitol/page-header';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +19,8 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Surface } from '@/components/ui/surface';
+import { VisualErrorBoundary } from '@/components/visual-error-boundary';
+import { useInBrowser } from '@/hooks/use-in-browser';
 import {
     FinanceMapControls,
     FinanceMapFigures,
@@ -218,6 +216,7 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                             }
                         >
                             <SelectTrigger
+                                variant="quiet"
                                 aria-labelledby="town-label"
                                 className="w-full"
                             >
@@ -264,6 +263,7 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                                     }
                                 >
                                     <SelectTrigger
+                                        variant="quiet"
                                         aria-labelledby="barangay-label"
                                         className="w-full"
                                     >
