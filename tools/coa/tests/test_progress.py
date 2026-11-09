@@ -68,7 +68,8 @@ def testFallbackDoesNotReadAnEngineTwice(monkeypatch):
 
 def testCommandFlushesEventsBeforeExitAndKeepsPlainJsonCompatible(tmp_path):
     command = [sys.executable, "-u", "-m", "coa.intake", str(PDF), "executive_summary", "2025", str(tmp_path), "--members", "40", "--bytes", "104857600"]
-    process = subprocess.Popen(command + ["--events"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8")
+    # communicate() must not bypass bytes read ahead by a buffered text readline().
+    process = subprocess.Popen(command + ["--events"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
     try:
         first = json.loads(process.stdout.readline())
         stillRunning = process.poll() is None
