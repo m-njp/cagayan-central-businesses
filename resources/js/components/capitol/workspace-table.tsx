@@ -139,6 +139,7 @@ export function WorkspaceTable({
                             onValueChange={(value) => choose(key, value)}
                         >
                             <SelectTrigger
+                                variant="quiet"
                                 aria-labelledby={key + '-label'}
                                 className="w-full"
                             >

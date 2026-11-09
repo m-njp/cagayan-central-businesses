@@ -1,16 +1,13 @@
 import Map, { Layer, NavigationControl, Source } from 'react-map-gl/maplibre';
 import type { MapRef, MapLayerMouseEvent } from 'react-map-gl/maplibre';
-import * as maplibregl from 'maplibre-gl';
 import type { StyleSpecification } from 'maplibre-gl';
-import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import 'maplibre-gl/dist/maplibre-gl.css';
 import { useAppearance } from '@/hooks/use-appearance';
 import { collectionBounds } from '@/lib/map-data';
 import type { AreaCollection } from '@/lib/map-data';
 import { mapColor } from '@/lib/map-color';
 
-maplibregl.setWorkerUrl(workerUrl);
+import maplibregl from './maplibre';
 
 // Leave room for mandatory attribution when fitting the full province and its islands.
 const MAP_PADDING = { top: 24, right: 24, bottom: 76, left: 24 };

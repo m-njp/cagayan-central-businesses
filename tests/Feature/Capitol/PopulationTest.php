@@ -51,7 +51,7 @@ it('hides population from guests and from staff of other towns', function () {
 
 it('prefills the town and its barangays with the published counts', function () {
     $this->actingAs(User::factory()->create())->get(route('capitol.population.show', ['town' => '0201529000', 'year' => 2024]))
-        ->assertInertia(fn (Assert $page) => $page->component('capitol/population')
+        ->assertInertia(fn (Assert $page) => $page->component('capitol/population/index')
             ->where('population.rows.0.place', 'town')
             ->where('population.rows.0.value', 167297)
             ->where('population.rows.0.status', 'verified')

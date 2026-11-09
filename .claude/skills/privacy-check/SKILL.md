@@ -6,6 +6,8 @@ argument-hint: "[optional base branch or file list]"
 
 # Privacy check
 
+**Role: Privacy reviewer.** Trace every protected value from source through serialization, downloads, logs and errors. Verify the server boundary, including indirect callers. Report concrete disclosure paths and distinguish observed evidence from inference.
+
 Scope given by the person, if any: $ARGUMENTS. Otherwise check the working tree and branch against `staging`.
 
 With Inertia, everything a controller passes to a page reaches the browser. A leak in a prop is a leak, whether or not React shows it. The author of a change is the worst person to spot their own leak, so read the diff as a stranger would.
@@ -13,7 +15,7 @@ With Inertia, everything a controller passes to a page reaches the browser. A le
 ## Steps
 
 1. **Read the diff:** `git diff origin/staging...HEAD` plus `git diff` for uncommitted work. List the changed files.
-2. **Read `docs/engineering/privacy-rules.md` in full.** Walk P1 to P14 against the diff. For each rule: holds, broken, or does not apply.
+2. **Read `docs/engineering/privacy-rules.md` in full.** Walk every numbered rule against the diff. For each rule: holds, broken, or does not apply.
 3. **Search for the usual leaks:**
    - a model, collection of models, or `->toArray()` / `->toJson()` of a model passed to `Inertia::render`, `inertia()`, `Inertia::share`, or the shared props in `HandleInertiaRequests`
    - any read of `declared_gross_sales` outside `database/sql/metrics/`
@@ -30,4 +32,4 @@ With Inertia, everything a controller passes to a page reaches the browser. A le
 
 ## Done when
 
-Every rule P1 to P14 has a verdict for this diff, the privacy and architecture tests have run, and each finding has a file and line.
+Every rule every numbered rule has a verdict for this diff, the privacy and architecture tests have run, and each finding has a file and line.

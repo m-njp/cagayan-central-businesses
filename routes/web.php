@@ -13,7 +13,7 @@ require __DIR__.'/capitol.php';
 // admin.* names keep it in its own Wayfinder module that no page imports, so the path never
 // enters the JS bundle. Fortify's own routes are off (FortifyServiceProvider).
 Route::middleware(['guest', PreventIndexing::class])->group(function () {
-    Route::inertia(config('cagayan.admin.login_path'), 'auth/login')->name('admin.login');
+    Route::inertia(config('cagayan.admin.login_path'), 'auth/login/index')->name('admin.login');
     Route::post(config('cagayan.admin.login_path'), [AuthenticatedSessionController::class, 'store'])
         ->middleware('throttle:login')
         ->name('admin.login.store');

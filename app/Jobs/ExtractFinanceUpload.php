@@ -52,7 +52,7 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
     {
         $upload = DB::transaction(function (): ?FinanceUpload {
             $upload = FinanceUpload::query()->lockForUpdate()->findOrFail($this->uploadId);
-            if ($upload->status !== FinanceUploadStatus::Queued || FinanceParsingProgress::isStale($upload)
+            if ($upload->status !== FinanceUploadStatus::Queued || $upload->isStale()
                 || ($this->attemptId !== null && ($upload->progress['attempt'] ?? null) !== $this->attemptId)) {
                 return null;
             }

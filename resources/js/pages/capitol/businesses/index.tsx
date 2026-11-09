@@ -131,6 +131,7 @@ export default function Businesses({
                 }
             >
                 <SelectTrigger
+                    variant="quiet"
                     aria-labelledby={`${field}-label`}
                     className="w-full"
                 >

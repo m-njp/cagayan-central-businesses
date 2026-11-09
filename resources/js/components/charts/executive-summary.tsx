@@ -11,7 +11,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { executiveSummary } from '@/lib/analytics';
-import { citationLinks, observationNote } from '@/lib/performance-format';
+import { citationReports, observationNote } from '@/lib/performance-format';
 import type {
     AnalyticsCatalog,
     AnalyticsFilters,
@@ -78,7 +78,7 @@ export function ExecutiveSummary({
     const results = sections.find((section) => section.id === 'totals');
     const position = sections.find((section) => section.id === 'position');
     // Reports in year order, then page order, however the sections cite them.
-    const links = citationLinks(
+    const citations = citationReports(
         catalog.sources,
         sections.flatMap(({ history }) =>
             history.rows.flatMap((row) =>
@@ -87,8 +87,6 @@ export function ExecutiveSummary({
                 ),
             ),
         ),
-    ).sort((first, second) =>
-        first.text.localeCompare(second.text, undefined, { numeric: true }),
     );
 
     return (
@@ -201,7 +199,7 @@ export function ExecutiveSummary({
                     </section>
                 )}
             </div>
-            <SourceLine links={links} town={filters.town} />
+            <SourceLine citations={citations} town={filters.town} />
         </div>
     );
 }

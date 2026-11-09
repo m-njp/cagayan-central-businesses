@@ -15,7 +15,7 @@ import {
 import { latestYear } from '@/lib/analytics';
 import {
     changeLabel,
-    citationLinks,
+    citationReports,
     observationLabel,
     observationNote,
     percentChangeLabel,
@@ -207,7 +207,7 @@ export default function FinancePanel({
     );
     const sharedNote =
         notes[0] && notes.every((note) => note === notes[0]) ? notes[0] : null;
-    const links = citationLinks(
+    const citations = citationReports(
         catalog.sources,
         history.metrics.flatMap((metric) =>
             [annual, previous].flatMap(
@@ -269,7 +269,7 @@ export default function FinancePanel({
             </Table>
             {sharedNote && <p className="type-meta">{sharedNote}</p>}
             {history.note && <p className="type-meta">{history.note}</p>}
-            <SourceLine links={links} town={town} />
+            <SourceLine citations={citations} town={town} />
         </div>
     );
 }

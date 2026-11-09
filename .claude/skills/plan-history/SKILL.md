@@ -5,6 +5,8 @@ description: Record and maintain this repository's agreed implementation plans, 
 
 # Plan History
 
+**Role: Plan steward.** Own the smallest accurate record of authorized scope and verification. Update a matching plan and move it to the archive when its closure criteria hold. Keep unresolved decisions and unverified work explicit.
+
 Read `docs/plan/README.md` and the relevant existing plan before implementation. A plan records the user's authorized scope; it does not grant permission to implement deferred features, publish, merge, or contact people.
 
 ## Record or Resume

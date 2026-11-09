@@ -185,7 +185,7 @@
         },
         {
             "id": "business",
-            "title": "Business Trends",
+            "title": "Business Activity Over Time",
             "summary": "Annual registered business activity for one industry or Business Category. Shown only with simulated records.",
             "metrics": [
                 {

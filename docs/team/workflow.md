@@ -184,7 +184,7 @@ If a hook fails, fix the cause: `composer lint` for PHP formatting, `npm run che
 - **One task per session.** Start a new session for a new task, so old context does not leak in.
 - **Start from a skill:** `/feature-builder C3`, `/metric-builder M10`, `/db-change add wishes table`. The skill reads the right docs first.
 - **Read the plan before approving it.** Changing a plan is cheap. Changing merged code is not.
-- **When Claude gets something wrong twice,** add the correction to `CLAUDE.md` or the matching file in `.claude/rules/`, in the same pull request.
+- **When an agent gets something wrong twice,** record the correction in the shared project instructions or the matching file in `.claude/rules/` in the same pull request. [Shared project instructions](../../AGENTS.md).
 - **Decisions go in `docs/engineering/decisions.md`,** not in chat.
 - **One folder per laptop (user rule, 26-10-28).** All work happens in the one clone, `cagayan-business-kickoff`, switching branches there. Never create a git worktree, a second clone, or a copy of the repository for a task: several folders split one database, `.env` and branch set, and made changes hard to find and combine. Claude Code must not use worktree isolation for this project.
 

@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import {
     Select,
     SelectContent,
@@ -22,25 +23,32 @@ export function FinanceMapControls({
     year: number | null;
     onChange: (patch: Record<string, string | null>) => void;
 }) {
+    const yearDescription = useId();
+    const resolvedYear = latest ? finances.latestYear : null;
+
     return (
-        <label className="grid gap-2 type-label">
-            Year
+        <div className="flex items-center justify-between gap-2">
+            <span className="type-label">Year</span>
             <Select
                 value={latest ? 'latest' : String(year)}
                 onValueChange={(value) =>
                     onChange({ year: value === 'latest' ? null : value })
                 }
             >
-                <SelectTrigger className="w-full" aria-label="Fiscal year">
-                    <SelectValue />
+                <SelectTrigger
+                    variant="quiet"
+                    className="font-mono tabular-nums"
+                    aria-label="Fiscal year"
+                    aria-describedby={
+                        resolvedYear === null ? undefined : yearDescription
+                    }
+                >
+                    <SelectValue>
+                        {latest ? (resolvedYear ?? 'Latest') : undefined}
+                    </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="latest">
-                        Latest
-                        {finances.latestYear === null
-                            ? ''
-                            : ` (${finances.latestYear})`}
-                    </SelectItem>
+                    <SelectItem value="latest">Latest</SelectItem>
                     {finances.years.map((value) => (
                         <SelectItem key={value} value={String(value)}>
                             {value}
@@ -48,7 +56,12 @@ export function FinanceMapControls({
                     ))}
                 </SelectContent>
             </Select>
-        </label>
+            {resolvedYear !== null && (
+                <span id={yearDescription} className="sr-only">
+                    Latest verified fiscal year
+                </span>
+            )}
+        </div>
     );
 }
 
@@ -120,47 +133,39 @@ export function FinanceMapFigures({
                         : `${year} figures are not available.`}
                 </p>
             ) : (
-                <>
-                    {aggregate && coverage && (
-                        <div>
-                            <h3 className="type-item">
-                                Sum of Reporting Towns
-                            </h3>
-                            {sharedCoverage && (
-                                <p className="type-meta">
-                                    {sharedCoverage.reporting} of{' '}
-                                    {sharedCoverage.total} towns reporting
-                                </p>
+                <dl className="grid gap-3">
+                    {rows.map(({ metric, point }) => (
+                        <div key={metric.id}>
+                            <dt className="type-label">{metric.label}</dt>
+                            <dd className="font-mono type-body tabular-nums">
+                                {observationLabel(point, metric.unit)}
+                            </dd>
+                            {coverage && !sharedCoverage && point?.coverage && (
+                                <dd className="type-meta">
+                                    {point.coverage.reporting} of{' '}
+                                    {point.coverage.total} towns reporting
+                                </dd>
                             )}
                         </div>
-                    )}
-                    <dl className="grid gap-3">
-                        {rows.map(({ metric, point }) => (
-                            <div key={metric.id}>
-                                <dt className="type-label">{metric.label}</dt>
-                                <dd className="font-mono type-body tabular-nums">
-                                    {observationLabel(point, metric.unit)}
-                                </dd>
-                                {coverage &&
-                                    !sharedCoverage &&
-                                    point?.coverage && (
-                                        <dd className="type-meta">
-                                            {point.coverage.reporting} of{' '}
-                                            {point.coverage.total} towns
-                                            reporting
-                                        </dd>
-                                    )}
-                            </div>
-                        ))}
-                    </dl>
-                </>
+                    ))}
+                </dl>
             )}
             {(sources.length > 0 ||
                 summed ||
                 (latest && population?.sourceUrl)) && (
                 <div className="grid gap-1 type-meta">
                     <span>Source</span>
-                    {summed && <span>COA Annual Audit Reports</span>}
+                    {summed && (
+                        <div className="flex flex-wrap gap-x-2">
+                            <span>COA Annual Audit Reports</span>
+                            {coverage && sharedCoverage && (
+                                <span>
+                                    {sharedCoverage.reporting} of{' '}
+                                    {sharedCoverage.total} towns reporting
+                                </span>
+                            )}
+                        </div>
+                    )}
                     {sources.map((item) => (
                         <a
                             key={item.href}

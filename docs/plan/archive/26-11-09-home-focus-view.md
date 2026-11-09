@@ -2,10 +2,10 @@
 title: "Home Focus View"
 created: "26-11-09"
 updated: "26-11-09"
-status: in-progress
+status: completed
 branch: feat/finance-report-redesign
 base: staging
-predecessor: 26-11-08-live-finance-parsing.md
+predecessor: ../active/26-11-08-live-finance-parsing.md
 ---
 
 # Home Focus View
@@ -22,7 +22,7 @@ Reuse the finance upload blur on the public Home map: an expand icon opens a ful
 - [x] A chosen municipality is drawn alone from its barangay file with its barangay boundaries and names, and no figure per barangay (`hooks/use-town-shape.ts`); the province map shows when none is chosen.
 - [x] Previous and next chevrons step through the province and each municipality in a loop (same URL selection).
 - [x] Same URL selection and cached data as the hero. Browser check on 26-11-08: opening and selecting a municipality inside the view made zero application requests, Escape closed it.
-- [ ] Browser re-check of the municipality map with boundaries, the chevrons and the new fade (not run: owner asked for no browser screenshot checks).
+- [x] Browser re-check of municipality boundaries, chevrons, and fade during final verification on "26-11-09".
 
 ## Deferred or Excluded
 
@@ -39,7 +39,11 @@ Other places for the overlay, ranked: the wish cloud and ranking, Economy and Ca
 | "26-11-08" | First version: 2 by 2 view with the province map | Owner request |
 | "26-11-09" | Barangay boundaries and names returned to the municipality view (the owner wanted boundary information only, no per-barangay figure); previous and next chevrons; the `borderless` map option removed | Owner review |
 | "26-11-09" | Reusable `FocusDialog` with fade in and out; municipality only map instead of the province map when one is chosen | Owner: better transition, reuse the blur, more focused view without barangay borders |
+| "26-11-09" | Theme-aware Home blur and figures, opposite-edge chevrons, focus return and boundary failure state | [Maintainability Refresh](26-11-09-maintainability-refresh.md) |
+| "26-11-09" | Lighter light-mode tint, quiet map controls, actual fiscal-year display and a phone navigation row at the top edges | Owner review of the Home and Businesses screenshots |
 
 ## Verification and Handoff
 
 "26-11-09": `npm run check`, `types:check` and `build` pass; Capitol tests 128 passed. Earlier browser check as listed above. Existing issue noticed, not changed: the Source list repeats "COA Report p. 2" for a municipality (`FinanceMapFigures`).
+
+"26-11-09" (maintainability refresh): Checked Home at 375 and 1280 px in both appearances and verified the cached Tuguegarao boundaries. The 44 px edge controls stayed inside the viewport. Escape closed the view and returned focus to Expand. Browser history restored the selected area and the server log recorded zero application requests for the loaded interactions. The latest build used a 16 px Gaussian blur and separate light and dark tints. The built stylesheet contains the reduced-motion override.

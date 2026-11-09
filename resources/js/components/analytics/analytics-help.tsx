@@ -1,5 +1,6 @@
-import { ChevronRight, CircleHelp } from 'lucide-react';
+import { CircleHelp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Disclosure } from '@/components/ui/disclosure';
 import {
     Sheet,
     SheetContent,
@@ -20,16 +21,9 @@ function Group({
     children: React.ReactNode;
 }) {
     return (
-        <details open={open} className="group border-t py-1">
-            <summary className="flex min-h-10 cursor-pointer list-none items-center gap-2 type-item [&::-webkit-details-marker]:hidden">
-                <ChevronRight
-                    className="size-4 shrink-0 group-open:rotate-90 motion-safe:transition-transform"
-                    aria-hidden="true"
-                />
-                {title}
-            </summary>
+        <Disclosure title={title} open={open} className="border-t py-1">
             <div className="grid gap-3 pb-3 pl-6 type-body">{children}</div>
-        </details>
+        </Disclosure>
     );
 }
 

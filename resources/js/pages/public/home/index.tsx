@@ -1,10 +1,10 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { lazy, useEffect, useState } from 'react';
-import { BarangayAtlas } from '@/components/barangay-atlas';
+import { BarangayAtlas } from './barangay-atlas';
 import PerformanceVisual from '@/components/charts/performance-visual';
 import { DefinitionList } from '@/components/definition-list';
-import type { MapStyle } from '@/components/province-map';
-import { TownAtlas } from '@/components/town-atlas';
+import type { MapStyle } from '@/components/map/province-map';
+import { TownAtlas } from './town-atlas';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';

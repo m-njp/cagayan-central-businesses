@@ -12,7 +12,6 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 | :- | :- | :- |
 | [Live Finance Parsing](active/26-11-08-live-finance-parsing.md) | In progress | Faster shared Python readers, blur overlay live upload task, durable progress and failed-upload retry |
 | [Capitol Entry Redesign](active/26-11-09-capitol-entry-redesign.md) | In progress | One tab row, one status and entry cell, shared Waiting for Review table, Data Entry timestamps, compact Population with a barangay map, Municipality wording |
-| [Home Focus View](active/26-11-09-home-focus-view.md) | In progress | Reusable blur focus dialog and the Home 2 by 2 full-screen view, with the shortlist of other places |
 | [Kita Promo Production](active/26-11-05-kita-promo-production.md) | In review | Four cuts and stage mixes with the replacement drums and bass score verified 26-11-06; captions, stills and editable music supplied; strict native 60 fps source capture remains unresolved |
 | [Government Finances Report Redesign](active/26-11-03-finance-report-redesign.md) | Planned | Step 1 after the revert: Executive Summary polish, column lines and row shading, arrows, range chips and icon toggles, better tooltips, Capitol figure strip, retired indicators |
 | [Executive Summary View and Net Income](active/26-10-29-executive-summary-view.md) | In progress | Default Executive Summary table with charts, COA words Income, Expenses and Net Income, Financial Condition and Allotments for Tuguegarao City; CI and design checks pending |
@@ -24,6 +23,12 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 
 | Plan | Status | Reference |
 | :- | :- | :- |
+| [Audience Startup Bundles](archive/26-11-10-audience-startup-bundles.md) | Cancelled 26-11-10 | Layout split trial reduced bytes but increased first-visit requests. Reverted. |
+| [Registry and Finance Code Structure](archive/26-11-10-registry-finance-code-structure.md) | Completed 26-11-10 | Page entries, map and chart lazy loading, registry table and finance evidence. Production and SSR builds, browser request trace and PostGIS CI passed. |
+| [Repository Structure Follow-Up](archive/26-11-09-repository-structure-follow-up.md) | Completed 26-11-10 | Shared agent instructions, page-local Population table, sorting focus and finance upload reuse. Full PostGIS CI, build and browser checks passed. |
+| [Finance Filters and Business Activity](archive/26-11-09-finance-filters-business-activity.md) | Completed 26-11-09 | Shared dropdown design, finance sidebar, grouped citations and one business activity picker. Final CI, build and browser checks passed. |
+| [Maintainability Refresh](archive/26-11-09-maintainability-refresh.md) | Completed 26-11-09 | Home and Businesses controls, page folders, dead-code cleanup, project skills and one frontend test entry point. Final CI, build and browser checks passed. |
+| [Home Focus View](archive/26-11-09-home-focus-view.md) | Completed 26-11-09 | Shared blur, theme-aware Home comparison, keyboard focus, and viewport-edge navigation verified on phone and desktop |
 | [Data Entry](archive/26-11-03-data-entry.md) | Completed 26-11-09 | Finance report grid with zero-trust safeguards, Data Entry hub and review queue, consistent forms, population in the database; Capitol tests 128 passed; full CI, dark mode and 375px not run |
 | [Kita Showcase Fast Cut](archive/26-11-05-showcase-fast-cut.md) | Completed 26-11-05 | New 72 second 1080p60 cut with two original illustrations, new full-screen motion areas, fresh interactions, glyph morphing, state feedback and 140 BPM sound; decoded media checked |
 | [Kita Showcase Motion Rebuild](archive/26-11-05-showcase-motion-rebuild.md) | Superseded 26-11-05 | Rejected for slow pacing, arbitrary zooming and reused compositions; replacement continues in Showcase Fast Cut |

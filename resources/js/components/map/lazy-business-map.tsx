@@ -1,34 +1,35 @@
 import { lazy, Suspense } from 'react';
-import {
-    useInBrowser,
-    VisualErrorBoundary,
-} from '@/components/lazy-province-map';
-import type { BusinessMapProps } from '@/components/map/business-map';
 import { Skeleton } from '@/components/ui/skeleton';
+import { VisualErrorBoundary } from '@/components/visual-error-boundary';
+import { useNearViewport } from '@/hooks/use-near-viewport';
+import type { BusinessMapProps } from './business-map';
 
-const BusinessMap = lazy(() => import('@/components/map/business-map'));
+const BusinessMap = lazy(() => import('./business-map'));
 
-// MapLibre loads only in the browser, after the page, with a skeleton of the same size.
 export function LazyBusinessMap(props: BusinessMapProps) {
-    const inBrowser = useInBrowser();
+    const { ref, nearViewport } = useNearViewport();
     const skeleton = <Skeleton className="size-full rounded-sm" />;
 
-    if (!inBrowser) return skeleton;
-
     return (
-        <VisualErrorBoundary
-            fallback={
-                <p
-                    role="status"
-                    className="flex h-full items-center justify-center border bg-muted p-4 type-body"
+        <div ref={ref} className="size-full">
+            {nearViewport ? (
+                <VisualErrorBoundary
+                    fallback={
+                        <p
+                            role="status"
+                            className="flex h-full items-center justify-center border bg-muted p-4 type-body"
+                        >
+                            The map could not load.
+                        </p>
+                    }
                 >
-                    The map could not load.
-                </p>
-            }
-        >
-            <Suspense fallback={skeleton}>
-                <BusinessMap {...props} />
-            </Suspense>
-        </VisualErrorBoundary>
+                    <Suspense fallback={skeleton}>
+                        <BusinessMap {...props} />
+                    </Suspense>
+                </VisualErrorBoundary>
+            ) : (
+                skeleton
+            )}
+        </div>
     );
 }

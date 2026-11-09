@@ -3,7 +3,9 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
+    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
@@ -24,34 +26,46 @@ type Option = {
     disabled?: boolean;
     hint?: string;
 };
-type PickerField =
-    | 'town'
-    | 'measure'
-    | 'dimension'
-    | 'group'
-    | 'presentation'
-    | 'year';
+type PickerField = 'town' | 'measure' | 'business' | 'presentation' | 'year';
 
-const DIMENSIONS: Option[] = [
-    { value: 'industry', label: 'Industry' },
-    { value: 'category', label: 'Business Category' },
-];
+const BUSINESS_SECTIONS = [
+    { dimension: 'category', label: 'Business Categories' },
+    { dimension: 'industry', label: 'Official Industries' },
+] as const;
 
 function Picker({
     id,
     label,
     value,
     options,
+    sections,
     onChange,
     help,
 }: {
     id: string;
     label: string;
     value: string;
-    options: Option[];
+    options?: Option[];
+    sections?: { label: string; options: Option[] }[];
     help?: string;
     onChange: (value: string) => void;
 }) {
+    const optionItem = (option: Option) => (
+        <SelectItem
+            key={option.value}
+            value={option.value}
+            textValue={option.label}
+            disabled={option.disabled}
+        >
+            {option.label}
+            {option.hint && (
+                <span className="block type-data text-muted-foreground">
+                    {option.hint}
+                </span>
+            )}
+        </SelectItem>
+    );
+
     return (
         <Field className="min-w-0 gap-1">
             <div className="flex min-h-8 items-center gap-1">
@@ -61,25 +75,18 @@ function Picker({
             <Select
                 value={value}
                 onValueChange={onChange}
-                disabled={options.length === 0}
+                disabled={!options?.length && !sections?.length}
             >
-                <SelectTrigger id={id} className="min-h-10 w-full">
+                <SelectTrigger variant="quiet" id={id} className="w-full">
                     <SelectValue placeholder="Not available" />
                 </SelectTrigger>
                 <SelectContent>
-                    {options.map((option) => (
-                        <SelectItem
-                            key={option.value}
-                            value={option.value}
-                            disabled={option.disabled}
-                        >
-                            {option.label}
-                            {option.hint && (
-                                <span className="type-data text-muted-foreground">
-                                    {option.hint}
-                                </span>
-                            )}
-                        </SelectItem>
+                    {options?.map(optionItem)}
+                    {sections?.map((section) => (
+                        <SelectGroup key={section.label}>
+                            <SelectLabel>{section.label}</SelectLabel>
+                            {section.options.map(optionItem)}
+                        </SelectGroup>
                     ))}
                 </SelectContent>
             </Select>
@@ -101,7 +108,6 @@ export function AnalyticsPickers({
     onChange: (patch: Partial<AnalyticsFilters>) => void;
     idPrefix: string;
 }) {
-    const business = selectedBusiness(catalog, filters);
     const finance = catalog.finances[filters.town]?.[filters.measure];
     const year = selectedYear(catalog, filters);
     const topic = catalog.guide.topics.find(
@@ -184,35 +190,34 @@ export function AnalyticsPickers({
                     onChange={(value) => onChange({ year: Number(value) })}
                 />
             ),
-        dimension: () =>
-            business && (
+        business: () => {
+            const business = catalog.businesses;
+            if (!business || business.townCode !== filters.town) return null;
+
+            const sections = BUSINESS_SECTIONS.map((section) => ({
+                ...section,
+                options: business.groups[section.dimension],
+            })).filter((section) => section.options.length > 0);
+
+            return (
                 <Picker
-                    id={`${idPrefix}-dimension`}
-                    label="Group By"
-                    value={filters.dimension}
-                    options={DIMENSIONS}
-                    onChange={(dimension) =>
-                        onChange({
-                            dimension:
-                                dimension as AnalyticsFilters['dimension'],
-                        })
-                    }
+                    id={`${idPrefix}-business`}
+                    label="Show Trends For"
+                    help="Kita manages business categories. Official industries use the Philippine Standard Industrial Classification."
+                    value={selectedBusiness(catalog, filters)?.key ?? ''}
+                    sections={sections}
+                    onChange={(group) => {
+                        const section = sections.find((item) =>
+                            item.options.some(
+                                (option) => option.value === group,
+                            ),
+                        );
+                        if (section)
+                            onChange({ dimension: section.dimension, group });
+                    }}
                 />
-            ),
-        group: () =>
-            business && (
-                <Picker
-                    id={`${idPrefix}-group`}
-                    label={
-                        filters.dimension === 'category'
-                            ? 'Business Category'
-                            : 'Industry'
-                    }
-                    value={business.key}
-                    options={business.groups}
-                    onChange={(group) => onChange({ group })}
-                />
-            ),
+            );
+        },
     };
     return (
         <>

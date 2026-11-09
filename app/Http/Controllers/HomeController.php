@@ -10,7 +10,7 @@ final class HomeController extends Controller
 {
     public function __invoke(HomeOverviewQuery $query): Response
     {
-        return Inertia::render('public/home', [
+        return Inertia::render('public/home/index', [
             'overview' => $query->get(),
         ]);
     }

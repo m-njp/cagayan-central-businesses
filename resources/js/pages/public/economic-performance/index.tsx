@@ -3,7 +3,7 @@ import { MessageSquarePlus } from 'lucide-react';
 import { AnalyticsPanels } from '@/components/analytics/analytics-panels';
 import { AnalyticsPickers } from '@/components/analytics/analytics-pickers';
 import WishRankingChart from '@/components/charts/wish-ranking-chart';
-import { LazyProvinceMap } from '@/components/lazy-province-map';
+import { LazyProvinceMap } from '@/components/map/lazy-province-map';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { pushFilters, withCoveredMeasure } from '@/lib/analytics';
@@ -60,12 +60,12 @@ export default function EconomicPerformancePage({
                         filters={filters}
                         onChange={change}
                         businessControls={
-                            <div className="grid gap-3 sm:grid-cols-2 lg:w-2/3">
+                            <div className="w-full sm:max-w-sm">
                                 <AnalyticsPickers
                                     idPrefix="performance"
                                     catalog={catalog}
                                     filters={filters}
-                                    fields={['dimension', 'group']}
+                                    fields={['business']}
                                     onChange={change}
                                 />
                             </div>

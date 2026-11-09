@@ -12,16 +12,16 @@ Before editing an existing page, read design.md, "Working on Existing Screens". 
 
 ## Structure
 
-- **Data comes from props.** No API calls for page data, no Redux, Zustand, React Query, or Axios. Filters change the URL with `router.get(..., { preserveState: true })`.
-- **Pages** in `resources/js/pages/`, folders following the route name (`capitol.barangays.show` is `pages/capitol/barangays/show.tsx`). Each page declares a `Props` type matching its PHP Data object.
-- **Reuse first:** `components/ui/` (shadcn), then `components/`, `hooks/`, `lib/`. Missing shadcn piece: `npx shadcn@latest add <name>`.
-- **Do not over-split.** Keep markup in the page until it repeats or the file passes about 200 lines. No one-line wrappers, no pass-through components, no `index.ts` re-exports.
+- **Data comes from props.** No API calls for page data, no Redux, Zustand, React Query, or Axios. Loaded-data filters change the URL through local Inertia history. Scope server requests to missing or stale authorized data.
+- **Pages** in `resources/js/pages/`, folders following the route name (`capitol/barangays/show/index` resolves to `pages/capitol/barangays/show/index.tsx`). Each entry declares props matching its PHP Data object. Page-private sections and hooks live beside it.
+- **Reuse first:** `components/ui/` (shadcn), then `components/`, `hooks/`, `lib/`.
+- **Do not over-split.** Extract a real section or workflow. Keep short private markup inline and skip pass-through wrappers and barrels.
 - **No metric math in the browser.** Format only, with the helpers in `lib/`.
 - **Links and forms use Wayfinder** (`@/routes`, `@/actions`). Never a hard-coded URL. `<Link>` for navigation.
 - **Heavy libraries load lazily** (`React.lazy` for the map and charts) with a skeleton.
 - **Map:** import from `react-map-gl/maplibre`, never the default import. Basemap is OpenFreeMap `positron` with the offline fallback in `frontend.md`, "The map". Map colors come from tokens through `mapColor()`.
 - **Charts:** shadcn's `ChartContainer` (Recharts) with `--chart-*` tokens. Every chart has a table version.
-- **PDF:** `@react-pdf/renderer`, templates in `resources/js/pdf/`, built only from the page's props, loaded with `import()` on click. Tailwind and shadcn do not work inside a PDF. Show the "Simulated data" label.
+- **Planned PDF export:** `@react-pdf/renderer`, templates in `resources/js/pdf/`, built only from the page's props, loaded with `import()` on click. Tailwind and shadcn do not work inside a PDF. Show the "Simulated data" label.
 - **The server decides access.** Hiding something in React protects nothing. Public pages never receive admin fields.
 - File names kebab-case. Components PascalCase. Hooks `use-*`.
 
@@ -66,7 +66,7 @@ Show a change only through `TrendMark`, `ObservationChange` and `lib/trend.ts` (
 
 Check every state of a data panel before reporting it done: province or aggregate, a single town, an empty year, and barangay level. Verify the aggregate in the running app, because it carries the most rows. Never print a run of identical or near-identical citations or rows; condense them into one line (design.md, "Economic Map Cleanup"). The economic maps have no Measure selector, and Net Income reads in parentheses when negative, with no arrow.
 
-Public Economy and Capitol Analytics finance open on design.md, "Executive Summary View" (COA's lines as rows, years as columns), and otherwise follow "Government Finances Ledger Table": one table, one Source line of links to the stored PDF page, no Source Details or Compare, no source text in tooltips, short Help in the card header. For the Capitol finance review, follow design.md, "Government Finances Simplification", for the final approved pattern. Do not reintroduce source-card strips, repeated report-year subtitles, zero-selection counters, always-visible bulk-edit controls, independently sized category tables, loud pagination boxes or feature-level width caps that leave an empty side strip. Use compact source attribution, linked citation text, one shared table grid, right-hand fiscal filters and on-demand review mode. The shared pagination and breadcrumb contracts in frontend.md apply across the workspace.
+Public Economy and Capitol Analytics finance open on design.md, "Executive Summary View" (COA's lines as rows, years as columns). Apply "Finance Filters and Business Activity" for the collapsed COA Sources disclosure and "Government Finances Simplification" for the Capitol review table. The shared pagination and breadcrumb contracts in frontend.md apply across the workspace.
 
 Apply the later workspace-controls correction in design.md: actions must look actionable (Review/Cancel use outlines), Enter Report (the report grid, 26-11-03) belongs in the right panel, source selection is called Source Report, and entry has no Note; a Reason for Correction appears only when a verified amount changes. Use contextual FieldHelp instead of permanent explanations. Do not restore shared greeting/clock rows or duplicate Profile in the primary nav. Preserve session renewal/expiry behavior, profile limits, permission-based destinations and independent review restrictions when simplifying presentation.
 

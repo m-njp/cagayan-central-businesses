@@ -2,7 +2,7 @@ import { Minus, Plus, RotateCcw } from 'lucide-react';
 import { icons } from '@/lib/icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import townsSource from '../../../data/boundaries/cagayan-municipalities.geojson?raw';
+import townsSource from '../../../../data/boundaries/cagayan-municipalities.geojson?raw';
 import { Button } from '@/components/ui/button';
 import {
     Tooltip,
@@ -122,7 +122,7 @@ export type ProvinceMapProps = {
     // Zoom buttons, Ctrl or pinch with the wheel, and drag to pan. Plain scrolling still scrolls the page.
     zoomable?: boolean;
     // Adds a full screen button to the zoom controls (zoomable maps only).
-    onExpand?: () => void;
+    onExpand?: (trigger: HTMLButtonElement) => void;
     className?: string;
 };
 
@@ -381,47 +381,43 @@ export default function ProvinceMap({
     return (
         <div className={cn('relative', className)}>
             {map}
-            <div className="absolute top-2 right-2 flex flex-col gap-1">
+            <div className="absolute top-2 right-2 flex flex-col">
                 {onExpand && (
                     <Button
-                        variant="outline"
-                        size="icon"
+                        variant="subtle"
+                        size="touch"
                         aria-label="Full screen"
-                        onClick={onExpand}
-                        className="size-10"
+                        onClick={(event) => onExpand(event.currentTarget)}
                     >
                         <icons.fullscreen aria-hidden="true" />
                     </Button>
                 )}
                 <Button
-                    variant="outline"
-                    size="icon"
+                    variant="subtle"
+                    size="touch"
                     aria-label="Zoom in"
                     disabled={view.k >= MAX_ZOOM}
                     onClick={() => zoom(1.5)}
-                    className="size-10"
                 >
                     <Plus aria-hidden="true" />
                 </Button>
                 <Button
-                    variant="outline"
-                    size="icon"
+                    variant="subtle"
+                    size="touch"
                     aria-label="Zoom out"
                     disabled={view.k <= 1}
                     onClick={() => zoom(1 / 1.5)}
-                    className="size-10"
                 >
                     <Minus aria-hidden="true" />
                 </Button>
                 <Button
-                    variant="outline"
-                    size="icon"
+                    variant="subtle"
+                    size="touch"
                     aria-label="Show the whole map"
                     disabled={view.k === 1}
                     onClick={() =>
                         setView({ k: 1, cx: WIDTH / 2, cy: height / 2 })
                     }
-                    className="size-10"
                 >
                     <RotateCcw aria-hidden="true" />
                 </Button>

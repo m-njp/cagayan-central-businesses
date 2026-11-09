@@ -1,15 +1,11 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { CategoryChip } from '@/components/capitol/category-chip';
-import {
-    BusinessCategoryForm,
-    BusinessTypeForm,
-} from '@/components/capitol/category-forms';
+import { BusinessCategoryForm, BusinessTypeForm } from './category-forms';
 import { EditButton } from '@/components/capitol/edit-button';
 import { PageHeader } from '@/components/capitol/page-header';
 import { Pagination } from '@/components/capitol/pagination';
-import { SearchField } from '@/components/capitol/search-field';
+import { SearchField } from '@/components/search-field';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -40,14 +36,11 @@ import {
     visibleTypes,
 } from '@/lib/category-table';
 import type { CategoryView } from '@/lib/category-table';
-import { NOT_AVAILABLE, formatCount } from '@/lib/format';
+import { formatCount } from '@/lib/format';
 import { pageSearchParams } from '@/lib/navigation';
-import { index as businesses } from '@/routes/capitol/businesses';
 import { index } from '@/routes/capitol/categories';
 import type { BusinessCategories } from '@/types/workspace';
-
-const count = (value: number | null) =>
-    value === null ? NOT_AVAILABLE : formatCount(value);
+import { BusinessTypesTable } from './business-types-table';
 
 type Panel = { kind: 'type' | 'category' | 'categories'; code: string | null };
 
@@ -74,9 +67,6 @@ export default function BusinessCategoriesPage({
     );
     const [sheet, setSheet] = useState<Panel | null>(null);
     const [search, setSearch] = useState(state.q);
-    const byCode = Object.fromEntries(
-        categories.categories.map((item) => [item.code, item]),
-    );
     const names = Object.fromEntries(
         categories.categories.map((item) => [item.code, item.name]),
     );
@@ -123,43 +113,6 @@ export default function BusinessCategoriesPage({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
-    const SortHead = ({
-        label,
-        field,
-        align,
-    }: {
-        label: string;
-        field: string;
-        align?: 'right';
-    }) => {
-        const Icon =
-            state.sort !== field
-                ? ArrowUpDown
-                : state.dir === 'asc'
-                  ? ArrowUp
-                  : ArrowDown;
-        return (
-            <TableHead
-                aria-sort={
-                    state.sort === field
-                        ? state.dir === 'asc'
-                            ? 'ascending'
-                            : 'descending'
-                        : 'none'
-                }
-                className={align ? 'text-right' : ''}
-            >
-                <button
-                    type="button"
-                    onClick={() => sortBy(field)}
-                    className="inline-flex items-center gap-1 underline-offset-2 hover:underline"
-                >
-                    {label}
-                    <Icon className="size-3.5" aria-hidden="true" />
-                </button>
-            </TableHead>
-        );
-    };
     const filter = (
         label: string,
         value: string | null,
@@ -170,7 +123,12 @@ export default function BusinessCategoriesPage({
             value={value ?? 'all'}
             onValueChange={(next) => onChange(next === 'all' ? null : next)}
         >
-            <SelectTrigger aria-label={label} className="h-8 w-40">
+            <SelectTrigger
+                variant="quiet"
+                size="sm"
+                aria-label={label}
+                className="w-40"
+            >
                 <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -201,7 +159,11 @@ export default function BusinessCategoriesPage({
             <Surface
                 toolbar={
                     <>
-                        <SearchField value={search} onChange={setSearch} />
+                        <SearchField
+                            compact
+                            value={search}
+                            onChange={setSearch}
+                        />
                         {filter(
                             'Categories',
                             state.category,
@@ -242,86 +204,16 @@ export default function BusinessCategoriesPage({
                     />
                 }
             >
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <SortHead label="Business Type" field="name" />
-                            <SortHead label="Category" field="category" />
-                            <SortHead label="Industry" field="industry" />
-                            <SortHead
-                                label={
-                                    categories.year === null
-                                        ? 'Registered'
-                                        : `Registered (${categories.year})`
-                                }
-                                field="registered"
-                                align="right"
-                            />
-                            <TableHead className="w-12">
-                                <span className="sr-only">Actions</span>
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {page.total === 0 && (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={5}
-                                    className="py-8 text-center text-muted-foreground"
-                                >
-                                    {filtered
-                                        ? 'No Business Types match.'
-                                        : 'No Business Types yet.'}
-                                </TableCell>
-                            </TableRow>
-                        )}
-                        {page.rows.map((row) => (
-                            <TableRow key={row.code}>
-                                <TableCell className="whitespace-normal">
-                                    {row.name}
-                                </TableCell>
-                                <TableCell>
-                                    {byCode[row.category] && (
-                                        <CategoryChip
-                                            name={byCode[row.category].name}
-                                            color={byCode[row.category].color}
-                                        />
-                                    )}
-                                </TableCell>
-                                <TableCell className="max-w-52 whitespace-normal text-muted-foreground">
-                                    {row.industry}
-                                </TableCell>
-                                <TableCell className="text-right font-mono tabular-nums">
-                                    {row.registered === null ? (
-                                        count(row.registered)
-                                    ) : (
-                                        <Link
-                                            href={
-                                                businesses({
-                                                    query: { type: row.code },
-                                                }).url
-                                            }
-                                            className="underline underline-offset-2"
-                                        >
-                                            {count(row.registered)}
-                                        </Link>
-                                    )}
-                                </TableCell>
-                                <TableCell className="w-12 px-1 text-right">
-                                    <EditButton
-                                        label={`Edit ${row.name}`}
-                                        onClick={() =>
-                                            setSheet({
-                                                kind: 'type',
-                                                code: row.code,
-                                            })
-                                        }
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <BusinessTypesTable
+                    rows={page.rows}
+                    categories={categories.categories}
+                    year={categories.year}
+                    filtered={filtered}
+                    sort={state.sort}
+                    dir={state.dir}
+                    onSort={sortBy}
+                    onEdit={(code) => setSheet({ kind: 'type', code })}
+                />
             </Surface>
             <Sheet
                 open={sheet !== null}

@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
-import { DashboardTables } from '@/components/capitol/dashboard-tables';
-import { DashboardAtlas } from '@/components/map/dashboard-atlas';
+import { DashboardTables } from './dashboard-tables';
+import { DashboardAtlas } from './dashboard-atlas';
 import type { DataEntryReviewRow } from '@/types/data-entry';
 import type { WorkspaceMap } from '@/types/workspace';
 

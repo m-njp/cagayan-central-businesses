@@ -1,4 +1,3 @@
-import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { FinanceFiguresTable } from '@/components/capitol/finance-figures-table';
@@ -23,6 +22,7 @@ import {
     SheetDescription,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import { Surface } from '@/components/ui/surface';
 import { pageSearchParams } from '@/lib/navigation';
 import { show } from '@/routes/capitol/finances';
 import type { FinanceReport } from '@/types/finance';
@@ -122,9 +122,46 @@ export default function FinanceReportPage({
                 )}
             </div>
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
+                <aside className="flex min-w-0 flex-col gap-2 lg:col-start-2 lg:row-start-1">
+                    <Surface padded aria-label="Filters">
+                        <div className="flex items-center justify-between gap-2">
+                            <span id="fiscal-year-label" className="type-label">
+                                Fiscal Year
+                            </span>
+                            <Select
+                                value={String(year)}
+                                onValueChange={chooseYear}
+                            >
+                                <SelectTrigger
+                                    variant="quiet"
+                                    size="sm"
+                                    aria-labelledby="fiscal-year-label"
+                                    className="font-mono tabular-nums"
+                                >
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {years.map((item) => (
+                                        <SelectItem
+                                            key={item}
+                                            value={String(item)}
+                                        >
+                                            {item}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </Surface>
+                    <FinanceUploads
+                        report={report}
+                        onOpen={openUpload}
+                        watching={uploading && uploadId !== null}
+                    />
+                </aside>
                 <section
                     aria-label={`Figures for fiscal year ${year}`}
-                    className="flex min-w-0 flex-col gap-3"
+                    className="flex min-w-0 flex-col gap-3 lg:col-start-1 lg:row-start-1"
                 >
                     {report.issues.length > 0 && (
                         <details className="border-b pb-3">
@@ -167,31 +204,6 @@ export default function FinanceReportPage({
                         fiscalYear={year}
                     />
                 </section>
-                <WorkspaceFilters>
-                    <label id="fiscal-year-label" className="type-label">
-                        Fiscal Year
-                    </label>
-                    <Select value={String(year)} onValueChange={chooseYear}>
-                        <SelectTrigger
-                            aria-labelledby="fiscal-year-label"
-                            className="w-full"
-                        >
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {years.map((item) => (
-                                <SelectItem key={item} value={String(item)}>
-                                    {item}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <FinanceUploads
-                        report={report}
-                        onOpen={openUpload}
-                        watching={uploading && uploadId !== null}
-                    />
-                </WorkspaceFilters>
             </div>
         </>
     );

@@ -38,6 +38,7 @@ No new packages (the row checkbox stays native). Public pages keep their wording
 | :- | :- | :- |
 | "26-11-09" | Shared primitives, Government Finances, Data Entry timestamps, Population rework, Municipality wording | Owner review in this session |
 | "26-11-09" | `population.tsx` split into `population-map.tsx` and `population-entry-fields.tsx`; page is 476 lines after formatting, not the sub 300 planned | Deep JSX nesting; further splitting would only move lines |
+| "26-11-09" | Put the Fiscal Year label and quiet selector on one row and show upload timestamps in Recent Uploads | Owner follow-up to the [finance filters redesign](../archive/26-11-09-finance-filters-business-activity.md) |
 
 ## Verification and Handoff
 
@@ -46,4 +47,8 @@ No new packages (the row checkbox stays native). Public pages keep their wording
 "26-11-09" (sign-off gap): the committed-data import test required zero pending figures, but 12 Tuguegarao City fs_workbook revenue lines (grants, other, total revenue for 2023 to 2025) were extracted on 26-11-02 and never signed off, so `composer ci:check` failed and the pre-push hook refused the push. Owner said to fix or remove the test. It now requires that every pending figure is a parsed, unreviewed one (nothing half reviewed) and the reviewed figures still import verified. This weakens the old check; the 12 still need a human sign-off in the app, then `php artisan finances:export`, after which the zero-pending check should return. Pending figures stay withheld from every screen.
 
 "26-11-09" (CI rerun): `composer ci:check` passed on `355e6fd`: frontend formatting/lint, TypeScript, all 29 frontend tests, Pint, PHPStan and all 377 PHP tests (2,714 assertions). The finance-import test fix was already present; no further code changes were needed. The outstanding human sign-offs and browser checks above remain unresolved.
+
+"26-11-09" (finance sidebar follow-up): The production build and browser checks passed. Fiscal Year and its value aligned at 375 and 1280 px. Selecting 2024 updated the figures. Both saved uploads displayed their Philippine timestamps in `MM-DD-YYYY HH:mm` format.
+
+"26-11-09" (finance sidebar CI): `composer ci:check` passed with 30 frontend tests and 377 PostGIS tests (2,724 assertions). The later Population table extraction is tracked in the [Repository Structure Follow-Up](../archive/26-11-09-repository-structure-follow-up.md).
 

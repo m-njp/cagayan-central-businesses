@@ -43,7 +43,7 @@ export default function Analytics({
                         idPrefix="analytics"
                         catalog={catalog}
                         filters={filters}
-                        fields={['town', 'dimension', 'group']}
+                        fields={['town', 'business']}
                         onChange={change}
                     />
                 </WorkspaceFilters>

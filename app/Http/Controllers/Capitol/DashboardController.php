@@ -13,7 +13,7 @@ final class DashboardController extends Controller
 {
     public function __invoke(CapitolDashboardRequest $request, WorkspaceMapQuery $query, DataEntryQuery $entry): Response
     {
-        return Inertia::render('capitol/dashboard', [
+        return Inertia::render('capitol/dashboard/index', [
             'map' => $query->get($request->input('town'), $request->input('level') === 'barangays'),
             // Null for roles that cannot review, so the table is absent rather than empty.
             'waiting' => $entry->waiting($request->user(), 1)['rows'] ?? null,

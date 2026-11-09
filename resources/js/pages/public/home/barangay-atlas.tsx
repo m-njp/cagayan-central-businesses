@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { LazyProvinceMap } from '@/components/lazy-province-map';
-import type { MapStyle } from '@/components/province-map';
+import { LazyProvinceMap } from '@/components/map/lazy-province-map';
+import type { MapStyle } from '@/components/map/province-map';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -99,6 +99,7 @@ export function BarangayAtlas({
                         }
                     >
                         <SelectTrigger
+                            variant="quiet"
                             id="population-town"
                             className="min-w-0 flex-1"
                         >

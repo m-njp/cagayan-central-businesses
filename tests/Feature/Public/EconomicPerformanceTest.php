@@ -29,7 +29,7 @@ test('the public catalog lists every town with the sum of reporting towns first'
     config(['cagayan.simulated' => false]);
 
     $this->get(route('public.economic-performance'))->assertInertia(fn (Assert $page) => $page
-        ->component('public/economic-performance')
+        ->component('public/economic-performance/index')
         ->where('simulated', false)
         ->where('performance.catalog.businesses', null)
         ->has('performance.catalog.towns', 30)
@@ -233,6 +233,10 @@ test('public sources trace signed-off and derived figures without exposing pendi
         'finance_document_id' => $report->id, 'location' => 'page 2', 'source_label' => 'Total Revenue', 'note' => 'PRIVATE REVIEW NOTE',
     ]);
     $expenses = FinanceFigure::factory()->verified()->for($town)->line('performance.expenses', 2024, '200.10')->create();
+    $anotherTown = Municipality::factory()->create(['psgc_code' => '0201501000']);
+    $anotherRevenue = FinanceFigure::factory()->verified()->for($anotherTown)->line('performance.revenue', 2024, '400.00')->create();
+    $anotherExpenses = FinanceFigure::factory()->verified()->for($anotherTown)->line('performance.expenses', 2024, '100.00')->create();
+    FinanceFigure::factory()->verified()->for($anotherTown)->line('performance.revenue', 2023, '350.00')->create();
     FinanceFigure::factory()->for($town)->line('performance.revenue', 2025, '987654321.12')->create(['note' => 'PENDING REVIEW NOTE']);
     FinanceLine::factory()->create(['code' => 'performance.surplus', 'group' => 'totals', 'source' => 'derived']);
     $this->artisan('metrics:refresh')->assertSuccessful();
@@ -246,7 +250,8 @@ test('public sources trace signed-off and derived figures without exposing pendi
             'fiscalYear' => 2024, 'reportYear' => 2025, 'page' => 2, 'location' => 'page 2', 'inputs' => [],
             'url' => route('public.finance-sources.show', $revenue->public_id, absolute: false),
         ])
-        ->where('performance.catalog.finances.0201500000.totals.rows.5.observations', fn ($points) => $points['performance.surplus']['sourceRefs'] === [$revenue->public_id, $expenses->public_id]))
+        ->where('performance.catalog.finances.0201500000.totals.rows.5.observations', fn ($points) => collect($points['performance.surplus']['sourceRefs'])->sort()->values()->all()
+            === collect([$revenue->public_id, $expenses->public_id, $anotherRevenue->public_id, $anotherExpenses->public_id])->sort()->values()->all()))
         ->assertDontSee('987654321.12')->assertDontSee('PRIVATE REVIEW NOTE')->assertDontSee('PENDING REVIEW NOTE')
         ->assertDontSee('coa.gov.ph/tuguegarao-2025.pdf');
 });

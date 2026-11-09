@@ -106,27 +106,52 @@ export function sourceHref(url: string, location: string | null): string {
 }
 
 /** One link per distinct citation behind a set of figures: a report page, or a workbook once per report. */
-export function citationLinks(
+export function citationReports(
     sources: Record<string, FinanceSource>,
     refs: string[],
 ) {
-    const links = new Map<string, { href: string; text: string }>();
+    type Citation = { href: string; text: string; page: number | null };
+    type Report = { label: string; links: Map<string, Citation> };
+    const years = new Map<number, Map<string, Report>>();
     for (const ref of refs) {
         const source = sources[ref];
         if (!source?.url) continue;
-        const name = `${source.label} ${source.reportYear ?? source.fiscalYear}`;
-        const text =
-            source.page === null
-                ? name
-                : formatFinanceSource(name, source.location);
-        // Figures of one report share a page but not a link address, so the text is the identity.
-        if (!links.has(text))
-            links.set(text, {
+        const year = source.reportYear ?? source.fiscalYear;
+        const key = `${source.town}:${source.kind ?? source.label}`;
+        const reports = years.get(year) ?? new Map<string, Report>();
+        const report = reports.get(key) ?? {
+            label: source.label,
+            links: new Map<string, Citation>(),
+        };
+        const workbook =
+            source.kind === 'fs_workbook' || source.kind === 'annex_workbook';
+        const text = workbook
+            ? 'Download Workbook'
+            : source.page === null
+              ? 'Full Report'
+              : formatFinanceSource('', source.location).trim();
+        // Different figure URLs can serve the same document page.
+        if (!report.links.has(text))
+            report.links.set(text, {
                 href: sourceHref(source.url, source.location),
                 text,
+                page: source.page,
             });
+        reports.set(key, report);
+        years.set(year, reports);
     }
-    return [...links.values()];
+    return [...years.entries()]
+        .sort(([first], [second]) => first - second)
+        .map(([year, reports]) => ({
+            year,
+            reports: [...reports.entries()].map(([key, { label, links }]) => ({
+                key,
+                label,
+                links: [...links.values()].sort(
+                    (first, second) => (first.page ?? 0) - (second.page ?? 0),
+                ),
+            })),
+        }));
 }
 
 /** One link per distinct report page behind the figures of an area and year. */
