@@ -7,16 +7,99 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+    font-family: 'Geist';
+    src: url('../fonts/Geist-VariableFont_wght.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Geist Mono';
+    src: url('../fonts/GeistMono-VariableFont_wght.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+/*
+ * Design tokens. docs/engineering/design.md, "Tokens", explains each group.
+ * Pages and components use these through Tailwind classes, never raw values.
+ */
 @theme {
+    /* Type. Geist reads well for every citizen, Geist Mono carries figures and labels. */
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+        'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono:
+        'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
+    /* Space. section: between page sections. gutter: page edge on phones. */
+    --spacing-section: 2.5rem;
+    --workspace-sidebar-width: 13rem;
+    --workspace-map-height: clamp(22rem, 57dvh, 38rem);
+    --spacing-gutter: 1rem;
+    /* Density (26-11-03): compact by default so screens show rows, not padding. */
+    --spacing-panel: 0.5rem;
+    --spacing-cell-x: 0.5rem;
+    --spacing-cell-y: 0.25rem;
+    --spacing-row: 2rem;
+
+    /* Motion. One easing for everything, three speeds. */
+    --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+    --duration-quick: 150ms;
+    --duration-base: 250ms;
+    --duration-slow: 600ms;
+
+    --default-transition-duration: 200ms;
+    --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+
+    --animate-rise: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-fade: fade 0.8s ease-out both;
+    --animate-nudge: nudge 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    --animate-draw: draw 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+    /* Strokes a check mark in; pair with a stroke-dasharray at least as long as the path. */
+    @keyframes draw {
+        from {
+            stroke-dashoffset: 24;
+        }
+    }
+
+    @keyframes nudge {
+        50% {
+            transform: translateY(4px);
+        }
+    }
+
+    @keyframes rise {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+    }
+
+    @keyframes fade {
+        from {
+            opacity: 0;
+        }
+    }
+
+    /* Comfortable line length for running text and definition lists (max-w-measure). */
+    --container-measure: 44rem;
+
+    /* Shape. Nearly square: 2px on controls, cards, and surfaces alike. Dots and avatars stay round. */
+    --radius-xs: calc(var(--radius) / 2);
+    --radius-sm: var(--radius);
+    --radius-md: var(--radius);
     --radius-lg: var(--radius);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
+    --radius-xl: var(--radius);
+    --radius-2xl: var(--radius);
+}
 
+/* Colors map inline, so a nested .dark (the Home hero) switches them for its subtree. */
+@theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
 
@@ -25,6 +108,9 @@
 
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
+
+    --color-brand: var(--brand);
+    --color-brand-foreground: var(--brand-foreground);
 
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
@@ -45,6 +131,10 @@
     --color-input: var(--input);
     --color-ring: var(--ring);
 
+    --color-trend-up: var(--trend-up);
+    --color-trend-down: var(--trend-down);
+    --color-simulated: var(--simulated);
+    --color-simulated-foreground: var(--simulated-foreground);
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
@@ -58,111 +148,207 @@
     --color-map-5: var(--map-5);
     --color-map-none: var(--map-none);
 
+    --color-highlight: var(--highlight);
+    --color-water: var(--water);
+
     --color-status-new: var(--status-new);
     --color-status-renewed: var(--status-renewed);
     --color-status-not-renewed: var(--status-not-renewed);
     --color-status-closed: var(--status-closed);
 
-    --color-sidebar: var(--sidebar);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-ring: var(--sidebar-ring);
+    /* Business Category colors (design.md, "Business Categories"). Always printed beside the tag name. */
+    --color-category-1: var(--category-1);
+    --color-category-2: var(--category-2);
+    --color-category-3: var(--category-3);
+    --color-category-4: var(--category-4);
+    --color-category-5: var(--category-5);
+    --color-category-6: var(--category-6);
+    --color-category-7: var(--category-7);
+    --color-category-8: var(--category-8);
+    --color-category-9: var(--category-9);
+    --color-category-10: var(--category-10);
 }
 
+/*
+ * River ink for actions and the hero, brass for small markers only, and a calm
+ * neutral scale for everything else (design.md, "Color").
+ */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+    /* A neutral stone, one step darker than the white cards, so every surface visibly lifts off the page. */
+    --background: oklch(0.955 0.002 95);
+    --foreground: oklch(0.23 0.02 250);
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --card-foreground: oklch(0.23 0.02 250);
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.23 0.02 250);
+    /* The river ink surface for the hero, the login panel, and the logo. Stays dark in both modes. */
+    --brand: oklch(0.36 0.07 245);
+    --brand-foreground: oklch(0.985 0.003 90);
+    --primary: oklch(0.36 0.07 245);
+    --primary-foreground: oklch(0.985 0.003 90);
+    --secondary: oklch(0.955 0.006 90);
+    --secondary-foreground: oklch(0.23 0.02 250);
+    --muted: oklch(0.955 0.006 90);
+    --muted-foreground: oklch(0.42 0.015 250);
+    --accent: oklch(0.95 0.01 245);
+    --accent-foreground: oklch(0.23 0.02 250);
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
+    --border: oklch(0.9 0.008 250);
+    --input: oklch(0.87 0.01 250);
+    --ring: oklch(0.36 0.07 245);
+    --trend-up: oklch(0.46 0.13 150);
+    --trend-down: oklch(0.48 0.17 25);
+    /* Amber marks simulated records wherever they appear (P13). */
+    --simulated: oklch(0.83 0.16 80);
+    --simulated-foreground: oklch(0.3 0.07 60);
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
     --chart-3: oklch(0.398 0.07 227.392);
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
-    /* Choropleth scale, low to high. One hue so order reads without a legend. */
-    --map-1: oklch(0.95 0.03 230);
-    --map-2: oklch(0.85 0.07 232);
-    --map-3: oklch(0.72 0.11 236);
-    --map-4: oklch(0.58 0.13 242);
-    --map-5: oklch(0.45 0.13 248);
-    --map-none: oklch(0.92 0 0);
+    /* Map scale, low to high. One hue so order reads without a legend. Every step stays visible as a dot on the background. */
+    --map-1: oklch(0.8 0.05 232);
+    --map-2: oklch(0.7 0.08 234);
+    --map-3: oklch(0.6 0.1 238);
+    --map-4: oklch(0.5 0.11 242);
+    --map-5: oklch(0.38 0.1 248);
+    --map-none: oklch(0.93 0.006 250);
+    /* Markers only: eyebrow rules, the current nav item, a chosen or connected town. */
+    --highlight: oklch(0.7 0.12 78);
+    /* Sea dots around the province map. Geography, not data, so always quieter than the map scale. */
+    --water: oklch(0.72 0.07 230);
     --status-new: oklch(0.6 0.15 150);
     --status-renewed: oklch(0.55 0.14 250);
     --status-not-renewed: oklch(0.72 0.15 70);
     --status-closed: oklch(0.55 0.02 260);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    --category-1: oklch(0.56 0.17 255);
+    --category-2: oklch(0.56 0.17 55);
+    --category-3: oklch(0.56 0.15 150);
+    --category-4: oklch(0.56 0.18 355);
+    --category-5: oklch(0.56 0.17 300);
+    --category-6: oklch(0.56 0.12 195);
+    --category-7: oklch(0.62 0.15 88);
+    --category-8: oklch(0.62 0.19 25);
+    --category-9: oklch(0.56 0.16 128);
+    --category-10: oklch(0.56 0.03 250);
+    --radius: 0.125rem;
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --background: oklch(0.23 0.022 245);
+    --foreground: oklch(0.95 0.005 90);
+    --card: oklch(0.3 0.024 245);
+    --card-foreground: oklch(0.95 0.005 90);
+    --popover: oklch(0.33 0.026 245);
+    --popover-foreground: oklch(0.95 0.005 90);
+    --brand: oklch(0.36 0.07 245);
+    --brand-foreground: oklch(0.95 0.005 90);
+    --primary: oklch(0.8 0.07 235);
+    --primary-foreground: oklch(0.19 0.02 250);
+    --secondary: oklch(0.33 0.026 245);
+    --secondary-foreground: oklch(0.95 0.005 90);
+    --muted: oklch(0.33 0.026 245);
+    --muted-foreground: oklch(0.84 0.01 250);
+    --accent: oklch(0.37 0.03 245);
+    --accent-foreground: oklch(0.95 0.005 90);
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
+    --border: oklch(0.43 0.025 245);
+    --input: oklch(0.6 0.025 245);
+    --ring: oklch(0.8 0.07 235);
+    --trend-up: oklch(0.8 0.14 150);
+    --trend-down: oklch(0.8 0.12 25);
+    --simulated: oklch(0.8 0.15 80);
+    --simulated-foreground: oklch(0.25 0.06 60);
+    --chart-1: oklch(0.72 0.14 250);
     --chart-2: oklch(0.696 0.17 162.48);
     --chart-3: oklch(0.769 0.188 70.08);
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
-    --map-1: oklch(0.3 0.05 240);
-    --map-2: oklch(0.42 0.08 238);
-    --map-3: oklch(0.55 0.11 236);
-    --map-4: oklch(0.68 0.12 232);
-    --map-5: oklch(0.8 0.11 228);
-    --map-none: oklch(0.26 0 0);
+    --map-1: oklch(0.58 0.06 240);
+    --map-2: oklch(0.67 0.08 238);
+    --map-3: oklch(0.75 0.09 236);
+    --map-4: oklch(0.83 0.08 232);
+    --map-5: oklch(0.93 0.05 228);
+    --map-none: oklch(0.43 0.025 245);
+    --highlight: oklch(0.8 0.11 82);
+    --water: oklch(0.62 0.08 228);
     --status-new: oklch(0.7 0.15 150);
     --status-renewed: oklch(0.68 0.13 250);
     --status-not-renewed: oklch(0.78 0.14 70);
     --status-closed: oklch(0.65 0.02 260);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --category-1: oklch(0.74 0.14 255);
+    --category-2: oklch(0.74 0.14 55);
+    --category-3: oklch(0.74 0.12 150);
+    --category-4: oklch(0.74 0.15 355);
+    --category-5: oklch(0.74 0.14 300);
+    --category-6: oklch(0.74 0.09 195);
+    --category-7: oklch(0.74 0.12 88);
+    --category-8: oklch(0.74 0.16 25);
+    --category-9: oklch(0.74 0.13 128);
+    --category-10: oklch(0.74 0.03 250);
+}
+
+/*
+ * Type roles from design.md, "Type". Pages use these instead of raw size and
+ * weight classes. Named type-* so tailwind-merge never mistakes them for text colors.
+ * Sans for words people read. Mono for numbers, labels, and codes.
+ */
+@utility type-display {
+    @apply text-4xl leading-[1.05] font-semibold tracking-tight text-balance md:text-5xl lg:text-6xl;
+}
+
+@utility type-title {
+    @apply text-3xl leading-tight font-semibold tracking-tight text-balance lg:text-4xl;
+}
+
+@utility type-heading {
+    @apply text-xl font-semibold tracking-tight text-balance lg:text-2xl;
+}
+
+@utility type-subtitle {
+    @apply text-base text-pretty text-muted-foreground md:text-lg;
+}
+
+@utility type-figure {
+    @apply font-mono text-3xl leading-none font-medium tracking-tight tabular-nums lg:text-4xl;
+}
+
+/* Small uppercase mono: legend titles, figure labels, the top line, data notes. */
+@utility type-label {
+    @apply font-mono text-xs font-medium tracking-[0.08em] uppercase;
+}
+
+@utility type-lead {
+    @apply text-base text-pretty;
+}
+
+@utility type-item {
+    @apply text-base font-medium;
+}
+
+@utility type-body {
+    @apply text-sm text-pretty;
+}
+
+@utility type-meta {
+    @apply text-sm text-muted-foreground;
+}
+
+@utility type-pin {
+    @apply text-xs font-medium;
+}
+
+/* Sections rise into view as they scroll in. No script, and nothing moves for reduced motion. */
+@utility reveal {
+    @supports (animation-timeline: view()) {
+        @media (prefers-reduced-motion: no-preference) {
+            animation: rise linear both;
+            animation-timeline: view();
+            animation-range: entry 0% entry 35%;
+        }
+    }
 }
 
 @layer base {
@@ -171,6 +357,11 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground antialiased;
     }
+}
+
+@utility type-data {
+    font-size: 0.75rem;
+    line-height: 1.5;
 }

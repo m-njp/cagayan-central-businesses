@@ -1,0 +1,16 @@
+psgc_code,town,reported_in_year,severity,kind,line_code,message,location
+0201501000,Abulug,2021,info,change_sign_reversed,budget.allotments_current,Report states the change as prior minus current (-13754623.72),
+0201501000,Abulug,2021,info,change_sign_reversed,budget.appropriations_current,Report states the change as prior minus current (-12091942.00),
+0201501000,Abulug,2021,info,change_sign_reversed,budget.obligations_current,Report states the change as prior minus current (-4395392.29),
+0201501000,Abulug,2021,info,change_sign_reversed,performance.expenses,Report states the change as prior minus current (-16711088.14),
+0201501000,Abulug,2021,info,change_sign_reversed,performance.revenue,Report states the change as prior minus current (-10685539.02),
+0201501000,Abulug,2021,info,change_sign_reversed,position.assets,Report states the change as prior minus current (-55432719.95),
+0201501000,Abulug,2021,info,change_sign_reversed,position.equity,Report states the change as prior minus current (-54147808.91),
+0201501000,Abulug,2021,info,change_sign_reversed,position.liabilities,Report states the change as prior minus current (-1284911.04),
+0201505000,Aparri,2021,info,restated,performance.revenue,2020 was 256215540.18 in the 2020 report,page 2
+0201510000,Camalaniugan,2021,info,restated,performance.expenses,2020 was 106548599.27 in the 2020 report,page 2
+0201510000,Camalaniugan,2021,info,restated,performance.revenue,2020 was 129755046.99 in the 2020 report,page 2
+0201523000,Santa Ana,2021,info,restated,performance.revenue,2020 was 232527270.99 in the 2020 report,page 1
+0201528000,Tuao,2021,info,restated,budget.appropriations_continuing,2020 was 72712290.25 in the 2020 report,page 1
+0201528000,Tuao,2021,info,restated,budget.obligations_continuing,2020 was 31290531.16 in the 2020 report,page 1
+0201528000,Tuao,2021,info,restated,performance.expenses,2020 was 192711549.26 in the 2020 report,page 1

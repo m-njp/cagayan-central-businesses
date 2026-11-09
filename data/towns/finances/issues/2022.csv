@@ -1,0 +1,14 @@
+psgc_code,town,reported_in_year,severity,kind,line_code,message,location
+0201504000,Amulung,2022,info,restated,performance.expenses,2021 was 187435247.77 in the 2021 report,page 1
+0201504000,Amulung,2022,info,restated,performance.revenue,2021 was 267296433.15 in the 2021 report,page 1
+0201512000,Enrile,2022,info,restated,budget.appropriations_current,2021 was 175272978.00 in the 2021 report,page 2
+0201512000,Enrile,2022,info,restated,budget.obligations_current,2021 was 141850988.19 in the 2021 report,page 2
+0201512000,Enrile,2022,info,restated,performance.expenses,2021 was 147465006.24 in the 2021 report,page 2
+0201512000,Enrile,2022,info,restated,performance.revenue,2021 was 180960936.28 in the 2021 report,page 2
+0201519000,Peñablanca,2022,info,restated,budget.appropriations_current,2021 was 429758566.39 in the 2021 report,page 2
+0201519000,Peñablanca,2022,info,restated,budget.obligations_current,2021 was 374226299.07 in the 2021 report,page 2
+0201520000,Piat,2022,info,restated,performance.expenses,2021 was 124337318.85 in the 2021 report,page 1
+0201523000,Santa Ana,2022,info,restated,performance.expenses,2021 was 190601755.80 in the 2021 report,page 1
+0201523000,Santa Ana,2022,info,restated,performance.revenue,2021 was 225805950.90 in the 2021 report,page 1
+0201528000,Tuao,2022,info,restated,position.assets,2021 was 726167377.87 in the 2021 report,page 1
+0201528000,Tuao,2022,info,restated,position.equity,2021 was 630534341.63 in the 2021 report,page 1

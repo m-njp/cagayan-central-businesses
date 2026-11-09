@@ -177,6 +177,7 @@ If a hook fails, fix the cause: `composer lint` for PHP formatting, `npm run che
 6. Its wording follows `docs/engineering/design.md` and the phrases in `privacy-rules.md`.
 7. Someone other than the author clicked through it.
 8. Its status is updated in `docs/team/roadmap.md`.
+9. Its accepted plan and verification are recorded through `/plan-history` in `docs/plan/` with `yy-mm-dd` dates. Resume matching active plans; archive completed plans and link them when planning improvements.
 
 ## Working with Claude Code
 
@@ -185,6 +186,7 @@ If a hook fails, fix the cause: `composer lint` for PHP formatting, `npm run che
 - **Read the plan before approving it.** Changing a plan is cheap. Changing merged code is not.
 - **When Claude gets something wrong twice,** add the correction to `CLAUDE.md` or the matching file in `.claude/rules/`, in the same pull request.
 - **Decisions go in `docs/engineering/decisions.md`,** not in chat.
+- **One folder per laptop (user rule, 26-10-28).** All work happens in the one clone, `cagayan-business-kickoff`, switching branches there. Never create a git worktree, a second clone, or a copy of the repository for a task: several folders split one database, `.env` and branch set, and made changes hard to find and combine. Claude Code must not use worktree isolation for this project.
 
 ## Daily rhythm
 
@@ -201,12 +203,15 @@ The database runs in Docker from `compose.yaml`, the same way on every laptop, a
 - **A real change** (a new image version, a new init script) is its own `chore/` pull request, reviewed by the backend developer, with the CI image kept in sync. The pre-commit hook reminds you. The description says what teammates run after merging, usually `composer db:up`.
 - **Something broken?** Run `composer doctor` first, then tell the backend developer.
 - **Never** `docker compose down -v`, `docker volume rm`, or `docker system prune`. They delete your local database.
+- **Before any rebuild** (`migrate:fresh`, `composer db:reset`), run `php artisan config:show database.connections.pgsql.database` and confirm which database it is and that nothing else uses it, such as your running `composer dev`. A rebuild deletes the local accounts too; restore them with `php artisan db:seed --class=DemoAccountSeeder` (user correction, 26-10-28).
+- **Before `npm ci` or `npm install`,** stop `composer dev` completely, including its Vite process. On Windows a running Vite server locks Tailwind's native file, and the install stops halfway with `EPERM`, leaving `node_modules` broken.
 
 ## Not allowed
 
 - Committing or pushing directly to `main` or `staging`, or force pushing a shared branch.
 - Opening a work pull request into `main`. Work goes into `staging`, and `main` changes only by release.
 - Skipping hooks with `--no-verify`.
+- Creating git worktrees, extra clones, or copies of the repository folder. Work in the one clone and switch branches.
 - Changing Docker (`compose.yaml`, `docker/`) inside a feature branch. See "The shared database" above.
 - Editing a migration that has been merged.
 - Committing `.env` files, database dumps, or real business records.

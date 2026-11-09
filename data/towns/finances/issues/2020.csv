@@ -1,0 +1,5 @@
+psgc_code,town,reported_in_year,severity,kind,line_code,message,location
+0201513000,Gattaran,2020,info,change_sign_reversed,performance.expenses,Report states the change as prior minus current (-32298637.34),
+0201515000,Iguig,2020,warning,change_mismatch,performance.revenue,"current minus prior is 24421037.77, stated 24421.03",
+0201519000,Peñablanca,2020,info,change_sign_reversed,performance.expenses,Report states the change as prior minus current (-24126234.63),
+0201524000,Santa Praxedes,2020,warning,header_years_repeated,,Column years unreadable; assumed current year then prior year,

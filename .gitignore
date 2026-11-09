@@ -40,3 +40,7 @@ yarn-error.log
 /opencode.jsonc
 /.claude/settings.local.json
 /CLAUDE.local.md
+/tools/coa/.venv
+/tools/coa/logs
+__pycache__/
+.pytest_cache/

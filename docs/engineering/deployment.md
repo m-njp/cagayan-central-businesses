@@ -46,6 +46,7 @@ The deploy job uses a GitHub environment named `production`. GitHub creates it o
 - PostgreSQL 17 with PostGIS 3.5, on the same server or managed. Run `CREATE EXTENSION postgis;` once as a superuser if the app user cannot.
 - Git, with read access to this repository (a read-only deploy key on GitHub)
 - A queue worker kept running by Supervisor or systemd: `php artisan queue:work --tries=1`
+- For Capitol report uploads (D42): Python 3 with the parser's venv, `python -m venv tools/coa/.venv` then `tools/coa/.venv/bin/pip install -r tools/coa/requirements.txt`, or set `COA_PYTHON`. `composer doctor` reports whether it is ready.
 - HTTPS, for example with Certbot
 
 Node is not needed on the server. Assets are built on the GitHub runner.
@@ -58,8 +59,10 @@ Do this once, by hand, as the deploy user:
 2. Create `DEPLOY_PATH/.env` from `.env.example` with production values:
    - `APP_ENV=production`, `APP_DEBUG=false` (privacy-rules.md, P14: debug mode is off for any demo others can reach), `APP_URL=https://...`
    - the real database host, name, user, and password
-   - a strong `DEMO_ADMIN_PASSWORD`, or none, and create administrators with an Artisan command instead
-   - `CAGAYAN_SIMULATED=true` while the data is simulated
+   - a strong password for each `DEMO_*_PASSWORD`, or none, and create administrators with an Artisan command instead. Quick sign in is local only and answers 404 in production (decisions.md, D33)
+   - `CAGAYAN_SIMULATED=false` (the default). Set true only for a presentation that needs the simulated business records
+   - `CAGAYAN_ADMIN_LOGIN_PATH` set to a long random value (`php -r "echo bin2hex(random_bytes(12));"`). Production refuses to boot with the example value (decisions.md, D20). Share it with administrators directly, never in the repository or a public channel.
+   - `SESSION_SECURE_COOKIE=true` and `SESSION_ENCRYPT=true` once the site runs on HTTPS
 3. Run `composer install --no-dev`, `php artisan key:generate`, `php artisan migrate --force`, `php artisan db:seed --force`, and `php artisan metrics:refresh`.
 4. Make `storage/` and `bootstrap/cache/` writable by the PHP-FPM user.
 5. Copy a built `public/build` folder once, or let the first deploy do it.

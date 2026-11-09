@@ -1,0 +1,23 @@
+psgc_code,town,reported_in_year,severity,kind,line_code,message,location
+0201504000,Amulung,2023,info,restated,performance.expenses,2022 was 317410297.16 in the 2022 report,page 2
+0201504000,Amulung,2023,info,restated,performance.revenue,2022 was 403490440.93 in the 2022 report,page 2
+0201508000,Buguey,2023,info,restated,performance.expenses,2022 was 156190740.62 in the 2022 report,page 1
+0201509000,Calayan,2023,info,restated,performance.expenses,2022 was 152969080.86 in the 2022 report,page 1
+0201509000,Calayan,2023,info,restated,performance.revenue,2022 was 244865921.96 in the 2022 report,page 1
+0201509000,Calayan,2023,info,restated,position.assets,2022 was 789913165.77 in the 2022 report,page 1
+0201509000,Calayan,2023,info,restated,position.liabilities,2022 was 179636880.87 in the 2022 report,page 1
+0201511000,Claveria,2023,info,restated,performance.expenses,2022 was 144585912.00 in the 2022 report,page 1
+0201514000,Gonzaga,2023,info,restated,performance.expenses,2022 was 270479149.83 in the 2022 report,page 1
+0201516000,Lal-Lo,2023,info,restated,position.liabilities,2022 was 344980792.89 in the 2022 report,page 1
+0201517000,Lasam,2023,info,restated,performance.expenses,2022 was 193237695.84 in the 2022 report,page 1
+0201517000,Lasam,2023,info,restated,performance.revenue,2022 was 233314810.32 in the 2022 report,page 1
+0201518000,Pamplona,2023,info,restated,performance.expenses,2022 was 133534894.28 in the 2022 report,page 1
+0201520000,Piat,2023,info,restated,performance.expenses,2022 was 142898365.28 in the 2022 report,page 2
+0201521000,Rizal,2023,info,restated,position.assets,2022 was 299901040.55 in the 2022 report,page 1
+0201521000,Rizal,2023,info,restated,position.liabilities,2022 was 130365225.36 in the 2022 report,page 1
+0201522000,Sanchez Mira,2023,info,restated,performance.expenses,2022 was 165903883.25 in the 2022 report,page 1
+0201522000,Sanchez Mira,2023,info,restated,performance.revenue,2022 was 195361038.44 in the 2022 report,page 1
+0201523000,Santa Ana,2023,info,restated,performance.expenses,2022 was 221854405.79 in the 2022 report,page 1
+0201523000,Santa Ana,2023,info,restated,performance.revenue,2022 was 304238539.70 in the 2022 report,page 1
+0201524000,Santa Praxedes,2023,info,restated,performance.expenses,2022 was 75646378.94 in the 2022 report,page 1
+0201524000,Santa Praxedes,2023,info,restated,position.liabilities,2022 was 36519873.53 in the 2022 report,page 1

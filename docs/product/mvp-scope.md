@@ -13,6 +13,24 @@ Cagayan Business is a map-based dashboard that gives the Provincial Government o
 
 One-line version for slides: "One map of Cagayan's registered businesses, for the planners who decide and the people who want to start."
 
+## October 24, 2026 clarification: Revenue and Economic Status
+
+Keep the project's business and economic information purpose. Do not pivot it into an auditing system. The approved direction is to retain government revenue as one clearly identified contextual measure alongside broader economic indicators; revenue alone is not a definition or score of a place's economy.
+
+| Information group | Meaning and candidate measures, subject to verified availability |
+| :- | :- |
+| Government Finances | City/municipal government revenue, source-defined expenses, and comparable annual changes. COA accounts describe the reporting government, not private business sales. |
+| Economic Activity | GDP, real GDP growth, and industry composition from PSA. GDP describes economic output; growth at constant prices adjusts for price changes. |
+| Household Conditions | Family income/expenditure, employment, and poverty, with survey coverage and reference periods preserved. |
+| Business Landscape | Registered businesses by location and category, openings, renewals, and closures, when records and metrics exist. |
+| Community Interests | Wishes expressed by participating respondents, not measured market demand. |
+
+Government revenue can change because of national transfers, collection policy, or other factors as well as local activity. It must not be treated as an automatic indicator of business growth, household prosperity, or investment suitability. Use an explicit label such as City Government Revenue where supported by the source. Economic Status is a grouping of defined indicators, not an invented good/bad rating.
+
+Keep every figure at its actual geographic level. The PSA Provincial Product Accounts tables located for this project report provinces/HUCs; Cagayan Province's GDP must not be displayed as Tuguegarao City's or a barangay's GDP. No geographic allocation or substitution is authorized without an appropriate source and method. Keep government accounts separate from economic output and household measures, even when they appear alongside each other.
+
+Official references: [PSA PPA definitions](https://psa.gov.ph/statistics/ppa/faqs) and [BLGF explanation of local and external government income](https://blgf.gov.ph/dof-unit-clarifies-lgu-income-data/). The historical COA view remains future work in the roadmap. Further COA/BOI/PSA document collection is deferred to a separate session; this clarification records the direction and does not implement new screens or import new figures.
+
 ## Problem
 
 The Capitol can see yearly, town-level business indicators from national sources, but it has no view of its own that shows registered businesses barangay by barangay, by type, and over time. The research behind this statement is in the Verification findings section, and the team should still confirm it with the provincial planning office.
@@ -69,7 +87,7 @@ The public side has five features and needs no login.
 
 1. **Explore map.** The same barangay map, with declared sales shown only as a band: how many registered businesses, what types, and the most common types in each barangay.
 2. **Business listing.** For each business the public sees only its name, type, a brief description, the year it was first established, and its barangay. No owner name, no contact number, no income.
-3. **I wish there was this business here.** A resident picks their town and a business type, adds a short reason if they want, and submits. The page then shows how many others wished for the same thing and how many such businesses are already registered in that town. Wishes are counted, not treated as proof of demand.
+3. **I wish there was this business here.** A resident picks their town and may choose a business type, name a specific business, or do both. They can add a short reason of up to 255 characters. Wishes are counted, not treated as proof of demand.
 4. **Start a business in Cagayan.** Four questions produce a personal checklist in the order to do things, with where to get each document. Every item links to its official source and shows the date it was last verified. The guide is read-only: it shows what to prepare and where to get it, with no forms, uploads, or submission. The application itself stays in the city's own online system.
    - Ownership: solo owner, partnership or corporation, or cooperative
    - Activity: food, retail, services, manufacturing, and others
@@ -83,7 +101,7 @@ For the MVP, cover three complete paths end to end, for example a solo-owned cof
 
 These are left out on purpose, and each has a reason the team can give if a judge asks.
 
-- **Permit application, issuance, renewal, and expiry warnings.** This is a city and municipal function, and LGUs were already directed to run electronic one-stop shops for it. Cagayan Business shows permit compliance only as a statistic, such as the renewal rate per barangay.
+- **Permit application, issuance, renewal, and expiry warnings.** This is a city and municipal function, and LGUs were already directed to run electronic one-stop shops for it. Cagayan Business shows permit compliance only as a statistic, such as the renewal rate per barangay. Clarified "26-10-28" (D39, user decision): a later business registry may store and publish permit validity, the renewal range, expiry and uploaded documents as records for the Capitol. It still does not take applications, compute or collect fees, or issue and renew permits, which stay with the city. Built "26-10-29" in [Business Registry Records](../plan/active/26-10-28-business-registry-records.md) (D40): records, permits, documents and a permit status label (M32). Expiry is a label on the record, not a warning or a notification.
 - **Sales of any single business on screen.** Each business's declared sales are stored and used in the calculations, but the dashboard only ever displays area totals.
 - **Unregistered businesses.** The dashboard covers registered businesses only, and says so on screen.
 - **Black-box forecasts.** The outlook uses methods that can be explained in one sentence and tested against past years. A model that scores each business's chance of renewing comes after real data is available.
@@ -110,7 +128,7 @@ The frame is real and the business records are simulated. Every screen that show
 - **Admin-only fields:** owner name, contact number, ownership type, size category (micro, small, medium), number of employees
 - **Status per year:** new, renewed, not renewed, or closed
 - **Declared gross sales per year:** never shown for one business, used only inside area totals
-- **Citizen wish record:** town, business type wished for, optional short reason, date. No name or contact is collected.
+- **Citizen wish record:** town, optional business type, optional specific business name, optional short reason, date. The form requires a type or a specific business, or both. No resident name or contact is collected.
 
 **Privacy rules built into the product**
 
@@ -147,7 +165,7 @@ Every number on screen has a plain definition the team can state in the question
 - **Public sales band:** the band that contains an area's total declared sales. The team sets the band edges with the adviser.
 - **Peer group:** barangays of the same urban or rural class.
 - **Below peer average:** business density lower than the peer group's median by a margin the team sets and states.
-- **Wish count:** the number of wishes for a business type in a town. It shows interest from the people who chose to answer, not measured demand.
+- **Wish count:** the number of wishes for a business type, a specific company, or both in a town. It shows interest from the people who chose to answer, not measured demand.
 
 ## Suggested build approach
 
@@ -269,6 +287,8 @@ Anti-Red Tape Authority. (2020, September 15). *ARTA to LGUs: Automate business 
 
 Bureau of Internal Revenue. (2025). *Application for registration: For self-employed (single proprietor/professional), mixed income individuals, non-resident alien engaged in trade/business, estate and trust* (BIR Form No. 1901, October 2025 ENCS). https://bir-cdn.bir.gov.ph/BIR/pdf/1901%20October%202025%20ENCS%20Final.pdf
 
+Bureau of Internal Revenue registration display rules, researched October 29, 2026 from secondary summaries for D40; a team member still has to check the official texts on bir.gov.ph and record the verification date. RR No. 15-2024 requires the COR at each place of business (Aureada Law, https://www.aureadalaw.com/post/navigating-revenue-regulations-15-2024-what-online-and-brick-and-mortar-businesses-need-to-know). RMC No. 38-2026 created the Registration Seal Badge with a QR code that verifies the COR (Grant Thornton Philippines, https://www.grantthornton.com.ph/insights/articles-and-updates1/tax-notes/bir-prescribes-mandatory-display-of-registration-seal-badge-for-online-businesses/). RMC No. 113-2026 suspended its mandatory online posting (BusinessMirror, October 27, 2026, https://businessmirror.com.ph/2026/10/27/bir-suspends-seal-requirement-for-online-sellers/).
+
 Business Mapper. (n.d.). *Increasing LGU revenues through tax mapping in the Philippines*. Retrieved October 3, 2026, from http://www.businessmapper.biz/technical-blogs-3/increasing-lgu-revenues-through-tax-mapping-in-the-philippines
 
 Department of Trade and Industry. (n.d.-a). *Business registration and permits*. Retrieved October 3, 2026, from https://www.dti.gov.ph/dti-business-center/dti-business-registration-permits
@@ -302,3 +322,26 @@ Republic Act No. 10173. (2012). *Data Privacy Act of 2012*. Official Gazette. ht
 Republic Act No. 11032. (2018). *Ease of Doing Business and Efficient Government Service Delivery Act of 2018*. Official Gazette. https://www.officialgazette.gov.ph/2018/05/28/republic-act-no-11032/
 
 Gap: the Tuguegarao permit office announcement and the barangay orientation notice were supplied by the team and are not listed until their links and dates are recorded. No SEC or CDA registration source, no formal Tuguegarao City Citizen's Charter, and no law or ruling on the confidentiality of gross sales declared to a city treasurer were found. The National Privacy Commission's 2019 opinion on listing registered businesses is cited by title only and still needs to be read in full. The PGC Digital Innovation Challenge guidelines were provided by the team and are not listed.
+
+## October 25 Economic Performance Demo
+
+Superseded 26-10-28 for finance: Economy now shows the signed-off COA ledger (2019 to 2025), not a simulated finance demo, and population and business counts are no longer deferred on this page. Only the Tuguegarao City sample wishes remain demonstration data. See "October 28 No Simulated Data and Ledger Table" below.
+
+The user approved a dedicated public Cagayan Economic Performance page with two topics: Government Finances and Community Wishes. The initial implementation uses synthetic Tuguegarao City figures only; the other 28 towns remain selectable with unavailable content. Finance covers completed fiscal-year positions 2021 through 2025, clearly simulated, with Government Revenue/Government Expenses and comparable annual changes. Community Wishes provides curated business-type and fictional specific-business counts in cloud, ranked bars and table views. These counts express wishes, not measured demand.
+
+Population and registered-business counts/history/leading types were explicitly removed from this iteration and remain planned future work. Reason themes, live public-label review/classification, source importing/history storage, spatial analytics and Python predictions are also deferred. The simulation must not alter verified Home figures or expose original live wish text. Keep the existing deferred COA source-collection work separate; implementing this demo does not complete it.
+
+### October 25 Economy UI Polish
+
+The user replaced the initial topic selector with stacked sections: Government Finances followed by Community Wishes. The visible name is Cagayan Economy. Add a town-picker map beside the finance chart, compact spacing, stronger grid lines, icon view switchers and a link from Community Wishes to the existing wish form. Both sections share the selected town, but maintain separate view controls. Population, business counts, forecasts, source imports and live wish publication remain deferred; no extra statistics are invented to fill space.
+
+
+### October 25 Home and Wishes Simplification
+
+Home now directs residents to share a wish or explore their town's economy, carrying a selected town. Remove the placeholder Business Map/guide task cards and Home protection section. Economy combines curated business types and specific businesses into one ranking with cloud/bars views and actual town/count tooltips; no tables or kind selector. Keep limitations in documentation and date/basis in source details rather than repeated captions/disclaimers. Synthetic data remains labeled, other towns unavailable, and comparative town rankings remain deferred. This does not change wish submission fields, privacy enforcement, or source-collection scope.
+
+## October 28 No Simulated Data and Ledger Table
+
+The user decided that simulated data cannot be the default. Business records are not seeded or shown unless `CAGAYAN_SIMULATED` is true, which stays available for presentations (decisions.md, D37). The public Economy page and Capitol Analytics show real government finances only, plus the Tuguegarao City sample wishes labeled "Sample Data". Executive Summary totals cover all 29 towns; breakdowns beyond totals and barangay population exist for Tuguegarao City only, and the screens say so.
+
+The Government Finances Yearly Summary is one table (item, selected year, year before, change) with one Source line whose links open our stored COA PDF at the cited page. Help is a short sheet in the card header. Layout and rules: `docs/engineering/design.md`, "Government Finances Ledger Table". Metric definitions M19 to M31 are unchanged.

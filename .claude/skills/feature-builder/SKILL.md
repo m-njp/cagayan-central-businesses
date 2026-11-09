@@ -22,7 +22,7 @@ One feature, one branch, one pull request. Build only what $feature needs.
 ## Steps
 
 1. **Branch.** If on `main` or `staging`, create a work branch inside `staging`: `git switch staging`, `git pull --ff-only`, `git switch -c feat/<id>-<short-name>` (`docs/team/workflow.md`).
-2. **Restate the feature** as three to six acceptance checks a person can verify by clicking, written from the user's point of view. If the product document is unclear or two docs disagree, stop and ask.
+2. **Apply `/plan-history`.** Resume the matching active plan or create an agreed plan under `docs/plan/active` using `yy-mm-dd`. Record verification during implementation; archive only when acceptance checks pass. **Restate the feature** as three to six acceptance checks a person can verify by clicking, written from the user's point of view. If the product document is unclear or two docs disagree, stop and ask.
 3. **Check dependencies.** Every table must exist in `database/migrations/` and every metric in `database/sql/metrics/`. If one is missing, stop and name the skill to run first (`/db-change ...` or `/metric-builder M5`). A metric built inside a feature hides it from review.
 4. **Look for what exists.** Search `app/Queries`, `app/Data`, `app/Services`, `resources/js/components`, and `components/ui` for pieces to reuse. List them in the plan.
 5. **Propose the slice**, then wait for approval:

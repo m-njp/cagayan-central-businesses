@@ -1,0 +1,21 @@
+psgc_code,town,reported_in_year,severity,kind,line_code,message,location
+0201501000,Abulug,2024,info,heading_not_in_catalog,,Abulug-FS-2024.xlsx!SCBAA row 61: 'Allocation for Senior Citizens and PWD',
+0201501000,Abulug,2024,info,spending_outside_catalog,,Abulug-FS-2024.xlsx!SCBAA row 64: 'Maintenance and Other Operating Expenses' 7214519.62 is not under a catalog sector,
+0201501000,Abulug,2024,info,spending_outside_catalog,,Abulug-FS-2024.xlsx!SCBAA row 65: 'Capital Outlay' 143842.11 is not under a catalog sector,
+0201501000,Abulug,2024,warning,sheet_not_found,,Abulug-Annexes-2024.xlsx: no detailed General Fund performance sheet,
+0201502000,Alcala,2024,warning,change_mismatch,performance.net_income,"current minus prior is 19633085.11, stated 27587385.91",
+0201502000,Alcala,2024,warning,differs_from_summary,performance.expenses,"2024: workbook lines add up to 199202572.11, the Executive Summary states 201010574.32",
+0201503000,Allacapan,2024,info,heading_not_in_catalog,,Allacapan-FS-2024.xlsx!SCBAA row 70: 'Allocation for Senior Citizens and PWD',
+0201503000,Allacapan,2024,info,spending_outside_catalog,,Allacapan-FS-2024.xlsx!SCBAA row 71: 'Maintenance and Other Operating Expenses' 1115443.00 is not under a catalog sector,
+0201503000,Allacapan,2024,info,spending_outside_catalog,,Allacapan-FS-2024.xlsx!SCBAA row 73: 'Maintenance and Other Operating Expenses' 1350000.00 is not under a catalog sector,
+0201503000,Allacapan,2024,warning,sheet_not_found,,Allacapan-Annexes-2024.xlsx: no detailed General Fund performance sheet,
+0201506000,Baggao,2024,warning,header_years_repeated,,Column years unreadable; assumed current year then prior year,
+0201507000,Ballesteros,2024,info,restated,performance.expenses,2023 was 156202813.88 in the 2023 report,page 1
+0201513000,Gattaran,2024,info,change_sign_reversed,performance.net_income,Report states the change as prior minus current (75857472.39),
+0201513000,Gattaran,2024,warning,header_years_swapped,,Columns are headed 2024 then 2023 but printed 2023 then 2024; read in printed order,
+0201514000,Gonzaga,2024,info,restated,performance.expenses,2023 was 334875276.97 in the 2023 report,page 1
+0201514000,Gonzaga,2024,info,restated,performance.revenue,2023 was 300707898.28 in the 2023 report,page 1
+0201514000,Gonzaga,2024,warning,change_mismatch,performance.net_income,"current minus prior is 74874463.56, stated 74874.46",
+0201527000,Solana,2024,info,restated,budget.appropriations_current,2023 was 360100524.23 in the 2023 report,page 2
+0201529000,Tuguegarao City,2024,info,heading_not_in_catalog,,Tuguegarao-City-FS-2024.xlsx!10 - SCBAA row 62: 'Share from Tobacco Excise Tax',
+0201529000,Tuguegarao City,2024,info,spending_outside_catalog,,Tuguegarao-City-FS-2024.xlsx!10 - SCBAA row 63: 'Maintenance and Other Operating Expenses' 2325039.70 is not under a catalog sector,

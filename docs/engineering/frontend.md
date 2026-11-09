@@ -12,12 +12,13 @@ There is no API and no client-side store. The controller is the data layer.
 2. Inertia sends `profile` as a prop to `resources/js/pages/capitol/barangays/show.tsx`.
 3. The page renders it.
 
-To change what is on screen, change the URL or submit a form. Inertia fetches the new props.
+Keep selections in the URL, but a URL change does not imply a request. Use local Inertia history for data already loaded. Request new props only when data is missing, stale, explicitly refreshed, or changed by a write.
 
 | Need | Use |
 | :- | :- |
 | Data for a page | Props from the controller |
-| Filters | `router.get(url, params, { preserveState: true, preserveScroll: true })`, so filters live in the URL |
+| Loaded-data filters, sorting, views and map selections | `router.push` / `router.replace` with existing props and a Wayfinder URL; no request |
+| Missing server data or server pagination | A scoped request for the missing dataset; cache by dataset identity and reuse it |
 | Refresh one prop only | `router.reload({ only: ['rankings'] })` |
 | A slow panel | `Inertia::defer()` on the server, a skeleton on the client |
 | A form | Inertia's `<Form>` component or `useForm` |
@@ -34,14 +35,14 @@ resources/
     pages/            one file per screen, folders follow the route name
       capitol/          capitol.barangays.show -> capitol/barangays/show.tsx
       public/           public.map -> public/map.tsx
-    layouts/          page shells: sidebar, header, the "Simulated data" label
+    layouts/          page shells: header, bottom bar, footer, the "Simulated data" label
     components/
+      *.tsx             app-wide pieces (page header, figure row, province map)
       ui/               shadcn primitives, added with the shadcn CLI
       map/              the map and its layers
       charts/           chart wrappers
       privacy/          guarded figure, hidden notice, simulated label
     pdf/              PDF templates for @react-pdf/renderer
-      *.tsx             app-wide pieces (layout parts, headings, breadcrumbs), added with the design system
     hooks/            reusable hooks, named use-*.ts
     lib/              plain functions with no React: formatting, cn()
     types/            TypeScript types that mirror app/Data
@@ -106,9 +107,10 @@ export default function Show({ profile }: Props) { ... }
 | Change filters on the current page | `router.get(index(), { year }, { preserveState: true, preserveScroll: true })` |
 | A form | `<Form {...store.form()}>`. After it succeeds, the server redirects; do not navigate in `onSuccess`. |
 | A file download (CSV, server export) | a plain `<a href={exportCsv().url}>`, because the response is not an Inertia page |
-- Public pages never link to a Capitol page except through the login link.
+- Public pages never link to a Capitol page, not even to its login (decisions.md, D20).
+- **One exception to Wayfinder:** the admin login form posts to its own URL (`usePage().url`), and its routes are named `admin.login*` so they sit in a Wayfinder module no page imports. Any import that holds the login path would put it in the public bundle.
 - The server decides access. Hiding a button in React protects nothing; the route must check it.
-- Logout is a `POST` (`<Link method="post" href={logout()} as="button">`).
+- Logout is a `POST`. The Wayfinder route carries the method, so `<Link href={logout()} as="button">` is enough.
 
 ## Performance
 
@@ -162,6 +164,7 @@ async function loadMapStyle() {
 - `mapColor()` reads a token from `app.css` and returns a color MapLibre accepts, because map layers cannot use Tailwind classes. Add it to `lib/` with the first map, and use it for every map color. Never a hex value.
 - The map component lives in `components/map/` and is loaded with `React.lazy` (see "Performance").
 - The map is never the only way to reach a barangay. A list or search does the same job (`design.md`).
+- **The province map is different.** `components/province-map.tsx` is a plain SVG of the 29 towns by default, with optional `source` geometry for each town's barangays. Only the province boundary is bundled with the component; barangay datasets load on demand. Pages use `LazyProvinceMap` (`components/lazy-province-map.tsx`), which loads it with `React.lazy` in the browser only and shows a skeleton until then, because a lazy component cannot finish during server rendering. It draws a halftone: same-size dots on one grid (`lib/halftone.ts`), colored by an optional shade per place (`shades`), brass for `highlight`, with `onSelect` on click or keyboard, `water` for sea dots, and `zoomable` for zoom and pan. It never carries business data. The Home hero (`components/town-atlas.tsx`) passes it the public town shades from `TownAtlasQuery`, computed in SQL. Use it for illustration and as a place picker beside a real control, never in place of the MapLibre map.
 
 ## Charts
 
@@ -169,7 +172,9 @@ Recharts through shadcn's Chart component (`components/ui/chart.tsx`). It gives 
 
 - Use `ChartContainer` with a `ChartConfig` that names each series and its token color (`var(--chart-1)`). Never a hex value.
 - Shared chart wrappers go in `components/charts/`.
-- Every chart has a table version a click away (`design.md`).
+- `ChartConfig` keys must be valid CSS names, because they become `--color-<key>` variables. Key series by position (`series0`) when ids contain dots, such as finance line codes; an invalid name draws nothing.
+- Yearly series use `FinancePanel` (the ledger table) and `FinanceHistoryChart`: one unit per chart, gaps stay gaps, and the chart is skipped when nothing can be plotted (bands or all hidden). The public Economy page and Capitol Analytics share `components/analytics/analytics-pickers.tsx` and `analytics-panels.tsx`; the server decides where sales are bands.
+- Every chart has a table version: in Trends the ledger table sits under the chart (`design.md`, "Government Finances Ledger Table").
 - Docs: https://ui.shadcn.com/docs/components/chart
 
 ## PDF export
@@ -211,6 +216,15 @@ The exact words are in `privacy-rules.md`, "Words on screen".
 
 ## Files and names
 
+### Shared Workspace Navigation and Forms
+
+- Every Capitol page uses `CapitolLayout`. Its `WorkspaceBreadcrumbs` component renders the single breadcrumb trail; do not add back-links or a second breadcrumb inside page content. Top-level destinations resolve from `workspaceNavigation`. A nested controller supplies `breadcrumbs` as an ordered list of `{ label, href? }`, excluding Dashboard; the layout adds Dashboard and marks only the final item current. Use named routes for parent links. Example: Dashboard > Government Finances > Abulug > Report 2024. Dashboard geography retains its local map navigation. Paginated top-level pages append the current page after page 1.
+- Every paginated workspace list uses `components/capitol/pagination.tsx` with the shared `Pagination` Data object from `Pagination::from($results)`. Display only quiet Previous / Page n of m / Next controls, with unavailable directions disabled; hide pagination for a single page. Do not show a bare Page 1 footer, redundant record counts or a boxed numbered strip. Finance, Community Wishes and Activity Logs use this contract.
+- Use `<FieldLabel required>` for required fields, together with `required` on the actual input or Select. This adds the same visible asterisk and screen-reader required text everywhere. Conditional requirements must change both controls together; optional fields have no marker. Server validation remains authoritative. Do not make a separate required-marker component per form.
+- Use the existing shadcn Dialog and Sheet primitives. A finance entry opens only through Enter a Figure in a right-hand Sheet. Sign Off and Reject have separate dialogs: Sign Off has no note field and the server records the signed-in Admin as reviewer (the request refuses a note on a sign-off), while Reason for Rejection is required only for rejection. The Status column shows the reviewer's display name (`reviewedBy`, null for figures from the reviewed CSVs); the entrant's identity is still never sent. Keep errors inside the open form, retain values after failed validation, and close only after success or deliberate cancellation.
+- Finance report fiscal years are selected in the right-hand filter panel, newest first. These figures are already loaded: year changes use local Inertia history, including Back/Forward, and must make zero application requests. Index pagination and filters query missing authorized records. Use one table with category separator rows and fixed shared columns. The compact source attribution and each figure citation link directly to the original COA report. `formatFinanceSource` formats page or workbook references; never append a second COA Source link under the citation.
+- The default finance table is for reading. Review Figures reveals selection controls; bulk actions and a count appear only when selection is non-empty. Page-width limits and gutters come from CapitolLayout, not an additional max-width wrapper inside the finance pages.
+
 - File names are kebab-case: `barangay-profile.tsx`, `use-filters.ts`.
 - Components are PascalCase. Hooks start with `use`.
 - One shared component per file. Small helpers used only by that component stay in the same file.
@@ -218,3 +232,101 @@ The exact words are in `privacy-rules.md`, "Words on screen".
 ## Checks
 
 `npm run check:fix` formats and lints. `npm run types:check` runs TypeScript. Both run in the pre-commit hook.
+
+About the Data loads one `data/barangays/maps/<town-code>.json` chunk per selected town. The `barangayTown` URL filter selects among all 29 Cagayan towns. The current boundary and its population properties are passed to the shared SVG map through its optional `source` prop. Population shades are prepared in the dataset, not calculated in the browser.
+
+The Home maps share a Dotted/Solid presentation preference, stored as `map-style` in browser storage. One icon-only control beside the main town selector changes both maps. Changing it updates component state only; it does not navigate, reload datasets, or reset selections. Both styles use `ProvinceMap` and its existing geometry, motion, and interaction behavior.
+
+The barangay explorer caches parsed census data, lookups, and pending imports per town for the browser session. Revisiting a town uses its cached data immediately, without a loading skeleton or repeated parsing. Prepared SVG geometry and dot grids are also cached by the shared map; only a first visit animates in. Town filters remain client-side Inertia replacements and do not request the Home data again.
+
+The wish form updates selection state immediately. It requests only the optional `tally` prop in the background when both codes are present; that response replaces the URL. Incomplete or cached selections replace the URL locally. The main `page` prop is lazy, so count requests skip rebuilding form options, allowances, and form tokens. Repeated selections are ignored, counts are cached for the current visit, and superseded requests are cancelled. A successful form response clears the count cache. Business Type is shown by default; the Specify a Business control reveals the optional company field, including automatically when editing a wish with a company name.
+
+Workspace map navigation uses `lib/workspace-map-navigation.ts` for local Inertia history updates, including geographic breadcrumbs. It loads a town census chunk once through the existing promise cache and derives barangay props without a controller visit. A selection never resets the map instance. Refreshing or opening a deep link still uses protected server routes and validation.
+
+Workspace idle activity is sent through an authenticated, CSRF-protected, throttled POST after direct trusted pointer, keyboard, wheel or touch input, at most once per configured minute. It returns only the Workspace DTO and updates the isolated status component without a page visit or map reset. No timer renews the session; background checks retain the server deadline and the absolute limit never moves. The request uses Inertia v3 standalone HTTP requests: https://inertiajs.com/docs/v3/the-basics/http-requests.
+
+## Economic Performance Contract
+
+The public Economic Performance page receives EconomicPerformance Data objects mirrored in types/economic-performance.ts. Finance metadata identifies metrics by stable ID; annual observations retain decimal-string money, states and precomputed changes. Browser conversion to numbers is solely for plotting/formatting. Chart components never derive growth rates, totals or counts. Fixture and future verified Query implementations share the same public contract; source/mode information must remain accurate.
+
+Charts mount only in the browser through PerformanceVisual and lazy imports. Finances have matching peso domains, accessible tooltips, solid/dashed legends and table access. Wish cloud inputs are already ranked curated aggregates; its scaling/placement is visual layout, not a metric calculation. Wait for fonts, measure the container, use stable layout inputs, preserve multiword labels, and retain exact counts and table fallback. Views and cascading filters use validated URL query parameters through Wayfinder and Inertia.
+
+Vite explicitly prebundles Recharts and @visx/wordcloud together. A fresh-cache browser check exposed transient duplicate-React hook errors when those lazy dependencies optimized after first render; prebundling both before navigation resolved the issue. Production and fresh development first-load checks both pass. Charts still load lazily on their page; prebundling does not put their production code in the Home page.
+
+The 26-10-25 polish returns both finance and wish Data objects in the same response. Filters are now town, period, kind, financeView and wishView. Topic and shared view have been removed from validation, types, Query branches and page controls. Old prototype query keys are ignored and disappear on the next navigation; the route is unchanged. Both view selections and period/kind survive changes to the other section. Economy is the shared navigation label, so the unused mobileTitle extension was removed.
+
+Reuse LazyProvinceMap as a geographic selector, with no economic/population shades, and highlight the same town as the dropdown. The icon view switcher reuses the shared ToggleGroup and Tooltip primitives. The request/response contract, source labels and simulated-only isolation remain unchanged apart from returning both sections together.
+
+Economy view icons update local Inertia history using the already-loaded Data objects, so switching a chart to a table does not refetch both sections or show unrelated loading states. Superseded by the local-selection correction below: town, period and wish-kind changes also use local history. Interactive ProvinceMap SVGs use a group role so their labeled town buttons remain exposed to assistive technology; static illustrations retain the image role. Economy uses solid town boundaries for compact-map readability.
+
+
+### Local Selection Contract
+
+Correction approved 26-10-25 after repeated unnecessary requests. Before wiring any select, sort, view, map click, breadcrumb or tab, identify whether it needs data absent from the current page. URL persistence is not a reason to call `router.get`, `visit`, `reload` or a JSON endpoint.
+
+- Loaded public data: select, filter or order existing finished rows locally and update Inertia history. Preserve other controls, scroll, mounted maps, and Back/Forward. Ignore unchanged selections. Do not recalculate metrics, ranks, counts or percentages in React.
+- Economy: load a bounded catalog of public town datasets once, including all finance years and both curated wish modes. The server supplies period boundaries, complete observations and pre-ranked aggregates. The frontend selects a town, filters displayed year rows and selects a wish mode. Missing town entries mean unavailable, not a cache miss to fetch on every click. Initial navigation, refresh and direct links still pass through server validation.
+- Home: reuse its preloaded town atlas and map geometry. Capitol: preserve the existing public geography cache and local navigation; fetch genuinely missing geography once, evict failed promises for retry. Never prefetch private datasets for unauthorized users.
+- Large future datasets: fetch only the missing authorized dataset, cache by geography/data version rather than presentation settings, and deduplicate in-flight loads. Do not preload unbounded records or weaken server-side privacy filtering to avoid requests.
+- Review requirement: record expected application-request counts for each changed interaction, then verify repeated selections, Back/Forward and refresh in the browser. Loaded-data interactions must produce zero application requests. Asset/module loads are distinct from database-backed application requests. Backend tests must establish that the initial payload contains every supported local mode, including starting from an unavailable town.
+
+The Economy catalog replaces selected-only finance/wish fields, avoiding duplicate payloads and stale selected data. Removed its request callbacks, selection-loading skeletons and network-retry banner; lazy visualization loading/error handling remains in the shared visualization boundary. Future verified queries must retain this bounded-data boundary or explicitly design cache-miss loading before expanding scope.
+
+
+### Home and Combined Wishes Correction
+
+Approved 26-10-25. This supersedes separate kind snapshots and table/view fields above. Economy filters are now only `town`, `period`, `wishView` (cloud/bars). `kind` and `financeView` are ignored legacy parameters, removed on the next local navigation; wishView=table is invalid. The bounded catalog contains one combined wish snapshot per available town with townCode/townName, source/asOf/period metadata, namespaced label IDs, original counts and cloud limit. Both fixture groups are combined and ordered in the Query. There is no backend mode filter or filter request, and the browser does not add counts or rank entries.
+
+Finance always renders its chart and retains exact observations in a screen-reader list. Wishes render either the full-label ranked bar list or cloud with omitted-label count chips. No table branch remains. Shared WishTooltip supplies actual dataset town and exact count on hover/focus/activation; duplicate visible phrases retain separate namespaced IDs. Long ranked lists scroll within a bounded region instead of expanding an SVG indefinitely. Bar widths are visual encodings of finished counts. Cloud word size is the count's position between the smallest and largest displayed count on a log scale, as visx `scaleLog` does (`lib/wish-cloud-size.ts`), so any set of counts keeps its order, fills the same size range, and one large outlier cannot flatten the rest. No count, label length, or word has its own size cap; one shared maximum is lowered until every label fits the width. A layout that drops a displayed word is retried smaller, and the cloud never shows a word while a higher-demand wish is left to the count chips. Larger words in the upper half of the range use the chart accent, the rest use the foreground.
+
+Home action links use Wayfinder with the valid selected atlas town from the current Inertia URL. The removed protection copy's smallGroupMin prop was removed from HomeOverview, its Query and TypeScript contract. No privacy enforcement threshold changed. Existing map selection/cache behavior is unchanged.
+
+### Shared Workspace Controls "26-10-28"
+
+Use `WorkspaceFilters` for the right-hand filter/action panel in finance, Activity Logs and Community Wishes. It centralizes panel spacing, mobile ordering and accessible labeling.
+
+Use `FieldHelp` beside `FieldLabel` for requested contextual explanations. It uses the existing tooltip primitive with a named, keyboard-focusable help button; clicking also opens it. Use `FieldLabel required` plus native required controls for mandatory fields. Do not repeat limits as permanent helper copy when validation already enforces them.
+
+`workspaceNavigation` is the single source of destination labels, icons, permission visibility and group placement. Account destinations remain available to breadcrumbs but render only in the bottom account menu. Preserve Wayfinder's logout method.
+
+`WorkspaceStatus` owns session activity, expiry reloads and renewal warnings. Do not remove it when changing page chrome. It intentionally renders no greeting/date/clock row.
+
+Figure entry has six possible fields: year, item, basis, amount, source report and a conditional official source URL. It sends no note; the request prohibits an entry note. Review notes and historical imported notes are separate concerns and remain supported. All source, amount, year, role and independent-review restrictions still apply.
+
+Finance index report-year navigation is URL-backed. The query defaults to the newest available authorized report year, always scopes rows to one year and includes that year in pagination links. Tab/filter changes reset pagination. Revisited first-page selections use a component-local cache and Inertia history; missing selections fetch authorized data. Leaving the index discards this cache so later visits read current review counts.
+
+
+### Analytics Clarity "26-10-28"
+
+Partly superseded the same day by "Government Finances Ledger Table" below (no Compare control or `compare` parameter, no Source Details, one Source line, new Help). Supersedes earlier finance fixture and view descriptions. Public Economy and Capitol Analytics share Yearly Summary and Trends, with Show and Fiscal Year. URL state adds `presentation=summary|trends`, nullable explicit `year`, and `period=all|recent|2y|3y|5y` (default 3y). Legacy recent retains its configured lower boundary. Each trends section ends at its latest shown observation; all business subpanels share the counts series range. Explicit fiscal year persists across category changes. Every loaded selection remains local Inertia history with zero application requests.
+
+`AnalyticsCatalog` adds shared `guide` content and deduplicated public `sources`; observations reference evidence through `sourceRefs`. Evidence contains only signed-off government figures and checked census inputs (see the ledger table contract below for its fields). Derived measures reference their signed-off inputs; reporting-town sums reference contributors. No reviewer identities, internal review notes, pending amounts or private business sales enter this evidence catalog. The shared metric IDs link Help definitions without a second metric registry.
+
+The explanatory source is `resources/content/analytics-guide.json`, mirrored in the repository learning guide. A test checks that the written guide retains the shared explanations. Topic and metric `id`s and `inputs` in that file also drive the evidence graph: change them with care. No finance math moves to React. `composer test:analytics` verifies local row selection and history serialization with Node built-ins.
+
+### Government Finances Ledger Table "26-10-28"
+
+Look and words: `design.md`, "Government Finances Ledger Table". Contract:
+
+- **One evidence store.** `catalog.sources[key]` is the only place a source lives: `kind`, `label`, `town`, `fiscalYear`, `reportYear`, `page`, `location` and `url`. `url` is `public.finance-sources.show` for the figure (our stored copy of the COA report), null for a figure entered by hand, and the PSA address for census. Observations carry `sourceRefs` only. `FinancialHistory` has no source; business series carry one fixed `note` (privacy-rules.md, "Words on screen"). Never copy source text into a row, tooltip, chart or footer.
+- **Citations.** `citationLinks(sources, refs)` in `lib/performance-format.ts` returns one `{href, text}` per distinct citation ("Executive Summary 2025 p. 2"; a workbook once per report) and `SourceLine` renders them under the table. A Sum of Reporting Towns (`ALL_TOWNS`) renders the plain line instead. The map panels use `financeMapSources` for the same links.
+- **Report route.** `public.finance-sources.show` takes the figure's `public_id`, resolves only verified figures whose ledger document file sits under `data/towns`, streams a PDF inline (the link adds `#page=N`) and downloads a workbook. Throttled by `finance-sources`; anything else is 404.
+- **Selections.** URL state is `presentation`, `year`, `period`, `measure`, `town` (plus the business pair while simulated records are on). No `compare`. `measures[].towns` lists the towns that have a measure; `measureCovers` and `withCoveredMeasure` disable it elsewhere and fall back to Government Totals when the town changes. A year button in Trends calls the same local history push, so no selection makes an application request.
+- **Request counts, measured in the browser 26-10-28.** Opening the page makes one document request. Choosing Trends, choosing a year from the Trends table and browser Back each made zero further application requests.
+- **Help.** `AnalyticsHelp` reads `catalog.guide` (introduction, notes, topics) and hides the business topic unless `catalog.businesses` exists.
+
+## Dynamic Economic Maps "26-10-28"
+
+HomeOverview and WorkspaceMap share a FinanceMap contract with years, latestYear, three M19 metrics, annual observations, SQL-computed shades and deduplicated public source evidence. Year remains in local Inertia history alongside geography; absent year means Latest. There is no Measure selector or `measure` URL parameter: the map shades by Income and the panel lists all three measures. Latest is global, not per town. Explicit fiscal years hide all economic-panel population context, and missing town records never fall back. Existing public map style preference and the independent census explorer are preserved. Cached dashboard geography and breadcrumbs preserve finance filters. The panel ends with one Source block: one underlined link per distinct COA report page (the province sum shows one plain "COA Annual Audit Reports" line instead) (`financeMapSources`, opened at the cited page with `#page=N`) plus the Latest population link. It does not open the Analytics evidence drawer. Coverage prints once when every metric shares it; an empty year or barangay level shows one status line instead of repeated Not available rows.
+
+FinanceYears preserves configured default ranges and extends report/review limits from imported reports and ledger records; Analytics extends its series from published statistics. No range advances from the current date alone.
+
+## Government Finance Figures "26-10-28"
+
+A change renders only through `TrendMark` and `ObservationChange`, which take their direction, token color and words from `lib/trend.ts` (`trendOf`, tested by `composer test:trend`). Net Income has no mark: a loss reads in accounting parentheses. A rounded or abbreviated peso figure renders through `ExactAmount`, a button over a Tooltip whose accessible name is the exact amount, opened by hover, focus or tap. The Yearly Summary lists the year before, the selected year, then Change; Trends lists years oldest to newest with each change under its year. A component never reads a module-level cache during render without also holding the value in state: the React Compiler memoizes such a read, which left `BarangayAtlas` on its loading skeleton until it kept the fetched census in state.
+
+## Business Categories "26-10-28"
+
+`BusinessCategories` carries every Business Category and Business Type with `registered` counts, the industry options, the data year, name limits, the palette size and the page size. The page reads its state from the URL (`view=categories|types`, `q`, `sort`, `dir`, `category`, `industry`, `page`) with `parseCategoryView`, and changes it with `router.push` (or `replace` for search) without a request. `lib/category-table.ts` holds the pure sort, filter, paging, URL and Title Case functions, tested by `composer test:categories`. Writes (`categories.store`, `categories.update`, `types.store`, `types.update`) redirect back and flash a toast. New categories take the least used color on the server. Category classes live in `lib/category-colors.ts` as literal strings so Tailwind sees them.
+
+The Businesses directory (`capitol.businesses.index`) is the opposite case: rows are not loaded, so it pages, sorts and filters on the server. Each filter change is a `router.get` that preserves state and scroll, search replaces history, and the shared `Pagination` carries the query string. Its Data object holds public-class fields only.

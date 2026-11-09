@@ -1,0 +1,73 @@
+psgc_code,town,reported_in_year,severity,kind,line_code,message,location
+0201502000,Alcala,2025,info,heading_not_in_catalog,,Alcala-FS-2025.xlsx!SCBAA row 78: 'Share from National Wealth',
+0201502000,Alcala,2025,info,heading_not_in_catalog,,Alcala-FS-2025.xlsx!SCBAA row 81: 'Allocation for Senior Citizens and PWD',
+0201502000,Alcala,2025,info,restated,expense.mooe,2024 was 94430829.15 in the 2024 report,
+0201502000,Alcala,2025,info,restated,expense.non_cash,2024 was 33936752.44 in the 2024 report,
+0201502000,Alcala,2025,info,restated,position.assets,2024 was 574936973.17 in the 2024 report,page 1
+0201502000,Alcala,2025,info,restated,position.liabilities,2024 was 45471718.87 in the 2024 report,page 1
+0201502000,Alcala,2025,info,spending_outside_catalog,,Alcala-FS-2025.xlsx!SCBAA row 86: 'Maintenance and Other Operating Expenses' 788433.52 is not under a catalog sector,
+0201504000,Amulung,2025,error,net_income_mismatch,performance.net_income,"2024: revenue minus expenses is 6256992.08, stated -6588299.25",
+0201504000,Amulung,2025,error,net_income_mismatch,performance.net_income,"2025: revenue minus expenses is 45851084.58, stated 32021821.31",
+0201504000,Amulung,2025,info,heading_not_in_catalog,,Amulung-FS-2025.xlsx!SCBAA row 46: 'Personnel Services',
+0201504000,Amulung,2025,info,heading_not_in_catalog,,Amulung-FS-2025.xlsx!SCBAA row 54: 'Personnel Services',
+0201504000,Amulung,2025,info,heading_not_in_catalog,,Amulung-FS-2025.xlsx!SCBAA row 80: 'Personnel Services',
+0201504000,Amulung,2025,info,restated,performance.expenses,2024 was 264823443.57 in the 2024 report,page 1
+0201504000,Amulung,2025,info,restated,performance.revenue,2024 was 258235144.32 in the 2024 report,page 1
+0201504000,Amulung,2025,info,spending_outside_catalog,,Amulung-FS-2025.xlsx!SCBAA row 47: 'Maintenance and Other Operating Expenses' 18445832.80 is not under a catalog sector,
+0201504000,Amulung,2025,info,spending_outside_catalog,,Amulung-FS-2025.xlsx!SCBAA row 81: 'Maintenance and Other Operating Expenses' 5334862.67 is not under a catalog sector,
+0201504000,Amulung,2025,info,spending_outside_catalog,,Amulung-FS-2025.xlsx!SCBAA row 82: 'Capital Outlay' 30354691.22 is not under a catalog sector,
+0201506000,Baggao,2025,info,heading_not_in_catalog,,Baggao-FS-2025.xlsx!SCBAA row 78: 'Share from National Wealth',
+0201506000,Baggao,2025,info,heading_not_in_catalog,,Baggao-FS-2025.xlsx!SCBAA row 81: 'Allocation for Senior Citizens and PWD',
+0201506000,Baggao,2025,info,restated,position.assets,2024 was 1543432411.59 in the 2024 report,page 2
+0201506000,Baggao,2025,info,restated,position.liabilities,2024 was 305882834.80 in the 2024 report,page 2
+0201506000,Baggao,2025,info,spending_outside_catalog,,Baggao-FS-2025.xlsx!SCBAA row 86: 'Maintenance and Other Operating Expenses' 4800000.00 is not under a catalog sector,
+0201506000,Baggao,2025,warning,change_mismatch,performance.net_income,"current minus prior is 61664468.97, stated 141565032.51",
+0201512000,Enrile,2025,info,restated,budget.appropriations_current,2024 was 245193383.58 in the 2024 report,page 2
+0201512000,Enrile,2025,info,restated,budget.obligations_current,2024 was 227567332.63 in the 2024 report,page 2
+0201512000,Enrile,2025,warning,differs_from_summary,performance.revenue,"2025: workbook lines add up to 251012223.69, the Executive Summary states 320926560.17",
+0201512000,Enrile,2025,warning,national_share_not_separate,revenue.tax,"Enrile-FS-2025.xlsx!8. Consolidated Fin Per: no national share line, so Local Taxes may include it",
+0201513000,Gattaran,2025,info,heading_not_in_catalog,,Gattaran-FS-2025.xlsx!SCBAA row 82: 'General Fund PPA's',
+0201513000,Gattaran,2025,info,heading_not_in_catalog,,Gattaran-FS-2025.xlsx!SCBAA row 87: 'Personnel Services',
+0201513000,Gattaran,2025,info,restated,position.assets,2024 was 975296161.17 in the 2024 report,page 2
+0201513000,Gattaran,2025,info,restated,position.liabilities,2024 was 177552821.05 in the 2024 report,page 2
+0201513000,Gattaran,2025,warning,sheet_year_mismatch,,"Gattaran-FS-2025.xlsx!SCBAA: title says 2024, workbook is for 2025",
+0201515000,Iguig,2025,info,heading_not_in_catalog,,Iguig-FS-2025.xlsx!SCBAA row 71: 'PESO',
+0201515000,Iguig,2025,info,spending_outside_catalog,,Iguig-FS-2025.xlsx!SCBAA row 72: 'PERSONAL SERVICES' 1656334.50 is not under a catalog sector,
+0201515000,Iguig,2025,info,spending_outside_catalog,,Iguig-FS-2025.xlsx!SCBAA row 73: 'MOOE' 183640.00 is not under a catalog sector,
+0201515000,Iguig,2025,info,spending_outside_catalog,,Iguig-FS-2025.xlsx!SCBAA row 74: 'GAD' 395214.12 is not under a catalog sector,
+0201519000,Peñablanca,2025,info,heading_not_in_catalog,,Penablanca-FS-2025.xlsx!SCBAA row 67: 'Personnel Services',
+0201519000,Peñablanca,2025,info,restated,position.assets,2024 was 836497286.53 in the 2024 report,page 1
+0201519000,Peñablanca,2025,info,spending_outside_catalog,,Penablanca-FS-2025.xlsx!SCBAA row 68: 'Maintenance and Other Operating Expenses' 33219507.34 is not under a catalog sector,
+0201519000,Peñablanca,2025,warning,differs_from_summary,performance.expenses,"2025: workbook lines add up to 440694823.43, the Executive Summary states 440925223.43",
+0201520000,Piat,2025,info,restated,position.assets,2024 was 376184298.61 in the 2024 report,page 1
+0201520000,Piat,2025,info,restated,position.liabilities,2024 was 76338966.99 in the 2024 report,page 1
+0201520000,Piat,2025,info,spending_outside_catalog,,Piat-FS-2025.xlsx!SCBAA row 68: 'Maintenance and Other Operating Expenses' 90000.00 is not under a catalog sector,
+0201521000,Rizal,2025,error,net_income_mismatch,performance.net_income,"2024: revenue minus expenses is -2530709.07, stated -33543300.08",
+0201521000,Rizal,2025,error,net_income_mismatch,performance.net_income,"2025: revenue minus expenses is 4081910.57, stated 3704295.45",
+0201521000,Rizal,2025,info,heading_not_in_catalog,,Rizal-FS-2025.xlsx!SCABAA row 80: 'Share from National Wealth',
+0201521000,Rizal,2025,info,heading_not_in_catalog,,Rizal-FS-2025.xlsx!SCABAA row 83: 'Allocation for Senior Citizens and PWD',
+0201521000,Rizal,2025,info,restated,performance.expenses,2024 was 162027018.04 in the 2024 report,page 2
+0201521000,Rizal,2025,info,restated,performance.net_income,2024 was -33537726.90 in the 2024 report,page 2
+0201521000,Rizal,2025,info,restated,performance.revenue,2024 was 128489291.14 in the 2024 report,page 2
+0201521000,Rizal,2025,info,spending_outside_catalog,,Rizal-FS-2025.xlsx!SCABAA row 87: 'Personal Services' 1226539.48 is not under a catalog sector,
+0201521000,Rizal,2025,info,spending_outside_catalog,,Rizal-FS-2025.xlsx!SCABAA row 88: 'Maintenance and Other Operating Expenses' 9507322.58 is not under a catalog sector,
+0201521000,Rizal,2025,warning,change_mismatch,budget.obligations_current,"current minus prior is 4872122.79, stated 872122.80",
+0201526000,Santo Niño,2025,error,revenue_sources_mismatch,revenue.tax,"2025: sources add up to 298626320.16, Total Revenue is 298648712.98",
+0201526000,Santo Niño,2025,error,revenue_sources_mismatch,revenue.tax,"2024: sources add up to 254555807.33, Total Revenue is 254556078.94",
+0201526000,Santo Niño,2025,info,heading_not_in_catalog,,Sto.-Nino-FS-2025.xlsx!SCBAA_Final row 80: 'Share from National Wealth',
+0201526000,Santo Niño,2025,info,heading_not_in_catalog,,Sto.-Nino-FS-2025.xlsx!SCBAA_Final row 83: 'Allocation for Senior Citizens and PWD',
+0201526000,Santo Niño,2025,info,restated,performance.expenses,2024 was 199587749.35 in the 2024 report,page 1
+0201526000,Santo Niño,2025,info,restated,performance.revenue,2024 was 254577873.74 in the 2024 report,page 1
+0201526000,Santo Niño,2025,info,spending_outside_catalog,,Sto.-Nino-FS-2025.xlsx!SCBAA_Final row 88: 'Maintenance and Other Operating Expenses' 31000.00 is not under a catalog sector,
+0201526000,Santo Niño,2025,warning,differs_from_summary,performance.revenue,"2025: workbook lines add up to 298626320.16, the Executive Summary states 298648712.98",
+0201527000,Solana,2025,info,heading_not_in_catalog,,Solana-FS-2025.xlsx!Comp of Budget-Actual row 64: 'Gender and Development Fund (GAD)',
+0201527000,Solana,2025,info,restated,position.assets,2024 was 1159443854.72 in the 2024 report,page 1
+0201527000,Solana,2025,info,restated,position.liabilities,2024 was 289706710.96 in the 2024 report,page 1
+0201527000,Solana,2025,info,spending_outside_catalog,,Solana-FS-2025.xlsx!Comp of Budget-Actual row 65: 'Maintenance and Other Operating Expenses' 2445.47 is not under a catalog sector,
+0201527000,Solana,2025,warning,differs_from_summary,performance.revenue,"2025: workbook lines add up to 423210733.20, the Executive Summary states 449380526.18",
+0201528000,Tuao,2025,info,restated,performance.expenses,2024 was 269606127.57 in the 2024 report,page 1
+0201528000,Tuao,2025,info,spending_outside_catalog,,Tuao-FS-2025.xlsx!SCBAA row 84: 'Maintenance and Other Operating Expenses' 22005894.18 is not under a catalog sector,
+0201529000,Tuguegarao City,2025,info,heading_not_in_catalog,,Tuguegarao-City-FS-2025.xlsx!11 - SCBAA row 73: 'Share from Tobacco Excise Tax',
+0201529000,Tuguegarao City,2025,info,heading_not_in_catalog,,Tuguegarao-City-FS-2025.xlsx!11 - SCBAA row 76: 'Special Education Fund',
+0201529000,Tuguegarao City,2025,info,spending_outside_catalog,,Tuguegarao-City-FS-2025.xlsx!11 - SCBAA row 77: 'Maintenance and Other Operating Expenses' 37385155.74 is not under a catalog sector,
+0201529000,Tuguegarao City,2025,info,spending_outside_catalog,,Tuguegarao-City-FS-2025.xlsx!11 - SCBAA row 78: 'Capital Outlay' 18523045.15 is not under a catalog sector,

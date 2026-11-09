@@ -1,4 +1,4 @@
-import type { Auth } from '@/types/auth';
+import type { Auth, DemoLoginOption } from '@/types/auth';
 
 declare module '@inertiajs/core' {
     export interface InertiaConfig {
@@ -6,6 +6,7 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             simulated: boolean;
+            demoLogins?: DemoLoginOption[];
             [key: string]: unknown;
         };
     }

@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Kita Brand Identity</title>
+        <style>
+            @font-face {
+                font-family: 'Geist';
+                src: url('../../resources/fonts/Geist-VariableFont_wght.ttf');
+                font-weight: 100 900;
+            }
+            @font-face {
+                font-family: 'Geist Mono';
+                src: url('../../resources/fonts/GeistMono-VariableFont_wght.ttf');
+                font-weight: 100 900;
+            }
+            :root {
+                --ink: #18405f;
+                --paper: #fbfaf6;
+                --text: #14202c;
+                --muted: #5d6b78;
+                --line: #dfe3e6;
+                --brass: #c7943c;
+                --brass-dark: #e1b767;
+                --off-white: #f0eeeb;
+                --m1: #9ec4d9;
+                --m2: #6aa7c9;
+                --m3: #3e88b5;
+                --m4: #16699c;
+                --m5: #034574;
+                --d1: #597f9b;
+                --d2: #659dc1;
+                --d3: #74b7df;
+                --d4: #91d1f3;
+                --d5: #c6efff;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--paper);
+                color: var(--text);
+                font:
+                    16px/1.55 'Geist',
+                    system-ui,
+                    sans-serif;
+            }
+            main {
+                max-width: 1040px;
+                margin: 0 auto;
+                padding: 48px 16px 96px;
+            }
+            h1,
+            h2,
+            h3 {
+                font-weight: 600;
+                letter-spacing: -0.01em;
+                margin: 0;
+            }
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+            h3 {
+                font-size: 1rem;
+                margin-bottom: 4px;
+            }
+            p {
+                margin: 0 0 12px;
+                max-width: 64ch;
+            }
+            section {
+                padding: 48px 0 0;
+            }
+            .label {
+                font:
+                    500 12px/1.4 'Geist Mono',
+                    monospace;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 8px;
+            }
+            .muted {
+                color: var(--muted);
+            }
+            .panel {
+                border: 1px solid var(--line);
+                border-radius: 2px;
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 24px;
+            }
+            .panel.ink {
+                background: var(--ink);
+                border-color: var(--ink);
+            }
+            .grid {
+                display: grid;
+                gap: 16px;
+            }
+            .g2 {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+            .g3 {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+            img {
+                display: block;
+                max-width: 100%;
+                height: auto;
+            }
+            .meanings {
+                display: grid;
+                gap: 16px;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                margin-top: 24px;
+            }
+            .meaning {
+                border-top: 2px solid var(--ink);
+                padding-top: 12px;
+            }
+            .meaning b {
+                font-size: 1.25rem;
+                display: block;
+            }
+            .swatches {
+                display: grid;
+                gap: 12px;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            .sw {
+                border: 1px solid var(--line);
+                border-radius: 2px;
+                overflow: hidden;
+                background: #fff;
+            }
+            .sw i {
+                display: block;
+                height: 64px;
+            }
+            .sw div {
+                padding: 8px 10px;
+                font:
+                    500 12px/1.5 'Geist Mono',
+                    monospace;
+            }
+            .sw small {
+                display: block;
+                color: var(--muted);
+                font-family: 'Geist', sans-serif;
+                font-size: 12px;
+            }
+            ul.rules {
+                margin: 0;
+                padding-left: 18px;
+            }
+            ul.rules li {
+                margin-bottom: 6px;
+            }
+            .clear {
+                position: relative;
+                padding: 22px;
+                outline: 1px dashed var(--brass);
+                background: rgba(199, 148, 60, 0.07);
+            }
+            .dont {
+                border: 1px solid var(--line);
+                border-radius: 2px;
+                background: #fff;
+                padding: 16px;
+            }
+            .dont .stage {
+                height: 96px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 8px;
+                overflow: hidden;
+            }
+            .dont span {
+                font-size: 13px;
+                color: var(--muted);
+            }
+            .card16 {
+                aspect-ratio: 16/9;
+                width: 100%;
+                background: var(--ink);
+                border-radius: 2px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                overflow: hidden;
+            }
+            .card16 .label {
+                color: #aebfcc;
+                margin: 0;
+            }
+            .topline {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                font:
+                    500 12px/1 'Geist Mono',
+                    monospace;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                padding: 10px 16px;
+                border-bottom: 1px solid var(--line);
+                background: #fff;
+            }
+            .topline a {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--text);
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <header>
+                <span class="label"
+                    >Brand Identity, Version 1, October 29, 2026</span
+                >
+                <img src="kita-logo.svg" alt="Kita" width="400" />
+                <p class="muted" style="margin-top: 20px">
+                    Entirety of Cagayan’s Finance and Performance, seen,
+                    centralized, and managed, in a single platform.
+                </p>
+                <p class="muted">
+                    We present to you, Kita. Cagayan’s finances come into focus
+                    first. Its businesses, its people, and its future come next.
+                </p>
+            </header>
+
+            <section>
+                <span class="label">1 Name</span>
+                <h2>Kita</h2>
+                <p>
+                    A Filipino word that carries the whole product in four
+                    letters. It is the one word that holds the finances, the
+                    registry, and the public view.
+                </p>
+                <div class="meanings">
+                    <div class="meaning">
+                        <b>Earned</b>Kita means income and profit. It stands for
+                        the government finances and the businesses the platform
+                        records.
+                    </div>
+                    <div class="meaning">
+                        <b>Seen</b>Kita also means clearly visible, as in
+                        kitang-kita. It stands for transparency: figures anyone
+                        can see, with their source.
+                    </div>
+                    <div class="meaning">
+                        <b>Shared</b>Kita is spoken from one person to another,
+                        as in mahal kita. It stands for a government speaking
+                        openly to its people, and the people answering back
+                        through their wishes.
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <span class="label">2 The Mark</span>
+                <h2>An Eye Made of Data</h2>
+                <p>
+                    A halftone eye holds a small magnifying lens as its iris.
+                    The eye is the public looking. The lens is the detail: one
+                    town, one barangay, one figure. The brass dot at its center
+                    is the pupil, the single thing you chose to look at. The
+                    same brass dot becomes the dot on the i in the wordmark.
+                </p>
+                <div class="g2 grid" style="margin-top: 20px">
+                    <div class="panel">
+                        <img src="kita-mark.svg" alt="Kita mark" width="340" />
+                    </div>
+                    <div class="panel ink">
+                        <img
+                            src="kita-mark-reverse.svg"
+                            alt="Kita mark, reverse"
+                            width="340"
+                        />
+                    </div>
+                </div>
+                <div class="g3 grid" style="margin-top: 16px">
+                    <div>
+                        <h3>Dots</h3>
+                        <p class="muted">
+                            57 dots on a 10 unit grid, all one size, exactly as
+                            the map draws them. Depth carries the value, never
+                            size.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Depth</h3>
+                        <p class="muted">
+                            The five map shades. The deepest dots sit closest to
+                            the lens, so the eye focuses where you look.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Brass</h3>
+                        <p class="muted">
+                            Used only for the pupil and the dot on the i. It
+                            marks the chosen place, as it does on the map.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <span class="label">3 Logo</span>
+                <h2>Lockups</h2>
+                <div class="g2 grid" style="margin-top: 16px">
+                    <div class="panel">
+                        <img src="kita-logo.svg" alt="Kita" width="360" />
+                    </div>
+                    <div class="panel ink">
+                        <img
+                            src="kita-logo-reverse.svg"
+                            alt="Kita"
+                            width="360"
+                        />
+                    </div>
+                    <div class="panel">
+                        <img
+                            src="kita-logo-stacked.svg"
+                            alt="Kita"
+                            width="240"
+                        />
+                    </div>
+                    <div class="panel ink">
+                        <img
+                            src="kita-logo-stacked-reverse.svg"
+                            alt="Kita"
+                            width="240"
+                        />
+                    </div>
+                </div>
+                <p class="muted" style="margin-top: 12px">
+                    The horizontal lockup is primary. Use the stacked lockup for
+                    square or narrow spaces, the mark alone for avatars and
+                    stamps, and the icon for the browser tab and the app.
+                    Reverse versions go only on River ink or another dark
+                    surface. The one color version,
+                    <code>kita-mark-mono.svg</code>, takes any single color
+                    through <code>currentColor</code> for print, stamps and
+                    watermarks.
+                </p>
+            </section>
+
+            <section>
+                <span class="label">4 Space and Size</span>
+                <h2>Clear Space and Minimum Size</h2>
+                <div class="g2 grid" style="margin-top: 16px">
+                    <div class="panel">
+                        <div class="clear">
+                            <img src="kita-logo.svg" alt="Kita" width="320" />
+                        </div>
+                    </div>
+                    <div>
+                        <ul class="rules">
+                            <li>
+                                Keep clear space on every side equal to half the
+                                height of the letter K (about one fourteenth of
+                                the lockup width).
+                            </li>
+                            <li>
+                                Horizontal lockup: never below 96 px wide, or 25
+                                mm in print.
+                            </li>
+                            <li>
+                                Mark alone: never below 32 px wide. Smaller than
+                                that, use the icon.
+                            </li>
+                            <li>Icon: works down to 16 px.</li>
+                        </ul>
+                        <div
+                            style="
+                                display: flex;
+                                gap: 16px;
+                                align-items: end;
+                                margin-top: 20px;
+                            "
+                        >
+                            <img
+                                src="kita-icon.svg"
+                                alt=""
+                                width="64"
+                                height="64"
+                            />
+                            <img
+                                src="kita-icon.svg"
+                                alt=""
+                                width="32"
+                                height="32"
+                            />
+                            <img
+                                src="kita-icon.svg"
+                                alt=""
+                                width="16"
+                                height="16"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <span class="label">5 Color</span>
+                <h2>Colors Come From the App</h2>
+                <p>
+                    Every color is an existing design token, so the brand and
+                    the product never drift apart. Nothing is added.
+                </p>
+                <h3 style="margin-top: 20px">On light surfaces</h3>
+                <div class="swatches">
+                    <div class="sw">
+                        <i style="background: var(--ink)"></i>
+                        <div>
+                            #18405F<small
+                                >River ink, --primary and --brand. Ring, handle,
+                                wordmark</small
+                            >
+                        </div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--brass)"></i>
+                        <div>
+                            #C7943C<small
+                                >Brass, --highlight. Pupil and the i dot
+                                only</small
+                            >
+                        </div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--m1)"></i>
+                        <div>#9EC4D9<small>--map-1</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--m2)"></i>
+                        <div>#6AA7C9<small>--map-2</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--m3)"></i>
+                        <div>#3E88B5<small>--map-3</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--m4)"></i>
+                        <div>#16699C<small>--map-4</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--m5)"></i>
+                        <div>#034574<small>--map-5</small></div>
+                    </div>
+                </div>
+                <h3 style="margin-top: 20px">On River ink surfaces</h3>
+                <div class="swatches">
+                    <div class="sw">
+                        <i style="background: var(--off-white)"></i>
+                        <div>
+                            #F0EEEB<small
+                                >Foreground. Ring, handle, wordmark</small
+                            >
+                        </div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--brass-dark)"></i>
+                        <div>#E1B767<small>Brass on dark</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--d1)"></i>
+                        <div>#597F9B<small>--map-1 dark</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--d2)"></i>
+                        <div>#659DC1<small>--map-2 dark</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--d3)"></i>
+                        <div>#74B7DF<small>--map-3 dark</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--d4)"></i>
+                        <div>#91D1F3<small>--map-4 dark</small></div>
+                    </div>
+                    <div class="sw">
+                        <i style="background: var(--d5)"></i>
+                        <div>#C6EFFF<small>--map-5 dark</small></div>
+                    </div>
+                </div>
+                <p class="muted" style="margin-top: 12px">
+                    Hex values are the sRGB conversions of the oklch tokens in
+                    <code>resources/css/app.css</code>. Print uses the same
+                    values.
+                </p>
+            </section>
+
+            <section>
+                <span class="label">6 Typography</span>
+                <h2>Geist, the Same Voice as the Product</h2>
+                <div class="g2 grid" style="margin-top: 16px">
+                    <div
+                        class="panel"
+                        style="
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 6px;
+                        "
+                    >
+                        <span class="label">Wordmark</span>
+                        <span
+                            style="
+                                font-size: 88px;
+                                line-height: 1;
+                                font-weight: 600;
+                                letter-spacing: -0.005em;
+                                color: var(--ink);
+                            "
+                            >Kita</span
+                        >
+                        <span class="muted" style="font-size: 13px"
+                            >Geist SemiBold, outlined in the logo files, with a
+                            round brass dot on the i.</span
+                        >
+                    </div>
+                    <div
+                        class="panel"
+                        style="
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 10px;
+                        "
+                    >
+                        <span class="label">Tagline</span>
+                        <span
+                            style="
+                                font:
+                                    500 14px/1.4 'Geist Mono',
+                                    monospace;
+                                letter-spacing: 0.14em;
+                                text-transform: uppercase;
+                                color: var(--ink);
+                            "
+                            >Cagayan, Seen</span
+                        >
+                        <span style="font-size: 22px; font-weight: 600"
+                            >Cagayan, Seen</span
+                        >
+                        <span class="muted" style="font-size: 13px"
+                            >Geist Mono, uppercase and tracked, as the app's
+                            labels, on title cards and covers. Geist SemiBold in
+                            Title Case where it reads as a sentence.</span
+                        >
+                    </div>
+                </div>
+                <ul class="rules" style="margin-top: 16px">
+                    <li>
+                        The name is always written <b>Kita</b>. Never KITA or
+                        kita.
+                    </li>
+                    <li>
+                        Do not retype the wordmark in another font. Use the logo
+                        files.
+                    </li>
+                    <li>
+                        Titles and headings carry no commas, dashes, middots or
+                        pipes, as in the product.
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <span class="label">7 Usage</span>
+                <h2>Do Not</h2>
+                <div class="g3 grid" style="margin-top: 16px">
+                    <div class="dont">
+                        <div class="stage">
+                            <img
+                                src="kita-logo.svg"
+                                alt=""
+                                width="200"
+                                style="transform: scaleX(1.5)"
+                            />
+                        </div>
+                        <span>Stretch or squash the logo.</span>
+                    </div>
+                    <div class="dont">
+                        <div class="stage" style="background: #8a5ad1">
+                            <img src="kita-logo.svg" alt="" width="200" />
+                        </div>
+                        <span
+                            >Place it on colors outside the palette, or on
+                            photographs.</span
+                        >
+                    </div>
+                    <div class="dont">
+                        <div class="stage">
+                            <img
+                                src="kita-logo.svg"
+                                alt=""
+                                width="200"
+                                style="filter: hue-rotate(150deg) saturate(2)"
+                            />
+                        </div>
+                        <span>Recolor any part, including the brass.</span>
+                    </div>
+                    <div class="dont">
+                        <div class="stage">
+                            <img
+                                src="kita-logo.svg"
+                                alt=""
+                                width="200"
+                                style="
+                                    filter: drop-shadow(
+                                        4px 4px 3px rgba(0, 0, 0, 0.5)
+                                    );
+                                "
+                            />
+                        </div>
+                        <span>Add shadows, glows, gradients or outlines.</span>
+                    </div>
+                    <div class="dont">
+                        <div class="stage">
+                            <img
+                                src="kita-mark.svg"
+                                alt=""
+                                width="120"
+                                style="transform: rotate(-25deg)"
+                            />
+                        </div>
+                        <span>Rotate or tilt the mark.</span>
+                    </div>
+                    <div class="dont">
+                        <div class="stage" style="background: var(--ink)">
+                            <img src="kita-logo.svg" alt="" width="200" />
+                        </div>
+                        <span
+                            >Use the light logo on a dark surface. Use the
+                            reverse logo.</span
+                        >
+                    </div>
+                </div>
+                <p class="muted" style="margin-top: 12px">
+                    No gradients anywhere, as in the product. The dots stay one
+                    size. Brass is never used for decoration, buttons, or links.
+                </p>
+            </section>
+
+            <section>
+                <span class="label">8 Applications</span>
+                <h2>In Use</h2>
+                <div class="g2 grid" style="margin-top: 16px">
+                    <div>
+                        <h3>Top line of every screen</h3>
+                        <div class="topline">
+                            <a href="#"
+                                ><img src="kita-mark.svg" alt="" width="28" />
+                                Kita</a
+                            ><span class="muted">Light</span>
+                        </div>
+                        <p class="muted" style="margin-top: 8px">
+                            The app name stays a quiet type-label link home. The
+                            small mark sits before it. Nothing else changes in
+                            the layout.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Browser tab and app icon</h3>
+                        <div
+                            style="
+                                display: flex;
+                                gap: 16px;
+                                align-items: end;
+                                padding: 12px 0;
+                            "
+                        >
+                            <img
+                                src="kita-icon.svg"
+                                alt=""
+                                width="96"
+                                height="96"
+                            /><img
+                                src="kita-icon.svg"
+                                alt=""
+                                width="48"
+                                height="48"
+                            /><img
+                                src="kita-icon.svg"
+                                alt=""
+                                width="24"
+                                height="24"
+                            />
+                        </div>
+                        <p class="muted">
+                            A simplified mark: the lens, the handle and the
+                            brass pupil on River ink. It replaces the default
+                            <code>public/favicon.svg</code> when the name is
+                            final.
+                        </p>
+                    </div>
+                </div>
+                <div class="g2 grid" style="margin-top: 16px">
+                    <div>
+                        <h3>Video title card and slide cover</h3>
+                        <div class="card16">
+                            <img
+                                src="kita-logo-stacked-reverse.svg"
+                                alt="Kita"
+                                style="width: 32%"
+                            /><span class="label">Cagayan, Seen</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Presentation closing card</h3>
+                        <div class="card16">
+                            <img
+                                src="kita-mark-reverse.svg"
+                                alt=""
+                                style="width: 40%"
+                            /><span
+                                style="
+                                    color: var(--off-white);
+                                    font-size: clamp(14px, 2.2vw, 20px);
+                                    font-weight: 600;
+                                "
+                                >Cagayan, Seen</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <span class="label">9 Files</span>
+                <h2>What Is in This Folder</h2>
+                <ul class="rules">
+                    <li>
+                        <code>kita-logo.svg</code> and
+                        <code>kita-logo-reverse.svg</code>: horizontal lockups.
+                    </li>
+                    <li>
+                        <code>kita-logo-stacked.svg</code> and
+                        <code>kita-logo-stacked-reverse.svg</code>: stacked
+                        lockups.
+                    </li>
+                    <li>
+                        <code>kita-mark.svg</code>,
+                        <code>kita-mark-reverse.svg</code> and
+                        <code>kita-mark-mono.svg</code>: the mark alone.
+                    </li>
+                    <li>
+                        <code>kita-icon.svg</code>: app and browser icon on
+                        River ink.
+                    </li>
+                </ul>
+                <p class="muted" style="margin-top: 12px">
+                    All logo files are plain SVG with the wordmark outlined, so
+                    they need no font. Nothing in the app has been renamed or
+                    changed.
+                </p>
+            </section>
+        </main>
+    </body>
+</html>

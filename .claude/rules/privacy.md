@@ -18,14 +18,15 @@ Full rules and reasons: `docs/engineering/privacy-rules.md`. Read it before chan
 - **P5** The guard runs after filters, on the final group.
 - **P6** Anything derived from a hidden figure is hidden: per business, share, change, rank, concentration, outlook.
 - **P7** The public sees a band only, never a number. Hidden stays hidden, with no band.
-- **P8** Owner name, contact number, ownership type, size category, employee count: authenticated administrators only.
-- **P9** Opening a full business record writes one `record_view_logs` row before responding. The list view writes none.
+- **P8** Owner name, owner contact, street address, ownership type, size category, employee count, registration and permit numbers, TIN (masked, never sent to the edit form), RDO, review notes and documents: Capitol administrators and Staff of the business's town only. The business's own phone and email are public; a home-based business never sends its pin.
+- **P9** Opening a full business record, its edit form or a document writes one `record_view_logs` row before responding. The list view writes none.
 - **P10** Pages get Data objects from `app/Data/`, never models, collections, or `->toArray()` of a model, including shared props in `HandleInertiaRequests`. Separate public and admin objects.
 - **P11** CSV and PDF are built from the same guarded Data objects.
-- **P12** Wishes store no name, contact, or network address, only a one-way daily hash. Reasons are admin only. The form is rate limited.
-- **P13** The "Simulated data" label is in the shared layout and every export.
+- **P12** Wishes store no name, contact, or raw network address. A browser is the SHA-256 hash of an anonymous signed cookie token, plus a daily keyed network hash used only to cap new respondents (D21). One new wish per 3 days, 3 edits per 7 days, from `cagayan.wishes`. Honeypot, signed form timer, plain-text reasons with no links. Reasons are admin only, plus the browser that wrote them. Rate limited per IP per hour.
+- **P13** The "Simulated data" label is in the shared layout and every export whenever simulated records are on. They are off by default (D37), and with the flag off no business figure is produced.
 - **P14** No sales, owner names, or contact numbers in logs or exception text.
+- **P15** Only approved registry records reach public routes or `stats_` tables (D40).
 
-Known gap: `HandleInertiaRequests` still shares the full `User` model as `auth.user`. Fix planned in `docs/engineering/testing.md`, "Audit backlog". Do not copy that pattern.
+`auth.user` is the `SessionUser` Data object (name only). Keep it that way.
 
 Before committing, run `/privacy-check` or the `privacy-reviewer` agent.

@@ -41,7 +41,7 @@ Route::middleware(['auth', 'can:capitol'])
 
 - Bind models by a readable key where one exists (`{barangay:psgc_code}`), so URLs can be shared and bookmarked.
 - Use resource method names: `index`, `show`, `create`, `store`, `edit`, `update`, `destroy`. A controller with one job uses `__invoke`.
-- Filters live in the query string (`?year=2026&type=pharmacy`), so a refresh, the back button, and a shared link all show the same screen.
+- Filters live in the query string (`?year=2026&type=pharmacy`), so a refresh, the back button, and a shared link all show the same screen. This does not require a server request per selection: loaded-data sorts, filters, views and cached map selections use local Inertia history. Queries return bounded public datasets with finished metrics; fetch only missing data. See frontend.md, "Local Selection Contract".
 - After any `POST`, `PUT`, `PATCH`, or `DELETE`, redirect. Never render a page from a write. Show the result with a toast: `Inertia::flash('toast', ['type' => 'success', 'message' => __('Wish recorded.')])`.
 
 ### Clean URLs
@@ -70,7 +70,7 @@ Always redirect to a route name, never to a typed path, so renaming a URL never 
 | To a page outside Inertia (a file download, another site) | `return Inertia::location($url);` |
 | A URL was renamed and old links exist | `Route::permanentRedirect('old-path', 'new-path');` in the route file |
 | Where login sends people | `'home'` in `config/fortify.php` |
-| Where guests are sent when they open a Capitol page | the `login` route, which Laravel uses by default |
+| Where guests are sent when they open a Capitol page | nowhere: a plain 404, so the login path stays hidden (decisions.md, D20) |
 
 Do not use `redirect('/some/path')` or `redirect()->to(...)` with a typed path. Validation failures redirect back on their own through the Form Request.
 
@@ -142,20 +142,7 @@ final class BarangayProfileQuery
 
 One class, one public `handle()` method, one use case. Wrap more than one write in a transaction.
 
-```php
-final class SubmitWish
-{
-    public function handle(Municipality $town, BusinessType $type, ?string $reason, string $ip): Wish
-    {
-        return Wish::create([
-            'municipality_id' => $town->id,
-            'business_type_id' => $type->id,
-            'reason' => $reason,
-            'dedupe_hash' => hash_hmac('sha256', implode('|', [today()->toDateString(), $ip, $town->id, $type->id]), config('app.key')),
-        ]);
-    }
-}
-```
+For example, `SubmitWish::handle()` receives the validated town, optional business type, optional company name, reason, and the submitter and network hashes. It acquires a lock per submitter, checks the cooldown and network allowance, and writes the wish. `EditWish` applies the edit allowance and records the edit in a transaction. See those Actions for the complete implementation; raw network addresses and the removed `dedupe_hash` design must not be copied into new code.
 
 ## Services hold shared domain rules
 
@@ -274,8 +261,8 @@ Route::post('wishes', [WishController::class, 'store'])->middleware('throttle:wi
 
 | Endpoint | Limit | Where |
 | :- | :- | :- |
-| Login | 5 per minute per email and IP | `FortifyServiceProvider` (exists) |
-| Wish form (P3) | per IP, per hour | add with the feature |
+| Login | `admin.login_per_minute` per email and IP, `admin.login_per_hour_per_ip` per IP, `admin.login_per_hour_per_account` per account (lockout) | `FortifyServiceProvider` |
+| Wish form and edits (P3) | `wishes.per_hour_per_ip` per IP, per hour. The 3 day cooldown and weekly edit limit are separate rules in `WishAllowance` (privacy-rules.md, P12) | `AppServiceProvider` |
 | CSV and PDF exports (C14) | per user, per minute | add with the feature |
 
 Limits live in `AppServiceProvider` (or `FortifyServiceProvider` for login), named, and applied with `throttle:<name>`. The limiter key may use the IP. That is held briefly in the cache, never written to a table.
@@ -290,3 +277,12 @@ Limits live in `AppServiceProvider` (or `FortifyServiceProvider` for login), nam
 
 - Every threshold lives in `config/cagayan.php` and is read with `config('cagayan....')`. Never a literal in PHP, SQL, or React.
 - `env()` is read only inside `config/` files.
+
+
+## Workspace foundation
+
+The capitol gate admits active Super Admin, Admin, and Staff accounts. Separate community-wishes and activity-logs gates enforce the visibility matrix; edit-town checks assigned towns for Staff. Routes remain inside the shared authenticated Capitol group. The dashboard's WorkspaceMap payload contains economic/geographic data only. Workspace capabilities and session deadlines are private Capitol props, not public shared props; auth.user remains name-only.
+
+ProtectAdminSession runs on web requests and binds each session to auth_version, start time, and last user-initiated Capitol activity. Background reloads send X-Workspace-Background: true. A stale tab rechecks through a non-renewing reload before redirecting to sign-in. Private Inertia history is encrypted; sign-in/logout/expiry clear history keys. Cookie security defaults to HTTPS-only in production; deployments must retain secure cookie settings.
+
+The prototype retains Fortify password sign-in with remember-me disabled and public registration off. The private /capitol/profile page is an approved workspace feature, not restored starter /settings/profile. Identity-provider migration is documented in database.md and deliberately deferred. Trusted operators assign an existing account with php artisan workspace:role <email> super_admin|admin|staff. This command never creates an account or silently promotes an existing administrator.

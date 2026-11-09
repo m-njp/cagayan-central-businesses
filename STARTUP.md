@@ -16,7 +16,7 @@ Install each one, then open a **new** PowerShell window and run its check.
 | Tool | Get it | Check |
 | :- | :- | :- |
 | Git | https://git-scm.com/download/win | `git --version` |
-| PHP 8.3 or newer | WAMP, Laravel Herd, or https://php.new | `php -v` |
+| PHP 8.3.36 or a newer 8.3 patch | WAMP, Laravel Herd, or https://php.new | `php -v` |
 | Composer | https://getcomposer.org/download | `composer --version` |
 | Node 22 | https://nodejs.org (LTS installer) | `node --version` |
 | Docker Desktop | https://www.docker.com/products/docker-desktop | `docker --version` |
@@ -24,11 +24,13 @@ Install each one, then open a **new** PowerShell window and run its check.
 
 Everyone uses the same PHP minor version (8.3) as CI.
 
+PHP 8.3.36 includes the October 2026 critical security fixes. Update the PHP used by the web server as well as the command line, set `session.upload_progress.enabled=0` in both configurations, and restart PHP after updating. Keep installing subsequent security patches. Official advisory: https://www.php.net/#security-advisory-critical-remote-code-execution-vulnerabilities-update-now.
+
 ## 3. Turn on two PHP extensions
 
 The app talks to PostgreSQL through `pdo_pgsql` and `pgsql`.
 
-1. Run `php --ini`. Note the "Loaded Configuration File", for example `C:\wamp64\bin\php\php8.3.14\php.ini`.
+1. Run `php --ini`. Note the "Loaded Configuration File", for example `C:\wamp64\bin\php\php8.3.36\php.ini`.
 2. Open that file in a text editor. Find these two lines and delete the `;` at the start of each:
 
    ```
@@ -77,12 +79,9 @@ composer setup
 composer dev
 ```
 
-Open http://localhost:8000 and log in as the demo administrator:
+Open http://localhost:8000/staff-sign-in (the path is `CAGAYAN_ADMIN_LOGIN_PATH` in your `.env`). The page shows a quick sign in button for each demo role: Super Admin, Admin, and Staff. The buttons exist only while `APP_ENV=local`.
 
-- Email: `admin@cagayan.test`
-- Password: `password`
-
-Both come from `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` in your `.env`. Press `Ctrl+C` in the terminal to stop.
+The accounts come from `DEMO_SUPER_ADMIN_*`, `DEMO_ADMIN_*`, and `DEMO_STAFF_*` in your `.env`. To change a role's login, edit those lines and run `php artisan db:seed --class=DemoAccountSeeder`. It adds missing accounts and leaves existing ones alone. Press `Ctrl+C` in the terminal to stop.
 
 **Check:** you see the dashboard after logging in.
 

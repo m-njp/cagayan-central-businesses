@@ -44,6 +44,7 @@ class DoctorCommand extends Command
         $this->check('Docker is running and the db service is healthy', fn () => $this->checkDocker());
         $this->check('.env exists and has an app key', fn () => $this->checkEnv());
         $this->check('Git hooks path is .githooks', fn () => $this->checkHooksPath());
+        $this->check('COA parser tools', fn () => $this->checkCoaTools());
         $this->check('App can connect to the database', fn () => $this->checkDatabaseConnection());
         $this->check('PostGIS responds', fn () => $this->checkPostgis(), needsDatabase: true);
         $this->check('Test database exists', fn () => $this->checkTestDatabase(), needsDatabase: true);
@@ -113,7 +114,7 @@ class DoctorCommand extends Command
         if (! $satisfied) {
             throw new DoctorFailure(
                 'PHP '.PHP_VERSION." does not meet {$constraint} from composer.json.",
-                'Install PHP 8.3 or newer (WAMP, Laravel Herd, or php.new), and make sure `php -v` in a new terminal shows it.',
+                'Install a patched PHP version matching composer.json (WAMP, Laravel Herd, or php.new), and make sure `php -v` in a new terminal shows it.',
             );
         }
 
@@ -225,6 +226,14 @@ class DoctorCommand extends Command
         }
 
         return null;
+    }
+
+    /** Optional for a clean clone; Capitol report uploads need it on the queue worker (D34, D42). */
+    private function checkCoaTools(): string
+    {
+        return is_file((string) config('cagayan.finances.uploads.python'))
+            ? 'ready'
+            : 'not set up, so report uploads cannot be read; `composer data:finances:test` creates it';
     }
 
     private function checkDatabaseConnection(): string

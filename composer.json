@@ -9,7 +9,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "~8.3.36 || ~8.4.27 || ~8.5.12",
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/chisel": "^0.1.0",
         "laravel/fortify": "^1.37.2",
@@ -66,11 +66,31 @@
             "@php artisan migrate:fresh --seed --force",
             "@php artisan metrics:refresh"
         ],
+        "data:towns": [
+            "@php artisan towns:import",
+            "@php artisan barangays:import"
+        ],
+        "data:finances": [
+            "@php artisan finances:import"
+        ],
+        "data:finances:extract": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py extract"
+        ],
+        "data:finances:test": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py test"
+        ],
+        "data:finances:parse": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py intake"
+        ],
         "doctor": [
             "@php artisan app:doctor"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
+            "@php artisan dev:guard",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
         ],
         "lint": [
@@ -83,8 +103,20 @@
             "Composer\\Config::disableProcessTimeout",
             "npm run check",
             "npm run types:check",
+            "@test:analytics",
+            "@test:maps",
+            "@test:categories",
+            "@test:trend",
+            "@test:geo",
+            "@test:businesses",
             "@test"
         ],
+        "test:maps": "node --experimental-strip-types --test tests/Frontend/finance-map.test.mjs",
+        "test:trend": "node --experimental-strip-types --test tests/Frontend/trend.test.mjs",
+        "test:geo": "node --experimental-strip-types --test tests/Frontend/geo.test.mjs",
+        "test:businesses": "node --experimental-strip-types --test tests/Frontend/public-businesses.test.mjs",
+        "test:categories": "node --experimental-strip-types --test tests/Frontend/category-table.test.mjs",
+        "test:analytics": "node --experimental-strip-types --test tests/Frontend/analytics.test.mjs",
         "types:check": [
             "phpstan analyse --memory-limit=1G"
         ],

@@ -4,7 +4,7 @@ A map of Cagayan's registered businesses, barangay by barangay, for the Provinci
 Capitol staff log in to see business counts, trends, and area sales totals. The public explores the map, gets a start-a-business checklist, and tells the Capitol what businesses their town lacks.
 The MVP covers Tuguegarao City's 49 barangays. Built for the PGC Digital Innovation Challenge 2026.
 
-> **Simulated data.** Barangay boundaries and population are real. Every business record is simulated, and every screen that shows them says so.
+> **Data.** Boundaries, population and COA government finances are real. There are no simulated business records unless `CAGAYAN_SIMULATED` is true for a presentation, and then every screen that shows them says so. The Tuguegarao City wishes on Economy are sample data and are labeled.
 
 ## Quick start
 
@@ -17,7 +17,7 @@ composer setup
 composer dev
 ```
 
-Open http://localhost:8000 and log in with `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` from your `.env`.
+Open http://localhost:8000/staff-sign-in and press a demo role button (Super Admin, Admin, or Staff). The buttons exist only while `APP_ENV=local`; accounts come from the `DEMO_*` lines in your `.env` (decisions.md, D33).
 
 ## Every day
 

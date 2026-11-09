@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Http\Controllers\Capitol;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\AnalyticsRequest;
+use App\Queries\AnalyticsCatalogQuery;
+use Inertia\Inertia;
+use Inertia\Response;
+
+final class AnalyticsController extends Controller
+{
+    public function __invoke(AnalyticsRequest $request, AnalyticsCatalogQuery $query): Response
+    {
+        return Inertia::render('capitol/analytics', [
+            'catalog' => $query->get(),
+            'filters' => $request->analyticsFilters(),
+        ]);
+    }
+}
