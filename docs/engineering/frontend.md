@@ -60,7 +60,7 @@ The Inertia resolver registers only `pages/**/index.tsx`. Other files in a page 
 - **Page** (`pages/`): receives props, arranges the screen, owns page state such as which tab is open. Pages do not format numbers by hand or fetch data.
 - **Component** (`components/`): shows one thing well and is used in more than one place.
 - **Primitive** (`components/ui/`): shadcn building blocks such as button, card, dialog, table.
-- **Helper** (`lib/`): pure functions, for example `formatPesos()`, `formatPercent()`.
+- **Helper** (`lib/`): pure functions, for example `formatNumber()` and `formatPercent()`.
 
 ## When to make a component
 
@@ -284,13 +284,15 @@ Home action links use Wayfinder with the valid selected atlas town from the curr
 
 ### Shared Workspace Controls "26-10-28"
 
-Use `WorkspaceFilters` for the right-hand filter/action panel in finance, Activity Logs and Community Wishes. It centralizes panel spacing, mobile ordering and accessible labeling.
+Use `WorkspaceFilters` for the Capitol panel surface and accessible heading. Use `WorkspaceFilterLayout` on list pages for the shared 16 rem right rail with filters above results in narrow layouts and first in reading order. The Dashboard uses its wider supporting stack to fit finance year columns.
 
 Use `FieldHelp` beside `FieldLabel` for requested contextual explanations. It uses the existing tooltip primitive with a named, keyboard-focusable help button; clicking also opens it. Use `FieldLabel required` plus native required controls for mandatory fields. Do not repeat limits as permanent helper copy when validation already enforces them.
 
 `workspaceNavigation` is the single source of destination labels, icons, permission visibility and group placement. Account destinations remain available to breadcrumbs but render only in the bottom account menu. Preserve Wayfinder's logout method.
 
-`WorkspaceStatus` owns session activity, expiry reloads and renewal warnings. Do not remove it when changing page chrome. It intentionally renders no greeting/date/clock row.
+`WorkspaceStatus` owns session activity, expiry reloads and renewal warnings. The Dashboard welcome owns its date and clock separately so its time updates do not rerender the map or tables.
+
+`WorkspaceFilterSelect` reuses the compact Select and Field styles for the standard All option. Specialized year and analytics controls keep their own selection contracts. Dashboard tables use the shared `Pagination` with local state for their already-loaded rows. The review table keeps its server-provided order and role restrictions. Appearance transitions apply to marked shell and panel surfaces after initialization and honor reduced motion.
 
 Figure entry has six possible fields: year, item, basis, amount, source report and a conditional official source URL. It sends no note; the request prohibits an entry note. Review notes and historical imported notes are separate concerns and remain supported. All source, amount, year, role and independent-review restrictions still apply.
 
@@ -318,7 +320,9 @@ Look and words: `design.md`, "Government Finances Ledger Table". Contract:
 
 ## Dynamic Economic Maps "26-10-28"
 
-HomeOverview and WorkspaceMap share a FinanceMap contract with years, latestYear, three M19 metrics, annual observations, SQL-computed shades and deduplicated public source evidence. Year remains in local Inertia history alongside geography; absent year means Latest. There is no Measure selector or `measure` URL parameter: the map shades by Income and the panel lists all three measures. Latest is global, not per town. Explicit fiscal years hide all economic-panel population context, and missing town records never fall back. Existing public map style preference and the independent census explorer are preserved. Cached dashboard geography and breadcrumbs preserve finance filters. The panel ends with one Source block: one underlined link per distinct COA report page (the province sum shows one plain "COA Annual Audit Reports" line instead) (`financeMapSources`, opened at the cited page with `#page=N`) plus the Latest population link. It does not open the Analytics evidence drawer. Coverage prints once when every metric shares it; an empty year or barangay level shows one status line instead of repeated Not available rows.
+HomeOverview and WorkspaceMap share a FinanceMap contract with years, latestYear, three M19 metrics, annual observations, SQL-computed shades and public source evidence. Year remains in local Inertia history alongside geography. An absent year means Latest. The map shades by Income and the panel lists all three measures. Latest selects one common fiscal year for every municipality. Explicit fiscal years hide population context. The fullscreen chart uses all loaded years for the selected area. Cached dashboard geography and breadcrumbs preserve finance filters. `financeMapSources` supplies the citations for the selected year. Municipality links open the stored report at `#page=N`. Province totals link to the report catalog in About the Data. The Latest population link uses the URL stored with the figure. Coverage prints once when every metric shares it. An empty year or barangay level shows one status line.
+
+About the Data reads the verified report catalog from `FinanceEvidenceQuery`. Each catalog entry is public citation metadata for an existing file allowed by the same check used by the public download route. The catalog contains no figure amounts, workbook inputs, private uploads or storage paths. Citations group by report file and page, with one download per workbook. The ZIP contains the whole verified catalog regardless of the municipality search. Its temporary file is deleted after delivery. The preparation dialog reuses the parser's blur and progress bar.
 
 FinanceYears preserves configured default ranges and extends report/review limits from imported reports and ledger records; Analytics extends its series from published statistics. No range advances from the current date alone.
 
@@ -328,6 +332,6 @@ A change renders only through `TrendMark` and `ObservationChange`, which take th
 
 ## Business Categories "26-10-28"
 
-`BusinessCategories` carries every Business Category and Business Type with `registered` counts, the industry options, the data year, name limits, the palette size and the page size. The page reads its state from the URL (`view=categories|types`, `q`, `sort`, `dir`, `category`, `industry`, `page`) with `parseCategoryView`, and changes it with `router.push` (or `replace` for search) without a request. `lib/category-table.ts` holds the pure sort, filter, paging, URL and Title Case functions, tested by `composer test:categories`. Writes (`categories.store`, `categories.update`, `types.store`, `types.update`) redirect back and flash a toast. New categories take the least used color on the server. Category classes live in `lib/category-colors.ts` as literal strings so Tailwind sees them.
+`BusinessCategories` supplies category names, colors and type counts for the Categories sheet, plus type rows with registered counts for the loaded year. It also supplies industry options, name limits, palette size and page size. The Business Types table uses local Inertia history for `q`, `sort`, `dir`, `category`, `industry` and `page`; search replaces the history entry. Old `view` values are ignored. `composer test:categories` covers the table helpers. Category and type writes redirect with a toast. New categories take the least-used server color; keep palette classes literal in `lib/category-colors.ts` so Tailwind sees them.
 
 The Businesses directory (`capitol.businesses.index`) is the opposite case: rows are not loaded, so it pages, sorts and filters on the server. Each filter change is a `router.get` that preserves state and scroll, search replaces history, and the shared `Pagination` carries the query string. Its Data object holds public-class fields only.
