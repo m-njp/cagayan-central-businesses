@@ -36,6 +36,7 @@ it('counts only assigned towns for staff and gives them no review list', functio
         ->where('entry.datasets.0.id', 'finances')
         ->where('entry.datasets.0.pending', 1)
         ->where('entry.datasets.1.pending', 0)
+        ->where('entry.datasets.1.actionHref', route('capitol.businesses.create', absolute: false))
         ->where('entry.review', null)
         ->where('entry.datasets.2.id', 'population')
         ->where('entry.datasets.2.pending', 0)
@@ -68,10 +69,39 @@ it('lists finance reports and submitted businesses together for admins', functio
     $this->actingAs(User::factory()->create())->get(route('capitol.data-entry'))->assertInertia(fn (Assert $page) => $page
         ->where('entry.datasets.0.pending', 2)
         ->where('entry.datasets.1.pending', 1)
+        ->where('entry.datasets.1.actionHref', null)
         ->where('entry.datasets.3.id', 'categories')
+        ->where('entry.datasets.3.pending', null)
         ->where('entry.review', fn ($rows) => collect($rows)->pluck('item')->sort()->values()->all() === [
             'Abulug Report 2025', 'Kapihan sa Centro', 'Tuguegarao City Report 2025',
         ]))
         ->assertDontSee('Sentinel Owner Reyes')->assertDontSee('09171234567');
     expect(DB::table('record_view_logs')->count())->toBe(0);
+});
+
+it('paginates the oldest review items with links to their source records', function () {
+    $population = PopulationFigure::factory()->for($this->town)
+        ->create(['year' => 2024, 'updated_at' => '2026-09-01 00:00:00']);
+    FinanceFigure::query()->where('municipality_id', $this->other->id)->update(['updated_at' => '2026-09-02 00:00:00']);
+    foreach (range(2017, 2024) as $year) {
+        FinanceFigure::factory()->for($this->town)->line('performance.revenue', $year, '100.00')
+            ->create(['updated_at' => '2026-09-03 00:00:00']);
+    }
+    $this->actingAs(User::factory()->create(['role' => UserRole::SuperAdmin]));
+
+    $this->get(route('capitol.data-entry'))->assertInertia(fn (Assert $page) => $page
+        ->has('entry.review', 10)
+        ->where('entry.review.0.href', route('capitol.population.show', ['town' => $this->town->psgc_code, 'year' => $population->year], absolute: false))
+        ->where('entry.review.1.href', route('capitol.finances.show', ['town' => $this->other->psgc_code, 'year' => 2025], absolute: false))
+        ->where('entry.review.2.item', 'Tuguegarao City Report 2017')
+        ->where('entry.review.9.item', 'Tuguegarao City Report 2024')
+        ->where('entry.pagination.total', 12)
+        ->where('entry.pagination.page', 1));
+
+    $this->get(route('capitol.data-entry', ['page' => 2]))->assertInertia(fn (Assert $page) => $page
+        ->has('entry.review', 2)
+        ->where('entry.pagination.page', 2));
+
+    $this->get(route('capitol.data-entry', ['page' => 99, 'workflow' => 'population']))
+        ->assertRedirect(route('capitol.data-entry', ['page' => 2, 'workflow' => 'population']));
 });

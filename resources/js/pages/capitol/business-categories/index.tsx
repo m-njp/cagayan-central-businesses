@@ -31,25 +31,18 @@ import {
 } from '@/components/ui/table';
 import {
     categoryQuery,
-    paginate,
     parseCategoryView,
     visibleTypes,
 } from '@/lib/category-table';
 import type { CategoryView } from '@/lib/category-table';
 import { formatCount } from '@/lib/format';
 import { pageSearchParams } from '@/lib/navigation';
+import { paginate } from '@/lib/pagination';
 import { index } from '@/routes/capitol/categories';
 import type { BusinessCategories } from '@/types/workspace';
 import { BusinessTypesTable } from './business-types-table';
 
 type Panel = { kind: 'type' | 'category' | 'categories'; code: string | null };
-
-// The URL carries only what differs from the one table's defaults, so the fixed view is left out.
-function urlQuery(state: CategoryView) {
-    const query = categoryQuery(state);
-    delete query.view;
-    return query;
-}
 
 export default function BusinessCategoriesPage({
     categories,
@@ -57,11 +50,8 @@ export default function BusinessCategoriesPage({
     categories: BusinessCategories;
 }) {
     const { url } = usePage();
-    // One table of Business Types: the old view parameter is ignored.
-    const params = pageSearchParams(url);
-    params.set('view', 'types');
     const state = parseCategoryView(
-        params,
+        pageSearchParams(url),
         categories.categories,
         categories.industries,
     );
@@ -83,8 +73,9 @@ export default function BusinessCategoriesPage({
 
     // Every row is loaded, so sorting, filters and pages only change local history.
     const go = (patch: Partial<CategoryView>, replace = false) => {
-        const query = urlQuery({ ...state, page: 1, ...patch });
-        if (JSON.stringify(query) === JSON.stringify(urlQuery(state))) return;
+        const query = categoryQuery({ ...state, page: 1, ...patch });
+        if (JSON.stringify(query) === JSON.stringify(categoryQuery(state)))
+            return;
         const visit = {
             url: index({ query }).url,
             preserveState: true,

@@ -228,7 +228,8 @@ test('the Executive Summary over the maximum period is the default and focused m
 
 test('public sources trace signed-off and derived figures without exposing pending amounts or review notes', function () {
     $town = Municipality::factory()->create(['psgc_code' => '0201529000', 'name' => 'Tuguegarao City']);
-    $report = FinanceDocument::factory()->for($town)->create(['fiscal_year' => 2025, 'source_url' => 'https://www.coa.gov.ph/tuguegarao-2025.pdf']);
+    $file = 'executive-summaries/2025/Tuguegarao-City/Tuguegarao-City-Executive-Summary-2025.pdf';
+    $report = FinanceDocument::factory()->for($town)->create(['fiscal_year' => 2025, 'file' => $file, 'source_url' => 'https://www.coa.gov.ph/tuguegarao-2025.pdf']);
     $revenue = FinanceFigure::factory()->verified()->for($town)->line('performance.revenue', 2024, '500.25')->create([
         'finance_document_id' => $report->id, 'location' => 'page 2', 'source_label' => 'Total Revenue', 'note' => 'PRIVATE REVIEW NOTE',
     ]);
@@ -246,6 +247,7 @@ test('public sources trace signed-off and derived figures without exposing pendi
             && $points['performance.surplus']['sourceRefs'] === [$revenue->public_id, $expenses->public_id])
         // One evidence entry per figure; the link is our stored copy of the report, never COA's address.
         ->where('performance.catalog.sources.'.$revenue->public_id, [
+            'documentKey' => hash('sha256', $file),
             'kind' => 'executive_summary', 'label' => 'Executive Summary', 'town' => 'Tuguegarao City',
             'fiscalYear' => 2024, 'reportYear' => 2025, 'page' => 2, 'location' => 'page 2', 'inputs' => [],
             'url' => route('public.finance-sources.show', $revenue->public_id, absolute: false),

@@ -99,10 +99,6 @@ def statedYear(rows: list[tuple]) -> int | None:
     return int(found.group(1)) if found else None
 
 
-def pickSheet(book, score) -> tuple[str, list[tuple]] | None:
-    return pickSheets(book, {"sheet": score})["sheet"]
-
-
 def pickSheets(book, scores: dict, progress: Progress = None) -> dict:
     """Score all required statement types in one pass; keep only the best sheet for each."""
     best = {}

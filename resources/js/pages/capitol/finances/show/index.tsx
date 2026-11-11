@@ -5,8 +5,10 @@ import { PageHeader } from '@/components/capitol/page-header';
 import { FinanceReportGrid } from '@/components/capitol/finance-report-grid';
 import { FinanceUploads } from '@/components/capitol/finance-upload';
 import { FinanceParsingTask } from '@/components/capitol/finance-parsing-task';
+import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Field, FieldLabel } from '@/components/ui/field';
 import {
     Select,
     SelectContent,
@@ -22,7 +24,6 @@ import {
     SheetDescription,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import { Surface } from '@/components/ui/surface';
 import { pageSearchParams } from '@/lib/navigation';
 import { show } from '@/routes/capitol/finances';
 import type { FinanceReport } from '@/types/finance';
@@ -121,13 +122,16 @@ export default function FinanceReportPage({
                     <span>Not available</span>
                 )}
             </div>
-            <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
+            <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_var(--workspace-panel-width)]">
                 <aside className="flex min-w-0 flex-col gap-2 lg:col-start-2 lg:row-start-1">
-                    <Surface padded aria-label="Filters">
-                        <div className="flex items-center justify-between gap-2">
-                            <span id="fiscal-year-label" className="type-label">
+                    <WorkspaceFilters>
+                        <Field orientation="horizontal" className="gap-2">
+                            <FieldLabel
+                                htmlFor="fiscal-year"
+                                className="type-label"
+                            >
                                 Fiscal Year
-                            </span>
+                            </FieldLabel>
                             <Select
                                 value={String(year)}
                                 onValueChange={chooseYear}
@@ -135,7 +139,7 @@ export default function FinanceReportPage({
                                 <SelectTrigger
                                     variant="quiet"
                                     size="sm"
-                                    aria-labelledby="fiscal-year-label"
+                                    id="fiscal-year"
                                     className="font-mono tabular-nums"
                                 >
                                     <SelectValue />
@@ -151,8 +155,8 @@ export default function FinanceReportPage({
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div>
-                    </Surface>
+                        </Field>
+                    </WorkspaceFilters>
                     <FinanceUploads
                         report={report}
                         onOpen={openUpload}

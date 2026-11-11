@@ -1,4 +1,9 @@
-import Map, { Layer, NavigationControl, Source } from 'react-map-gl/maplibre';
+import Map, {
+    Layer,
+    NavigationControl,
+    Popup,
+    Source,
+} from 'react-map-gl/maplibre';
 import type { MapRef, MapLayerMouseEvent } from 'react-map-gl/maplibre';
 import type { StyleSpecification } from 'maplibre-gl';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -13,14 +18,18 @@ import maplibregl from './maplibre';
 const MAP_PADDING = { top: 24, right: 24, bottom: 76, left: 24 };
 const BASEMAP = 'https://tiles.openfreemap.org/styles/positron';
 
-export default memo(function EconomicMap({
+export default memo(function AreaMap({
     source,
     selected,
     onSelect,
+    label,
+    describe,
 }: {
     source: AreaCollection;
     selected: string | null;
     onSelect: (code: string) => void;
+    label: string;
+    describe?: (code: string) => string | undefined;
 }) {
     const ref = useRef<MapRef>(null);
     const previous = useRef<string | null>(null);
@@ -28,6 +37,11 @@ export default memo(function EconomicMap({
     const [plain, setPlain] = useState(false);
     const [ready, setReady] = useState(false);
     const [fatal, setFatal] = useState(false);
+    const [hovered, setHovered] = useState<{
+        code: string;
+        longitude: number;
+        latitude: number;
+    } | null>(null);
     const colors = useMemo(
         () => ({
             background: mapColor('--muted', resolvedAppearance),
@@ -103,6 +117,19 @@ export default memo(function EconomicMap({
         const code = event.features?.[0]?.properties?.psgc_code;
         if (typeof code === 'string') onSelect(code);
     };
+    const hover = (event: MapLayerMouseEvent) => {
+        const code = event.features?.[0]?.properties?.psgc_code;
+        setHovered(
+            typeof code === 'string'
+                ? {
+                      code,
+                      longitude: event.lngLat.lng,
+                      latitude: event.lngLat.lat,
+                  }
+                : null,
+        );
+    };
+    const description = hovered && describe?.(hovered.code);
 
     if (fatal)
         return (
@@ -119,7 +146,7 @@ export default memo(function EconomicMap({
         <div
             className="relative h-full overflow-hidden rounded-sm border bg-card"
             role="region"
-            aria-label="Economic map of Cagayan"
+            aria-label={label}
         >
             <Map
                 ref={ref}
@@ -142,6 +169,9 @@ export default memo(function EconomicMap({
                     })
                 }
                 onClick={click}
+                onMouseMove={describe ? hover : undefined}
+                onMouseOut={describe ? () => setHovered(null) : undefined}
+                cursor={hovered ? 'pointer' : undefined}
                 onError={(event) => {
                     if (
                         /webgl|context lost|context creation|gpu|worker failed/i.test(
@@ -214,6 +244,19 @@ export default memo(function EconomicMap({
                         }}
                     />
                 </Source>
+                {hovered && description && (
+                    <Popup
+                        longitude={hovered.longitude}
+                        latitude={hovered.latitude}
+                        closeButton={false}
+                        closeOnClick={false}
+                        focusAfterOpen={false}
+                        offset={8}
+                        className="pointer-events-none [&_.maplibregl-popup-content]:bg-popover [&_.maplibregl-popup-content]:text-popover-foreground"
+                    >
+                        {description}
+                    </Popup>
+                )}
                 <NavigationControl position="top-right" showCompass={false} />
             </Map>
             {plain && (

@@ -4,12 +4,14 @@ import { BarangayAtlas } from './barangay-atlas';
 import PerformanceVisual from '@/components/charts/performance-visual';
 import { DefinitionList } from '@/components/definition-list';
 import type { MapStyle } from '@/components/map/province-map';
+import { SourceLink } from '@/components/source-link';
 import { TownAtlas } from './town-atlas';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { pageSearchParams } from '@/lib/navigation';
-import { economicPerformance } from '@/routes/public';
+import { PSA_CENSUS_RELEASE } from '@/lib/public-sources';
+import { economicPerformance, sources } from '@/routes/public';
 import { index as suggestions } from '@/routes/public/wishes';
 import type { HomeOverview } from '@/types/data';
 
@@ -111,9 +113,17 @@ export default function Home({ overview }: Props) {
                 className="grid reveal scroll-mt-6 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-10"
             >
                 <div className="flex flex-col gap-4">
-                    <h2 id="about-data-heading" className="type-heading">
-                        About the Data
-                    </h2>
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <h2 id="about-data-heading" className="type-heading">
+                            About the Data
+                        </h2>
+                        <Link
+                            href={sources()}
+                            className="type-body underline underline-offset-2"
+                        >
+                            View About the Data
+                        </Link>
+                    </div>
                     <BarangayAtlas
                         towns={overview.atlas.towns}
                         counts={overview.barangays}
@@ -127,18 +137,9 @@ export default function Home({ overview }: Props) {
                             description: (
                                 <>
                                     Population:{' '}
-                                    <a
-                                        href="https://psa.gov.ph/statistics/population-and-housing/node/1684077888"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="underline underline-offset-2"
-                                    >
+                                    <SourceLink href={PSA_CENSUS_RELEASE}>
                                         PSA 2024 Census of Population
-                                        <span className="sr-only">
-                                            {' '}
-                                            (opens in a new tab)
-                                        </span>
-                                    </a>
+                                    </SourceLink>
                                     . Government revenue and expenses: verified
                                     municipal and city financial statements
                                     published by the Commission on Audit.

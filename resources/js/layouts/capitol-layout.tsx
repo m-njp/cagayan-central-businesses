@@ -48,15 +48,24 @@ export default function CapitolLayout({ children }: { children: ReactNode }) {
     ];
 
     return (
-        <div className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[var(--workspace-sidebar-width)_minmax(0,1fr)]">
+        <div
+            data-theme-surface
+            className="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-[var(--workspace-sidebar-width)_minmax(0,1fr)]"
+        >
             <a
                 href="#workspace-content"
                 className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:bg-background focus:p-3"
             >
                 Skip to Content
             </a>
-            <aside className="border-b bg-card lg:fixed lg:inset-y-0 lg:w-(--workspace-sidebar-width) lg:border-r lg:border-b-0">
-                <div className="flex h-14 items-center justify-between gap-3 border-b px-4">
+            <aside
+                data-theme-surface
+                className="border-b bg-card lg:fixed lg:inset-y-0 lg:w-(--workspace-sidebar-width) lg:border-r lg:border-b-0"
+            >
+                <div
+                    data-theme-surface
+                    className="flex h-(--workspace-header-height) items-center justify-between gap-3 border-b px-4"
+                >
                     <Link
                         href={dashboard()}
                         className="rounded-sm focus-visible:outline-ring"
@@ -167,7 +176,10 @@ export default function CapitolLayout({ children }: { children: ReactNode }) {
                 </div>
             </aside>
             <div className="min-w-0 lg:col-start-2">
-                <div className="flex min-h-12 items-center justify-between gap-3 border-b bg-card px-gutter md:px-6">
+                <div
+                    data-theme-surface
+                    className="flex min-h-12 items-center justify-between gap-3 border-b bg-card px-gutter md:px-6 lg:min-h-(--workspace-header-height)"
+                >
                     <WorkspaceBreadcrumbs />
                     <SimulatedLabel />
                 </div>

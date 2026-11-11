@@ -16,7 +16,6 @@ const FADE =
 // The workspace's one full-page focus view: the page stays visible under a Gaussian blur and the content sits bare in
 // the middle, with no card. The parsing progress and the Home map both use it. Children bring their own title.
 export function FocusDialog({
-    overlayClassName,
     className,
     closeButton = false,
     closeClassName,
@@ -24,7 +23,6 @@ export function FocusDialog({
     children,
     ...props
 }: ComponentProps<typeof Dialog> & {
-    overlayClassName?: string;
     className?: string;
     closeButton?: boolean;
     closeClassName?: string;
@@ -43,9 +41,8 @@ export function FocusDialog({
                 }}
                 onCloseAutoFocus={onCloseAutoFocus}
                 overlayClassName={cn(
-                    'bg-background/60 backdrop-blur-md',
+                    'bg-background/45 backdrop-blur-sm dark:bg-background/75 dark:backdrop-blur-lg',
                     FADE,
-                    overlayClassName,
                 )}
                 className={cn(
                     'border-0 bg-transparent p-0 shadow-none',
@@ -72,5 +69,32 @@ export function FocusDialog({
                 )}
             </DialogContent>
         </Dialog>
+    );
+}
+
+export function FocusNavigation({
+    previousLabel,
+    nextLabel,
+    onStep,
+    canPrevious = true,
+    canNext = true,
+}: {
+    previousLabel: string;
+    nextLabel: string;
+    onStep: (direction: -1 | 1) => void;
+    canPrevious?: boolean;
+    canNext?: boolean;
+}) {
+    const style = 'pointer-events-auto cursor-pointer hover:bg-brand hover:text-brand-foreground focus-visible:bg-brand focus-visible:text-brand-foreground disabled:invisible';
+
+    return (
+        <nav aria-label="Focus view navigation" className="pointer-events-none absolute inset-x-0 top-[max(--spacing(2),env(safe-area-inset-top))] z-10 mx-auto flex max-w-6xl justify-between pr-[max(--spacing(2),env(safe-area-inset-right))] pl-[max(--spacing(2),env(safe-area-inset-left))] md:top-1/2 md:-translate-y-1/2">
+            <Button variant="ghost" size="touch" aria-label={previousLabel} className={style} disabled={!canPrevious} onClick={() => onStep(-1)}>
+                <icons.previous aria-hidden="true" className="size-8" />
+            </Button>
+            <Button variant="ghost" size="touch" aria-label={nextLabel} className={style} disabled={!canNext} onClick={() => onStep(1)}>
+                <icons.next aria-hidden="true" className="size-8" />
+            </Button>
+        </nav>
     );
 }

@@ -50,24 +50,21 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
-  position = "popper",
-  side = "bottom",
-  sideOffset = 4,
   align = "start",
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Content>) {
+}: Omit<React.ComponentProps<typeof SelectPrimitive.Content>, "position" | "side" | "sideOffset">) {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
           "relative z-50 max-h-[min(20rem,var(--radix-select-content-available-height,20rem))] max-w-[var(--radix-select-content-available-width,calc(100vw-1rem))] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=open]:fade-in-0 motion-reduce:animate-none",
-          position === "popper" && "min-w-[min(max(9rem,var(--radix-select-trigger-width)),var(--radix-select-content-available-width))]",
+          "min-w-[min(max(9rem,var(--radix-select-trigger-width)),var(--radix-select-content-available-width))]",
           className
         )}
-        position={position}
-        side={side}
-        sideOffset={sideOffset}
+        position="popper"
+        side="bottom"
+        sideOffset={4}
         collisionPadding={8}
         align={align}
         {...props}

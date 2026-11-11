@@ -85,6 +85,7 @@
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py intake"
         ],
+        "data:finances:check-archive": "python tools/coa/check_archive.py",
         "doctor": [
             "@php artisan app:doctor"
         ],
@@ -142,7 +143,6 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
         "pre-package-uninstall": [

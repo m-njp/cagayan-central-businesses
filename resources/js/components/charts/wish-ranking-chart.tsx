@@ -5,7 +5,7 @@ import type { CommunityWishSnapshot } from '@/types/economic-performance';
 export default function WishRankingChart({
     snapshot,
 }: {
-    snapshot: CommunityWishSnapshot;
+    snapshot: Pick<CommunityWishSnapshot, 'items' | 'townName'>;
 }) {
     const { items, townName } = snapshot;
     if (items.length === 0)

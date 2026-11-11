@@ -13,6 +13,7 @@ import {
 } from '@/lib/finance-map';
 import { observationLabel } from '@/lib/performance-format';
 import type { FinanceMap } from '@/types/finance-map';
+import type { FinancialHistory } from '@/types/economic-performance';
 import { HomeFocusView } from './home-focus-view';
 import { LazyProvinceMap } from '@/components/map/lazy-province-map';
 import type { MapStyle, ProvinceMapProps } from '@/components/map/province-map';
@@ -49,6 +50,17 @@ export function TownAtlas({
     const selection = financeMapSelection(finances, params);
     const town = atlas.towns.find((item) => item.code === townCode) ?? null;
     const shown = town ?? atlas.province;
+    const history: FinancialHistory = {
+        metrics: finances.metrics,
+        rows: [...finances.years]
+            .sort((a, b) => a - b)
+            .flatMap((year) => {
+                const observations = finances.observations[shown.code]?.[year];
+                return observations ? [{ year, observations }] : [];
+            }),
+        axisMaximum: '',
+        note: null,
+    };
     const change = (patch: Record<string, string | null>) => {
         const query = Object.fromEntries(params);
         for (const [key, value] of Object.entries(patch)) {
@@ -110,20 +122,9 @@ export function TownAtlas({
     };
     const figures = (
         <>
-            <div className="flex flex-col gap-1">
-                <p className="type-label">
-                    {shown.kind === 'province'
-                        ? 'Province'
-                        : shown.kind === 'city'
-                          ? 'City'
-                          : 'Municipality'}
-                </p>
-                <h2 aria-live="polite" className="type-title">
-                    {shown.kind === 'province'
-                        ? 'Cagayan Province'
-                        : shown.name}
-                </h2>
-            </div>
+            <h2 aria-live="polite" className="type-heading">
+                {shown.kind === 'province' ? 'Cagayan Province' : shown.name}
+            </h2>
 
             <FinanceMapFigures
                 finances={finances}
@@ -136,8 +137,8 @@ export function TownAtlas({
     );
 
     return (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
-            <div className="dark h-[28rem] md:h-[36rem] lg:h-[44rem]">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+            <div className="dark h-[28rem] md:h-[36rem]">
                 <LazyProvinceMap
                     {...map}
                     onExpand={(trigger) => {
@@ -148,7 +149,7 @@ export function TownAtlas({
                 />
             </div>
 
-            <aside className="flex flex-col gap-5 border-t border-current/15 pt-5 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
+            <aside className="flex flex-col gap-2 border-t border-current/15 pt-3 lg:self-center lg:border-t-0 lg:border-l lg:pt-0 lg:pl-5">
                 <div className="flex items-center gap-2">
                     <Select
                         value={town?.code ?? NONE}
@@ -212,7 +213,7 @@ export function TownAtlas({
 
                 <section
                     aria-label="Figures"
-                    className="flex flex-col gap-4 rounded-lg border border-current/15 p-4 [&_.type-meta]:text-brand-foreground/90"
+                    className="flex flex-col gap-2 border-t border-current/15 pt-3 [&_.type-meta]:text-brand-foreground/90"
                 >
                     {figures}
                 </section>
@@ -231,6 +232,7 @@ export function TownAtlas({
                 map={map}
                 figures={figures}
                 finances={finances}
+                history={history}
                 area={{
                     code: shown.code,
                     name:

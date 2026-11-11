@@ -110,7 +110,8 @@ export type AnalyticsGuide = {
 };
 
 /** The one evidence entry behind a published figure; observations point to it by key. */
-export type FinanceSource = {
+export type FinanceCitation = {
+    documentKey?: string | null;
     kind: 'executive_summary' | 'fs_workbook' | 'annex_workbook' | null;
     label: string;
     town: string;
@@ -118,6 +119,9 @@ export type FinanceSource = {
     reportYear: number | null;
     page: number | null;
     location: string | null;
-    inputs: { location: string; value: string }[];
     url: string | null;
+};
+
+export type FinanceSource = FinanceCitation & {
+    inputs: { location: string; value: string }[];
 };

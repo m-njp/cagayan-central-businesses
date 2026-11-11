@@ -349,6 +349,29 @@ await test('formatting retains notes and groups deduplicated citations by report
             },
         ],
     );
+    const grouped = citationReports(
+        {
+            first: { ...sources.a, documentKey: 'report-a' },
+            duplicate: {
+                ...sources.a,
+                documentKey: 'report-a',
+                location: 'pages 2-3',
+                url: '/finance-sources/duplicate',
+            },
+            second: {
+                ...sources.a,
+                documentKey: 'report-b',
+                url: '/finance-sources/second',
+            },
+        },
+        ['first', 'duplicate', 'second'],
+    );
+    assert.deepEqual(
+        grouped[0].reports.map((report) =>
+            report.links.map((link) => link.href),
+        ),
+        [['/finance-sources/a#page=2'], ['/finance-sources/second#page=2']],
+    );
     hooks.deregister();
 });
 
@@ -414,7 +437,7 @@ await test('finance coverage trims uncollected outer years and expands with newl
 });
 
 await test('chart segments preserve signed amounts without bridging gaps or incompatible definitions', async () => {
-    const { financeChartSeries, focusedFinance } =
+    const { financeChartSeries } =
         await import('../../resources/js/lib/finance-chart.ts');
     const detail = history([
         [2020, point('0')],
@@ -432,7 +455,6 @@ await test('chart segments preserve signed amounts without bridging gaps or inco
             [null, null, null, null, 15, 18],
         ],
     );
-    assert.equal(focusedFinance(detail, 'unknown').id, 'amount');
     assert.equal(
         financeChartSeries(history([[2025, point('12')]]))[0].values[0],
         12,

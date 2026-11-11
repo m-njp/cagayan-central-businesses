@@ -19,6 +19,7 @@ export function Surface({
 }) {
     return (
         <section
+            data-theme-surface
             className={cn(
                 'flex min-w-0 flex-col rounded-sm border bg-card text-card-foreground',
                 className,

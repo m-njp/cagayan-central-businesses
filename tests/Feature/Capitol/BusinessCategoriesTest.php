@@ -33,7 +33,7 @@ function registerBusinesses(BusinessType $type, BusinessStatus $status, int $yea
     }
 }
 
-it('counts registered businesses per type and category for the latest data year', function () {
+it('counts registered businesses per type for the latest data year', function () {
     $second = BusinessType::factory()->for($this->agriculture, 'category')->create(['code' => 'livestock', 'name' => 'Livestock Farm', 'psic_section' => 'A', 'psic_section_name' => 'Agriculture, forestry and fishing']);
     registerBusinesses($this->farm, BusinessStatus::Renewed, 2024, 2);
     registerBusinesses($second, BusinessStatus::New, 2024, 1);
@@ -47,17 +47,14 @@ it('counts registered businesses per type and category for the latest data year'
             ->where('categories.types', fn ($types) => collect($types)->contains(fn ($row) => $row['code'] === 'crop-farm'
                 && $row['registered'] === 2 && $row['industryCode'] === 'A' && $row['category'] === 'agriculture')
                 && collect($types)->contains(fn ($row) => $row['code'] === 'shop' && $row['registered'] === 0))
-            // Agriculture: two renewed farms and one new livestock farm, never the closed one. The shop traded in 2023 only.
-            ->where('categories.categories.0.registered', 3)
             ->where('categories.categories.0.types', 2)
-            ->where('categories.categories.1.registered', 0));
+            ->missing('categories.categories.0.registered'));
 });
 
 it('keeps registered counts null while simulated records are off or none exist', function () {
     $this->actingAs($this->admin)->get(route('capitol.categories.index'))
         ->assertInertia(fn (Assert $page) => $page->where('categories.year', null)
-            ->where('categories.types.0.registered', null)
-            ->where('categories.categories.0.registered', null));
+            ->where('categories.types.0.registered', null));
 
     registerBusinesses($this->farm, BusinessStatus::Renewed, 2024, 2);
     $this->artisan('metrics:refresh')->assertSuccessful();
@@ -65,7 +62,7 @@ it('keeps registered counts null while simulated records are off or none exist',
 
     $this->actingAs($this->admin)->get(route('capitol.categories.index'))
         ->assertInertia(fn (Assert $page) => $page->where('categories.year', null)
-            ->where('categories.categories.0.registered', null));
+            ->where('categories.types.0.registered', null));
 });
 
 it('never sends sales to the page', function () {

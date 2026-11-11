@@ -2,7 +2,9 @@ import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { LazyProvinceMap } from '@/components/map/lazy-province-map';
 import type { MapStyle } from '@/components/map/province-map';
+import { SourceLink } from '@/components/source-link';
 import { Button } from '@/components/ui/button';
+import { Field, FieldLabel } from '@/components/ui/field';
 import {
     Select,
     SelectContent,
@@ -85,36 +87,36 @@ export function BarangayAtlas({
         return <p className="type-body">No town population is available.</p>;
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-                <label htmlFor="population-town" className="type-label">
+            <Field
+                orientation="horizontal"
+                className="w-auto max-w-full gap-2 self-start"
+            >
+                <FieldLabel
+                    htmlFor="population-town"
+                    className="shrink-0 type-label"
+                >
                     Town
-                </label>
-                <div className="flex items-center gap-2">
-                    <Select
-                        value={town.code}
-                        onValueChange={(code) =>
-                            replaceLocalQuery(url, home, {
-                                barangayTown: code,
-                            })
-                        }
-                    >
-                        <SelectTrigger
-                            variant="quiet"
-                            id="population-town"
-                            className="min-w-0 flex-1"
-                        >
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {towns.map((item) => (
-                                <SelectItem key={item.code} value={item.code}>
-                                    {item.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
+                </FieldLabel>
+                <Select
+                    value={town.code}
+                    onValueChange={(code) =>
+                        replaceLocalQuery(url, home, {
+                            barangayTown: code,
+                        })
+                    }
+                >
+                    <SelectTrigger variant="quiet" id="population-town">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {towns.map((item) => (
+                            <SelectItem key={item.code} value={item.code}>
+                                {item.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </Field>
             {failedTown === townCode ? (
                 <div role="alert" className="flex flex-col gap-3">
                     <p>Could not load the barangay map.</p>
@@ -188,18 +190,9 @@ export function BarangayAtlas({
                     </div>
                     <div className="flex items-baseline gap-2 border-t pt-3 type-meta text-foreground">
                         <span>Source</span>
-                        <a
-                            href={current.source}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="underline underline-offset-2"
-                        >
+                        <SourceLink href={current.source}>
                             {sourceName(current.source)}
-                            <span className="sr-only">
-                                {' '}
-                                (opens in a new tab)
-                            </span>
-                        </a>
+                        </SourceLink>
                     </div>
                 </>
             )}

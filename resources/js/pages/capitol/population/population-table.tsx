@@ -11,7 +11,7 @@ import {
 import { formatCount, NOT_AVAILABLE } from '@/lib/format';
 import type { PopulationRow } from '@/types/population';
 
-const STICKY = 'sticky top-0 z-10 h-8 border-b bg-card';
+const STICKY = 'sticky top-0 z-20 h-8 border-b bg-card';
 
 export function PopulationTable({
     rows,
@@ -54,7 +54,7 @@ export function PopulationTable({
     const picking = reviewable.size > 0;
 
     return (
-        <div className="max-h-[calc(100dvh-14rem)] overflow-y-auto [&_[data-slot=table-container]]:overflow-visible">
+        <div className="isolate max-h-[calc(100dvh-14rem)] overflow-auto [&_[data-slot=table-container]]:overflow-visible">
             <Table
                 className={`text-sm transition-opacity ${loading ? 'opacity-60' : ''}`}
             >
