@@ -14,10 +14,10 @@ export const BUSINESS_STATUS_LABELS: Record<string, string> = {
 };
 
 export const PERMIT_STATUS: Record<string, { label: string; dot: string }> = {
-    valid: { label: 'Permit Valid', dot: 'bg-status-new' },
-    expiring: { label: 'Permit Expiring', dot: 'bg-status-not-renewed' },
-    expired: { label: 'Permit Expired', dot: 'bg-status-closed' },
-    none: { label: 'No Permit on File', dot: 'bg-muted-foreground' },
+    valid: { label: 'Valid', dot: 'bg-status-new' },
+    expiring: { label: 'Expiring', dot: 'bg-status-not-renewed' },
+    expired: { label: 'Expired', dot: 'bg-status-closed' },
+    none: { label: 'Not on File', dot: 'bg-muted-foreground' },
 };
 
 // The words for an entered figure everywhere it appears: finance lines and census counts.

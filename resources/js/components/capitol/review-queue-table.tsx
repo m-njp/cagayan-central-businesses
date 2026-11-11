@@ -18,12 +18,27 @@ const number = 'text-right font-mono tabular-nums';
 export function ReviewQueueTable({
     rows,
     footer,
+    total,
 }: {
     rows: DataEntryReviewRow[];
     footer?: ReactNode;
+    total?: number;
 }) {
     return (
-        <Surface title="Waiting for Review" footer={footer}>
+        <Surface
+            title="Waiting for Review"
+            toolbar={
+                total === undefined ? undefined : (
+                    <span className="type-meta">
+                        <span className="font-mono tabular-nums">
+                            {formatCount(total)}
+                        </span>{' '}
+                        {total === 1 ? 'item' : 'items'}
+                    </span>
+                )
+            }
+            footer={footer}
+        >
             <Table>
                 <TableHeader>
                     <TableRow>

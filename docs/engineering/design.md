@@ -15,7 +15,7 @@ The short version: **calm, exact, and readable by any citizen.** Sans for words,
 
 ## Working on Existing Screens
 
-These rules record the user's corrections from the public map and wish form work. Apply them before proposing or implementing another UI change. The latest explicit correction takes precedence over earlier examples or historical decisions.
+Use these rules and the relevant screen pattern below before changing an existing screen. The latest explicit correction takes precedence over earlier examples or historical decisions.
 
 ### Preserve the Requested Structure
 
@@ -46,7 +46,7 @@ Every visible sentence must add information needed to understand the data, compl
 - The main panel uses "Source" on its own line, followed by one source link per line. The compact barangay explorer uses one inline Source row with the PSA link.
 - Use the supplied [PSA 2024 release](https://psa.gov.ph/statistics/population-and-housing/node/1684077888) for population links. Boundary provenance belongs in the data READMEs; a population workbook does not supply boundary shapes.
 - Geographic scope is Cagayan Province: 28 municipalities and Tuguegarao City. Batanes is outside this scope.
-- About the Data selects a town and displays its barangay boundaries and populations. Do not restore the extra barangay dropdown, duplicated style switch, population legend, or helper paragraphs.
+- About the Data uses one line for the Town label and picker, then displays the selected town's barangay boundaries and populations. Do not restore the extra barangay dropdown, duplicated style switch, population legend, or helper paragraphs.
 - A single click or keyboard activation selects a place. The details stay in the panel; do not restore More Details, its modal, or Suggest a Business Here on the map.
 - Keep Geist for readable words and Geist Mono for numbers and compact data labels. Dark surfaces use muted blue slate that complements the map's blue, with readable foregrounds and field borders. Avoid a near-black base or an unrelated neutral charcoal palette.
 
@@ -63,22 +63,22 @@ Every visible sentence must add information needed to understand the data, compl
 
 Owner corrections, "26-11-08", after two rejected versions of the finance upload progress view.
 
-- A full-page Gaussian blur (`bg-background/60 backdrop-blur-md`) over the page that stays visible, with bare content centered on it. No card, no scrollbar.
+- Use the shared Focus Overlay below.
 - Geist Mono throughout. One status line, a thin scan bar and a fixed seven-line log: time (24-hour Philippine), source location, line label, exact amount, then an icon. The newest line spins; finished lines draw an animated check.
 - Print what happened in plain words and figures, not raw event text. Show no all-caps headings, hint text, "Discovered Figures" counts, badges, results tables or expandable history.
 - Prefer deleting code to adding it. Server events carry facts; the browser formats them.
 
 ### Focus Overlay
 
-Owner direction, "26-11-08" and "26-11-09". One reusable component, `components/ui/focus-dialog.tsx`, serves the parsing progress and the Home map view. Do not rebuild the blur by hand.
+Use `components/ui/focus-dialog.tsx` for parsing progress, the report ZIP, the Home map and the Data Entry guide. Parsing and ZIP preparation also share `TaskProgress`.
 
-- The page stays visible under a Gaussian blur that fades in slowly and out quickly (reduced motion skips it). Content sits bare in the middle: no card, border or shadow. Children bring their own title (`sr-only` is fine).
-- The Home view opens from one expand icon in the map controls (not a click on the map, which already selects a municipality). It is a full-screen comparison view, not a details dialog. Four bare areas on a 2 by 2 grid with no visible grid lines: top left the map, top right the area's figures, bottom left the Income, Expenses and Net Income trend, bottom right the same figures as a table with years as columns.
+- Keep the page visible under a Gaussian blur: 45% background tint and 8 px in light mode, 75% and 16 px in dark mode. Fade in slowly and out quickly; skip motion when reduced motion is enabled. Center the bare content without a card, border or shadow. Give each dialog a title, which may be visually hidden.
+- The Home view opens from the expand icon in the map controls. Its comparison grid pairs the map with the area's figures above, and the finance trend with the latest three fiscal years below. Keep the chart and table bare. Use the theme foreground for chart axes, the legend and source labels. The fullscreen table uses transparent rows and monochrome values and arrows. The Home hero keeps the compact snapshot beside the map.
 - With a municipality chosen, the map shows that municipality alone, drawn from its barangay file with its barangay boundaries and names on hover, and no figure per barangay (one shade, the municipality's). With none chosen it shows the province. It uses the same URL selection and cached data as the hero, so opening it requests nothing new, and it has no second style or year control.
-- Home uses the current appearance for the blur tint, figures, charts, table, and controls. Keep the underlying page recognizable through the Gaussian blur, with a lighter tint in light mode. Preserve the hero ink treatment within the map.
-- Previous and next chevrons sit at opposite viewport edges with a 44 px hit area. On phones they sit at the top edges with Close centered and content scrolling below. They step through the province and each municipality in a loop through the same URL selection.
+- Preserve the hero ink treatment within the Home map.
+- Previous and next chevrons sit halfway down the sides of the centered canvas on desktop. Each has a 32 px icon, a 44 px hit area, and a dark background on hover and keyboard focus. On phones they sit at the top edges with Close centered and content scrolling below. They step through the province and each municipality in a loop through the same URL selection.
 - Close with a 44 px icon button or Escape; focus returns to the expand button. Below `md` it is one scrolling column.
-- Where else it could help, ranked, not built: 1) the wish cloud and ranking, for more real labels at full size; 2) finance charts on Economy and Capitol Analytics (one shared `AnalyticsPanels`); 3) the Capitol Dashboard map, preferring MapLibre's own fullscreen control over a second WebGL instance. Do not use it for tables, entry forms, Population, Data Entry, Businesses, the finance review dialog or upload.
+- Where else it could help, ranked, not built: 1) the wish cloud and ranking, for more real labels at full size; 2) finance charts on Economy and Capitol Analytics (one shared `AnalyticsPanels`); 3) the Capitol Dashboard map, preferring MapLibre's own fullscreen control over a second WebGL instance. Data Entry uses it for its workflow guide. Keep the hub tables, entry forms, Population, Businesses, finance review and upload in their existing layouts.
 
 ### Compact Controls
 
@@ -86,14 +86,18 @@ Use the shared input and select primitives. Control height, compact height, and 
 
 Compact toolbars use `SearchField`. Show a magnifier at rest, expand and focus the field on activation, and keep an active query visible with a clear action. An empty field collapses when focus leaves or Escape is pressed. In public Businesses, put the magnifier beside the town picker and put Barangay and Category on one row at phone widths. Preserve page-specific filtering and history. Map zoom, reset, and expand use unobtrusive icons with 44 px touch targets.
 
+The Businesses filter toolbar is one bordered card with dividers between the town and search group, Barangay, Category, and the actions. On phones, use horizontal rules between rows and keep a vertical rule between Barangay and Category. Keep the list and map close to the toolbar. On business profiles, detail grid rules end at the inside edges of the card and field text aligns with the heading.
+
 Use the same Radix Select for value selection across public and Capitol screens. Filters use quiet triggers. Form fields use a subtle border and share the same chevron, focus ring, menu rows and selection checkmark. Triggers and option rows have 44 px touch targets below the desktop breakpoint. Long menus scroll within the available viewport. Group headings identify option sets and stay out of the selection order.
+
+Use the shared `Field` with `orientation="horizontal"` for a compact label and control on one line. Fields stack by default. Use `orientation="responsive"` inside `FieldGroup` when the layout should switch based on available width.
 
 ### Tabs and Municipality
 
 - One tab row for every filter tab: `components/capitol/tab-row.tsx`, the Businesses look (filled pill for the active tab, mono labels for years, no underline). Government Finances years, Businesses review states and Population census years all use it inside a `Surface padded`.
 - In the Capitol workspace, the word is Municipality in every label, header and placeholder. Never Town, City, "Town or City" or both. Code names and routes keep `town`.
 - Entered figures show one status cell (`FigureStatus`: dot and word, "by you", the Returned note inline) and one entry cell (`EntryCell`, compact `h-7`). Times in Data Entry read `MM-DD-YY HH:mm` in Philippine time through `formatEntryTimestamp`.
-- Population is the table on the left and the municipality's barangay map on the right. The map is the shared `ProvinceMap` in its solid style, as on the Dashboard, shaded by the barangay file. Choosing a barangay on the map selects its row and the reverse. All rows share one font size; the municipality total is only medium weight.
+- Population is the table on the left and the municipality's barangay map on the right. Use the shared Capitol MapLibre map with a basemap, zoom controls, local barangay shading, and a population tooltip. Choosing a barangay on the map selects its row and the reverse. The sticky table header sits above the row edit buttons. The municipality total uses medium weight at the same size as the other rows.
 
 ### Validate the Result and Leave a Clear Handoff
 
@@ -138,13 +142,11 @@ Two families, both open-license and self-hosted from `resources/fonts/` (works o
 
 | Role | Class | Font and size | Example |
 | :- | :- | :- | :- |
-| Display | `type-display` | Sans semibold, 4xl to 6xl | See How Cagayan Lives and Works |
 | Page title | `type-title` | Sans semibold, 3xl to 4xl | Suggest a Business |
 | Section heading | `type-heading` | Sans semibold, xl to 2xl | How Businesses Are Protected |
 | Subtitle | `type-subtitle` | Sans, base to lg, muted | Context only when needed |
 | Figure | `type-figure` | Mono medium, 3xl to 4xl, `tabular-nums` | 1,284,676 |
 | Label | `type-label` | Mono medium, xs, uppercase, tracked | POPULATION |
-| Lead | `type-lead` | Sans, base | Protection points |
 | Item | `type-item` | Sans medium, base | Business Map |
 | Body | `type-body` | Sans, sm | Descriptions, controls |
 | Meta | `type-meta` | Sans, sm, muted | Footer, notes |
@@ -235,19 +237,32 @@ Page titles: pass only the page name to `<Head title="Home" />`. The app adds it
 
 ### App shell (public)
 
-- **No top bar.** A slim line at the top scrolls away with the page: the app name as a `type-label` link home, the "Simulated data" tag only while simulated records are on (D37), and the light and dark switch on the right. There is no login button on public screens (decisions.md, D20).
+- **Top bar:** the Kita lockup links home from a 56 px row that scrolls away with the page. The appearance switch sits at the right with spacing around it. There is no login button or simulated data label in public navigation (decisions.md, D20 and D37).
 - **Phones:** navigation is the bottom bar (`components/app-bottom-bar.tsx`), at most four items, each with an icon and a label.
-- **Desktop:** Home and Suggestions as small `type-label` text links on the right of the same line, the current one underlined in brass. Not a bar. Home also links to wishes with its "Share Your Wish" button.
+- **Desktop:** Home, Economy, Businesses and Suggestions are text links on the right of the same row. The current section has a filled background. The links sit directly on the header surface.
 - **Footer:** a formal institutional block naming the Republic of the Philippines, Provincial Government of Cagayan, the initiative, and the Digital Innovation Challenge context. Use clear hierarchy and restrained wording. Data sources are credited in `data/` READMEs and beside the relevant figures.
 - Content is centered at `max-w-6xl`, `px-gutter` on phones and `px-6` from `md`, sections `gap-section` apart.
 - Capitol uses a fixed, non-collapsible labeled desktop sidebar and a mobile menu. One compact breadcrumb strip follows actual geography/page hierarchy. The content fills the remaining width.
 - Compact spacing, readable type, hairline separators, no oversized greeting or decorative metric cards. New workspace dimensions live in app.css tokens.
-- Do not render a shared greeting, birthday, date or clock row. Keep session activity, expiry checks and renewal warnings active independently of page decoration.
-- Dashboard: MapLibre population map and selected-area details. Omit the requests/approvals placeholder until functional. Community Wishes never appears on the dashboard.
+- The Dashboard starts with a compact brand blue welcome row showing the saved display name, Philippine date and 24-hour clock. Keep session activity, expiry checks and renewal warnings independent of the welcome row. Align the desktop sidebar logo and breadcrumb headers on one shared height.
+- Use the [Capitol Dashboard pattern](#capitol-dashboard) for the map, finance figures, ranking and review queue. Community Wishes lives on its own authorized page.
+- Use a shared Capitol filter panel with a heading and compact field rows. Keep it beside the results on desktop and above them on narrow screens. Place search and longer controls on their own rows. Businesses keeps the review-state tabs above the table.
+- Capitol permit labels read Valid, Expiring, Expired and Not on File. Category chips wrap long names inside a 12 rem width limit.
 - Selected sidebar destinations use background and weight, without an accent bar. Use a compact Account trigger in the bottom bar; do not show the account name or role in the sidebar. No repeated helper paragraphs about expressed interest, unavailable workflows, or boundary limitations.
 - One click selects an area locally, without a server visit or remounting the map. Geographic breadcrumbs also update locally. View Barangays explicitly drills down. Town/barangay selects provide equivalent access; URL filters preserve navigation. Sources and missing figures remain explicit.
 - Community Wishes is separate, accessible only to Admin and Super Admin. Activity Logs is Super Admin only. Profile is available to each signed-in role.
 - Future business publication uses labeled stages 1 Prepare, 2 Review, 3 Publish. No preview approval controls before that workflow is implemented.
+
+### Capitol Dashboard
+
+**First screen question.** What do the selected area's figures show, and how do they compare with recent years? The map is the starting point. Put the controls, snapshot and finance history beside it so readers can compare them while the area stays in view. Start that row directly below the welcome and keep an accessible name for the map region.
+
+- Group by what readers compare. From 1280 px, use regular Grid for the map and its supporting stack. Give the map a bounded minimum height and let it fill the row as the supporting stack grows. Keep the scale beside the figures and give the finance table enough width for its year columns. [Adaptive supporting panes](https://developer.android.com/develop/ui/views/layout/canonical-layouts#supporting-pane)
+- Keep lower tables independent. Place Government Income by Municipality beside Waiting for Review. Show eight ranking rows and ten review rows per page with independent Previous and Next controls. The ranking spans the width when review access is unavailable. Keep Open Data Entry in the review footer.
+- Use the same reading and keyboard order at every width. Below 1280 px, stack the map, selected area, finance history, ranking and authorized review queue in that order. Keep these tiles in source order and verify the layout at 375, 1280 and 1440 px. [W3C Grid guidance on reading order](https://www.w3.org/TR/css-grid/#order-accessibility)
+- Put Municipality and Year on one row when the panel is at least 25 rem wide. Stack them when the controls need more room. Keep the same order when the user drills down to barangays.
+- Show the smaller movement arrow and place count beside the semibold rank number. Put the comparison detail in a tooltip on hover and keyboard focus.
+- Use native scrollbars with shared theme colors, including inside tables. Use the thin variant for fine pointers and keep the system defaults in forced colors. [MDN scrollbar styling](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scrollbars_styling)
 
 ### Home
 
@@ -404,6 +419,8 @@ Keep source/demo context with each visualization. Public wish labels are curated
 
 The public page is now named Cagayan Economy, with Economy in navigation. This correction supersedes the preceding one-topic-at-a-time layout: Government Finances appears first, alongside a compact town-picker map on desktop, and Community Wishes follows below. Phones stack the finance surface, map and wishes. One Town dropdown serves both data sections and the map. The map has no fiscal shading or additional statistics.
 
+On public Economy, the Municipality picker sits in the map header beside Cagayan and shows the current selection. The map and picker share the same local selection.
+
 Keep the page in one compact wrapper to avoid the public shell's large inter-section gaps. Cards use compact padding and 12px content gaps; the finance chart is shorter with solid, high-contrast Cartesian grid lines. View changes use icon-only toggle groups with accessible labels, pressed states, keyboard support and hover/focus tooltips. Keep Period and Wishes For as labeled selects. A Share Your Wish action belongs with Community Wishes, not on the map. Both sections retain complete tables and independent view selections.
 
 
@@ -443,14 +460,15 @@ Repeated patterns to avoid: expanding a source credit into cards, adding subtitl
 
 - Keep the Fiscal Year label and quiet selector on one row, to the right of the figures on desktop and above them on phones. Recent Uploads is a separate collapsed disclosure below the selector. Indicate active parsing in its label. Each upload shows its filename, short status and upload timestamp in Philippine time. Open it for the full result or retry.
 - Public Economy and Capitol Analytics use one collapsed COA Sources disclosure. Inside it, reports are grouped by report year, oldest first. Each report is named once and keeps its direct cited page links or workbook download. Province totals keep the plain COA attribution. This supersedes the earlier wrapped Source line on the analytics screens.
-- Business Activity Over Time uses Show Trends For with Business Categories and Official Industries option sections. Contextual help explains the two classifications. Selecting a group changes both existing URL values in local history. The displayed counts and simulated-data rules stay the same.
+- Public Economy uses Show Trends For with sections for Business Categories and Official Industries. Capitol Analytics shows a separate compact selector for each classification and only one series is selected at a time. Both update the classification and group together in local history. On Capitol Analytics, the municipality selector shows the selected place with an accessible label.
 
 ### Workspace Controls Correction "26-10-28"
 
 - Put Enter a Figure below the fiscal-year selector in the right panel. Use visible outlined Review Figures and Cancel Review buttons; reserve ghost styling for secondary icon controls.
 - Figure entry order is Fiscal Year, Item, Basis, Amount in PHP (₱), Source Report, then a conditional official COA link. No entry Note. A sign-off has no note: the reviewing Admin is recorded automatically and shown under the status. Rejection reasons stay required. Figures loaded from the reviewed CSVs have no reviewer account, so they show only their status, and no stored note is shown on a verified figure.
 - Use FieldHelp for requested field explanations, rather than permanent helper paragraphs. FieldLabel required markers accompany actual required controls.
-- Activity Logs and Community Wishes use the same right-side filter layout, with filters above the table on narrow screens.
+- Use compact horizontal filter rows on Capitol lists, with filters above the table on narrow screens. On Businesses, the search icon in the Filters heading opens the field and a search with text stays visible.
+- Community Wishes shows a centered word cloud below the table and uses the standard filter rail. The cloud shows the ten most requested business types under the same filters, using counts across all table pages. A ranked list is the fallback when a phrase cannot fit. Keep exact counts in the table and use business type labels from the catalog.
 - Keep the sidebar compact, with Workspace and authorized Management destinations. The bottom account dropdown contains Profile and Sign Out; do not repeat Profile in the primary navigation. Government Finances uses the peso icon.
 - Profile shows the required name marker, without a permanent character-limit caption. Preserve the limit itself.
 
@@ -465,7 +483,7 @@ Superseded the same day for Source Details, Year Details, the Compare control, t
 
 Explicit user approval supersedes the earlier chart-only finance rule on public Economy and Capitol Analytics. Lead with aligned Yearly Summary rows for revenue, expenses and surplus or deficit. Trends is optional. Category labels remain source-specific; Business Taxes and Fees always displays General Fund. Contextual FieldHelp and a navigable Help drawer explain definitions on demand. Source Details is reachable from annual figures, chart tooltips and a persistent Year Details control for keyboard/touch access.
 
-Comparison is off initially. Compact changes use green up and red down triangle/text tokens for direction only, with neutral unchanged values. Rate changes use percentage points. The type-data role is 12px; chart tooltips use 8px padding and aligned label/value rows. Combined coverage, census, restatement and missing reasons remain available together. Exact government figures remain public; the separate Business Trends section explicitly identifies simulated data.
+Comparison is off initially. Compact changes use green up and red down triangle/text tokens for direction only, with neutral unchanged values. Rate changes use percentage points. The type-data role is 12px; chart tooltips use 8px padding and aligned label/value rows. Combined coverage, census, restatement and missing reasons remain available together. Exact government figures remain public; the separate Business Activity Over Time section explicitly identifies simulated data.
 
 ## Dynamic Economic Map Approval "26-10-28"
 
@@ -475,7 +493,9 @@ The user approved Government Revenue, Government Expenses and Surplus or Deficit
 
 User correction. The Measure selector is removed from both economic maps because the panel already lists Government Revenue, Government Expenses and Surplus or Deficit. The map always shades by Government Revenue, and the Capitol legend names it. Year is the only finance control.
 
-The panel ends with one Source line followed by one underlined link per distinct report page, such as "COA Report p. 12", opening the PDF at that page. The Latest population link joins the same list. A province total (Sum of Reporting Towns) has one report per town, so it shows one plain line, "COA Annual Audit Reports", with no per-town link list; each town's own report is one selection away. Never print a run of identical citations. The panel has no Source Details drawer, fiscal-year or sign-off text, definitions, or repeated source descriptions. Coverage prints once when all metrics share it. A missing year or barangay level shows one status line, never repeated Not available rows.
+The panel ends with one Source row that wraps as needed. Each municipality link opens a distinct cited report page or downloads its workbook. Province totals link to the COA reports section of About the Data. The Latest population link opens its census release. Coverage prints once when all metrics share it. A missing year or barangay level shows one status line. Home and the footer link to About the Data. The page lists verified reports directly by municipality and year, with file icons and one action to download the complete COA archive.
+
+On Home and the Capitol Dashboard, align figure labels with their exact values. Keep filter labels on the same line as their controls. On the Capitol Dashboard, let the panel end after its sources and scale, and keep Low, the swatches, and High together.
 
 Surplus or Deficit shows a green up triangle (`text-trend-up`) for a surplus and a red down triangle (`text-trend-down`) for a deficit, with the signed amount. Zero or missing shows no triangle. The triangle marks the sign of the result, not a performance rating; M26 still forbids rating a change.
 
@@ -508,13 +528,13 @@ Executive Summary 2025 p. 2
 - **Phones** keep the same four columns: amounts use the short form below the `sm` breakpoint (exact figure for screen readers), cell padding and type shrink, and the table never overflows the page.
 - **Missing, hidden and not available.** A cell reads "Not available" or "Hidden to protect individual businesses", never `0`. The reason (not published by COA, workbook not loaded, awaiting sign-off, census, restated, coverage) prints once under the table when every row shares it, otherwise under its own item label.
 
-**Sources, once.** The only source on the card is the Source line under a Yearly Summary: one underlined link per distinct report page, such as "Executive Summary 2025 p. 2", opening our stored copy of the COA PDF at that page (`public.finance-sources.show` plus `#page=N`). A workbook figure links once per report ("Financial Statements 2025") and downloads. A Sum of Reporting Towns shows the plain line "COA Annual Audit Reports" with no links. Calculated rows reuse their inputs' citations. Never print a run of identical citations, and never put a source, fiscal-year phrase or sign-off text in a tooltip, a row, a chart or a footer. There is no Source Details drawer and no Year Details control. All evidence lives in one catalog entry per figure (`catalog.sources`); observations only point to it.
+**Sources, once.** The only source on the card is the collapsed COA Sources disclosure under a Yearly Summary, grouped by report year (26-11-11; it replaced the flat Source line): one underlined link per distinct report page, such as "Executive Summary 2025 p. 2", opening our stored copy of the COA PDF at that page (`public.finance-sources.show` plus `#page=N`). A workbook figure links once per report ("Financial Statements 2025") and downloads. A Sum of Reporting Towns shows the plain line "COA Annual Audit Reports" with no links. Calculated rows reuse their inputs' citations. Never print a run of identical citations, and never put a source, fiscal-year phrase or sign-off text in a tooltip, a row, a chart or a footer. There is no Source Details drawer and no Year Details control. All evidence lives in one catalog entry per figure (`catalog.sources`); observations only point to it.
 
 **Help.** A Help sheet opens from the card header, never beside the page title. It is short: one sentence of introduction, then native disclosure groups (Reading the Table, Coverage, Sum of Reporting Towns, What These Figures Are, Measures), the first open. Measures lists each measure as its label, one line of meaning and, where it is calculated, its formula. Longer definitions stay in `docs/engineering/metrics.md` and `docs/product/analytics-guide.md`. Show keeps its contextual FieldHelp. No topic select, no marketing copy.
 
 **Tuguegarao City.** Executive Summary totals cover every town, but breakdowns beyond totals are loaded for Tuguegarao City only. A measure another town lacks stays in the Show list, disabled, with the hint "Tuguegarao City Only" (or "Not Loaded for This Town" when several towns have it), so no one lands on an empty panel. Home's About the Data says the same in one sentence. Barangay population is Tuguegarao City only.
 
-**Simulated data.** Off by default (`CAGAYAN_SIMULATED`, D37). While off there are no business records, no Business Trends section, no Simulated data tag. While on, the tag appears in the layout and Business Trends returns, built from the same table. The Community Wishes on Economy are sample wishes for Tuguegarao City and carry a `type-label` "Sample Data" beside the heading; they have no source footer or source tooltip.
+**Simulated data.** Off by default (`CAGAYAN_SIMULATED`, D37). While off there are no business records, no Business Activity Over Time section, no Simulated data tag. While on, the tag appears in the layout and Business Activity Over Time returns, built from the same table. The Community Wishes on Economy are sample wishes for Tuguegarao City and carry a `type-label` "Sample Data" beside the heading; they have no source footer or source tooltip.
 
 Do not restore: per-row Source Details buttons, a Source footer in every panel, report-year captions, a Year Details select, source text in chart tooltips, a Compare checkbox, a Help topic select, or the Help button beside the title.
 
@@ -564,7 +584,7 @@ User corrections from screenshots of the profile, the directory and Economy. The
 - **Directory.** Filters in one grid row: Town, Search with a leading search icon, Barangay, Category, then BIR Registered. Rows show the category icon and the name only, with two fixed right slots (milestone mark, BIR shield) so rows align. From `lg` the list and map share one fixed-height panel; the list scrolls inside it with Show More at its end.
 - **Map area.** The chosen barangay has a solid primary outline and a name tag in the top left; the rest of the town is dimmed.
 - **Changes.** Arrow per cell, percent on hover (26-11-04). Trends cells show the figure with the triangle beside it; every year cell shows the arrow against the year before; the exact amount and the percent stay on hover through `ExactAmount`. Negative pesos read in accounting style, (₱58.65M), and keep their red down triangle.
-- **Economy.** Panels use 12px padding and tighter charts. Business Trends shows counts only: Declared Sales and Share of Town were removed. The right column is sticky and holds the Town Explorer map and Community Wishes, so no empty strip remains.
+- **Economy.** Panels use 12px padding and tighter charts. Business Activity Over Time (formerly Business Trends) shows counts only: Declared Sales and Share of Town were removed. The right column is sticky and holds the Town Explorer map and Community Wishes, so no empty strip remains.
 - **Community Wishes.** On Economy, one compact ranked list with thin horizontal bars and every wish, no view switcher.
 - **Home wish cloud.** The Home wish card holds the `@visx/wordcloud` word cloud (`WishCloud`) between its heading, with the Sample Data label, and Share Your Wish: horizontal words packed on an archimedean spiral with a fixed generator, sized on a log scale, the most wished in brand blue, then teal, then muted. No counts on the words; hover, focus or tap shows the original `WishTooltip` (label, town, wishes). A layout that cannot place every word is redone with smaller sizes, so no wish is dropped. Lazy loaded. The Economy action becomes one row below it: heading left, Explore the Economy right.
 
@@ -573,7 +593,7 @@ User corrections from screenshots of the profile, the directory and Economy. The
 The app is named Kita (`APP_NAME`). Logos come only from the official files in `docs/brand`, copied to `public/brand` and drawn by `KitaLogo` (`components/kita-logo.tsx`), which picks the reverse file on dark surfaces and never recolors, stretches or retypes them.
 
 - **Public top line.** The horizontal lockup (28 px high) links home, then icon and text links from `lg` with the brass underline on the current section, then the appearance toggle and the Simulated data tag behind a divider. A hairline border closes the line; it still scrolls away.
-- **Footer.** Brand ink: the stacked reverse logo with one sentence on the initiative; Explore (the four sections), Sources (PSA, COA, OpenStreetMap, external links) and Government columns; a bottom row with the Kita icon and name, and Digital Innovation Challenge 2026. No link to the Capitol (D20).
+- **Footer.** Brand ink with the stacked reverse logo, one sentence on the initiative, Explore links, a link to Sources, and Government credits. The bottom row shows the Kita icon and name and Digital Innovation Challenge 2026. Public pages do not link to the Capitol (D20).
 - **Capitol and Sign In.** The Capitol sidebar shows the horizontal lockup; the Sign In brand panel shows the stacked reverse logo. The browser tab uses the Kita icon.
 
 ## Executive Summary View "26-10-29"
@@ -589,7 +609,7 @@ User-approved simplification for public Economy and Capitol Analytics. It supers
 - **Words.** Income, Expenses and Net Income under the Government Finances heading; "Government Income" on map legends, which have no such heading. The Show group formerly called Government Totals is Results of Operation.
 - **Charts.** Below the table, side by side from `lg`: Results of Operation (Income and Expenses lines) and Financial Condition (Liabilities and Government Equity stacked, so each bar is Assets), with `--chart-*` tokens, lazy loaded, the table as their alternative.
 - **Missing.** A row a town lacks reads Not available in every cell with the reason once under its label, such as "Loaded for Tuguegarao City only" (M35). Never `0`.
-- **Sources.** One Source line, one link per distinct report page, sorted by report year then page.
+- **Sources.** One COA Sources disclosure grouped by report year, one link per distinct report page, sorted by page.
 
 ## Finance Report Polish "26-11-03"
 
@@ -634,7 +654,7 @@ No synchronized tooltips across charts. Missing years stay gaps. The Charts view
 
 ## Public Navigation and Data Labels "26-10-30"
 
-User correction supersedes the Kita Brand top-line icons and underline. Desktop navigation uses text-only links with a filled selected background, visible keyboard focus and no underline. The public navbar has no Simulated data tag. Sample Data labels sit at the upper right of the Home and Economy wish cards, using a red token-based bordered badge. Public simulated business labels use the shared config-driven SimulatedLabel inside the directory, profile and Business Trends content; Capitol retains its layout label. No extra explanatory copy or navigation icons.
+User correction supersedes the Kita Brand top-line icons and underline. Desktop navigation uses text-only links with a filled selected background, visible keyboard focus and no underline. The public navbar has no Simulated data tag. Sample Data labels sit at the upper right of the Home and Economy wish cards, using a red token-based bordered badge. Public simulated business labels use the shared config-driven SimulatedLabel inside the directory, profile and Business Activity Over Time content; Capitol retains its layout label. No extra explanatory copy or navigation icons.
 
 ## Achievements Redesign "26-10-30"
 
@@ -650,6 +670,7 @@ Owner correction: tables, tabs and titles sat straight on the page background, s
 
 - **Everything sits on a card.** `components/ui/surface.tsx` is the one card: a bordered `bg-card` surface with an optional heading row (`title`, `toolbar`), a `footer` (pagination, save actions) and `padded` for forms. Tables go in flush; the surface draws the border. Tab rows (`TabRow`) and filter rows are a `Surface padded` too. Never `rounded-sm border bg-card` by hand.
 - **Page header.** Every Capitol page starts with `components/capitol/page-header.tsx`: the title in its own card with the page actions on the right. The breadcrumb strip is a card bar as well.
+- **Data Entry.** Admins and Super Admins see Waiting for Review first, with the total and ten items per page. Staff start at Datasets. Dataset names are direct links without subtitles. **How Data Entry Works** opens the full-screen focus overlay. Use Home's focus chevrons and compact type without chapter or step counters. Name steps after the action or outcome. On the canvas, use a quiet dot grid, hide connector handles, and highlight the selected step's paths. Route verification and return separately so each outcome reads clearly. Keep the same steps usable if the diagram is unavailable.
 - **Page background.** `--background` is a neutral stone one step darker than white cards (light) and one step darker than the card slate (dark), so a surface always lifts off the page. No blue cast in light mode.
 - **Icon actions.** Row edit is a pen icon button (`components/capitol/edit-button.tsx`, named for screen readers), never the word Edit. Search in a toolbar is a magnifier (`components/capitol/search-field.tsx`).
 - **Verified is locked.** In a bulk entry grid a verified figure shows as text with a pen; the pen unlocks that one cell and asks for a reason. Pending and empty cells stay inputs (`components/capitol/entry-cell.tsx`). Status words come from `FIGURE_STATUS` in `lib/registry.ts`: Pending, Verified, Returned.

@@ -38,7 +38,9 @@
     /* Space. section: between page sections. gutter: page edge on phones. */
     --spacing-section: 2.5rem;
     --workspace-sidebar-width: 13rem;
-    --workspace-map-height: clamp(22rem, 57dvh, 38rem);
+    --workspace-map-height: clamp(22rem, 48dvh, 30rem);
+    --workspace-header-height: 3.5rem;
+    --workspace-panel-width: 16rem;
     --spacing-gutter: 1rem;
     /* Density (26-11-03): compact by default so screens show rows, not padding. */
     --spacing-panel: 0.5rem;
@@ -300,10 +302,6 @@
  * weight classes. Named type-* so tailwind-merge never mistakes them for text colors.
  * Sans for words people read. Mono for numbers, labels, and codes.
  */
-@utility type-display {
-    @apply text-4xl leading-[1.05] font-semibold tracking-tight text-balance md:text-5xl lg:text-6xl;
-}
-
 @utility type-title {
     @apply text-3xl leading-tight font-semibold tracking-tight text-balance lg:text-4xl;
 }
@@ -325,10 +323,6 @@
     @apply font-mono text-xs font-medium tracking-[0.08em] uppercase;
 }
 
-@utility type-lead {
-    @apply text-base text-pretty;
-}
-
 @utility type-item {
     @apply text-base font-medium;
 }
@@ -343,6 +337,14 @@
 
 @utility field-surface {
     @apply border-input bg-card text-card-foreground;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html[data-theme-ready] [data-theme-surface] {
+        transition-property: background-color, color, border-color;
+        transition-duration: var(--duration-quick);
+        transition-timing-function: var(--ease-out-soft);
+    }
 }
 
 @utility type-meta {
@@ -371,6 +373,18 @@
 
     body {
         @apply bg-background text-foreground antialiased;
+    }
+}
+
+@media (forced-colors: none) {
+    html {
+        scrollbar-color: var(--muted-foreground) var(--muted);
+    }
+}
+
+@media (pointer: fine) and (forced-colors: none) {
+    * {
+        scrollbar-width: thin;
     }
 }
 

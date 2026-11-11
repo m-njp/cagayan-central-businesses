@@ -48,11 +48,9 @@ const RESULT_COLOR = 'var(--foreground)';
 export default function FinanceHistoryChart({
     history,
     variant = 'lines',
-    legend = true,
 }: {
     history: FinancialHistory;
     variant?: FinanceChartVariant;
-    legend?: boolean;
 }) {
     const resultMetric =
         variant === 'outcome' || variant === 'result'
@@ -77,12 +75,6 @@ export default function FinanceHistoryChart({
               ]
             : []),
     ];
-    const config = Object.fromEntries(
-        series.map(({ metric, color: swatch }, index) => [
-            `series${index}`,
-            { label: metric.label, color: swatch },
-        ]),
-    );
     const data = history.rows.map((row, position) => ({
         year: row.year,
         result: amount(row.observations[RESULT_METRIC]),
@@ -103,10 +95,9 @@ export default function FinanceHistoryChart({
     return (
         <div className="flex min-w-0 flex-col gap-2">
             <ChartContainer
-                config={config}
                 className={`aspect-auto w-full font-mono tabular-nums ${variant === 'result' ? 'h-32 sm:h-36' : 'h-48 sm:h-56'}`}
                 role="group"
-                aria-label={`${series.map(({ metric }) => metric.label).join(' and ')} by year. Exact values are listed in the table.`}
+                aria-label={`${series.map(({ metric }) => metric.label).join(' and ')} by year`}
             >
                 <ComposedChart
                     data={data}
@@ -251,7 +242,7 @@ export default function FinanceHistoryChart({
                         ))}
                 </ComposedChart>
             </ChartContainer>
-            {legend && series.length > 1 && (
+            {series.length > 1 && (
                 <ul
                     aria-label="Legend"
                     className="flex flex-wrap justify-center gap-x-4 gap-y-1"

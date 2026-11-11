@@ -12,6 +12,6 @@ final class CommunityWishController extends Controller
 {
     public function __invoke(WorkspaceListRequest $request, CommunityWishesQuery $query): Response
     {
-        return Inertia::render('capitol/community-wishes/index', ['table' => $query->get($request->input('town'), $request->input('category'))]);
+        return Inertia::render('capitol/community-wishes/index', $query->get($request->input('town'), $request->input('category')));
     }
 }

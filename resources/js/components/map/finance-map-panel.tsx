@@ -1,4 +1,6 @@
+import { Link } from '@inertiajs/react';
 import { useId } from 'react';
+import { SourceLink } from '@/components/source-link';
 import {
     Select,
     SelectContent,
@@ -8,7 +10,12 @@ import {
 } from '@/components/ui/select';
 import { financeMapObservation } from '@/lib/finance-map';
 import { formatFigure, formatNumber, sourceName } from '@/lib/format';
-import { financeMapSources, observationLabel } from '@/lib/performance-format';
+import {
+    financeMapSources,
+    groupCitationReports,
+    observationLabel,
+} from '@/lib/performance-format';
+import { sources as publicSources } from '@/routes/public';
 import type { TownFigure } from '@/types/data';
 import type { FinanceMap } from '@/types/finance-map';
 
@@ -17,11 +24,13 @@ export function FinanceMapControls({
     latest,
     year,
     onChange,
+    compact = false,
 }: {
     finances: FinanceMap;
     latest: boolean;
     year: number | null;
     onChange: (patch: Record<string, string | null>) => void;
+    compact?: boolean;
 }) {
     const yearDescription = useId();
     const resolvedYear = latest ? finances.latestYear : null;
@@ -37,6 +46,7 @@ export function FinanceMapControls({
             >
                 <SelectTrigger
                     variant="quiet"
+                    size={compact ? 'sm' : 'default'}
                     className="font-mono tabular-nums"
                     aria-label="Fiscal year"
                     aria-describedby={
@@ -64,6 +74,8 @@ export function FinanceMapControls({
         </div>
     );
 }
+
+const figureRow = 'grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3';
 
 export function FinanceMapFigures({
     finances,
@@ -104,15 +116,32 @@ export function FinanceMapFigures({
         )
             ? coverages[0]
             : null;
-    // A sum of towns has one report per town; one plain attribution beats a wall of links.
-    const sources =
-        barangay || aggregate ? [] : financeMapSources(finances, code, year);
-    const summed = aggregate && !barangay && !empty;
-
+    const sources = barangay ? [] : financeMapSources(finances, code, year);
+    const hasProvinceReports =
+        aggregate && sources.some((source) => source?.url);
+    const links = aggregate
+        ? []
+        : groupCitationReports(sources).flatMap(({ reports }) =>
+              reports.flatMap((report) =>
+                  report.links.map((link) => ({
+                      ...link,
+                      report: report.label,
+                  })),
+              ),
+          );
+    const provinceCoverage =
+        coverage && aggregate && !empty ? sharedCoverage : null;
+    const reporting = provinceCoverage
+        ? `${provinceCoverage.reporting} of ${provinceCoverage.total} towns reporting`
+        : null;
+    const populationSourceUrl = latest ? population?.sourceUrl : null;
+    const populationSourceName = populationSourceUrl
+        ? sourceName(populationSourceUrl)
+        : null;
     return (
-        <div className="grid gap-3">
+        <div className="grid gap-2">
             {latest && (
-                <dl>
+                <dl className={figureRow}>
                     <dt className="type-label">
                         Population
                         {population ? ` (${population.year})` : ''}
@@ -133,15 +162,15 @@ export function FinanceMapFigures({
                         : `${year} figures are not available.`}
                 </p>
             ) : (
-                <dl className="grid gap-3">
+                <dl className="grid gap-1">
                     {rows.map(({ metric, point }) => (
-                        <div key={metric.id}>
+                        <div key={metric.id} className={figureRow}>
                             <dt className="type-label">{metric.label}</dt>
                             <dd className="font-mono type-body tabular-nums">
                                 {observationLabel(point, metric.unit)}
                             </dd>
                             {coverage && !sharedCoverage && point?.coverage && (
-                                <dd className="type-meta">
+                                <dd className="col-span-full type-meta">
                                     {point.coverage.reporting} of{' '}
                                     {point.coverage.total} towns reporting
                                 </dd>
@@ -150,50 +179,32 @@ export function FinanceMapFigures({
                     ))}
                 </dl>
             )}
-            {(sources.length > 0 ||
-                summed ||
-                (latest && population?.sourceUrl)) && (
-                <div className="grid gap-1 type-meta">
+            {reporting && <p className="type-meta">{reporting}</p>}
+            {(hasProvinceReports ||
+                links.length > 0 ||
+                populationSourceUrl) && (
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 border-t border-current/15 pt-2 type-meta">
                     <span>Source</span>
-                    {summed && (
-                        <div className="flex flex-wrap gap-x-2">
-                            <span>COA Annual Audit Reports</span>
-                            {coverage && sharedCoverage && (
-                                <span>
-                                    {sharedCoverage.reporting} of{' '}
-                                    {sharedCoverage.total} towns reporting
-                                </span>
-                            )}
-                        </div>
+                    {hasProvinceReports && (
+                        <Link
+                            href={`${publicSources.url()}#coa-reports`}
+                            className="underline underline-offset-2"
+                        >
+                            COA Reports
+                        </Link>
                     )}
-                    {sources.map((item) => (
-                        <a
-                            key={item.href}
-                            href={item.href}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="underline underline-offset-2"
-                        >
-                            {item.text}
-                            <span className="sr-only">
-                                {' '}
-                                (opens in a new tab)
-                            </span>
-                        </a>
+                    {links.map((item) => (
+                        <SourceLink key={item.href} href={item.href}>
+                            {`${item.report} ${item.text}`}
+                        </SourceLink>
                     ))}
-                    {latest && population?.sourceUrl && (
-                        <a
-                            href={population.sourceUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="underline underline-offset-2"
-                        >
-                            {sourceName(population.sourceUrl)}
-                            <span className="sr-only">
-                                {' '}
-                                (opens in a new tab)
-                            </span>
-                        </a>
+                    {populationSourceUrl && populationSourceName && (
+                        <SourceLink href={populationSourceUrl}>
+                            {populationSourceName ===
+                            'Philippine Statistics Authority'
+                                ? 'PSA Census'
+                                : populationSourceName}
+                        </SourceLink>
                     )}
                 </div>
             )}

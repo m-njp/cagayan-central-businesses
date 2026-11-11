@@ -326,6 +326,8 @@ Retired 26-11-03 by the owner. Income and Expenses per Resident are no longer co
 - **Restated years:** use the restated figure. The tooltip says it was restated, and the earlier figure stays in Capitol history.
 - **No rating:** an increase is not automatically an improvement, and no good or bad rating follows from a change.
 
+**Dashboard rank display.** The existing Government Income by Municipality table ranks the already-loaded, verified municipal income figures for the selected fiscal year. Municipalities with equal figures share a place and the next place skips the tied slots. Rank change is the previous fiscal year's place minus the selected year's place. Reporting coverage can differ between years. New indicates a first appearance in the loaded history when a prior-year ranking exists. The rank tooltip explains the comparison or indicates that the prior rank is unavailable. These are table annotations derived from the existing income measure.
+
 ### M27. Sum of Reporting Towns
 
 - **Label:** a total across towns for one line and year is always labeled "Sum of Reporting Towns", never provincial government finances. The Capitol dashboard map panel drops the heading and the "N of M towns reporting" line (owner, 26-11-04); its figures sit under the area name and the COA Annual Audit Reports source.

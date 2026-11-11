@@ -32,6 +32,10 @@ With events, each line is one JSON object. `stage` and `scan` describe actual wo
 
 Interactive uploads show actual page, sheet and matched-cell events at a half-second pace, requested by the owner on "26-11-08". Pacing is optional and spends at most 20 seconds per run (`PACE_BUDGET_SECONDS` in `coa/intake.py`). It changes when events appear, never the figures or validation. Normal CLI parsing does not wait unless `--pace` is supplied. The upload shows a blurred full-page overlay with the last seven real events (time, source location, line, exact amount). Parse Again starts a fresh attempt on the stored file and keeps the same verification rules.
 
+## Verify a public report archive
+
+Download the ZIP from About the Data, then run `composer data:finances:check-archive -- path/to/cagayan-coa-reports.zip`. The checker compares every ZIP entry against its manifest and the approved checksums in `data/towns/finances/documents.csv`. It exits with an error when a report differs, an entry is missing, or the archive contains an unexpected file. Add `--events` for JSON progress lines using the parser's event helper. The web download uses PHP's `zip` extension and the same approved checksums. The Python checker runs locally with the standard library.
+
 ## Troubleshoot
 
 - **Waiting:** run `composer dev`, which includes the queue worker. Tasks that do not start become retryable after the configured queue wait.

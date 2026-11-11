@@ -6,7 +6,7 @@ import {
 } from '@/lib/format';
 import type {
     EconomicObservation,
-    FinanceSource,
+    FinanceCitation,
     MetricUnit,
 } from '@/types/economic-performance';
 import type { FinanceMap } from '@/types/finance-map';
@@ -107,17 +107,22 @@ export function sourceHref(url: string, location: string | null): string {
 
 /** One link per distinct citation behind a set of figures: a report page, or a workbook once per report. */
 export function citationReports(
-    sources: Record<string, FinanceSource>,
+    sources: Record<string, FinanceCitation>,
     refs: string[],
 ) {
+    return groupCitationReports(refs.map((ref) => sources[ref]));
+}
+
+export function groupCitationReports(citations: FinanceCitation[]) {
     type Citation = { href: string; text: string; page: number | null };
-    type Report = { label: string; links: Map<string, Citation> };
+    type Report = { label: string; links: Map<number | string, Citation> };
     const years = new Map<number, Map<string, Report>>();
-    for (const ref of refs) {
-        const source = sources[ref];
+    for (const source of citations) {
         if (!source?.url) continue;
         const year = source.reportYear ?? source.fiscalYear;
-        const key = `${source.town}:${source.kind ?? source.label}`;
+        const key =
+            source.documentKey ??
+            `${source.town}:${source.kind ?? source.label}`;
         const reports = years.get(year) ?? new Map<string, Report>();
         const report = reports.get(key) ?? {
             label: source.label,
@@ -131,8 +136,9 @@ export function citationReports(
               ? 'Full Report'
               : formatFinanceSource('', source.location).trim();
         // Different figure URLs can serve the same document page.
-        if (!report.links.has(text))
-            report.links.set(text, {
+        const linkKey = workbook ? text : (source.page ?? text);
+        if (!report.links.has(linkKey))
+            report.links.set(linkKey, {
                 href: sourceHref(source.url, source.location),
                 text,
                 page: source.page,
@@ -154,28 +160,32 @@ export function citationReports(
         }));
 }
 
-/** One link per distinct report page behind the figures of an area and year. */
+export function municipalityCitationReports(citations: FinanceCitation[]) {
+    const towns = new Map<string, FinanceCitation[]>();
+    for (const citation of citations) {
+        if (!citation?.url) continue;
+        const reports = towns.get(citation.town) ?? [];
+        reports.push(citation);
+        towns.set(citation.town, reports);
+    }
+    return [...towns.entries()]
+        .sort(([first], [second]) => first.localeCompare(second, LOCALE))
+        .map(([town, reports]) => ({
+            town,
+            years: groupCitationReports(reports),
+        }));
+}
+
 export function financeMapSources(
     finances: FinanceMap,
     code: string,
     year: number | null,
 ) {
     if (year === null) return [];
-    const links = new Map<string, { href: string; text: string }>();
-    for (const point of Object.values(
+    const refs = Object.values(
         finances.observations[code]?.[year] ?? {},
-    ))
-        for (const ref of point.sourceRefs ?? []) {
-            const source = finances.sources[ref];
-            if (!source?.url) continue;
-            const href = sourceHref(source.url, source.location);
-            if (!links.has(href))
-                links.set(href, {
-                    href,
-                    text: formatFinanceSource('COA Report', source.location),
-                });
-        }
-    return [...links.values()];
+    ).flatMap((point) => point.sourceRefs ?? []);
+    return [...new Set(refs)].map((ref) => finances.sources[ref]);
 }
 
 export function formatPesoTick(value: number): string {

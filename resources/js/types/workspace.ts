@@ -64,7 +64,6 @@ export type BusinessCategoryRow = {
     name: string;
     color: number;
     types: number;
-    registered: number | null;
 };
 
 export type BusinessCategories = {

@@ -2,7 +2,10 @@ import { Head } from '@inertiajs/react';
 import { AnalyticsPanels } from '@/components/analytics/analytics-panels';
 import { AnalyticsPickers } from '@/components/analytics/analytics-pickers';
 import { PageHeader } from '@/components/capitol/page-header';
-import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
+import {
+    WorkspaceFilterLayout,
+    WorkspaceFilters,
+} from '@/components/capitol/workspace-filters';
 import { pushFilters, withCoveredMeasure } from '@/lib/analytics';
 import { analytics } from '@/routes/capitol';
 import type {
@@ -29,15 +32,16 @@ export default function Analytics({
         <>
             <Head title="Analytics" />
             <PageHeader title="Analytics" />
-            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-                <div className="flex min-w-0 flex-col gap-4">
+            <WorkspaceFilterLayout
+                results={
                     <AnalyticsPanels
                         catalog={catalog}
                         filters={filters}
                         onChange={change}
                         figures
                     />
-                </div>
+                }
+            >
                 <WorkspaceFilters>
                     <AnalyticsPickers
                         idPrefix="analytics"
@@ -45,9 +49,10 @@ export default function Analytics({
                         filters={filters}
                         fields={['town', 'business']}
                         onChange={change}
+                        compact
                     />
                 </WorkspaceFilters>
-            </div>
+            </WorkspaceFilterLayout>
         </>
     );
 }

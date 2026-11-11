@@ -30,12 +30,3 @@ export function financeChartSeries(history: FinancialHistory) {
         return segments;
     });
 }
-
-export function focusedFinance(
-    history: FinancialHistory,
-    metric: string | null,
-) {
-    return (
-        history.metrics.find((item) => item.id === metric) ?? history.metrics[0]
-    );
-}

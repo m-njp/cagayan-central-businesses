@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { FocusDialog } from '@/components/ui/focus-dialog';
 import { Spinner } from '@/components/ui/spinner';
+import { TaskProgress } from '@/components/ui/task-progress';
 import { useFinanceUploadTask } from '@/hooks/use-finance-upload-task';
 import { icons } from '@/lib/icons';
 import { formatCount } from '@/lib/format';
@@ -169,9 +170,8 @@ export function FinanceParsingTask({
                     </DialogDescription>
                 </div>
                 {running ? (
-                    <progress
+                    <TaskProgress
                         aria-label="Source Scan"
-                        className="h-1 w-full appearance-none [&::-moz-progress-bar]:bg-primary [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-primary"
                         value={scanning ? (progress?.current ?? 0) : undefined}
                         max={scanning ? (progress?.total ?? 1) : undefined}
                     />

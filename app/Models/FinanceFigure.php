@@ -85,7 +85,7 @@ class FinanceFigure extends Model
         $root = realpath(base_path('data/towns'));
         $path = $root === false ? false : realpath("$root/$file");
 
-        return $path !== false && str_starts_with($path, $root.DIRECTORY_SEPARATOR) ? $path : null;
+        return $path !== false && str_starts_with($path, $root.DIRECTORY_SEPARATOR) && is_file($path) ? $path : null;
     }
 
     /**

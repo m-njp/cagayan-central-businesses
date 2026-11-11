@@ -14,6 +14,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Surface } from '@/components/ui/surface';
 import { Toggle } from '@/components/ui/toggle';
 import { pageSearchParams } from '@/lib/navigation';
 import {
@@ -129,261 +130,275 @@ export default function PublicBusinesses({
         onChange: (value: string | null) => void,
         all?: string,
     ) => (
-        <Select
-            value={value ?? 'all'}
-            onValueChange={(next) => onChange(next === 'all' ? null : next)}
-            disabled={!town && !!all}
-        >
-            <SelectTrigger
-                variant="quiet"
-                aria-label={label}
-                className="w-full min-w-0"
+        <div className="min-w-0 p-1">
+            <Select
+                value={value ?? 'all'}
+                onValueChange={(next) => onChange(next === 'all' ? null : next)}
+                disabled={!town && !!all}
             >
-                <SelectValue placeholder={label} />
-            </SelectTrigger>
-            <SelectContent>
-                {all && <SelectItem value="all">{all}</SelectItem>}
-                {options.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
+                <SelectTrigger
+                    variant="quiet"
+                    aria-label={label}
+                    className="w-full min-w-0"
+                >
+                    <SelectValue placeholder={label} />
+                </SelectTrigger>
+                <SelectContent>
+                    {all && <SelectItem value="all">{all}</SelectItem>}
+                    {options.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
     );
 
     return (
         <>
             <Head title="Businesses" />
-            <div className="flex flex-col gap-3">
-                <h1 className="type-title">Businesses</h1>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                    <div className="flex min-w-0 flex-[1_1_17rem] flex-wrap items-center gap-x-2">
-                        <Select
-                            value={view.town ?? undefined}
-                            onValueChange={chooseTown}
-                        >
-                            <SelectTrigger
-                                variant="quiet"
-                                aria-label="Town"
-                                className="min-w-0 flex-1"
-                            >
-                                <SelectValue placeholder="Choose a Town" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {directory.towns.map((option) => (
-                                    <SelectItem
-                                        key={option.value}
-                                        value={option.value}
+            <div className="flex flex-col gap-4 pt-4">
+                <div className="flex flex-col gap-3">
+                    <h1 className="type-title">Businesses</h1>
+                    <Surface aria-label="Business Filters">
+                        <div className="grid lg:grid-cols-[minmax(0,1.25fr)_minmax(0,2fr)_auto]">
+                            <div className="flex min-w-0 flex-wrap items-center gap-1 border-b p-1 lg:border-r lg:border-b-0">
+                                <Select
+                                    value={view.town ?? undefined}
+                                    onValueChange={chooseTown}
+                                >
+                                    <SelectTrigger
+                                        variant="quiet"
+                                        aria-label="Town"
+                                        className="min-w-0 flex-1"
                                     >
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <SearchField
-                            label="Search by Name"
-                            value={search}
-                            disabled={!town}
-                            onChange={setSearch}
-                            expandedClassName="basis-full sm:basis-36 lg:basis-48"
-                        />
-                    </div>
-                    <div className="grid min-w-0 flex-[1_1_17rem] grid-cols-2 gap-x-2">
-                        {choose(
-                            'Barangay',
-                            view.barangay,
-                            town?.barangays ?? [],
-                            (barangay) => go({ barangay }),
-                            'All Barangays',
-                        )}
-                        {choose(
-                            'Category',
-                            view.category,
-                            directory.categories.map((c) => ({
-                                value: c.code,
-                                label: c.name,
-                            })),
-                            (category) => go({ category }),
-                            'All Categories',
-                        )}
-                    </div>
-                    <div className="flex gap-2">
-                        <Toggle
-                            variant="outline"
-                            disabled={!town}
-                            pressed={view.bir}
-                            onPressedChange={(bir) => go({ bir })}
-                        >
-                            BIR Registered
-                        </Toggle>
-                        {town && (
-                            <Button
-                                variant="outline"
-                                className="lg:hidden"
-                                onClick={() => go({ map: !view.map })}
-                            >
-                                {view.map ? 'Show List' : 'Show Map'}
-                            </Button>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            {!view.town || (!town && !loading && !failed) ? (
-                <p className="rounded-sm border bg-card p-6 type-body text-muted-foreground">
-                    Choose a town to see its registered businesses.
-                </p>
-            ) : failed ? (
-                <div
-                    role="alert"
-                    className="flex flex-wrap items-center gap-3 rounded-sm border bg-card p-6 type-body"
-                >
-                    Businesses could not load.
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => chooseTown(view.town as string)}
-                    >
-                        Try Again
-                    </Button>
-                </div>
-            ) : (
-                // From lg the list and the map share one fixed-height panel: the list scrolls inside it, so both edges line up.
-                <div className="grid gap-3 lg:h-[calc(100dvh-12rem)] lg:min-h-[28rem] lg:grid-cols-2">
-                    <div
-                        className={
-                            view.map
-                                ? 'hidden min-h-0 lg:flex lg:flex-col'
-                                : 'flex min-h-0 flex-col'
-                        }
-                    >
-                        {!town || loading ? (
-                            <div
-                                className="flex flex-col gap-2"
-                                aria-busy="true"
-                            >
-                                {Array.from({ length: 6 }, (_, i) => (
-                                    <Skeleton
-                                        key={i}
-                                        className="h-11 w-full rounded-sm"
-                                    />
-                                ))}
-                            </div>
-                        ) : rows.length === 0 ? (
-                            <p className="rounded-sm border bg-card p-4 type-body text-muted-foreground">
-                                {town.rows.length === 0
-                                    ? 'No registered businesses here yet.'
-                                    : 'No businesses match these filters.'}
-                            </p>
-                        ) : (
-                            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-sm border bg-card">
-                                <div className="flex justify-end px-3 pt-3">
-                                    <SimulatedLabel />
-                                </div>
-                                <ul className="divide-y">
-                                    {rows.slice(0, view.shown).map((row) => {
-                                        const category =
-                                            categories[row.category];
-                                        return (
-                                            <li
-                                                key={row.id}
-                                                onMouseEnter={() =>
-                                                    setHighlight(row.id)
-                                                }
-                                                onMouseLeave={() =>
-                                                    setHighlight(null)
-                                                }
+                                        <SelectValue placeholder="Choose a Town" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {directory.towns.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
                                             >
-                                                <Link
-                                                    href={show(row.id)}
-                                                    onFocus={() =>
-                                                        setHighlight(row.id)
-                                                    }
-                                                    className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset"
-                                                >
-                                                    {category && (
-                                                        <CategoryIcon
-                                                            code={category.code}
-                                                            name={category.name}
-                                                        />
-                                                    )}
-                                                    <span className="min-w-0 flex-1 truncate type-item">
-                                                        {row.name}
-                                                    </span>
-                                                    {/* Two fixed slots, so every row lines up whichever marks it has. */}
-                                                    <span className="grid shrink-0 grid-cols-2 gap-2 *:grid *:size-5 *:place-items-center">
-                                                        <span>
-                                                            {row.milestone && (
-                                                                <MilestoneMark
-                                                                    years={
-                                                                        row.milestone
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <SearchField
+                                    label="Search by Name"
+                                    value={search}
+                                    disabled={!town}
+                                    onChange={setSearch}
+                                    expandedClassName="basis-full sm:basis-40"
+                                />
+                            </div>
+                            <div className="grid min-w-0 grid-cols-2 items-center divide-x border-b lg:border-r lg:border-b-0">
+                                {choose(
+                                    'Barangay',
+                                    view.barangay,
+                                    town?.barangays ?? [],
+                                    (barangay) => go({ barangay }),
+                                    'All Barangays',
+                                )}
+                                {choose(
+                                    'Category',
+                                    view.category,
+                                    directory.categories.map((c) => ({
+                                        value: c.code,
+                                        label: c.name,
+                                    })),
+                                    (category) => go({ category }),
+                                    'All Categories',
+                                )}
+                            </div>
+                            <div className="flex flex-wrap items-center gap-1 p-1">
+                                <Toggle
+                                    className="h-touch px-3 type-control md:h-control"
+                                    disabled={!town}
+                                    pressed={view.bir}
+                                    onPressedChange={(bir) => go({ bir })}
+                                >
+                                    BIR Registered
+                                </Toggle>
+                                {town && (
+                                    <Button
+                                        variant="outline"
+                                        className="h-touch md:h-control lg:hidden"
+                                        onClick={() => go({ map: !view.map })}
+                                    >
+                                        {view.map ? 'Show List' : 'Show Map'}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </Surface>
+                </div>
+
+                {!view.town || (!town && !loading && !failed) ? (
+                    <p className="rounded-sm border bg-card p-6 type-body text-muted-foreground">
+                        Choose a town to see its registered businesses.
+                    </p>
+                ) : failed ? (
+                    <div
+                        role="alert"
+                        className="flex flex-wrap items-center gap-3 rounded-sm border bg-card p-6 type-body"
+                    >
+                        Businesses could not load.
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => chooseTown(view.town as string)}
+                        >
+                            Try Again
+                        </Button>
+                    </div>
+                ) : (
+                    // From lg the list and the map share one fixed-height panel: the list scrolls inside it, so both edges line up.
+                    <div className="grid gap-3 lg:h-[calc(100dvh-12rem)] lg:min-h-[28rem] lg:grid-cols-2">
+                        <div
+                            className={
+                                view.map
+                                    ? 'hidden min-h-0 lg:flex lg:flex-col'
+                                    : 'flex min-h-0 flex-col'
+                            }
+                        >
+                            {!town || loading ? (
+                                <div
+                                    className="flex flex-col gap-2"
+                                    aria-busy="true"
+                                >
+                                    {Array.from({ length: 6 }, (_, i) => (
+                                        <Skeleton
+                                            key={i}
+                                            className="h-11 w-full rounded-sm"
+                                        />
+                                    ))}
+                                </div>
+                            ) : rows.length === 0 ? (
+                                <p className="rounded-sm border bg-card p-4 type-body text-muted-foreground">
+                                    {town.rows.length === 0
+                                        ? 'No registered businesses here yet.'
+                                        : 'No businesses match these filters.'}
+                                </p>
+                            ) : (
+                                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-sm border bg-card">
+                                    <div className="flex justify-end px-3 pt-3">
+                                        <SimulatedLabel />
+                                    </div>
+                                    <ul className="divide-y">
+                                        {rows
+                                            .slice(0, view.shown)
+                                            .map((row) => {
+                                                const category =
+                                                    categories[row.category];
+                                                return (
+                                                    <li
+                                                        key={row.id}
+                                                        onMouseEnter={() =>
+                                                            setHighlight(row.id)
+                                                        }
+                                                        onMouseLeave={() =>
+                                                            setHighlight(null)
+                                                        }
+                                                    >
+                                                        <Link
+                                                            href={show(row.id)}
+                                                            onFocus={() =>
+                                                                setHighlight(
+                                                                    row.id,
+                                                                )
+                                                            }
+                                                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset"
+                                                        >
+                                                            {category && (
+                                                                <CategoryIcon
+                                                                    code={
+                                                                        category.code
+                                                                    }
+                                                                    name={
+                                                                        category.name
                                                                     }
                                                                 />
                                                             )}
-                                                        </span>
-                                                        <span>
-                                                            {row.bir && (
-                                                                <BirMark />
-                                                            )}
-                                                        </span>
-                                                    </span>
-                                                </Link>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                                {rows.length > view.shown && (
-                                    <div className="border-t p-2">
-                                        <Button
-                                            variant="outline"
-                                            className="w-full"
-                                            onClick={() =>
-                                                go(
-                                                    {
-                                                        shown:
-                                                            view.shown +
-                                                            PAGE_SIZE,
-                                                    },
-                                                    true,
-                                                )
-                                            }
-                                        >
-                                            Show More
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                        {view.barangay && town && (
-                            <p className="pt-2 type-body">
-                                Missing a business in{' '}
-                                {barangayName[view.barangay]}?{' '}
-                                <Link
-                                    href={suggestions()}
-                                    className="underline underline-offset-2"
-                                >
-                                    Suggest One
-                                </Link>
-                            </p>
-                        )}
+                                                            <span className="min-w-0 flex-1 truncate type-item">
+                                                                {row.name}
+                                                            </span>
+                                                            {/* Two fixed slots, so every row lines up whichever marks it has. */}
+                                                            <span className="grid shrink-0 grid-cols-2 gap-2 *:grid *:size-5 *:place-items-center">
+                                                                <span>
+                                                                    {row.milestone && (
+                                                                        <MilestoneMark
+                                                                            years={
+                                                                                row.milestone
+                                                                            }
+                                                                        />
+                                                                    )}
+                                                                </span>
+                                                                <span>
+                                                                    {row.bir && (
+                                                                        <BirMark />
+                                                                    )}
+                                                                </span>
+                                                            </span>
+                                                        </Link>
+                                                    </li>
+                                                );
+                                            })}
+                                    </ul>
+                                    {rows.length > view.shown && (
+                                        <div className="border-t p-2">
+                                            <Button
+                                                variant="outline"
+                                                className="w-full"
+                                                onClick={() =>
+                                                    go(
+                                                        {
+                                                            shown:
+                                                                view.shown +
+                                                                PAGE_SIZE,
+                                                        },
+                                                        true,
+                                                    )
+                                                }
+                                            >
+                                                Show More
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            {view.barangay && town && (
+                                <p className="pt-2 type-body">
+                                    Missing a business in{' '}
+                                    {barangayName[view.barangay]}?{' '}
+                                    <Link
+                                        href={suggestions()}
+                                        className="underline underline-offset-2"
+                                    >
+                                        Suggest One
+                                    </Link>
+                                </p>
+                            )}
+                        </div>
+                        <div
+                            className={`h-[70dvh] lg:h-full ${view.map ? '' : 'hidden lg:block'}`}
+                        >
+                            {view.town && (
+                                <LazyBusinessMap
+                                    townCode={view.town}
+                                    barangay={view.barangay}
+                                    businesses={rows}
+                                    highlight={highlight}
+                                    onSelect={(id) => router.visit(show(id))}
+                                    label="Map of registered businesses"
+                                />
+                            )}
+                        </div>
                     </div>
-                    <div
-                        className={`h-[70dvh] lg:h-full ${view.map ? '' : 'hidden lg:block'}`}
-                    >
-                        {view.town && (
-                            <LazyBusinessMap
-                                townCode={view.town}
-                                barangay={view.barangay}
-                                businesses={rows}
-                                highlight={highlight}
-                                onSelect={(id) => router.visit(show(id))}
-                                label="Map of registered businesses"
-                            />
-                        )}
-                    </div>
-                </div>
-            )}
+                )}
+            </div>
         </>
     );
 }

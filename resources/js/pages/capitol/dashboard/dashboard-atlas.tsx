@@ -8,8 +8,10 @@ import {
     useState,
 } from 'react';
 import townsRaw from '../../../../../data/boundaries/cagayan-municipalities.geojson?raw';
-import { PageHeader } from '@/components/capitol/page-header';
+import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
+import { FinanceYearsTable } from '@/components/finance-years-table';
 import { Button } from '@/components/ui/button';
+import { Field, FieldLabel } from '@/components/ui/field';
 import {
     Select,
     SelectContent,
@@ -37,7 +39,7 @@ import { pageSearchParams } from '@/lib/navigation';
 import { navigateDashboard } from '@/lib/workspace-map-navigation';
 import type { WorkspaceMap } from '@/types/workspace';
 
-const EconomicMap = lazy(() => import('@/components/map/economic-map'));
+const AreaMap = lazy(() => import('@/components/map/area-map'));
 const townGeometry = JSON.parse(townsRaw) as AreaCollection;
 
 export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
@@ -65,6 +67,7 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
     const barangay =
         data.barangays.find((item) => item.code === barangayCode) ?? null;
     const shown = barangay ?? town ?? data.atlas.province;
+    const financeArea = town ?? data.atlas.province;
     const [loaded, setLoaded] = useState<{
         code: string;
         source: AreaCollection;
@@ -134,15 +137,14 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
 
     return (
         <section
-            className="flex min-w-0 flex-col gap-4"
-            aria-label="Economic Map"
+            className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(26rem,1fr)]"
+            aria-label="Map and Selected Area"
         >
-            <PageHeader title="Economic Map" />
-            <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
-                <div
-                    className="relative h-(--workspace-map-height)"
-                    aria-busy={pending}
-                >
+            <div
+                className="relative min-h-(--workspace-map-height)"
+                aria-busy={pending}
+            >
+                <div className="absolute inset-0">
                     {!inBrowser ? (
                         <Skeleton className="h-full w-full" />
                     ) : failed !== null ? (
@@ -177,7 +179,8 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                                     <Skeleton className="h-full w-full" />
                                 }
                             >
-                                <EconomicMap
+                                <AreaMap
+                                    label="Economic map of Cagayan"
                                     source={
                                         drilling && loaded?.code === townCode
                                             ? {
@@ -204,54 +207,69 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                         </VisualErrorBoundary>
                     )}
                 </div>
-                <Surface padded aria-label="Selected area">
-                    <div className="flex flex-col gap-2">
-                        <label id="town-label" className="type-label">
-                            Municipality
-                        </label>
-                        <Select
-                            value={townCode ?? 'all'}
-                            onValueChange={(code) =>
-                                navigate(code === 'all' ? null : code)
-                            }
-                        >
-                            <SelectTrigger
-                                variant="quiet"
-                                aria-labelledby="town-label"
-                                className="w-full"
+            </div>
+            <div className="grid min-w-0 content-start gap-4">
+                <WorkspaceFilters title="Selected Area">
+                    <div className="@container grid">
+                        <div className="grid divide-y @min-[25rem]:grid-cols-[minmax(0,1fr)_auto] @min-[25rem]:divide-x @min-[25rem]:divide-y-0">
+                            <Field
+                                orientation="horizontal"
+                                className="min-w-0 gap-2 @min-[25rem]:pr-3"
                             >
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">
-                                    All of Cagayan
-                                </SelectItem>
-                                {data.atlas.towns.map((item) => (
-                                    <SelectItem
-                                        key={item.code}
-                                        value={item.code}
+                                <FieldLabel
+                                    htmlFor="dashboard-municipality"
+                                    className="shrink-0 type-label"
+                                >
+                                    Municipality
+                                </FieldLabel>
+                                <Select
+                                    value={townCode ?? 'all'}
+                                    onValueChange={(code) =>
+                                        navigate(code === 'all' ? null : code)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        variant="quiet"
+                                        size="sm"
+                                        id="dashboard-municipality"
                                     >
-                                        {item.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {town && !drilling && (
-                            <Button
-                                variant="outline"
-                                onClick={() => navigate(town.code, 'barangays')}
-                            >
-                                View Barangays
-                            </Button>
-                        )}
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent align="end">
+                                        <SelectItem value="all">
+                                            All of Cagayan
+                                        </SelectItem>
+                                        {data.atlas.towns.map((item) => (
+                                            <SelectItem
+                                                key={item.code}
+                                                value={item.code}
+                                            >
+                                                {item.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+                            <div className="@min-[25rem]:pl-3">
+                                <FinanceMapControls
+                                    finances={data.finances}
+                                    {...selection}
+                                    onChange={change}
+                                    compact
+                                />
+                            </div>
+                        </div>
                         {drilling && (
-                            <>
-                                <label
-                                    id="barangay-label"
-                                    className="mt-2 type-label"
+                            <Field
+                                orientation="horizontal"
+                                className="gap-2 border-t"
+                            >
+                                <FieldLabel
+                                    htmlFor="dashboard-barangay"
+                                    className="shrink-0 type-label"
                                 >
                                     Barangay
-                                </label>
+                                </FieldLabel>
                                 <Select
                                     value={barangayCode ?? 'all'}
                                     onValueChange={(code) =>
@@ -264,12 +282,12 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                                 >
                                     <SelectTrigger
                                         variant="quiet"
-                                        aria-labelledby="barangay-label"
-                                        className="w-full"
+                                        size="sm"
+                                        id="dashboard-barangay"
                                     >
                                         <SelectValue placeholder="Choose a Barangay" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent align="end">
                                         <SelectItem value="all">
                                             All Barangays
                                         </SelectItem>
@@ -283,15 +301,20 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                            </>
+                            </Field>
+                        )}
+                        {town && !drilling && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="mt-2 h-touch justify-self-end md:h-control-compact"
+                                onClick={() => navigate(town.code, 'barangays')}
+                            >
+                                View Barangays
+                            </Button>
                         )}
                     </div>
-                    <FinanceMapControls
-                        finances={data.finances}
-                        {...selection}
-                        onChange={change}
-                    />
-                    <div className="border-t pt-3">
+                    <div className="grid gap-2 border-t pt-2">
                         <h2 className="type-item">{shown.name}</h2>
                         <FinanceMapFigures
                             finances={data.finances}
@@ -303,10 +326,13 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                             coverage={false}
                         />
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 border-t pt-3 type-meta">
+                    <div className="grid grid-cols-[auto_auto_minmax(2rem,1fr)_auto] items-center gap-1.5 border-t pt-2 type-meta">
                         <span>Government Income</span>
                         <span>Low</span>
-                        <div className="flex gap-0.5" aria-hidden="true">
+                        <div
+                            className="grid grid-cols-5 gap-0.5"
+                            aria-hidden="true"
+                        >
                             {[
                                 'bg-map-1',
                                 'bg-map-2',
@@ -314,14 +340,18 @@ export function DashboardAtlas({ data }: { data: WorkspaceMap }) {
                                 'bg-map-4',
                                 'bg-map-5',
                             ].map((color) => (
-                                <span
-                                    key={color}
-                                    className={color + ' h-3 w-4'}
-                                />
+                                <span key={color} className={color + ' h-3'} />
                             ))}
                         </div>
                         <span>High</span>
                     </div>
+                </WorkspaceFilters>
+                <Surface title="Government Finances">
+                    <FinanceYearsTable
+                        finances={data.finances}
+                        code={financeArea.code}
+                        name={financeArea.name}
+                    />
                 </Surface>
             </div>
         </section>

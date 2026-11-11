@@ -9,7 +9,10 @@ export function PageHeader({
     children?: ReactNode;
 }) {
     return (
-        <header className="flex min-h-12 flex-wrap items-center justify-between gap-2 rounded-sm border bg-card px-panel py-1.5">
+        <header
+            data-theme-surface
+            className="flex min-h-12 flex-wrap items-center justify-between gap-2 rounded-sm border bg-card px-panel py-1.5"
+        >
             <h1 className="type-heading">{title}</h1>
             {children && (
                 <div className="flex flex-wrap items-center gap-2">

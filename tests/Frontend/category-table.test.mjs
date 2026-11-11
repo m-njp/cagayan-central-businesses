@@ -2,12 +2,11 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
     categoryQuery,
-    paginate,
     parseCategoryView,
     titleCase,
-    visibleCategories,
     visibleTypes,
 } from '../../resources/js/lib/category-table.ts';
+import { paginate } from '../../resources/js/lib/pagination.ts';
 
 const categories = [{ code: 'agriculture' }, { code: 'tourism' }];
 const names = { agriculture: 'Agriculture', tourism: 'Tourism' };
@@ -30,7 +29,6 @@ void test('stale or edited URL state falls back to the defaults', () => {
             'view=bogus&sort=nope&dir=sideways&category=mining&industry=Z&page=-4',
         ),
         {
-            view: 'categories',
             q: '',
             sort: 'name',
             dir: 'asc',
@@ -39,8 +37,8 @@ void test('stale or edited URL state falls back to the defaults', () => {
             page: 1,
         },
     );
-    assert.equal(view('view=categories&sort=industry').sort, 'name');
-    assert.equal(view('view=categories&sort=types').sort, 'types');
+    assert.equal(view('view=categories&sort=industry').sort, 'industry');
+    assert.equal(view('view=categories&sort=types').sort, 'name');
     assert.equal(view('view=types&sort=category').sort, 'category');
 });
 
@@ -53,7 +51,6 @@ void test('only non-default state reaches the URL', () => {
             ),
         ),
         {
-            view: 'types',
             q: 'cafe',
             sort: 'registered',
             dir: 'desc',
@@ -61,7 +58,9 @@ void test('only non-default state reaches the URL', () => {
             page: '3',
         },
     );
-    assert.deepEqual(categoryQuery(view('category=tourism')), {});
+    assert.deepEqual(categoryQuery(view('category=tourism')), {
+        category: 'tourism',
+    });
 });
 
 void test('names sort by locale so Ñ follows N, and ties fall back to the name', () => {
@@ -133,23 +132,6 @@ void test('search, category and industry filters combine, and types sort by cate
         'Feed Store',
         'Rice Farm',
     ]);
-});
-
-void test('categories sort by type count and search by name', () => {
-    const rows = [
-        { code: 'a', name: 'Alpha', color: 1, types: 1, registered: 9 },
-        { code: 'b', name: 'Beta', color: 2, types: 3, registered: null },
-    ];
-    assert.deepEqual(
-        visibleCategories(rows, view('sort=types&dir=desc')).map(
-            (item) => item.code,
-        ),
-        ['b', 'a'],
-    );
-    assert.deepEqual(
-        visibleCategories(rows, view('q=alp')).map((item) => item.code),
-        ['a'],
-    );
 });
 
 void test('paging clamps to the last page and reports totals', () => {

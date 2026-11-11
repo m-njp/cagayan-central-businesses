@@ -38,9 +38,8 @@ final class FinanceUploadQuery
     {
         $stale = $upload->isStale();
 
-        return new FinanceUploadRow($upload->public_id, $upload->original_name, (string) config("cagayan.finances.uploads.kinds.{$upload->kind}.label"),
+        return new FinanceUploadRow($upload->public_id, $upload->original_name,
             $stale ? 'failed' : $upload->status->value, $stale ? 'Failed' : $upload->status->label(), $upload->figures,
-            $stale ? 'Parsing was interrupted. Retry parsing.' : $upload->message,
             $upload->created_at->timezone((string) config('cagayan.display_timezone'))->format('Y-m-d H:i'));
     }
 

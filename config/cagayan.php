@@ -299,6 +299,8 @@ return [
     | Finance ledger entry and review (D35, metrics.md M19 to M27). Fiscal years
     | the forms accept, the largest peso amount, and the note length.
     */
+    'data_entry' => ['review_per_page' => 10],
+
     'finances' => [
         'first_year' => 2019,
         'last_year' => 2025,
@@ -338,6 +340,8 @@ return [
         ],
         'per_page' => 20,
         'source_requests_per_minute' => 60,
+        'source_archive_requests_per_minute' => 3,
+        'source_archive_max_bytes' => 134217728,
         // Towns whose workbook breakdowns finances:import loads (26-10-28: Tuguegarao first). Other towns'
         // parsed workbooks stay in data/towns/finances/extracted; every Executive Summary always loads.
         'workbook_towns' => ['0201529000'],

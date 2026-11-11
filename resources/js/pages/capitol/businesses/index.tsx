@@ -4,19 +4,16 @@ import { CategoryChip } from '@/components/capitol/category-chip';
 import { PageHeader } from '@/components/capitol/page-header';
 import { Pagination } from '@/components/capitol/pagination';
 import { TabRow } from '@/components/capitol/tab-row';
-import { WorkspaceFilters } from '@/components/capitol/workspace-filters';
+import {
+    WorkspaceFilterLayout,
+    WorkspaceFilters,
+    WorkspaceFilterSelect,
+} from '@/components/capitol/workspace-filters';
 import { PermitBadge, RecordBadge } from '@/components/registry-badges';
 import { RowChevron, RowLink } from '@/components/row-link';
+import { SearchField } from '@/components/search-field';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Surface } from '@/components/ui/surface';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import {
     Table,
     TableBody,
@@ -120,33 +117,14 @@ export default function Businesses({
         label: string,
         options: { value: string; label: string }[],
     ) => (
-        <>
-            <label id={`${field}-label`} className="type-label">
-                {label}
-            </label>
-            <Select
-                value={filters[field] ?? 'all'}
-                onValueChange={(value) =>
-                    go({ [field]: value === 'all' ? null : value })
-                }
-            >
-                <SelectTrigger
-                    variant="quiet"
-                    aria-labelledby={`${field}-label`}
-                    className="w-full"
-                >
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    {options.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-        </>
+        <WorkspaceFilterSelect
+            label={label}
+            options={options}
+            value={filters[field] ?? 'all'}
+            onChange={(value) =>
+                go({ [field]: value === 'all' ? null : value })
+            }
+        />
     );
 
     return (
@@ -171,8 +149,8 @@ export default function Businesses({
                     onChange={(record) => go({ record })}
                 />
             </Surface>
-            <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-                <div className="min-w-0 space-y-4">
+            <WorkspaceFilterLayout
+                results={
                     <Surface
                         footer={<Pagination data={directory.pagination} />}
                     >
@@ -269,17 +247,19 @@ export default function Businesses({
                             </TableBody>
                         </Table>
                     </Surface>
-                </div>
-                <WorkspaceFilters>
-                    <label className="flex flex-col gap-2 type-label">
-                        Search
-                        <Input
-                            type="search"
+                }
+            >
+                <WorkspaceFilters
+                    toolbar={
+                        <SearchField
+                            label="Search Businesses"
                             value={search}
-                            maxLength={60}
-                            onChange={(event) => setSearch(event.target.value)}
+                            onChange={setSearch}
+                            expandedClassName="w-36 sm:w-36"
+                            compact
                         />
-                    </label>
+                    }
+                >
                     {select('barangay', 'Barangay', directory.barangays)}
                     {select(
                         'category',
@@ -311,7 +291,7 @@ export default function Businesses({
                         </Button>
                     )}
                 </WorkspaceFilters>
-            </div>
+            </WorkspaceFilterLayout>
         </>
     );
 }

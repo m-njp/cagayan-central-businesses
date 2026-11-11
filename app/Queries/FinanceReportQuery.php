@@ -80,13 +80,9 @@ final class FinanceReportQuery
             uploadKinds: array_map(fn (string $kind, array $item) => new SelectOption($kind, $item['label']),
                 array_keys((array) config('cagayan.finances.uploads.kinds')), (array) config('cagayan.finances.uploads.kinds')),
             limits: [
-                'firstYear' => (int) config('cagayan.finances.first_year'),
                 'lastYear' => min($year, app(FinanceYears::class)->reportLastYear()),
                 'noteMax' => (int) config('cagayan.finances.note_max'),
-                'valueMax' => (string) config('cagayan.finances.value_max'),
-                'sourceUrlMax' => (int) config('cagayan.finances.source_url_max'),
                 'reviewBatchMax' => (int) config('cagayan.finances.review_batch_max'),
-                'uploadMaxKb' => (int) config('cagayan.finances.uploads.file_max_kb'),
                 'changesMax' => (int) config('cagayan.finances.entry_changes_max'),
             ],
         );
@@ -99,18 +95,14 @@ final class FinanceReportQuery
 
         return new FinanceFigureRow(
             id: $figure->public_id,
-            line: $figure->line_code,
             label: (string) $figure->getAttribute('line_label'),
             fiscalYear: $figure->fiscal_year,
             basis: $figure->basis->value,
             value: $figure->value,
-            variant: $figure->definition_variant,
             source: $manual ? 'Entered by Hand' : self::KINDS[($kind ?? FinanceDocumentKind::ExecutiveSummary)->value],
             location: $figure->location,
             status: $figure->status->value,
-            manual: $manual,
             enteredByYou: $figure->entered_by === $user->id,
-            reviewedOn: $figure->reviewed_on?->toDateString(),
             reviewedBy: $figure->reviewer?->name,
             note: $figure->note,
             group: (string) $figure->getAttribute('line_group'),
@@ -130,7 +122,7 @@ final class FinanceReportQuery
         $latest = $uploads->first(fn (FinanceUpload $upload) => $upload->issues !== null);
 
         return array_values(array_map(fn (array $issue) => new FinanceIssue(
-            (string) $issue['severity'], 'upload', null, (string) $issue['message'], $issue['location'] ?? null,
+            (string) $issue['severity'], 'upload', (string) $issue['message'], $issue['location'] ?? null,
         ), array_filter($latest->issues ?? [], fn (array $issue) => in_array($issue['severity'] ?? '', ['error', 'warning'], true))));
     }
 
@@ -155,7 +147,7 @@ final class FinanceReportQuery
             }
             $row = array_combine($columns, $cells);
             if ($row['psgc_code'] === $psgc && in_array($row['severity'], ['error', 'warning'], true)) {
-                $issues[] = new FinanceIssue($row['severity'], $row['kind'], $row['line_code'] ?: null, $row['message'], $row['location'] ?: null);
+                $issues[] = new FinanceIssue($row['severity'], $row['kind'], $row['message'], $row['location'] ?: null);
             }
         }
         fclose($handle);

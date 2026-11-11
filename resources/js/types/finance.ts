@@ -31,18 +31,14 @@ export type FinanceFigureStatus =
 
 export type FinanceFigureRow = {
     id: string;
-    line: string;
     label: string;
     fiscalYear: number;
     basis: 'actual' | 'budget_final';
     value: string;
-    variant: string | null;
     source: string;
     location: string | null;
     status: FinanceFigureStatus;
-    manual: boolean;
     enteredByYou: boolean;
-    reviewedOn: string | null;
     reviewedBy: string | null;
     note: string | null;
     group: string;
@@ -53,7 +49,6 @@ export type FinanceFigureRow = {
 export type FinanceIssue = {
     severity: 'error' | 'warning';
     kind: string;
-    line: string | null;
     message: string;
     location: string | null;
 };
@@ -68,11 +63,9 @@ export type FinanceDocumentLink = {
 export type FinanceUploadRow = {
     id: string;
     name: string;
-    kind: string;
     status: 'queued' | 'running' | 'done' | 'failed';
     statusLabel: string;
     figures: number;
-    message: string | null;
     uploadedAt: string;
 };
 
@@ -133,13 +126,9 @@ export type FinanceReport = {
     uploads: FinanceUploadRow[];
     uploadKinds: SelectOption[];
     limits: {
-        firstYear: number;
         lastYear: number;
         noteMax: number;
-        valueMax: string;
-        sourceUrlMax: number;
         reviewBatchMax: number;
-        uploadMaxKb: number;
         changesMax: number;
     };
 };

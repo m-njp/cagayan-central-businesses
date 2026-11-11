@@ -6,6 +6,13 @@ import WishRankingChart from '@/components/charts/wish-ranking-chart';
 import { LazyProvinceMap } from '@/components/map/lazy-province-map';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { pushFilters, withCoveredMeasure } from '@/lib/analytics';
 import { economicPerformance } from '@/routes/public';
 import { index as suggestions } from '@/routes/public/wishes';
@@ -20,9 +27,6 @@ export default function EconomicPerformancePage({
     performance: EconomicPerformance;
 }) {
     const { catalog, filters } = performance;
-    const townName = catalog.towns.find(
-        (town) => town.value === filters.town,
-    )?.label;
     const wishes = performance.wishes[filters.town];
     const change = (patch: Partial<PerformanceFilters>) => {
         if (patch.town && !catalog.towns.some((t) => t.value === patch.town))
@@ -41,18 +45,7 @@ export default function EconomicPerformancePage({
     return (
         <div className="grid gap-4">
             <Head title="Cagayan Economy" />
-            <header className="flex flex-wrap items-end justify-between gap-3">
-                <h1 className="type-title">Cagayan Economy</h1>
-                <div className="w-full sm:w-72">
-                    <AnalyticsPickers
-                        idPrefix="performance"
-                        catalog={catalog}
-                        filters={filters}
-                        fields={['town']}
-                        onChange={change}
-                    />
-                </div>
-            </header>
+            <h1 className="type-title">Cagayan Economy</h1>
             <div className="grid min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_20rem]">
                 <div className="flex min-w-0 flex-col gap-3">
                     <AnalyticsPanels
@@ -77,11 +70,30 @@ export default function EconomicPerformancePage({
                         aria-label="Town Explorer"
                         className="dark flex min-w-0 flex-col gap-2 rounded-sm bg-brand p-panel text-brand-foreground"
                     >
-                        <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center justify-between gap-2">
                             <h2 className="type-heading">Cagayan</h2>
-                            <span className="type-meta text-brand-foreground">
-                                {townName}
-                            </span>
+                            <Select
+                                value={filters.town}
+                                onValueChange={(town) => change({ town })}
+                            >
+                                <SelectTrigger
+                                    variant="quiet"
+                                    aria-label="Municipality"
+                                    className="flex-1 justify-end"
+                                >
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent align="end">
+                                    {catalog.towns.map((town) => (
+                                        <SelectItem
+                                            key={town.value}
+                                            value={town.value}
+                                        >
+                                            {town.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="h-64">
                             <LazyProvinceMap

@@ -28,6 +28,7 @@
         "@types/react-dom": "^19.2.0",
         "@visx/wordcloud": "4.0.0",
         "@vitejs/plugin-react": "^6.1.1",
+        "@xyflow/react": "12.12.1",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "concurrently": "^10.0.3",
