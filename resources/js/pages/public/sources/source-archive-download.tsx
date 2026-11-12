@@ -13,7 +13,7 @@ const feedback: Record<Phase, [string, string]> = {
         'Preparing Reports',
         'Checking the stored reports and building the ZIP.',
     ],
-    downloading: ['Downloading Reports', 'Receiving the verified ZIP.'],
+    downloading: ['Downloading Reports', 'Receiving the report ZIP.'],
     ready: [
         'Download Started',
         'Look for cagayan-coa-reports.zip in your downloads.',
@@ -82,9 +82,10 @@ export function SourceArchiveDownload() {
                 variant="outline"
                 size="sm"
                 onClick={() => void download()}
+                aria-label="Download All Reports"
             >
                 <Download aria-hidden="true" />
-                Download All Reports
+                Download All
             </Button>
             <FocusDialog
                 open={phase !== null}

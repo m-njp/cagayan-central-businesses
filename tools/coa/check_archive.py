@@ -13,9 +13,11 @@ from coa.progress import report
 
 def checkArchive(path: Path, events: bool) -> int:
     progress = (lambda event: print(json.dumps(event), flush=True)) if events else None
-    ledger = Path(__file__).resolve().parents[2] / "data/towns/finances/documents.csv"
-    with ledger.open(encoding="utf-8-sig", newline="") as source:
-        approved = {(Path(row["file"]).name, row["sha256"]) for row in csv.DictReader(source) if row["file"]}
+    towns = Path(__file__).resolve().parents[2] / "data/towns"
+    approved = set()
+    for catalog in (towns / "finances/documents.csv", towns / "executive-summaries/sources.csv"):
+        with catalog.open(encoding="utf-8-sig", newline="") as source:
+            approved.update((Path(row["file"]).name, row["sha256"]) for row in csv.DictReader(source) if row["file"])
 
     report(progress, "stage", stage="inspecting", message="Checking archive contents.")
     with ZipFile(path) as archive:

@@ -5,6 +5,7 @@ use App\Http\Controllers\FinanceSourceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicBusinessController;
 use App\Http\Controllers\PublicFinanceArchiveController;
+use App\Http\Controllers\PublicReportController;
 use App\Http\Controllers\PublicSourcesController;
 use App\Http\Controllers\WishController;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,8 @@ Route::name('public.')->group(function () {
     Route::get('about-the-data', PublicSourcesController::class)->name('sources');
     Route::redirect('sources', '/about-the-data');
     Route::get('about-the-data/download', PublicFinanceArchiveController::class)->middleware('throttle:finance-archives')->name('sources-download');
+    Route::get('about-the-data/reports/{report}', PublicReportController::class)
+        ->where('report', '[a-f0-9]{64}')->middleware('throttle:finance-sources')->name('source-reports.show');
     // The stored COA report behind a signed-off figure; the page number travels in the link's #page fragment.
     Route::get('finance-sources/{figure:public_id}', FinanceSourceController::class)->middleware('throttle:finance-sources')->name('finance-sources.show');
     Route::get('businesses', [PublicBusinessController::class, 'index'])->name('businesses.index');
