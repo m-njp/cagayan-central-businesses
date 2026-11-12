@@ -59,6 +59,22 @@ test('only signed-off figures reach the public series, with exact cents', functi
         ->assertDontSee('987654321.12');
 });
 
+test('verified years before the configured first year extend the catalog and the year filter', function () {
+    $town = Municipality::factory()->create(['psgc_code' => '0201501000']);
+    FinanceFigure::factory()->verified()->for($town)->line('performance.revenue', 2014, '61234567.89')->create();
+    FinanceFigure::factory()->for($town)->line('performance.revenue', 2012, '11111111.11')->create();
+    $this->artisan('metrics:refresh')->assertSuccessful();
+
+    // The Pending 2012 figure is not published, so the earliest year is the verified 2014.
+    $this->get(route('public.economic-performance', ['town' => '0201501000', 'year' => 2014]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('performance.catalog.periods.all', 2014)
+            ->where('performance.catalog.finances.0201501000.totals.rows.0.year', 2014)
+            ->where('performance.catalog.finances.0201501000.totals.rows.0.observations', fn ($points) => $points['performance.revenue']['value'] === '61234567.89'));
+    $this->getJson(route('public.economic-performance', ['year' => 2013]))->assertUnprocessable()->assertJsonValidationErrors('year');
+});
+
 test('a missing year says why it is missing and never shows a value', function () {
     $town = Municipality::factory()->create(['psgc_code' => '0201501000']);
     FinanceFigure::factory()->verified()->for($town)->line('performance.revenue', 2024, '100.00')->create();

@@ -23,7 +23,7 @@ return [
 
     'performance' => [
         'demo_town' => '0201529000',
-        // Fiscal years shown on the analytics pages; 2019 comes from the 2020 reports' prior-year column.
+        // Earliest analytics year when nothing older is published; verified older years extend it (FinanceYears).
         'first_year' => 2019,
         'last_year' => 2025,
         'recent_first_year' => 2023,
@@ -302,7 +302,9 @@ return [
     'data_entry' => ['review_per_page' => 10],
 
     'finances' => [
-        'first_year' => 2019,
+        'source_province' => 'Cagayan',
+        // The 2014 reports also print comparative figures for 2013.
+        'first_year' => 2013,
         'last_year' => 2025,
         'value_max' => '999999999999.99',
         'coa_url' => 'https://www.coa.gov.ph/reports/annual-audit-reports/aar-local-government-units/',

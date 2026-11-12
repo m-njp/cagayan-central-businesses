@@ -1,7 +1,10 @@
 import csv
 import re
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
+
+CATALOG = Path(__file__).resolve().parents[3] / "data/towns/finances/lines.csv"
 
 # Group headings that wrap onto the first row of a highlights table.
 SECTION_PREFIX = re.compile(
@@ -37,6 +40,16 @@ def load(path: Path) -> tuple[dict[str, Line], list[Alias]]:
                 pattern, _, variant = entry.partition("@")
                 aliases.append(Alias(row["code"], re.compile(pattern), variant or None))
     return lines, aliases
+
+
+@cache
+def catalogLabels() -> dict[str, str]:
+    return {code: line.label for code, line in load(CATALOG)[0].items()}
+
+
+def lineLabel(code: str) -> str:
+    """The catalog name of a line, such as "Income", for reviewer messages."""
+    return catalogLabels().get(code, code)
 
 
 def normalize(label: str) -> str:

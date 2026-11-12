@@ -41,7 +41,8 @@ final class AnalyticsCatalogQuery
 
     public function get(): AnalyticsCatalog
     {
-        $years = range((int) config('cagayan.performance.first_year'), app(FinanceYears::class)->publishedLastYear());
+        $financeYears = app(FinanceYears::class);
+        $years = range($financeYears->publishedFirstYear(), $financeYears->publishedLastYear());
         $groups = config('cagayan.finances.groups');
         $lines = FinanceLine::query()->where('displayed', true)->whereIn('group', array_keys($groups))
             ->orderBy('sort')->get(['code', 'label', 'group', 'unit', 'source'])->groupBy('group');

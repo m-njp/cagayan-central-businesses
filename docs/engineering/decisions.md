@@ -360,3 +360,14 @@ Approved 26-11-03 by the owner ([Data Entry plan](../plan/archive/26-11-03-data-
 ## D44. Data Entry Workflows
 
 Approved 26-11-11 in the [Capitol Entry Redesign](../plan/active/26-11-09-capitol-entry-redesign.md#data-entry-workflow). Data Entry lazy-loads `@xyflow/react` 12.12.1 when the workflow guide opens. Each chapter uses fixed positions and shares its step definitions between the graph and HTML instructions. Opening and closing replace the current history entry locally; changing chapters adds a local entry so Back and Forward restore the open guide and chapter. Review pages are fetched from the server.
+
+## D45. Corroborated Sign-Off and Reporting Differences
+
+Approved 26-11-12 by the project owner in [COA Accuracy and Reporting Differences](../plan/archive/26-11-12-coa-accuracy-and-differences.md). An owner-directed exception to D35's person-to-person sign-off, like the 26-10-29 Tuguegarao batch.
+
+- **Corroborated figures sign themselves off:** `php artisan finances:corroborate` verifies a Pending Executive Summary figure only when a year's own report and the next report's prior-year column print the same amount to the cent, for the same line, basis and definition, and neither report has a blocking or error finding on that line or across the document. The note reads "Corroborated: the Y and Y+1 COA reports print the same amount"; the reviewer is empty. `finances:export` saves them to `reviews.csv`. Restated, single-report and flagged figures stay Pending for a person.
+- **Three finding families:** every parser finding is "Within the Report" (the document disagrees with itself as printed), "Between Reports" (two reports print different amounts for the same year) or "Extraction Limits" (a limit of the parser). Anything that may be the parser's own limit is an Extraction Limit, never the government's. The mapping lives once in `tools/coa/coa/summary.py` and is written as the `family` column of `issues/<year>.csv`.
+- **Report Differences:** a Capitol page for all three roles lists those findings by municipality and report year, with the stored PDF page of each.
+- **One source of truth:** `composer data:finances:extract` always writes the committed CSVs and prints the added, removed and changed values; findings stay in `issues/` and nothing is published until signed off.
+
+**Why:** the 2014 to 2019 reports could not reach the maps without hundreds of manual sign-offs, while two separately published COA reports agreeing to the cent is stronger evidence than one transcription checked once. The owner asked that flags about a government's reporting be certain before they are shown.

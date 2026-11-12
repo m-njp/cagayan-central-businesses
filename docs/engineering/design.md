@@ -67,6 +67,7 @@ Owner corrections, "26-11-08", after two rejected versions of the finance upload
 - Geist Mono throughout. One status line, a thin scan bar and a fixed seven-line log: time (24-hour Philippine), source location, line label, exact amount, then an icon. The newest line spins; finished lines draw an animated check.
 - Print what happened in plain words and figures, not raw event text. Show no all-caps headings, hint text, "Discovered Figures" counts, badges, results tables or expandable history.
 - Prefer deleting code to adding it. Server events carry facts; the browser formats them.
+- Owner addition, "26-11-12": completed parsing shows one compact Automated Confidence percentage and a cross-check sentence below 100. At 100, state that source verification is still required. Use the Python check score, never task completion as confidence; older unscored uploads omit it. No extra panel or approval note.
 
 ### Focus Overlay
 
@@ -495,6 +496,8 @@ User correction. The Measure selector is removed from both economic maps because
 
 The panel ends with one Source row that wraps as needed. Each municipality link opens a distinct cited report page or downloads its workbook. Province totals link to the COA reports section of About the Data. The Latest population link opens its census release. Coverage prints once when all metrics share it. A missing year or barangay level shows one status line. Home and the footer link to About the Data. The page lists verified reports directly by municipality and year, with file icons and one action to download the complete COA archive.
 
+**Sources Library "26-11-12".** The owner's latest correction replaces the long municipality-by-municipality page and its verified-report-only catalog with one bounded document library. Use a searchable municipality list on desktop, a shared municipality Select on phones, a year filter and a bounded table with sticky headings. Show one municipality's history at a time, newest year first, with direct document links and file icons. Keep filters in local Inertia history and preserve page scroll. The complete ZIP remains independent of these filters. Retain the secondary population and map attributions. Original registered COA documents are public sources; the verification gate for published financial figures remains separate.
+
 On Home and the Capitol Dashboard, align figure labels with their exact values. Keep filter labels on the same line as their controls. On the Capitol Dashboard, let the panel end after its sources and scale, and keep Low, the swatches, and High together.
 
 Surplus or Deficit shows a green up triangle (`text-trend-up`) for a surplus and a red down triangle (`text-trend-down`) for a deficit, with the signed amount. Zero or missing shows no triangle. The triangle marks the sign of the result, not a performance rating; M26 still forbids rating a change.
@@ -674,3 +677,13 @@ Owner correction: tables, tabs and titles sat straight on the page background, s
 - **Page background.** `--background` is a neutral stone one step darker than white cards (light) and one step darker than the card slate (dark), so a surface always lifts off the page. No blue cast in light mode.
 - **Icon actions.** Row edit is a pen icon button (`components/capitol/edit-button.tsx`, named for screen readers), never the word Edit. Search in a toolbar is a magnifier (`components/capitol/search-field.tsx`).
 - **Verified is locked.** In a bulk entry grid a verified figure shows as text with a pen; the pen unlocks that one cell and asks for a reason. Pending and empty cells stay inputs (`components/capitol/entry-cell.tsx`). Status words come from `FIGURE_STATUS` in `lib/registry.ts`: Pending, Verified, Returned.
+
+## Report Differences "26-11-12"
+
+Owner corrections on the Capitol Report Differences page ([plan](../plan/archive/26-11-12-coa-accuracy-and-differences.md), D45).
+
+- **Guide in the focus overlay.** The page's help is the full Report Differences Guide in `components/ui/focus-dialog.tsx`, opened from the Guide button in the page header, never a side sheet. Each finding name in a report's findings opens the guide at its entry; the findings view steps aside while the guide is open and returns when it closes.
+- **One source for findings.** Category names, finding names and each finding's check, example and effect live in `pages/capitol/report-differences/finding-guide.ts`. The table, the findings view and the guide read it; the parser's messages describe the specific case.
+- **Categories:** Within the Report, Between Reports and Extraction Limits. Anything that may be the parser's own limit is an Extraction Limit, never attributed to the Commission on Audit or the municipality.
+- **Formal, neutral wording.** Each finding names the line, the years, the report and the amounts in pesos, in the terms of the Annual Audit Report (Increase (Decrease) column, Statement of Financial Position, prior-year column). Where a report contradicts itself, say so and state that it cannot be determined which side is wrong; never assert that a heading or an amount is the error without evidence from another report. Findings are not audit findings and say nothing about the use of funds.
+- One-decimal amounts are not a finding.

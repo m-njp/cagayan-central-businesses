@@ -5,9 +5,15 @@ use App\Models\FinanceDocument;
 use App\Models\FinanceFigure;
 use App\Models\FinanceUpload;
 use App\Models\Municipality;
+use App\Services\PublicExecutiveSummaries;
+use Illuminate\Support\Facades\File;
 use Inertia\Testing\AssertableInertia as Assert;
 
 // The stored COA report behind a signed-off figure. Only verified figures resolve; the file comes from the ledger, never the request.
+
+beforeEach(function () {
+    $this->app->instance(PublicExecutiveSummaries::class, new PublicExecutiveSummaries(base_path('data/towns/zz-source-test')));
+});
 
 function sourceReport(string $kind = 'pdf'): string
 {
@@ -19,9 +25,28 @@ function sourceReport(string $kind = 'pdf'): string
 }
 
 afterEach(function () {
-    array_map('unlink', glob(base_path('data/towns/zz-source-test/*')) ?: []);
-    @rmdir(base_path('data/towns/zz-source-test'));
+    File::deleteDirectory(base_path('data/towns/zz-source-test'));
 });
+
+function registeredExecutiveSummary(array $overrides = []): array
+{
+    $root = base_path('data/towns/zz-source-test');
+    $relative = '2025/Alcala/summary.pdf';
+    File::ensureDirectoryExists(dirname($root.'/'.$relative));
+    file_put_contents($root.'/'.$relative, "%PDF-1.4\n%test\n");
+    $row = array_replace([
+        'year' => '2025', 'psgc_code' => '0201502000', 'town' => 'Alcala', 'file' => $relative,
+        'pages' => '1', 'bytes' => filesize($root.'/'.$relative),
+        'sha256' => hash_file('sha256', $root.'/'.$relative),
+        'source_url' => 'https://www.coa.gov.ph/summary.pdf', 'retrieved_on' => '2026-11-12',
+    ], $overrides);
+    $handle = fopen($root.'/sources.csv', 'w');
+    fputcsv($handle, array_keys($row), escape: '');
+    fputcsv($handle, array_values($row), escape: '');
+    fclose($handle);
+
+    return ['key' => hash('sha256', 'executive-summaries/'.$relative), 'path' => $root.'/'.$relative, 'sha256' => $row['sha256']];
+}
 
 test('a signed-off figure opens its stored report as a pdf', function () {
     $town = Municipality::factory()->create();
@@ -135,4 +160,54 @@ test('report requests are rate limited', function () {
     }
 
     $this->get(route('public.finance-sources.show', '00000000-0000-4000-8000-000000000000'))->assertTooManyRequests();
+});
+
+test('collected original reports are public without publishing any finance figures', function () {
+    $report = registeredExecutiveSummary();
+
+    $this->get(route('public.sources'))->assertOk()->assertInertia(fn (Assert $props) => $props
+        ->component('public/sources/index')->has('citations', 1)
+        ->where('citations.0.town', 'Alcala')->where('citations.0.reportYear', 2025)
+        ->where('citations.0.page', null)
+        ->where('citations.0.url', route('public.source-reports.show', $report['key'], absolute: false))
+        ->missing('citations.0.path')->missing('citations.0.inputs')->missing('citations.0.value'));
+
+    $this->get(route('public.source-reports.show', $report['key']))
+        ->assertOk()->assertHeader('content-type', 'application/pdf');
+    $this->assertDatabaseCount('finance_figures', 0);
+});
+
+test('unregistered files and altered original PDFs cannot be downloaded', function () {
+    $report = registeredExecutiveSummary();
+    $this->get(route('public.source-reports.show', str_repeat('a', 64)))->assertNotFound();
+    file_put_contents($report['path'], "%PDF-1.4\n%fake\n");
+    $this->get(route('public.source-reports.show', $report['key']))->assertNotFound();
+    $this->get(route('public.sources-download'))->assertServiceUnavailable();
+});
+
+test('invalid source manifest entries are not exposed', function (array $overrides) {
+    $report = registeredExecutiveSummary($overrides);
+    $this->get(route('public.sources'))->assertOk()->assertInertia(fn (Assert $props) => $props->has('citations', 0));
+    $this->get(route('public.source-reports.show', $report['key']))->assertNotFound();
+})->with([
+    'outside the source root' => [['file' => '../../composer.json']],
+    'non-COA provenance' => [['source_url' => 'https://coa.gov.ph.example.com/source.pdf']],
+    'missing bytes' => [['bytes' => 1]],
+    'invalid checksum' => [['sha256' => 'not-a-checksum']],
+    'wrong report year' => [['year' => 2024]],
+]);
+
+test('the complete archive includes registered originals with their expected checksums', function () {
+    $report = registeredExecutiveSummary();
+    $response = $this->get(route('public.sources-download'))->assertOk()->assertDownload('cagayan-coa-reports.zip');
+    $path = $response->baseResponse->getFile()->getPathname();
+    $zip = new ZipArchive;
+    try {
+        expect($zip->open($path))->toBeTrue()
+            ->and($zip->getFromName('alcala/2025/summary.pdf'))->toBe("%PDF-1.4\n%test\n")
+            ->and(json_decode($zip->getFromName('manifest.json'), true))->toBe(['alcala/2025/summary.pdf' => $report['sha256']]);
+    } finally {
+        $zip->close();
+        unlink($path);
+    }
 });

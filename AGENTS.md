@@ -19,6 +19,8 @@ Laravel 13 (PHP 8.3), Inertia 3, React 19 with TypeScript, Vite 8 (through vite-
 
 All work in PowerShell. Add new tasks as Composer scripts, never as bash or PowerShell scripts.
 
+- PowerShell does not expand wildcard path arguments for `rg`. Search an existing directory and use `-g` to filter filenames instead of passing paths such as `app/Queries/*Finance*`.
+
 - `composer setup`: first-time setup on a fresh clone. Safe to rerun.
 - `composer dev`: run the app at http://localhost:8000 (server, queue, Vite). One dev server per machine: it refuses to start when port 8000 already answers (`php artisan dev:guard`) and clears a stale `public/hot`. Reuse the running server; never start a second one from another chat or terminal.
 - `composer ci:check`: frontend formatting and lint, TypeScript, frontend file tests, Pint, PHPStan, and Pest.

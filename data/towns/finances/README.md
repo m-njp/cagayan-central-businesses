@@ -4,9 +4,43 @@ Figures read from COA reports for Cagayan's 28 municipalities and Tuguegarao Cit
 
 Every Executive Summary loads for all 29 towns. Public citations open the stored copy of the document (`file` in `documents.csv`) through `public.finance-sources.show`, at the page parsed from the figure's `location` ("page 2"); the COA address in `source_url` stays here as provenance only. Workbook breakdowns load only for the towns in `cagayan.finances.workbook_towns`, Tuguegarao City since 26-10-28. The other towns' workbooks stay parsed in `extracted/` and `issues/` until their towns are added to that list. A town whose workbook is not loaded shows "The COA workbook for this year has not been added yet".
 
-Since 26-10-28 every loaded parsed figure is signed off (`reviews.csv`, 1,094 rows): 678 are published and 416 are earlier versions superseded by a later report's restatement. See "Reliability Review, 26-10-28" below.
+The 26-10-28 sign-offs remain in `reviews.csv`; see "Reliability Review, 26-10-28" below for that historical batch. Later extractions, including the batch below, remain Pending until independent verification.
 
 Definitions: `docs/engineering/metrics.md`, M19 to M27.
+
+Known parsing follow-up, "26-11-12": the two flagged Tuguegarao City 2025 workbook totals at `8 - Financial Performance 2025!D14` and `F14` match their stored amounts. They are internal `fs.total_revenue` check lines, correctly read by Python but excluded from eligible intake. The upload omission guard incorrectly treats them as missing and forces confidence to 0. No amounts or sign-offs were changed. See the [active fix and handoff](../../../docs/plan/active/26-11-12-coa-confidence-eligibility-fix.md).
+
+## Corroborated Sign-Off "26-11-12"
+
+`php artisan finances:corroborate` (D45) signed off 1,142 Pending Executive Summary figures that a year's own report and the next report's prior-year column print identically to the cent, with no blocking or error finding on that line or document in either report. Each carries the note "Corroborated: the Y and Y+1 COA reports print the same amount" in `reviews.csv`. A plain SQL count found 1,175 equal pairs on the first run; the others are held back by findings. Six more (Solana 2014) followed once a text-layer gap was read correctly. Published fiscal years now start at 2014, with 18 to 28 municipalities in each of 2014 to 2018. Restated, single-report and flagged figures stay Pending; the Capitol Report Differences page lists them with their PDF pages. Verified figures and published statistics from before the run were unchanged by the import (fingerprints compared).
+
+Run it after `composer data:finances`, read the `--dry-run` counts first, then `php artisan finances:export`.
+
+## Historical and Remaining 2025 Batch "26-11-12"
+
+Extracted the 174 Executive Summaries for 2014 through 2019 and the 16 newly collected 2025 reports. The 190 reports produced 2,919 catalog observations with exact amounts, PDF page locations, source labels and document SHA-256 values. Both current and comparative fiscal years are retained. Original reports remain under `../executive-summaries/`.
+
+The existing import scope loads 1,497 new observations into the finance review queue as Pending. The remaining 1,422 financial-condition/allotment/continuing-obligation detail observations stay in the extraction CSVs because `cagayan.finances.summary_detail_towns` still enables those lines for Tuguegarao City only. Workbook scope and metric definitions are unchanged.
+
+| Report year | Reports | Extracted observations | New Pending observations |
+| :- | -: | -: | -: |
+| 2014 | 29 | 450 | 232 |
+| 2015 | 29 | 457 | 238 |
+| 2016 | 29 | 461 | 236 |
+| 2017 | 29 | 472 | 244 |
+| 2018 | 29 | 456 | 238 |
+| 2019 | 29 | 457 | 241 |
+| 2025 | 16 | 166 | 68 |
+
+All 190 reports have figures in the queue. Each figure links to the registered stored PDF with its `#page=N` citation. Review access starts at fiscal year 2013 because the 2014 reports include that comparative column. This does not extend the published series or approve any figures.
+
+Source exceptions remain visible in `issues/<year>.csv` and the report review screen. In particular, Santa Praxedes 2016 prints its current Income as `48,014,545,75` on page 1, and Gattaran 2018 prints the comparative Income as `231,382,293,32` on page 2. These malformed main rows are not guessed; reviewers must transcribe/resolve them from the source. Other arithmetic discrepancies, conflicting rows, four year-header mismatches and three second-reader digit disagreements remain flagged for review.
+
+Extractor 1.2.0 supports older `P=` currency marks, amounts printed without thousands separators, percentages without `%`, longer wrapped qualifiers and readable amounts beside malformed change/percentage columns. Malformed trailing columns generate warnings; malformed main amounts remain unavailable.
+
+The full parser output was staged and only the requested source batch was promoted programmatically. All 2,541 pre-existing extracted observations were preserved, including workbook rows outside this task. The import transaction confirmed that all 1,178 pre-existing ledger observations and review decisions remained unchanged, along with all 993 published statistic rows. No new sign-offs were added to `reviews.csv`. Local baseline, target inventory, full output, promotion script and transaction receipts are retained under ignored `storage/app/source-review/coa/finance-extraction-261112/`.
+
+See the [extraction plan](../../../docs/plan/archive/26-11-12-historical-finance-extraction.md) for checks and handoff. A future full extraction must be diffed before import; it also regenerates workbooks and can change source metadata outside a selected PDF batch.
 
 ## Files
 
@@ -19,7 +53,7 @@ Definitions: `docs/engineering/metrics.md`, M19 to M27.
 | `reviews.csv` | Sign-offs of parsed figures: the report, line, year, basis, the value signed off, `verified` or `rejected`, the date, a note | `php artisan finances:export` |
 | `manual-figures.csv` | Figures entered by hand in the Capitol, with their status | `php artisan finances:export` |
 
-The parser rewrites `documents.csv`, `extracted/` and `issues/` on every run. Do not edit them by hand. Corrections go through the Capitol review screen (Phase 3), or through `lines.csv` aliases followed by a new run.
+The parser rewrites `documents.csv`, `extracted/` and `issues/` on every run and prints the values it added, removed or changed against the previous files. Read that diff before importing. Do not edit them by hand. Corrections go through the Capitol review screen (Phase 3), or through `lines.csv` aliases followed by a new run.
 
 After signing off or entering figures in the Capitol, run `php artisan finances:export` and commit `reviews.csv` and `manual-figures.csv`. Otherwise the next `composer db:reset` loses them. A sign-off applies only to the value it names: if a new parser run changes that value, the figure goes back to pending and the import prints a warning.
 
@@ -59,6 +93,14 @@ Each statement workbook is checked too:
 - A sheet titled with another year, a missing sheet, and spending under headings outside the catalog are reported too.
 
 Only the lines in `lines.csv` outside the `checks` group are written. The `checks` lines (assets, liabilities, equity, net income, allotments, other revenue lines, expense types, other sector headings) are read for these checks and to find where sections end.
+
+Each issue also has a `family`, shown on the Capitol Report Differences page (D45):
+
+| Family | Meaning |
+| :- | :- |
+| `report` | Within the Report: the document disagrees with itself as printed, such as a misprinted amount, a change column that does not add up or a header naming the wrong year |
+| `between_reports` | Between Reports: two COA reports print different amounts for the same year (`restated`) |
+| `reading` | Extraction Limits: a limit of the parser, such as a row split across lines or two readers disagreeing. Never a statement about the government's report |
 
 Severity tells the reviewer what to do:
 

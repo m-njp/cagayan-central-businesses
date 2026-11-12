@@ -82,6 +82,7 @@ export type FinanceUploadTask = {
         current: number | null;
         total: number | null;
         found: number | null;
+        confidence?: number | null;
         startedAt: string | null;
         updatedAt: string;
         finishedAt: string | null;
@@ -131,4 +132,42 @@ export type FinanceReport = {
         reviewBatchMax: number;
         changesMax: number;
     };
+};
+
+export type ReportDifferenceFamily = 'report' | 'between_reports' | 'reading';
+
+export type ReportDifferenceCell = {
+    report: number;
+    between: number;
+    reading: number;
+    pending: number;
+    verified: number;
+};
+
+export type ReportDifferences = {
+    years: number[];
+    rows: {
+        townCode: string;
+        town: string;
+        cells: Record<string, ReportDifferenceCell | null>;
+    }[];
+};
+
+export type ReportDifferenceDetail = {
+    townCode: string;
+    town: string;
+    year: number;
+    sourceUrl: string | null;
+    pending: number;
+    verified: number;
+    corroborated: number;
+    items: {
+        family: ReportDifferenceFamily;
+        severity: 'error' | 'warning' | 'info';
+        kind: string;
+        line: string | null;
+        fiscalYear: number | null;
+        message: string;
+        sourceUrl: string | null;
+    }[];
 };

@@ -13,9 +13,11 @@ from typing import Any
 
 from . import EXTRACTOR_VERSION
 from .archives import MEMBERS
+from .checks import documentChecks
+from .confidence import confidenceScore
 from .lines import Line, load
 from .progress import Progress, report
-from .summary import parseSummary
+from .summary import family, parseSummary
 from .workbook import readFs, readAnnex
 
 READERS = {"executive_summary": parseSummary, "fs_workbook": readFs, "annex_workbook": readAnnex}
@@ -59,11 +61,12 @@ def serializeFigure(figure: Any, documentKind: str, member: str | None) -> dict[
         "document_kind": documentKind, "member": member}
 
 
-def scan(path: Path, kind: str, year: int, output: Path, maxMembers: int, maxBytes: int, progress: Progress = None) -> dict[str, Any]:
+def scan(path: Path, kind: str, year: int, output: Path, maxMembers: int, maxBytes: int, progress: Progress = None, expectedTown: str | None = None, expectedProvince: str | None = None) -> dict[str, Any]:
+    sourceHash = hashlib.sha256(path.read_bytes()).hexdigest()
     lines, aliases = load(Path(__file__).resolve().parents[3] / "data/towns/finances/lines.csv")
     report(progress, "stage", stage="inspecting", message="Checking report contents and extraction limits.")
     documents = inspectDocuments(path, kind, output, maxMembers, maxBytes)
-    figures, issues, children = [], [], []
+    figures, issues, children, evidence = [], [], [], []
     for documentKind, document, member in documents:
         def documentProgress(event: dict[str, Any]) -> None:
             if event["type"] == "figure" and not isDisplayed(event["figure"]["line_code"], lines):
@@ -71,14 +74,21 @@ def scan(path: Path, kind: str, year: int, output: Path, maxMembers: int, maxByt
             report(progress, event["type"], **{key: value for key, value in event.items() if key != "type"}, document_kind=documentKind)
 
         report(progress, "stage", stage="scanning", message=f"Reading {documentKind.replace('_', ' ')}.")
-        result = READERS[documentKind](document, year, lines, aliases, documentProgress if progress else None)
+        if documentKind == 'executive_summary':
+            result = parseSummary(document, year, lines, aliases, documentProgress if progress else None, expectedTown, expectedProvince)
+            result.issues += documentChecks(result.figures, result.changes, year)
+        else:
+            result = READERS[documentKind](document, year, lines, aliases, documentProgress if progress else None,
+                                           expectedTown=expectedTown, expectedProvince=expectedProvince)
+        documentHash = hashlib.sha256(document.read_bytes()).hexdigest()
+        evidence.extend({**item, 'document_kind': documentKind, 'document_sha256': documentHash} for item in getattr(result, 'evidence', []))
         if not result.figures and sum(issue.kind == 'engine_failed' for issue in result.issues) == 2:
             raise ValueError("Neither PDF reader could open this report")
         if member:
             children.append({"kind": documentKind, "name": document.name, "member": member,
                 "sha256": hashlib.sha256(document.read_bytes()).hexdigest()})
         for issue in result.issues:
-            serialized = asdict(issue)
+            serialized = {**asdict(issue), 'family': family(issue.kind), 'document_kind': documentKind, 'document_sha256': documentHash}
             issues.append(serialized)
             report(progress, "issue", issue=serialized, document_kind=documentKind)
         documentFigures = [serializeFigure(figure, documentKind, member) for figure in result.figures if isDisplayed(figure.code, lines)]
@@ -88,7 +98,11 @@ def scan(path: Path, kind: str, year: int, output: Path, maxMembers: int, maxByt
         issue = {"severity": "error", "kind": "no_recognized_documents", "code": "", "message": "No recognized statement workbooks were found."}
         issues.append(issue)
         report(progress, "issue", issue=issue)
-    return {"parser_version": EXTRACTOR_VERSION, "figures": figures, "issues": issues, "children": children}
+    if hashlib.sha256(path.read_bytes()).hexdigest() != sourceHash:
+        raise ValueError('The input source changed during extraction; no final result is safe to save')
+    return {"parser_version": EXTRACTOR_VERSION, "source_sha256": sourceHash,
+            "figures": figures, "issues": issues, "children": children, "evidence": evidence,
+            "confidence": confidenceScore(figures, issues)}
 
 
 def isDisplayed(code: str, lines: dict[str, Line]) -> bool:
@@ -125,6 +139,8 @@ def main() -> None:
     parser.add_argument("--members", type=int, required=True)
     parser.add_argument("--bytes", type=int, required=True)
     parser.add_argument("--events", action="store_true")
+    parser.add_argument("--town", help="Expected government name supplied by the authorized review context")
+    parser.add_argument("--province", help="Expected province supplied by the authorized review context")
     parser.add_argument("--pace", type=float, default=0, help="Seconds to show each real scan or figure event")
     args = parser.parse_args()
     if not 0 <= args.pace <= 1:  # also rejects nan and inf
@@ -132,7 +148,7 @@ def main() -> None:
     emit = EventOutput(args.pace)
     args.output.mkdir(parents=True, exist_ok=True)
     try:
-        result = scan(args.file, args.kind, args.year, args.output, args.members, args.bytes, emit if args.events else None)
+        result = scan(args.file, args.kind, args.year, args.output, args.members, args.bytes, emit if args.events else None, args.town, args.province)
     except Exception:
         logging.exception("Report intake failed")
         if args.events:

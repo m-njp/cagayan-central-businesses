@@ -5,12 +5,15 @@ namespace App\Queries;
 use App\Data\PublicFinanceCitation;
 use App\Enums\FinanceFigureStatus;
 use App\Models\FinanceFigure;
+use App\Services\PublicExecutiveSummaries;
 use Illuminate\Support\Collection;
 use stdClass;
 
 /** Public source metadata only. No reviewer identity, internal notes, or pending values leave the ledger. */
 final class FinanceEvidenceQuery
 {
+    public function __construct(private PublicExecutiveSummaries $summaries) {}
+
     /**
      * @param  Collection<int, stdClass>  $stats
      * @param  array<string, list<string>>  $dependencies
@@ -63,15 +66,32 @@ final class FinanceEvidenceQuery
     /** @return list<PublicFinanceCitation> */
     public function publicCatalog(): array
     {
+        $originals = $this->summaries->files();
         $figures = $this->catalogFigures();
         $files = $this->publicFiles($figures);
         $citations = [];
+        foreach ($originals as $key => $file) {
+            $citations[$key] = new PublicFinanceCitation(
+                documentKey: $key,
+                kind: 'executive_summary',
+                label: 'Executive Summary',
+                town: $file['town'],
+                fiscalYear: $file['year'],
+                reportYear: $file['year'],
+                page: null,
+                location: null,
+                url: route('public.source-reports.show', $key, absolute: false),
+            );
+        }
         foreach ($figures as $figure) {
             $file = $files[$figure->finance_document_id] ?? null;
             if ($file === null) {
                 continue;
             }
             $citation = $this->citation($figure, $file);
+            if (isset($originals[$citation->documentKey ?? ''])) {
+                continue;
+            }
             $key = "{$citation->town}:{$citation->reportYear}:{$citation->documentKey}:{$citation->page}";
             $citations[$key] ??= $citation;
         }

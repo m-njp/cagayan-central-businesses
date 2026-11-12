@@ -11,7 +11,12 @@ final class FinanceParserStream
     /** @var array<string, mixed>|null */
     public ?array $result = null;
 
-    public function __construct(private readonly \Closure $onEvent) {}
+    public function __construct(
+        private readonly \Closure $onEvent,
+        private readonly ?int $reportYear = null,
+        private readonly ?string $documentKind = null,
+        private readonly ?string $sourceHash = null,
+    ) {}
 
     public function push(string $chunk): void
     {
@@ -55,22 +60,99 @@ final class FinanceParserStream
                 || ! is_array($result['figures'] ?? null) || ! is_array($result['issues'] ?? null) || ! is_array($result['children'] ?? null)) {
                 throw new \RuntimeException('Invalid parser result.');
             }
-            $this->result = $result;
             Validator::make($result, [
+                'source_sha256' => ['sometimes', 'string', 'regex:/^[a-f0-9]{64}$/D'],
+                'confidence' => ['sometimes', 'integer', 'between:0,100'],
                 'figures' => ['array', 'list'], 'figures.*' => ['array'],
                 'figures.*.line_code' => ['required', 'string'],
                 'figures.*.fiscal_year' => ['required', 'integer'],
                 'figures.*.basis' => ['required', 'in:actual,budget_final'],
                 'figures.*.value' => ['required', 'string', 'regex:/^-?\d+\.\d{2}$/D'],
                 'figures.*.document_kind' => ['required', 'in:executive_summary,fs_workbook,annex_workbook'],
+                'figures.*.location' => ['required', 'string', 'max:'.config('cagayan.finances.location_max')],
                 'issues' => ['array', 'list'], 'issues.*' => ['array'],
+                'issues.*.severity' => ['required', 'in:info,warning,error'],
+                'issues.*.kind' => ['required', 'string'],
+                'issues.*.code' => ['sometimes', 'string'],
+                'issues.*.message' => ['required', 'string'],
+                'issues.*.document_kind' => ['sometimes', 'in:executive_summary,fs_workbook,annex_workbook'],
+                'issues.*.document_sha256' => ['sometimes', 'string', 'regex:/^[a-f0-9]{64}$/D'],
                 'children' => ['array', 'list'], 'children.*' => ['array'],
                 'children.*.kind' => ['required', 'in:fs_workbook,annex_workbook'],
                 'children.*.name' => ['required', 'in:fs_workbook.xlsx,annex_workbook.xlsx'],
                 'children.*.sha256' => ['required', 'string', 'regex:/^[a-f0-9]{64}$/D'],
             ])->validate();
+            $this->validateContext($result);
+            $this->result = $result;
         } else {
             ($this->onEvent)($event);
+        }
+    }
+
+    /** @param array<string, mixed> $result */
+    private function validateContext(array $result): void
+    {
+        if (isset($result['confidence']) && ! is_int($result['confidence'])) {
+            throw new \RuntimeException('Parser returned an invalid confidence score.');
+        }
+        if (isset($result['source_sha256']) && $this->sourceHash !== null && ! hash_equals($this->sourceHash, (string) $result['source_sha256'])) {
+            throw new \RuntimeException('Parser result does not match the stored source checksum.');
+        }
+        /** @var list<array{kind: string, name: string, sha256: string}> $children */
+        $children = $result['children'];
+        $childHashes = [];
+        foreach ($children as $child) {
+            if (isset($childHashes[$child['kind']]) || $child['name'] !== $child['kind'].'.xlsx') {
+                throw new \RuntimeException('Parser returned duplicate or mismatched archive children.');
+            }
+            $childHashes[$child['kind']] = $child['sha256'];
+        }
+        if ($this->documentKind !== null && $this->documentKind !== 'archive' && $children !== []) {
+            throw new \RuntimeException('Parser returned archive children for a direct report.');
+        }
+
+        /** @var list<array{document_kind: string, line_code: string, fiscal_year: mixed, basis: string, location: string}> $figures */
+        $figures = $result['figures'];
+        $seen = [];
+        foreach ($figures as $figure) {
+            $year = $figure['fiscal_year'];
+            if (! is_int($year) || ($this->reportYear !== null && ! in_array($year, [$this->reportYear, $this->reportYear - 1], true))) {
+                throw new \RuntimeException('Parser returned a fiscal year outside the report context.');
+            }
+            $kind = $figure['document_kind'];
+            if (($this->documentKind === 'archive' && ! isset($childHashes[$kind]))
+                || ($this->documentKind !== null && $this->documentKind !== 'archive' && $kind !== $this->documentKind)) {
+                throw new \RuntimeException('Parser returned a figure for another document kind.');
+            }
+            if ($kind === 'executive_summary' && ! preg_match('/^page [1-9][0-9]*$/D', $figure['location'])) {
+                throw new \RuntimeException('Parser returned a PDF figure without a positive source page.');
+            }
+            $key = implode(' ', [$kind, $figure['line_code'], (string) $year, $figure['basis']]);
+            if (isset($seen[$key])) {
+                throw new \RuntimeException('Parser returned duplicate financial observations.');
+            }
+            $seen[$key] = true;
+        }
+
+        /** @var list<array{document_kind?: string, document_sha256?: string}> $issues */
+        $issues = $result['issues'];
+        foreach ($issues as $issue) {
+            if (! isset($issue['document_kind'])) {
+                if (isset($issue['document_sha256'])) {
+                    throw new \RuntimeException('Parser returned a checksum without its document kind.');
+                }
+
+                continue;
+            }
+            $kind = $issue['document_kind'];
+            if (($this->documentKind === 'archive' && ! isset($childHashes[$kind]))
+                || ($this->documentKind !== null && $this->documentKind !== 'archive' && $kind !== $this->documentKind)) {
+                throw new \RuntimeException('Parser returned an issue for another document kind.');
+            }
+            $expectedHash = $this->documentKind === 'archive' ? $childHashes[$kind] : $this->sourceHash;
+            if (isset($issue['document_sha256']) && $expectedHash !== null && ! hash_equals($expectedHash, $issue['document_sha256'])) {
+                throw new \RuntimeException('Parser issue does not match the stored source checksum.');
+            }
         }
     }
 }

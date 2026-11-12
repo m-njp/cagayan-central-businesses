@@ -10,14 +10,14 @@ use ZipArchive;
 
 final class PublicFinanceArchive
 {
-    public function __construct(private FinanceEvidenceQuery $evidence) {}
+    public function __construct(private FinanceEvidenceQuery $evidence, private PublicExecutiveSummaries $summaries) {}
 
     /** Build and verify the exact archive the public download route will send. */
     public function build(): string
     {
         $files = $this->files();
         if ($files === [] || ! class_exists(ZipArchive::class)) {
-            throw new RuntimeException('No verified report archive is available.');
+            throw new RuntimeException('No report archive is available.');
         }
 
         $path = tempnam(sys_get_temp_dir(), 'kita-coa-');
@@ -42,6 +42,10 @@ final class PublicFinanceArchive
     {
         $files = [];
         $bytes = 0;
+        foreach ($this->summaries->files() as $file) {
+            $files[$file['archiveName']] = ['path' => $file['path'], 'sha256' => $file['sha256']];
+            $bytes += (int) filesize($file['path']);
+        }
         foreach ($this->evidence->catalogFigures()->unique('finance_document_id') as $figure) {
             $path = $figure->publicFile();
             $document = $figure->document;
@@ -50,6 +54,9 @@ final class PublicFinanceArchive
             }
 
             $name = Str::slug($figure->municipality->name).'/'.$document->fiscal_year.'/'.basename($path);
+            if (isset($files[$name]) && $files[$name]['path'] === $path) {
+                continue;
+            }
             $size = filesize($path);
             $hash = $document->sha256;
             if ($size === false || $hash === null || isset($files[$name])) {
@@ -57,11 +64,10 @@ final class PublicFinanceArchive
             }
 
             $bytes += $size;
-            if ($bytes > (int) config('cagayan.finances.source_archive_max_bytes')) {
-                throw new RuntimeException('The report archive exceeds its size limit.');
-            }
-
             $files[$name] = ['path' => $path, 'sha256' => $hash];
+        }
+        if ($bytes > (int) config('cagayan.finances.source_archive_max_bytes')) {
+            throw new RuntimeException('The report archive exceeds its size limit.');
         }
 
         ksort($files);

@@ -24,7 +24,7 @@ final class FinanceParsingProgress
         return ['attempt' => $attempt, 'stage' => 'queued', 'message' => 'Waiting for the parser.',
             'location' => null, 'current' => null, 'total' => null, 'engine' => null,
             'startedAt' => null, 'updatedAt' => now()->toIso8601String(), 'finishedAt' => null,
-            'found' => 0, 'rows' => [], 'issues' => [], 'activity' => [], 'errorCode' => null,
+            'found' => 0, 'confidence' => null, 'rows' => [], 'issues' => [], 'activity' => [], 'errorCode' => null,
             'sequence' => 0];
     }
 
@@ -108,7 +108,7 @@ final class FinanceParsingProgress
     }
 
     /** @param array<string, mixed> $issue
-     * @return array{severity: string, code: string, line: string, message: string, location: ?string}
+     * @return array{severity: string, code: string, line: string, message: string, location: ?string, document_kind?: string, document_sha256?: string, fiscal_year?: int}
      */
     public static function issue(array $issue): array
     {
@@ -120,9 +120,21 @@ final class FinanceParsingProgress
             default => preg_replace('/^[\w.-]+\.xlsx[!:] ?/', '', self::text($issue['message'] ?? 'Check this figure against its source.')) ?? '',
         };
 
-        return ['severity' => in_array($issue['severity'] ?? null, ['info', 'warning', 'error'], true) ? $issue['severity'] : 'warning',
+        $normalized = ['severity' => in_array($issue['severity'] ?? null, ['info', 'warning', 'error'], true) ? $issue['severity'] : 'warning',
             'code' => $kind, 'line' => self::text($issue['code'] ?? ''), 'message' => $message,
             'location' => isset($issue['page']) ? 'page '.(int) $issue['page'] : (isset($issue['location']) ? self::text($issue['location']) : null)];
+        if (is_string($issue['document_kind'] ?? null)) {
+            $normalized['document_kind'] = self::text($issue['document_kind']);
+        }
+        if (is_string($issue['document_sha256'] ?? null)) {
+            $normalized['document_sha256'] = self::text($issue['document_sha256']);
+        }
+        $fiscalYear = $issue['fiscalYear'] ?? $issue['fiscal_year'] ?? null;
+        if (is_int($fiscalYear) && $fiscalYear > 0) {
+            $normalized['fiscal_year'] = $fiscalYear;
+        }
+
+        return $normalized;
     }
 
     public function flush(bool $force = false): void

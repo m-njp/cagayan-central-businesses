@@ -16,6 +16,7 @@ use App\Services\FinanceSignOff;
 use App\Services\FinanceYears;
 use App\Services\RefreshFinanceMetrics;
 use Carbon\CarbonInterface;
+use DomainException;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -28,7 +29,7 @@ use Illuminate\Validation\Rule;
  * Loads data/towns/finances into the ledger (D35). Parsed figures arrive pending; reviews.csv and
  * manual-figures.csv replay sign-offs exported by finances:export. Manual rows already in the database
  * are never deleted, and a parsed figure whose value changed goes back to pending.
- * Nothing is written when any file has an invalid row.
+ * Nothing is written when a file is invalid or would remove or replace reviewed source evidence.
  */
 #[Signature('finances:import {--path=data/towns/finances : Folder, relative to the project root}')]
 #[Description('Load COA finance figures, documents, and sign-offs into the finance ledger')]
@@ -91,12 +92,20 @@ final class ImportFinancesCommand extends Command
             return self::FAILURE;
         }
 
-        $counts = DB::transaction(function () use ($signOff, $metrics, $lines, $documents, $extracted, $reviews, $manual, $towns): array {
-            $counts = $this->write($signOff, $lines, $documents, $extracted, $reviews, $manual, $towns);
-            $metrics->handle();
+        try {
+            $counts = DB::transaction(function () use ($signOff, $metrics, $lines, $documents, $extracted, $reviews, $manual, $towns): array {
+                $this->guardReviewedEvidence($documents, $extracted, $towns);
+                $counts = $this->write($signOff, $lines, $documents, $extracted, $reviews, $manual, $towns);
+                $metrics->handle();
 
-            return $counts;
-        });
+                return $counts;
+            });
+        } catch (DomainException $error) {
+            $this->error($error->getMessage());
+            $this->error('Nothing was imported. Reconcile the reviewed source evidence before importing again.');
+
+            return self::FAILURE;
+        }
 
         foreach ($this->warnings as $warning) {
             $this->warn($warning);
@@ -108,6 +117,49 @@ final class ImportFinancesCommand extends Command
         ));
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @param  list<array{file: string, line: int, row: array<string, string>}>  $documents
+     * @param  list<array{file: string, line: int, row: array<string, string>}>  $extracted
+     * @param  array<string, int>  $towns
+     */
+    private function guardReviewedEvidence(array $documents, array $extracted, array $towns): void
+    {
+        $townCodes = array_flip($towns);
+        $sources = [];
+        foreach ($documents as $item) {
+            $row = $item['row'];
+            $sources["{$towns[$row['psgc_code']]} {$row['fiscal_year']} {$row['kind']}"] = $row;
+        }
+        $observations = [];
+        foreach ($extracted as $item) {
+            $row = $item['row'];
+            $observations["{$towns[$row['psgc_code']]} {$row['reported_in_year']} {$row['document_kind']} {$row['line_code']} {$row['fiscal_year']} {$row['basis']}"] = true;
+        }
+
+        // Lock pending rows too so a concurrent sign-off cannot race the stale-row cleanup.
+        $figures = FinanceFigure::query()->whereDoesntHave('document', fn ($document) => $document->uploaded())
+            ->with('document:id,fiscal_year,kind,availability,file,sha256,source_url')->lockForUpdate()
+            ->get(['id', 'municipality_id', 'finance_document_id', 'line_code', 'fiscal_year', 'basis', 'entry_method', 'status']);
+        foreach ($figures as $figure) {
+            if ($figure->status === FinanceFigureStatus::Pending) {
+                continue;
+            }
+            $document = $figure->document;
+            $documentKey = "{$figure->municipality_id} {$document?->fiscal_year} {$document?->kind->value}";
+            $key = "{$documentKey} {$figure->line_code} {$figure->fiscal_year} {$figure->basis->value}";
+            $context = 'Municipality '.$townCodes[$figure->municipality_id].', report '.($document->fiscal_year ?? 'unregistered').' '.($document->kind->value ?? '').'.';
+            if ($figure->entry_method === FinanceEntryMethod::Parsed && ! isset($observations[$key])) {
+                throw new DomainException("A reviewed observation is missing from the extraction: {$figure->line_code} {$figure->fiscal_year}. {$context} The existing ledger was retained.");
+            }
+            $source = $sources[$documentKey] ?? null;
+            if ($document !== null && $source !== null && ($document->availability->value !== $source['availability']
+                || $document->file !== ($source['file'] ?: null) || $document->sha256 !== ($source['sha256'] ?: null)
+                || $document->source_url !== ($source['source_url'] ?: null))) {
+                throw new DomainException('A reviewed document would be replaced by different source evidence. '.$context.' The existing ledger was retained.');
+            }
+        }
     }
 
     /**
@@ -218,7 +270,7 @@ final class ImportFinancesCommand extends Command
                     'value' => $row['value'], 'definition_variant' => $row['definition_variant'] ?: null,
                     'status' => FinanceFigureStatus::Pending, 'reviewed_by' => null, 'reviewed_on' => null,
                 ]);
-            } else {
+            } elseif ($figure->status === FinanceFigureStatus::Pending) {
                 $figure->fill($details)->save();
             }
         }
@@ -228,9 +280,6 @@ final class ImportFinancesCommand extends Command
         }
 
         $stale = $existing->reject(fn (FinanceFigure $figure, string $key) => isset($seen[$key]));
-        foreach ($stale->where('status', FinanceFigureStatus::Verified) as $figure) {
-            $this->warnings[] = "A verified figure is no longer in the extracted files and was removed: {$figure->line_code} {$figure->fiscal_year}.";
-        }
         FinanceFigure::query()->whereKey($stale->pluck('id')->all())->delete();
 
         return ['new' => count($inserts), 'changed' => $changed, 'removed' => $stale->count()];
