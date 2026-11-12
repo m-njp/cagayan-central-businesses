@@ -77,6 +77,10 @@
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py extract"
         ],
+        "data:finances:audit": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py audit"
+        ],
         "data:finances:test": [
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py test"
@@ -86,6 +90,10 @@
             "python tools/coa/run.py intake"
         ],
         "data:finances:check-archive": "python tools/coa/check_archive.py",
+        "data:finances:collect": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py collect"
+        ],
         "doctor": [
             "@php artisan app:doctor"
         ],
@@ -108,6 +116,7 @@
             "@test"
         ],
         "test:frontend": [
+            "@test:sources",
             "@test:analytics",
             "@test:maps",
             "@test:categories",
@@ -116,6 +125,7 @@
             "@test:businesses"
         ],
         "test:maps": "node --experimental-strip-types --test tests/Frontend/finance-map.test.mjs",
+        "test:sources": "node --experimental-strip-types --test tests/Frontend/source-library.test.mjs",
         "test:trend": "node --experimental-strip-types --test tests/Frontend/trend.test.mjs",
         "test:geo": "node --experimental-strip-types --test tests/Frontend/geo.test.mjs",
         "test:businesses": "node --experimental-strip-types --test tests/Frontend/public-businesses.test.mjs",

@@ -10,6 +10,8 @@ predecessor: ../archive/26-10-29-coa-parser-hardening.md
 
 # Live Finance Parsing
 
+Completed follow-up, "26-11-12": [COA Confidence Eligibility Fix](../archive/26-11-12-coa-confidence-eligibility-fix.md) removed a false 0% in the existing workbook task by aligning the omission guard with line eligibility. The parsing overlay was not redesigned.
+
 ## Objective
 
 Implement the owner's approved plan on "26-11-08": faster readable Python, real incremental progress and results in the existing finance upload workflow. The first screen answers: what is the parser doing and what has it found?

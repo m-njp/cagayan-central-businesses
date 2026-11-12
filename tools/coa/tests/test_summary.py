@@ -5,7 +5,7 @@ import pytest
 
 from coa.checks import documentChecks, mislabelledYears, restatementChecks, swapYears
 from coa.lines import load
-from coa.summary import parseSummary
+from coa.summary import parseSummary, parseText
 
 ROOT = Path(__file__).resolve().parents[3]
 SUMMARIES = ROOT / "data" / "towns" / "executive-summaries"
@@ -19,6 +19,33 @@ def parse(year: int, folder: str):
 
 def values(result) -> dict[tuple[str, int], Decimal]:
     return {(figure.code, figure.fiscalYear): figure.value for figure in result.figures}
+
+
+@pytest.mark.parametrize(("row", "expected", "warning"), [
+    ("Total Income 161,123,318.30 150,883,392.66 10,239,925.64 7", "161123318.30", False),
+    ("Total Income 161,123,318.30 150,883,392.66 10,239,925.64 (7.00%)", "161123318.30", False),
+    ("Total Income P=115,719,714.68 P=144,610,946.50 (28,891,231.82)", "115719714.68", False),
+    ("Income 217,772,319.49 199,052,338.47 18719981.02 9.00%", "217772319.49", False),
+    ("Income 186,488,805.85 165,029,450.20 21,468355.65 13%", "186488805.85", True),
+])
+def testOlderNumericLayoutsRetainReadableAmountsAndFlagMalformedTrailingColumns(row, expected, warning):
+    result = parseText([(1, "Financial Highlights"), (1, "2017 2016"), (1, row)], 2017, LINES, ALIASES)
+    assert values(result)[("performance.revenue", 2017)] == Decimal(expected)
+    assert ("unreadable_change" in {issue.kind for issue in result.issues}) == warning
+
+
+def testMalformedMainAmountIsNotGuessed():
+    result = parseText([(1, "Financial Highlights"), (1, "2016 2015"),
+                        (1, "Total Income P 48,014,545,75 P 43,668,723.14 P 4,345,822.61")], 2016, LINES, ALIASES)
+    assert not any(figure.code == "performance.revenue" for figure in result.figures)
+
+
+def testLongWrappedExpenseQualifierKeepsItsPageAndDefinition():
+    result = parse(2014, "Gattaran")
+    current = next(figure for figure in result.figures if figure.code == "performance.expenses" and figure.fiscalYear == 2014)
+    assert current.value == Decimal("124219472.51")
+    assert current.page == 2
+    assert current.variant == "includes_subsidy_to_other_funds"
 
 
 # Expected values were read from each PDF's highlights table by hand, not from parser output.

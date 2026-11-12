@@ -11,7 +11,6 @@ use App\Models\FinanceLine;
 use App\Models\FinanceUpload;
 use App\Models\Municipality;
 use App\Models\User;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Queue;
@@ -42,6 +41,12 @@ function intakeOutput(string $value = '99846291.10'): string
         'inputs' => [['location' => '11 - SCBAA!K61', 'value' => '69065950.52'], ['location' => '11 - SCBAA!K62', 'value' => '30780340.58']],
         'document_kind' => 'fs_workbook', 'member' => null,
     ]]]], JSON_THROW_ON_ERROR)."\n";
+}
+
+function storeUploadFixture(FinanceUpload $upload): void
+{
+    Storage::disk('local')->put($upload->path, 'workbook');
+    $upload->update(['sha256' => hash('sha256', 'workbook'), 'size' => strlen('workbook')]);
 }
 
 it('refuses an upload from staff not assigned to the town and keeps no file', function () {
@@ -93,6 +98,7 @@ it('reads one uploaded workbook into pending figures the uploader cannot sign of
     $uploader = User::factory()->create(['role' => UserRole::Admin]);
     $upload = FinanceUpload::factory()->for($this->town)->create(['uploaded_by' => $uploader->id]);
 
+    storeUploadFixture($upload);
     (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class));
 
     $figure = FinanceFigure::query()->sole();
@@ -119,6 +125,7 @@ it('never overwrites a different report already on record', function () {
         ->create(['finance_document_id' => $document->id]);
     $upload = FinanceUpload::factory()->for($this->town)->create();
 
+    storeUploadFixture($upload);
     (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class));
 
     expect($kept->fresh()->value)->toBe('99846291.10')
@@ -156,6 +163,7 @@ it('keeps only each cell and amount and never rewrites a signed-off citation', f
         ->create(['finance_document_id' => $document->id, 'location' => 'Reviewed cells', 'inputs' => null]);
     $upload = FinanceUpload::factory()->for($this->town)->create();
 
+    storeUploadFixture($upload);
     (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class));
 
     expect($signed->fresh()->location)->toBe('Reviewed cells')
@@ -170,6 +178,7 @@ it('keeps readable figures pending when another section has an error', function 
     Process::fake(['*' => Process::result(json_encode($event, JSON_THROW_ON_ERROR)."\n")]);
     $upload = FinanceUpload::factory()->for($this->town)->create();
 
+    storeUploadFixture($upload);
     (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class));
 
     expect($upload->fresh()->status)->toBe(FinanceUploadStatus::Done);
@@ -178,14 +187,15 @@ it('keeps readable figures pending when another section has an error', function 
     Process::assertRan(fn ($process) => in_array('--events', $process->command, true));
 });
 
-it('rolls back every figure and document when final persistence fails', function () {
+it('refuses duplicate parser observations before any figure or document is written', function () {
     $event = json_decode(intakeOutput(), true, flags: JSON_THROW_ON_ERROR);
     $event['result']['figures'][] = $event['result']['figures'][0];
     Process::fake(['*' => Process::result(json_encode($event, JSON_THROW_ON_ERROR)."\n")]);
     $upload = FinanceUpload::factory()->for($this->town)->create();
 
+    storeUploadFixture($upload);
     expect(fn () => (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class)))
-        ->toThrow(QueryException::class);
+        ->toThrow(RuntimeException::class, 'duplicate financial observations');
 
     $this->assertDatabaseCount('finance_figures', 0);
     $this->assertDatabaseCount('finance_documents', 0);

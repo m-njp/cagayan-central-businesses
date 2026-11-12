@@ -2,6 +2,22 @@
 
 The plan from today to the submission, and the status of every feature. Update the status lines in the same pull request that finishes the work.
 
+COA accuracy and Report Differences completed, 26-11-12. Extractor 1.4.0 fixes parser regressions found by checking every changed figure against its PDF page, always writes the committed CSVs with a printed diff, and labels each finding Within the Report, Between Reports or Extraction Limits. `finances:corroborate` signed off 1,142 figures that two COA reports print identically (D45), so the maps and Analytics now reach back to fiscal year 2014. The Capitol Report Differences page and its Guide list every finding by municipality and report year with its PDF page, in formal wording. [Scope and verification](../plan/archive/26-11-12-coa-accuracy-and-differences.md).
+
+COA confidence eligibility fix completed, 26-11-12. The upload job's omission guard now compares only eligible catalog lines, so legacy check-only Total Revenue rows no longer force a false 0 while genuine omissions still do. The live reparse moved the score from 0 to 100; no finance values, sign-offs or reviewed citations changed. [Scope and verification](../plan/archive/26-11-12-coa-confidence-eligibility-fix.md).
+
+COA parser hardening and automated confidence completed, 26-11-12: strict monetary/year evidence, independent signed-row confirmation, safe reparse/import handling and a compact confidence result in the existing blur overlay. No new package or approval note. The 348-report audit is staged for human verification; existing amounts, reviewed citations and published statistics remain unchanged. Python checks, browser verification, production build and full CI (461 Laravel tests) passed. [Scope and verification](../plan/archive/26-11-12-coa-parser-evidence-hardening.md).
+
+Historical finance extraction loaded for verification, 26-11-12. The 190 newly collected reports produced 2,919 cited observations; 1,497 eligible figures are Pending in the finance queue. Other municipal detail remains extracted under the existing Tuguegarao-only detail rule. Existing ledger values, sign-offs and published statistics were preserved. Source warnings and unreadable rows still require independent verification. Full CI (392 backend tests) and 478 COA tests passed. [Scope and verification](../plan/archive/26-11-12-historical-finance-extraction.md).
+
+Source library and file organization completed, 26-11-12. All 348 original COA summaries for 2014 through 2025 now live in the canonical repository source folders, with 192 related files moved out of Downloads. Public Sources has a searchable municipality browser, year filtering and bounded reports instead of the long list. Complete archive verification, frontend/build, 391 backend tests and 471 COA tests passed. This supersedes the source-review-only storage status below; financial extraction and sign-off remain separate. [Scope and verification](../plan/archive/26-11-12-source-library-and-file-organization.md).
+
+COA 2025 source collection completed, 26-11-12. Sixteen newly listed Executive Summaries downloaded and validated, completing local coverage for all 29 municipalities/city. New PDFs remain in source-review storage pending ingestion; automatic checkpoints and checks every 12 PDFs were used. [Scope and verification](../plan/archive/26-11-12-coa-2025-source-completion.md).
+
+COA historical source collection completed, 26-11-12. Automatic browser-save checkpoints and batches of 12 proved with 174 PDFs covering all 29 municipalities/city for every year 2014 through 2019. New sources remain in local source-review storage pending finance ingestion. [Scope and verification](../plan/archive/26-11-11-coa-browser-collection.md).
+
+COA collection tooling completed, 26-11-11. Checks run every 12 downloaded PDFs with per-download checkpoints, isolated failures and cached local validation. [Scope and verification](../plan/archive/26-11-11-coa-collection-batches.md).
+
 Finance filters and business activity redesign completed, 26-11-09. Shared dropdowns, separate Recent Uploads, grouped COA citations and a single business activity picker. [Scope and verification](../plan/archive/26-11-09-finance-filters-business-activity.md).
 
 Maintainability refresh completed, 26-11-09. Home focus and toolbar search, page folders, dependency and code cleanup, project skills, and one frontend test command. Final CI and browser checks passed. [Scope, follow-ups and verification](../plan/archive/26-11-09-maintainability-refresh.md).

@@ -5,10 +5,15 @@ namespace App\Jobs;
 use App\Actions\RecordParsedFigures;
 use App\Enums\FinanceAvailability;
 use App\Enums\FinanceDocumentKind;
+use App\Enums\FinanceEntryMethod;
+use App\Enums\FinanceFigureStatus;
 use App\Enums\FinanceUploadStatus;
 use App\Models\ActivityLog;
 use App\Models\FinanceDocument;
+use App\Models\FinanceFigure;
+use App\Models\FinanceLine;
 use App\Models\FinanceUpload;
+use App\Models\Municipality;
 use App\Services\FinanceParserStream;
 use App\Services\FinanceParsingProgress;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -67,24 +72,33 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
             return;
         }
         $progress = new FinanceParsingProgress($upload->id, $this->attemptId, $upload->progress ?? []);
-        $stream = new FinanceParserStream(fn (array $event) => $progress->accept($event));
+        $stream = new FinanceParserStream(fn (array $event) => $progress->accept($event), $upload->fiscal_year, $upload->kind, $upload->sha256);
         $disk = Storage::disk('local');
         $temporary = $disk->path(FinanceUpload::FOLDER.'/tmp/'.Str::uuid());
         $limits = config('cagayan.finances.uploads');
 
         try {
+            $townName = Municipality::query()->whereKey($upload->municipality_id)->value('name');
+            if (! is_string($townName) || $townName === '') {
+                throw new \RuntimeException('The report municipality could not be resolved.');
+            }
+            $sourcePath = $disk->path($upload->path);
+            $this->assertSourceHash($sourcePath, $upload->sha256);
             Process::path(base_path('tools/coa'))->env(['PYTHONIOENCODING' => 'utf-8'])->timeout((int) $limits['timeout_seconds'])->start([
-                (string) $limits['python'], '-u', '-m', 'coa.intake', $disk->path($upload->path), $upload->kind,
+                (string) $limits['python'], '-u', '-m', 'coa.intake', $sourcePath, $upload->kind,
                 (string) $upload->fiscal_year, $temporary,
                 '--members', (string) $limits['archive_members_max'], '--bytes', (string) $limits['archive_bytes_max'], '--events',
                 '--pace', (string) $limits['pace_seconds'],
+                '--town', $townName,
+                '--province', (string) config('cagayan.finances.source_province'),
             ], function (string $type, string $chunk) use ($stream): void {
                 if ($type === 'out') {
                     $stream->push($chunk);
                 }
             })->wait()->throw();
+            $this->assertSourceHash($sourcePath, $upload->sha256);
             $stream->finish();
-            /** @var array{parser_version: string, figures: list<array<string, mixed>>, issues: list<array<string, mixed>>, children: list<array{kind: string, name: string, member: string, sha256: string}>} $parsed */
+            /** @var array{parser_version: string, figures: list<array<string, mixed>>, issues: list<array<string, mixed>>, children: list<array{kind: string, name: string, member: string, sha256: string}>, confidence?: int} $parsed */
             $parsed = $stream->result;
             foreach (['executive_summary', 'fs_workbook', 'annex_workbook'] as $kind) {
                 $progress->accept(['type' => 'replace', 'document_kind' => $kind,
@@ -113,6 +127,7 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
                 // A PDF reader failure carries raw library text, which can name server paths; show a fixed sentence.
                 $issues = array_map(FinanceParsingProgress::issue(...), $parsed['issues']);
                 $waiting = 0;
+                $serverIntegrityError = false;
                 foreach ($sources as $kind => $source) {
                     $document = FinanceDocument::query()->firstOrNew([
                         'municipality_id' => $upload->municipality_id, 'fiscal_year' => $upload->fiscal_year, 'kind' => $kind,
@@ -123,6 +138,7 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
                             'A different %s for %d is already on record, so its figures were not changed.',
                             FinanceDocumentKind::from($kind)->label(), $upload->fiscal_year,
                         )];
+                        $serverIntegrityError = true;
 
                         continue;
                     }
@@ -131,12 +147,31 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
                         'sha256' => $source['sha256'], 'checked_on' => now()->toDateString(),
                     ])->save();
                     $figures = array_values(array_filter($parsed['figures'], fn (array $figure) => $figure['document_kind'] === $kind));
+                    $found = [];
+                    foreach ($figures as $figure) {
+                        $found[implode(' ', [(string) $figure['line_code'], (string) $figure['fiscal_year'], (string) $figure['basis']])] = true;
+                    }
+                    // Only lines the parser still delivers can be omitted; legacy check-only rows stay as they are.
+                    $previous = FinanceFigure::query()->where('finance_document_id', $document->id)
+                        ->where('entry_method', FinanceEntryMethod::Parsed)->where('status', FinanceFigureStatus::Pending)
+                        ->whereIn('line_code', FinanceLine::query()->enterable()->select('code'))
+                        ->get(['line_code', 'fiscal_year', 'basis', 'location']);
+                    foreach ($previous as $figure) {
+                        if (! isset($found[implode(' ', [$figure->line_code, (string) $figure->fiscal_year, $figure->basis->value])])) {
+                            $issues[] = ['severity' => 'error', 'code' => 'previous_figure_not_reproduced', 'line' => $figure->line_code,
+                                'fiscal_year' => $figure->fiscal_year, 'location' => $figure->location,
+                                'document_kind' => $kind, 'document_sha256' => $source['sha256'],
+                                'message' => 'A previous pending figure was not reproduced by this parse. Inspect its source before review.'];
+                            $serverIntegrityError = true;
+                        }
+                    }
                     $waiting += $record->handle($document, $figures, $upload->uploaded_by, $parsed['parser_version']);
                 }
 
                 $snapshot = $progress->snapshot;
                 $snapshot['stage'] = 'done';
                 $snapshot['found'] = count($parsed['figures']);
+                $snapshot['confidence'] = $serverIntegrityError ? 0 : ($parsed['confidence'] ?? null);
                 $snapshot['issues'] = array_slice($issues, 0, (int) config('cagayan.finances.uploads.progress_issues_max'));
                 $snapshot['finishedAt'] = now()->toIso8601String();
                 $snapshot['updatedAt'] = $snapshot['finishedAt'];
@@ -156,6 +191,14 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
         }
     }
 
+    private function assertSourceHash(string $path, string $expected): void
+    {
+        $actual = is_file($path) ? hash_file('sha256', $path) : false;
+        if ($actual === false || ! hash_equals($expected, $actual)) {
+            throw new \RuntimeException('Stored report checksum changed or its file is unavailable.');
+        }
+    }
+
     public function failed(?Throwable $exception): void
     {
         DB::transaction(function (): void {
@@ -168,6 +211,7 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
             $snapshot['failedStage'] = $snapshot['stage'];
             $snapshot['stage'] = 'failed';
             $snapshot['errorCode'] = 'report_unreadable';
+            $snapshot['confidence'] = 0;
             $snapshot['finishedAt'] = now()->toIso8601String();
             $upload->update(['status' => FinanceUploadStatus::Failed, 'progress' => $snapshot,
                 'message' => 'The report could not be read. Check the file and retry parsing.']);

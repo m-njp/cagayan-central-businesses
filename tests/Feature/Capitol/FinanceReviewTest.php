@@ -102,6 +102,28 @@ it('lets assigned staff enter a figure that waits as pending', function () {
         ->and(DB::table('activity_logs')->where('event', 'finance_figure_entered')->where('actor_id', $staff->id)->count())->toBe(1);
 });
 
+it('opens historical pending figures with comparative years and registered PDF page links', function () {
+    $file = 'executive-summaries/2014/Abulug/Abulug-Executive-Summary-2014.pdf';
+    $document = FinanceDocument::factory()->for($this->town)->create([
+        'fiscal_year' => 2014, 'file' => $file, 'sha256' => hash_file('sha256', base_path('data/towns/'.$file)),
+    ]);
+    FinanceFigure::factory()->for($this->town)->line('performance.revenue', 2013, '100.00')->create([
+        'finance_document_id' => $document->id, 'location' => 'page 2',
+    ]);
+    $source = route('public.source-reports.show', hash('sha256', $file), absolute: false);
+
+    $this->actingAs(User::factory()->create())->get(route('capitol.finances.show', ['town' => $this->town->psgc_code, 'year' => 2014]))
+        ->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->where('report.year', 2014)->where('report.entryYears', [2013, 2014])
+        ->where('report.figures.0.status', 'pending')->where('report.figures.0.location', 'page 2')
+        ->where('report.figures.0.sourceUrl', $source.'#page=2')
+        ->where('report.documents.0.sourceUrl', $source));
+    $this->get(route('capitol.finances.index', ['year' => 2014, 'status' => 'pending']))
+        ->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->has('list.rows', 1)->where('list.rows.0.pending', 1)->where('list.rows.0.year', 2014));
+    $this->assertDatabaseMissing('stats_finance_year', ['fiscal_year' => 2013, 'municipality_id' => $this->town->id]);
+});
+
 it('rejects an entry without a report or link, or with a malformed amount', function (array $overrides, string $field) {
     $this->actingAs(User::factory()->create())
         ->post(route('capitol.finances.figures.store', ['town' => '0201501000', 'year' => 2024]), manualEntry($overrides))
@@ -180,7 +202,7 @@ it('rejects invalid finance inputs without writing a figure', function (array $o
     'scientific notation' => [['value' => '1e4'], 'value'],
     'too many digits including leading zeros' => [['value' => '0000000000001.00'], 'value'],
     'later than its report' => [['fiscal_year' => 2025], 'fiscal_year'],
-    'outside the supported years' => [['fiscal_year' => 2018], 'fiscal_year'],
+    'outside the supported years' => [['fiscal_year' => 2012], 'fiscal_year'],
     'final budget on a revenue line' => [['basis' => 'budget_final'], 'basis'],
     'array instead of a line' => [['line_code' => ['performance.revenue']], 'line_code'],
     'unofficial source' => [['document_kind' => null, 'source_url' => 'https://example.com/report.pdf'], 'source_url'],

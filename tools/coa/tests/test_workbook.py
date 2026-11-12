@@ -2,9 +2,10 @@ from decimal import Decimal
 from pathlib import Path
 
 import pytest
+import openpyxl
 
 from coa.lines import load
-from coa.workbook import readAnnex, readFs
+from coa.workbook import amount, readAnnex, readFs
 
 ROOT = Path(__file__).resolve().parents[3]
 WORKBOOKS = ROOT / "data" / "towns" / "financial-statements"
@@ -18,6 +19,202 @@ def read(year: int, folder: str, kind: str):
 
 def values(result) -> dict[tuple[str, int, str], Decimal]:
     return {(figure.code, figure.fiscalYear, figure.basis): figure.value for figure in result.figures}
+
+
+def saveWorkbook(tmpPath, sheets):
+    book = openpyxl.Workbook()
+    book.remove(book.active)
+    for name, rows in sheets:
+        sheet = book.create_sheet(name)
+        for row in rows:
+            sheet.append(row)
+    path = tmpPath / "source.xlsx"
+    book.save(path)
+    book.close()
+    return path
+
+
+def performanceRows(current=100):
+    return [("Consolidated Statement of Financial Performance",), (None, 2025, 2024),
+            ("Tax Revenue", current, 90), ("Personnel Services", 50, 40), ("Total Revenue", current, 90)]
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def testEquallyScoringSheetsAreWithheldRegardlessOfWorkbookOrder(tmp_path, reverse):
+    sheets = [("First", performanceRows(100)), ("Second", performanceRows(200))]
+    path = saveWorkbook(tmp_path, list(reversed(sheets)) if reverse else sheets)
+
+    result = readFs(path, 2025, LINES, ALIASES)
+
+    assert result.figures == []
+    issue = next(issue for issue in result.issues if issue.kind == "ambiguous_sheets")
+    assert issue.severity == "error"
+    assert "First, Second" in issue.message
+
+
+@pytest.mark.parametrize("reader,label,title", [
+    (readFs, "Tax Revenue", "Consolidated Statement of Financial Performance"),
+    (readAnnex, "Business Tax", "Detailed Statement of Financial Performance General Fund"),
+])
+@pytest.mark.parametrize("reverse", [False, True])
+def testTiedNumericColumnCandidatesAreNotChosenByPosition(tmp_path, reader, label, title, reverse):
+    first, second = (200, 100) if reverse else (100, 200)
+    rows = [(title,), (None, 2025, None, 2024), (label, first, second, 90),
+            ("Personnel Services", 50, 60, 40), ("Total Revenue", first, second, 90)]
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+
+    result = reader(path, 2025, LINES, ALIASES)
+
+    assert result.figures == []
+    issue = next(issue for issue in result.issues if issue.kind == "year_columns_ambiguous")
+    assert issue.severity == "error"
+    assert "columns B, C" in issue.message
+
+
+def testRepeatedFiscalYearHeadersAreAnExplicitAmbiguity(tmp_path):
+    rows = performanceRows()
+    rows[1] = (None, 2025, 2025)
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+
+    result = readFs(path, 2025, LINES, ALIASES)
+
+    assert result.figures == []
+    assert any(issue.kind == "year_columns_ambiguous" and "repeated headers" in issue.message for issue in result.issues)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def testConflictingDuplicateRowsWithholdTheLineInsteadOfKeepingTheFirst(tmp_path, reverse):
+    rows = performanceRows()
+    duplicates = [("Tax Revenue", 100, 90), ("Tax Revenue", 200, 90)]
+    rows[2:3] = list(reversed(duplicates)) if reverse else duplicates
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+
+    result = readFs(path, 2025, LINES, ALIASES)
+
+    assert not any(figure.code == "revenue.tax" for figure in result.figures)
+    issue = next(issue for issue in result.issues if issue.kind == "conflicting_values")
+    assert issue.code == "revenue.tax"
+    assert issue.severity == "error"
+    assert "Performance!B3" in issue.message and "Performance!B4" in issue.message
+
+
+def testIdenticalDuplicateRowsAreNotCountedTwice(tmp_path):
+    rows = performanceRows()
+    rows.insert(3, rows[2])
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+
+    result = readFs(path, 2025, LINES, ALIASES)
+
+    figures = [figure for figure in result.figures if figure.code == "revenue.tax"]
+    assert sorted((figure.fiscalYear, figure.value) for figure in figures) == [(2024, Decimal("90.00")), (2025, Decimal("100.00"))]
+    assert not any(issue.kind == "conflicting_values" for issue in result.issues)
+
+
+def testMissingComparativeComponentDoesNotBecomeZeroInASummedLine(tmp_path):
+    rows = performanceRows()
+    rows[4] = ("Total Revenue", 170, 120)
+    rows += [("Gains", 20, 10), ("Miscellaneous Income", 50, None)]
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+
+    result = readFs(path, 2025, LINES, ALIASES)
+
+    figures = [figure for figure in result.figures if figure.code == "revenue.other"]
+    assert [(figure.fiscalYear, figure.value) for figure in figures] == [(2025, Decimal("70.00"))]
+    assert [item["location"] for item in figures[0].inputs] == ["Performance!B6", "Performance!B7"]
+    assert any(issue.kind == "incomplete_components" and issue.code == "revenue.other" and "Performance!C7" in issue.message for issue in result.issues)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("missing", [None, "unreadable"])
+def testWhollyUnreadableComponentCannotDisappearFromASummedLine(tmp_path, reverse, missing):
+    components = [("Gains", 20, 10), ("Miscellaneous Income", missing, missing)]
+    rows = performanceRows() + (list(reversed(components)) if reverse else components)
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+
+    result = readFs(path, 2025, LINES, ALIASES)
+
+    assert not any(figure.code == "revenue.other" for figure in result.figures)
+    issue = next(issue for issue in result.issues if issue.kind == "incomplete_components")
+    missingRow = 6 if reverse else 7
+    assert issue.severity == "error" and issue.code == "revenue.other"
+    assert f"Performance!B{missingRow}" in issue.message and f"Performance!C{missingRow}" in issue.message
+
+
+def testAllSummedComponentsUnreadableAreReportedWithoutInventingAnAmount(tmp_path):
+    rows = performanceRows() + [("Gains", None, None), ("Miscellaneous Income", None, None)]
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+
+    result = readFs(path, 2025, LINES, ALIASES)
+
+    assert not any(figure.code == "revenue.other" for figure in result.figures)
+    assert len([issue for issue in result.issues if issue.kind == "incomplete_components"]) == 2
+
+
+@pytest.mark.parametrize("cell", [float("nan"), float("inf"), float("-inf")])
+def testNonFiniteNumericCellsAreNotFinancialAmounts(cell):
+    assert amount(cell) is None
+
+
+def contextualRows(kind, identity="Municipality of Abulug, Cagayan"):
+    rows = performanceRows()
+    if kind == "annex":
+        rows[0] = ("Detailed Statement of Financial Performance General Fund",)
+        rows[2] = ("Business Tax", 100, 90)
+    rows.insert(1, (identity,))
+    return rows
+
+
+@pytest.mark.parametrize("reader,kind,code", [(readFs, "fs", "revenue.tax"), (readAnnex, "annex", "local.business_tax")])
+def testSelectedSheetIdentityComesFromCellsRatherThanFilename(tmp_path, reader, kind, code):
+    rows = contextualRows(kind)
+    rows.insert(2, ("Amounts in Philippine pesos",))
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+    renamed = path.rename(tmp_path / "Alcala.xlsx")
+
+    result = reader(renamed, 2025, LINES, ALIASES, expectedTown="Abulug", expectedProvince="Cagayan")
+
+    assert values(result)[(code, 2025, "actual")] == Decimal("100.00")
+    assert not any(issue.kind in ("municipality_mismatch", "municipality_unconfirmed", "province_unconfirmed", "unsupported_units") for issue in result.issues)
+
+
+@pytest.mark.parametrize("reader,kind", [(readFs, "fs"), (readAnnex, "annex")])
+@pytest.mark.parametrize("identity,expectedKind", [
+    ("Municipality of Alcala, Cagayan", "municipality_mismatch"),
+    ("Municipality of Abulug, Aurora", "province_unconfirmed"),
+    ("Government Financial Statements", "municipality_unconfirmed"),
+])
+def testSheetIdentityDistinguishesConflictFromUnconfirmedContext(tmp_path, reader, kind, identity, expectedKind):
+    path = saveWorkbook(tmp_path, [("Performance", contextualRows(kind, identity))])
+    renamed = path.rename(tmp_path / "Abulug.xlsx")
+
+    result = reader(renamed, 2025, LINES, ALIASES, expectedTown="Abulug", expectedProvince="Cagayan")
+
+    issue = next(issue for issue in result.issues if issue.kind == expectedKind)
+    if expectedKind.endswith('_mismatch'):
+        assert result.figures == []
+        assert issue.severity == 'error'
+    else:
+        assert result.figures
+        assert issue.severity == 'warning'
+    assert issue.page is None
+    assert "Abulug.xlsx!Performance" in issue.message and "A2" in issue.message
+    assert "First-page" not in issue.message
+
+
+@pytest.mark.parametrize("reader,kind", [(readFs, "fs"), (readAnnex, "annex")])
+@pytest.mark.parametrize("unit", ["Amounts in thousands of pesos", "Amounts are expressed in millions", "Amounts in USD", "Amounts in PHP'000"])
+def testUnsupportedSheetUnitsAreNotAssumedToBePesosOrConverted(tmp_path, reader, kind, unit):
+    rows = contextualRows(kind)
+    rows.insert(2, (unit,))
+    path = saveWorkbook(tmp_path, [("Performance", rows)])
+
+    result = reader(path, 2025, LINES, ALIASES, expectedTown="Abulug", expectedProvince="Cagayan")
+
+    assert result.figures == []
+    issue = next(issue for issue in result.issues if issue.kind == "unsupported_units")
+    assert issue.severity == "error"
+    assert issue.page is None
+    assert "Performance!A3" in issue.message and unit in issue.message
 
 
 # Expected values were read from the workbook cells by hand; sector totals add the class rows shown in the comments.
@@ -114,3 +311,16 @@ def testBasicPropertyTaxCitesTheSignedDiscount(year, cells, amounts, expected):
 
     assert figure.value == Decimal(expected)
     assert list(figure.inputs) == [{"location": f"ANNEX-B!{cell}", "value": value} for cell, value in zip(cells, amounts)]
+
+
+def testCheckOnlyTotalRevenueIsReadFromTheWorkbookButNotEligibleForIntake():
+    from coa.intake import isDisplayed
+
+    result = read(2025, "Tuguegarao-City", "FS")
+    totals = {figure.fiscalYear: figure for figure in result.figures if figure.code == "fs.total_revenue"}
+
+    assert {year: (figure.value, figure.location) for year, figure in totals.items()} == {
+        2025: (Decimal("1679019473.60"), "8 - Financial Performance 2025!D14"),
+        2024: (Decimal("1465722146.22"), "8 - Financial Performance 2025!F14"),
+    }
+    assert not isDisplayed("fs.total_revenue", LINES)

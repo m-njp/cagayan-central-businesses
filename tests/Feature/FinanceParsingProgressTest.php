@@ -113,8 +113,11 @@ it('keeps info notes out of the live feed and hides the stored file name in warn
 });
 
 it('rolls back figures when parsing fails and exposes only a safe failure message', function () {
+    Storage::fake('local');
     Process::fake(['*' => Process::result(output: "{\"type\":\"stage\",\"stage\":\"scanning\"}\n", errorOutput: 'C:\private\parser.py crashed', exitCode: 1)]);
     $upload = FinanceUpload::factory()->create();
+    Storage::disk('local')->put($upload->path, 'workbook');
+    $upload->update(['sha256' => hash('sha256', 'workbook')]);
 
     expect(fn () => (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class)))->toThrow(ProcessFailedException::class);
 
@@ -127,11 +130,12 @@ it('rolls back figures when parsing fails and exposes only a safe failure messag
 it('executes a real workbook through the queue and saves only pending finance figures', function () {
     Storage::fake('local');
     config(['queue.default' => 'database', 'cagayan.finances.uploads.pace_seconds' => 0]);
-    $town = Municipality::factory()->create(['psgc_code' => '0201529000']);
+    $town = Municipality::factory()->create(['psgc_code' => '0201529000', 'name' => 'Tuguegarao City']);
     FinanceLine::factory()->create(['code' => 'revenue.tax', 'source' => 'fs_workbook', 'group' => 'revenue_sources']);
     $upload = FinanceUpload::factory()->for($town)->create();
     $source = base_path('data/towns/financial-statements/2025/Tuguegarao-City/Tuguegarao-City-FS-2025.xlsx');
     Storage::disk('local')->put($upload->path, file_get_contents($source));
+    $upload->update(['sha256' => hash_file('sha256', $source)]);
     ExtractFinanceUpload::dispatch($upload->id, $upload->progress['attempt']);
 
     $this->artisan('queue:work', ['--once' => true, '--stop-when-empty' => true])->assertSuccessful();

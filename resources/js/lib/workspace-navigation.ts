@@ -3,6 +3,7 @@ import { index as businesses } from '@/routes/capitol/businesses';
 import { index as categories } from '@/routes/capitol/categories';
 import { index as finances } from '@/routes/capitol/finances';
 import { index as population } from '@/routes/capitol/population';
+import { index as reportDifferences } from '@/routes/capitol/report-differences';
 import { index as wishes } from '@/routes/capitol/wishes';
 import { index as logs } from '@/routes/capitol/logs';
 import { show as profile } from '@/routes/capitol/profile';
@@ -51,6 +52,13 @@ export function workspaceNavigation(workspace: Workspace) {
             group: 'Workspace',
             href: finances(),
             icon: icons.finances,
+            visible: true,
+        },
+        {
+            label: 'Report Differences',
+            group: 'Workspace',
+            href: reportDifferences(),
+            icon: icons.differences,
             visible: true,
         },
         {

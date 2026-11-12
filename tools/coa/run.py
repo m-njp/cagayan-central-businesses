@@ -21,10 +21,15 @@ def main() -> int:
         arguments = ["-m", "pytest", *command[1:]]
     elif command[0] == "intake":
         arguments = ["-u", "-m", "coa.intake", *command[1:]]
+    elif command[0] == "collect":
+        arguments = ["-u", "-m", "coa.collection", *command[1:]]
+    elif command[0] == "audit":
+        arguments = ["-u", "-m", "coa.audit", *command[1:]]
     else:
         arguments = ["-m", "coa", *command]
     environment = {**os.environ, "PYTHONPATH": str(HERE), "PYTHONIOENCODING": "utf-8"}
-    return subprocess.run([PYTHON, *arguments], cwd=HERE, env=environment).returncode
+    workingDirectory = HERE.parents[1] if command[0] == "collect" else HERE
+    return subprocess.run([PYTHON, *arguments], cwd=workingDirectory, env=environment).returncode
 
 
 if __name__ == "__main__":

@@ -61,8 +61,8 @@ final class RecordParsedFigures
                     'entered_by' => $uploaderId, 'reviewed_by' => null, 'reviewed_on' => null,
                 ]);
                 $waiting++;
-            } elseif ($figure->status !== FinanceFigureStatus::Verified) {
-                // A signed-off figure keeps the citation its reviewer saw; only unreviewed ones are refreshed.
+            } elseif ($figure->status === FinanceFigureStatus::Pending) {
+                // A reviewed figure keeps the citation its reviewer saw; only Pending ones are refreshed.
                 $figure->update($details);
             }
         }

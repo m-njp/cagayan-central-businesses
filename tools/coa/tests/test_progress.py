@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from coa.intake import EventOutput, scan
+from coa.confidence import confidenceScore
 from coa.lines import load
 from coa import summary, workbook
 
@@ -23,6 +24,7 @@ def testProgressAndDefaultIntakeHaveIdenticalFinancialOutput(tmp_path):
     plain = scan(FS, "fs_workbook", 2025, tmp_path, 40, 104857600)
 
     assert streamed == plain
+    assert streamed['confidence'] == confidenceScore(streamed['figures'], streamed['issues'])
     assert events[0]["stage"] == "inspecting"
     assert any(event["type"] == "scan" and event["location"] == "8 - Financial Performance 2025" for event in events)
     assert any(event["type"] == "figure" and event["figure"]["value"] == "430895820.24" for event in events)
@@ -87,6 +89,8 @@ def testCommandFlushesEventsBeforeExitAndKeepsPlainJsonCompatible(tmp_path):
     assert sum(event["type"] == "result" for event in events) == 1
     plain = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", check=True)
     assert json.loads(plain.stdout) == events[-1]["result"]
+    result = events[-1]['result']
+    assert result['confidence'] == confidenceScore(result['figures'], result['issues'])
 
 
 def testUnreadableFileEmitsSafeFailureWithoutResult(tmp_path):

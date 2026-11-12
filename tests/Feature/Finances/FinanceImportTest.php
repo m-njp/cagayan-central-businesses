@@ -4,10 +4,12 @@ use App\Console\Commands\ImportFinancesCommand;
 use App\Data\TownFigure;
 use App\Enums\FinanceEntryMethod;
 use App\Enums\FinanceFigureStatus;
+use App\Models\FinanceDocument;
 use App\Models\FinanceFigure;
 use App\Models\FinanceLine;
 use App\Models\Municipality;
 use App\Queries\TownAtlasQuery;
+use App\Services\RefreshFinanceMetrics;
 use Database\Seeders\MunicipalitySeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -184,6 +186,70 @@ it('never deletes figures entered by hand', function () {
 
     expect(FinanceFigure::query()->whereKey($manual->id)->exists())->toBeTrue();
 });
+
+it('refuses partial extraction output that would remove a reviewed observation', function (FinanceFigureStatus $status) {
+    writeFinanceFolder();
+    importFinances()->assertSuccessful();
+    $expenses = FinanceFigure::query()->where('line_code', 'performance.expenses')->sole();
+    $expenses->update(['status' => $status, 'reviewed_on' => '2026-10-28']);
+    app(RefreshFinanceMetrics::class)->handle();
+    $published = DB::table('stats_finance_year')->orderBy('fiscal_year')->orderBy('metric')->get()->all();
+    writeFinanceFolder(['extracted' => [
+        '0201501000,Abulug,2024,executive_summary,2024,performance.revenue,actual,600.00,,Income,page 2,'.SHA_2024.',2',
+    ]]);
+
+    importFinances()->expectsOutputToContain('A reviewed observation is missing from the extraction: performance.expenses 2024.')
+        ->assertFailed();
+
+    $this->assertDatabaseCount('finance_figures', 4);
+    $this->assertDatabaseHas('finance_figures', ['id' => $expenses->id, 'value' => '450.00', 'status' => $status->value, 'location' => 'page 1']);
+    $this->assertDatabaseHas('finance_figures', ['line_code' => 'performance.revenue', 'fiscal_year' => 2024, 'value' => '500.00']);
+    expect(DB::table('stats_finance_year')->orderBy('fiscal_year')->orderBy('metric')->get()->all())->toEqual($published);
+})->with([FinanceFigureStatus::Verified, FinanceFigureStatus::Superseded, FinanceFigureStatus::Rejected]);
+
+it('refuses replacement of a reviewed document even when the amounts are unchanged', function (string $before, string $after) {
+    writeFinanceFolder(['reviews' => ['0201501000,2024,executive_summary,performance.expenses,2024,actual,450.00,verified,2026-10-28,Checked']]);
+    importFinances()->assertSuccessful();
+    $document = FinanceDocument::query()->where('fiscal_year', 2024)->sole();
+    $evidence = $document->only(['availability', 'file', 'sha256', 'source_url']);
+    $path = base_path(TEST_FINANCE_FOLDER.'/documents.csv');
+    File::put($path, str_replace($before, $after, File::get($path)));
+    foreach (File::files(base_path(TEST_FINANCE_FOLDER.'/extracted')) as $file) {
+        File::put($file->getPathname(), str_replace($before, $after, File::get($file->getPathname())));
+    }
+
+    importFinances()->expectsOutputToContain('A reviewed document would be replaced by different source evidence.')
+        ->assertFailed();
+
+    expect($document->fresh()->only(['availability', 'file', 'sha256', 'source_url']))->toEqual($evidence);
+    $this->assertDatabaseHas('finance_figures', ['line_code' => 'performance.expenses', 'value' => '450.00', 'status' => 'verified']);
+    $this->assertDatabaseHas('stats_finance_year', ['fiscal_year' => 2024, 'metric' => 'performance.expenses', 'value' => '450.00']);
+})->with([
+    'file changed' => ['b.pdf', 'replacement.pdf'],
+    'checksum changed' => [SHA_2024, 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'],
+    'source link changed' => ['https://www.coa.gov.ph/2024.pdf', 'https://www.coa.gov.ph/replacement.pdf'],
+]);
+
+it('keeps the citation reviewed for an unchanged amount while refreshing pending evidence', function (FinanceFigureStatus $status) {
+    writeFinanceFolder(['reviews' => ['0201501000,2024,executive_summary,performance.expenses,2024,actual,450.00,verified,2026-10-28,Checked']]);
+    importFinances()->assertSuccessful();
+    FinanceFigure::query()->where('line_code', 'performance.expenses')->sole()->update(['status' => $status]);
+    $inputs = str_replace('"', '""', json_encode([['location' => 'page 9', 'value' => '450.00']]));
+    writeFinanceFolder(['extracted' => [
+        '0201501000,Abulug,2024,executive_summary,2024,performance.revenue,actual,500.00,,Total Income,page 7,'.SHA_2024.',2',
+        '0201501000,Abulug,2024,executive_summary,2024,performance.expenses,actual,450.00,,Total Expenses,page 9,'.SHA_2024.',2,"'.$inputs.'"',
+    ]]);
+
+    importFinances()->assertSuccessful();
+
+    $expenses = FinanceFigure::query()->where('line_code', 'performance.expenses')->sole();
+    expect($expenses->location)->toBe('page 1')
+        ->and($expenses->source_label)->toBe('Expense')
+        ->and($expenses->extractor_version)->toBe('1')
+        ->and($expenses->inputs)->toBeNull()
+        ->and($expenses->status)->toBe($status);
+    $this->assertDatabaseHas('finance_figures', ['line_code' => 'performance.revenue', 'fiscal_year' => 2024, 'location' => 'page 7', 'source_label' => 'Total Income', 'status' => 'pending']);
+})->with([FinanceFigureStatus::Verified, FinanceFigureStatus::Superseded, FinanceFigureStatus::Rejected]);
 
 it('lets the latest report win for a restated year whatever the review order', function () {
     writeFinanceFolder(['reviews' => [

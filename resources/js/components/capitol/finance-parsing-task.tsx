@@ -216,6 +216,19 @@ export function FinanceParsingTask({
                         {error}
                     </p>
                 )}
+                {finished && progress?.confidence != null && (
+                    <div
+                        aria-live="polite"
+                        className="flex flex-col gap-1 type-meta"
+                    >
+                        <p>Automated Confidence {progress.confidence}%</p>
+                        <p className="text-muted-foreground">
+                            {progress.confidence === 100
+                                ? 'All automated checks passed. Source verification is still required.'
+                                : 'Kindly cross-check the flagged amounts and source pages.'}
+                        </p>
+                    </div>
+                )}
                 <div className="flex gap-2">
                     {error && (
                         <Button variant="outline" onClick={reconnect}>

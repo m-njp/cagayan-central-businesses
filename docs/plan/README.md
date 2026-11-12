@@ -18,6 +18,22 @@ Dates inside plans use the requested `yy-mm-dd` format in Asia/Manila. Filenames
 
 ## Archive
 
+[COA Accuracy and Reporting Differences](archive/26-11-12-coa-accuracy-and-differences.md): completed 26-11-12. Extractor 1.4.0 fixes the parser regressions found by checking every changed figure against its PDF page, writes the committed CSVs with a printed diff, and labels each finding Within the Report, Between Reports or Extraction Limits in formal wording. `finances:corroborate` signed off 1,142 figures two COA reports print identically (D45), so maps and Analytics reach back to 2014. The Capitol Report Differences page and its Guide list every finding with its PDF page. Open items for the next agent are in section 10.
+
+[COA Parser Evidence Hardening](archive/26-11-12-coa-parser-evidence-hardening.md): completed 26-11-12. Strict financial evidence and safe reparse/import/review checks, with a simple automated confidence score in the existing blur overlay. No new package or approval note. The 348-PDF audit remains staged; ledger values, reviewed metadata and published statistics are unchanged. Python tests, browser verification, build and full CI (461 Laravel tests) passed.
+
+Follow-up: [COA Confidence Eligibility Fix](archive/26-11-12-coa-confidence-eligibility-fix.md), completed 26-11-12. The upload job's omission guard now compares only currently eligible lines, so check-only totals no longer force a false 0 while genuine omissions still do. The live reparse moved confidence from 0 to 100 with ledger rows, sign-offs and reviewed citations unchanged. 463 Laravel and 686 COA tests passed.
+
+[Historical Finance Extraction](archive/26-11-12-historical-finance-extraction.md): completed 26-11-12. Extracted 2,919 observations from 190 reports and queued 1,497 eligible figures as Pending with PDF page links. Preserved existing ledger values, sign-offs and published statistics; 392 backend and 478 COA tests passed. Additional detail remains extracted under the existing Tuguegarao-only rule.
+
+[Source Library and File Organization](archive/26-11-12-source-library-and-file-organization.md): completed 26-11-12. All 348 originals registered for 2014 through 2025; 192 related Downloads files moved with checksums and receipts. Sources now uses a bounded municipality/year browser; the complete 352-report archive, frontend/build, 391 backend tests and 471 COA tests passed.
+
+[COA 2025 Source Completion](archive/26-11-12-coa-2025-source-completion.md): completed 26-11-12. Downloaded and validated the 16 missing summaries with automatic checkpoints and 12-file checks; all 29 sources are archived with provenance and verified bundle checksums.
+
+[COA Browser Collection](archive/26-11-11-coa-browser-collection.md): completed 26-11-12. Automatic browser-folder checkpoints and batches of 12; all 174 Executive Summary PDFs for 2014 through 2019 downloaded, validated and archived with provenance. Collection tests and repository CI passed.
+
+[COA Collection Batches](archive/26-11-11-coa-collection-batches.md): completed 26-11-11. Durable per-download checkpoints, checks every 12 PDFs, isolated failures, bounded local workers and cached resume. All 158 stored PDFs accepted; full repository CI passed.
+
 [Home Navigation and Data Labels](archive/26-10-30-home-navigation-data-labels.md): completed 26-10-30. Frontend checks and build passed; full CI stopped at an unreadable Python cache directory.
 
 | Plan | Status | Reference |
