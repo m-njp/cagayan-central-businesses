@@ -6,6 +6,7 @@ use App\Models\FinanceFigure;
 use App\Models\FinanceUpload;
 use App\Models\Municipality;
 use App\Services\PublicExecutiveSummaries;
+use App\Services\PublicWorkbooks;
 use Illuminate\Support\Facades\File;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -13,7 +14,29 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
     $this->app->instance(PublicExecutiveSummaries::class, new PublicExecutiveSummaries(base_path('data/towns/zz-source-test')));
+    $this->app->instance(PublicWorkbooks::class, new PublicWorkbooks(base_path('data/towns/zz-source-test')));
 });
+
+/** A COA workbook copy registered the way data/towns/financial-statements/index.csv records it. */
+function registeredWorkbook(array $overrides = []): array
+{
+    $root = base_path('data/towns/zz-source-test');
+    $relative = $overrides['file'] ?? 'financial-statements/2025/Alcala/Alcala-Financial-Statements-2025.xlsx';
+    File::ensureDirectoryExists(dirname($root.'/'.$relative));
+    file_put_contents($root.'/'.$relative, 'PKworkbook');
+    $row = array_replace([
+        'report_year' => '2025', 'municipality' => 'Alcala', 'kind' => 'fs_workbook', 'file' => $relative,
+        'sha256' => hash_file('sha256', $root.'/'.$relative),
+        'source_url' => 'https://www.coa.gov.ph/download/1/cagayan/2/alcala-annual-audit-report-2025.zip',
+        'original_archive_members' => '07-Alcala2025_FS.xlsx', 'original_collection_files' => '',
+    ], $overrides);
+    $handle = fopen($root.'/financial-statements/index.csv', 'w');
+    fputcsv($handle, array_keys($row), escape: '');
+    fputcsv($handle, array_values($row), escape: '');
+    fclose($handle);
+
+    return ['key' => hash('sha256', $relative), 'path' => $root.'/'.$relative, 'sha256' => $row['sha256']];
+}
 
 function sourceReport(string $kind = 'pdf'): string
 {
@@ -206,6 +229,54 @@ test('the complete archive includes registered originals with their expected che
         expect($zip->open($path))->toBeTrue()
             ->and($zip->getFromName('alcala/2025/summary.pdf'))->toBe("%PDF-1.4\n%test\n")
             ->and(json_decode($zip->getFromName('manifest.json'), true))->toBe(['alcala/2025/summary.pdf' => $report['sha256']]);
+    } finally {
+        $zip->close();
+        unlink($path);
+    }
+});
+
+test('every registered workbook is listed and downloads under its readable name, without publishing a figure', function (string $kind, string $label, string $name) {
+    $workbook = registeredWorkbook(['kind' => $kind, 'file' => 'financial-statements/2025/Alcala/'.$name]);
+
+    $this->get(route('public.sources'))->assertOk()->assertInertia(fn (Assert $props) => $props
+        ->has('citations', 1)
+        ->where('citations.0.kind', $kind)->where('citations.0.label', $label)
+        ->where('citations.0.town', 'Alcala')->where('citations.0.reportYear', 2025)
+        ->where('citations.0.url', route('public.source-workbooks.show', $workbook['key'], absolute: false)));
+
+    $this->get(route('public.source-workbooks.show', $workbook['key']))->assertOk()
+        ->assertDownload($name)
+        ->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    $this->assertDatabaseCount('finance_figures', 0);
+})->with([
+    ['fs_workbook', 'Financial Statements', 'Alcala-Financial-Statements-2025.xlsx'],
+    ['annex_workbook', 'General Fund Annex', 'Alcala-Annexes-2025.xlsx'],
+    ['aapsi_workbook', 'AAPSI', 'Alcala-AAPSI-2025.xlsx'],
+    ['appendices_workbook', 'Appendices', 'Alcala-Appendices-2025.xlsx'],
+]);
+
+test('an unregistered, altered or non-COA workbook cannot be downloaded', function () {
+    $workbook = registeredWorkbook();
+    $this->get(route('public.source-workbooks.show', str_repeat('b', 64)))->assertNotFound();
+    file_put_contents($workbook['path'], 'PK replaced');
+    $this->get(route('public.source-workbooks.show', $workbook['key']))->assertNotFound();
+
+    $other = registeredWorkbook(['source_url' => 'https://coa.gov.ph.example.com/report.zip']);
+    $this->get(route('public.source-workbooks.show', $other['key']))->assertNotFound();
+});
+
+test('the complete archive includes registered workbooks beside the summaries', function () {
+    $report = registeredExecutiveSummary();
+    $workbook = registeredWorkbook();
+    $response = $this->get(route('public.sources-download'))->assertOk();
+    $path = $response->baseResponse->getFile()->getPathname();
+    $zip = new ZipArchive;
+    try {
+        expect($zip->open($path))->toBeTrue()
+            ->and(json_decode($zip->getFromName('manifest.json'), true))->toBe([
+                'alcala/2025/Alcala-Financial-Statements-2025.xlsx' => $workbook['sha256'],
+                'alcala/2025/summary.pdf' => $report['sha256'],
+            ]);
     } finally {
         $zip->close();
         unlink($path);

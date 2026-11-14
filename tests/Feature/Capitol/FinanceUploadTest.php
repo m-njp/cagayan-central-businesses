@@ -21,32 +21,32 @@ use Inertia\Testing\AssertableInertia as Assert;
 beforeEach(function () {
     Storage::fake('local');
     $this->town = Municipality::factory()->create(['psgc_code' => '0201529000', 'name' => 'Tuguegarao City']);
-    FinanceLine::factory()->create(['code' => 'sector.economic_services', 'group' => 'development', 'source' => 'fs_scbaa']);
+    FinanceLine::factory()->create(['code' => 'performance.revenue', 'group' => 'totals', 'source' => 'executive_summary']);
 });
 
-function uploadReport(User $user, Municipality $town, string $contents = 'workbook'): TestResponse
+function uploadReport(User $user, Municipality $town, string $contents = '%PDF-1.4 report'): TestResponse
 {
     return test()->actingAs($user)->post(route('capitol.finances.uploads.store', ['town' => $town->psgc_code, 'year' => 2025]), [
-        'kind' => 'fs_workbook',
-        'file' => UploadedFile::fake()->createWithContent('Tuguegarao-FS-2025.xlsx', $contents),
+        'kind' => 'executive_summary',
+        'file' => UploadedFile::fake()->createWithContent('Tuguegarao-Executive-Summary-2025.pdf', $contents),
     ]);
 }
 
-/** What `python -m coa.intake` prints for one Financial Statements workbook. */
+/** What `python -m coa.intake` prints for one Executive Summary. */
 function intakeOutput(string $value = '99846291.10'): string
 {
-    return json_encode(['type' => 'result', 'result' => ['parser_version' => '1.1.0', 'issues' => [], 'children' => [], 'figures' => [[
-        'line_code' => 'sector.economic_services', 'fiscal_year' => 2025, 'basis' => 'actual', 'value' => $value,
-        'source_label' => 'Economic Services', 'location' => '11 - SCBAA!K61; 11 - SCBAA!K62', 'definition_variant' => null,
-        'inputs' => [['location' => '11 - SCBAA!K61', 'value' => '69065950.52'], ['location' => '11 - SCBAA!K62', 'value' => '30780340.58']],
-        'document_kind' => 'fs_workbook', 'member' => null,
+    return json_encode(['type' => 'result', 'result' => ['parser_version' => '1.1.0', 'issues' => [], 'figures' => [[
+        'line_code' => 'performance.revenue', 'fiscal_year' => 2025, 'basis' => 'actual', 'value' => $value,
+        'source_label' => 'Income', 'location' => 'page 2', 'definition_variant' => null,
+        'inputs' => [['location' => 'page 2', 'value' => '69065950.52'], ['location' => 'page 2', 'value' => '30780340.58']],
+        'document_kind' => 'executive_summary',
     ]]]], JSON_THROW_ON_ERROR)."\n";
 }
 
 function storeUploadFixture(FinanceUpload $upload): void
 {
-    Storage::disk('local')->put($upload->path, 'workbook');
-    $upload->update(['sha256' => hash('sha256', 'workbook'), 'size' => strlen('workbook')]);
+    Storage::disk('local')->put($upload->path, 'report');
+    $upload->update(['sha256' => hash('sha256', 'report'), 'size' => strlen('report')]);
 }
 
 it('refuses an upload from staff not assigned to the town and keeps no file', function () {
@@ -93,7 +93,7 @@ it('polls only the same recent uploads shown in the finance report', function ()
                 ->where('uploadStatuses', $page->toArray()['props']['report']['uploads'])));
 });
 
-it('reads one uploaded workbook into pending figures the uploader cannot sign off', function () {
+it('reads one uploaded report into pending figures the uploader cannot sign off', function () {
     Process::fake(['*' => Process::result(intakeOutput())]);
     $uploader = User::factory()->create(['role' => UserRole::Admin]);
     $upload = FinanceUpload::factory()->for($this->town)->create(['uploaded_by' => $uploader->id]);
@@ -110,7 +110,7 @@ it('reads one uploaded workbook into pending figures the uploader cannot sign of
         ->and($figure->inputs)->toHaveCount(2)
         ->and($figure->document->file)->toBe($upload->path)
         ->and($figure->document->sha256)->toBe($upload->sha256);
-    Process::assertRan(fn ($process) => in_array('coa.intake', $process->command, true) && in_array('fs_workbook', $process->command, true));
+    Process::assertRan(fn ($process) => in_array('coa.intake', $process->command, true) && in_array('2025', $process->command, true));
 
     $this->actingAs($uploader)->post(route('capitol.finances.reviews.store', ['town' => $this->town->psgc_code, 'year' => 2025]), [
         'decision' => 'verified', 'figures' => [$figure->public_id],
@@ -120,8 +120,8 @@ it('reads one uploaded workbook into pending figures the uploader cannot sign of
 
 it('never overwrites a different report already on record', function () {
     Process::fake(['*' => Process::result(intakeOutput('1.00'))]);
-    $document = FinanceDocument::factory()->for($this->town)->create(['fiscal_year' => 2025, 'kind' => 'fs_workbook', 'sha256' => str_repeat('a', 64)]);
-    $kept = FinanceFigure::factory()->verified()->for($this->town)->line('sector.economic_services', 2025, '99846291.10')
+    $document = FinanceDocument::factory()->for($this->town)->create(['fiscal_year' => 2025, 'sha256' => str_repeat('a', 64)]);
+    $kept = FinanceFigure::factory()->verified()->for($this->town)->line('performance.revenue', 2025, '99846291.10')
         ->create(['finance_document_id' => $document->id]);
     $upload = FinanceUpload::factory()->for($this->town)->create();
 
@@ -144,22 +144,22 @@ it('marks a report that cannot be read so its figures are entered by hand', func
 
 it('keeps an uploaded report private even after its figure is signed off', function () {
     $upload = FinanceUpload::factory()->for($this->town)->create();
-    Storage::disk('local')->put($upload->path, 'workbook');
-    $document = FinanceDocument::factory()->for($this->town)->create(['fiscal_year' => 2025, 'kind' => 'fs_workbook', 'file' => $upload->path]);
-    $figure = FinanceFigure::factory()->verified()->for($this->town)->line('sector.economic_services', 2025, '99846291.10')
+    Storage::disk('local')->put($upload->path, 'report');
+    $document = FinanceDocument::factory()->for($this->town)->create(['fiscal_year' => 2025, 'file' => $upload->path]);
+    $figure = FinanceFigure::factory()->verified()->for($this->town)->line('performance.revenue', 2025, '99846291.10')
         ->create(['finance_document_id' => $document->id]);
 
     $this->get(route('public.finance-sources.show', $figure->public_id))->assertNotFound();
     $this->artisan('metrics:refresh')->assertSuccessful();
     $this->get(route('public.economic-performance'))->assertInertia(fn ($page) => $page
         ->where("performance.catalog.sources.{$figure->public_id}.url", null)
-        ->where("performance.catalog.sources.{$figure->public_id}.kind", 'fs_workbook'));
+        ->where("performance.catalog.sources.{$figure->public_id}.kind", 'executive_summary'));
 });
 
-it('keeps only each cell and amount and never rewrites a signed-off citation', function () {
+it('keeps only each input location and amount and never rewrites a signed-off citation', function () {
     Process::fake(['*' => Process::result(intakeOutput())]);
-    $document = FinanceDocument::factory()->for($this->town)->create(['fiscal_year' => 2025, 'kind' => 'fs_workbook', 'sha256' => null]);
-    $signed = FinanceFigure::factory()->verified()->for($this->town)->line('sector.economic_services', 2025, '99846291.10')
+    $document = FinanceDocument::factory()->for($this->town)->create(['fiscal_year' => 2025, 'sha256' => null]);
+    $signed = FinanceFigure::factory()->verified()->for($this->town)->line('performance.revenue', 2025, '99846291.10')
         ->create(['finance_document_id' => $document->id, 'location' => 'Reviewed cells', 'inputs' => null]);
     $upload = FinanceUpload::factory()->for($this->town)->create();
 
@@ -183,7 +183,7 @@ it('keeps readable figures pending when another section has an error', function 
 
     expect($upload->fresh()->status)->toBe(FinanceUploadStatus::Done);
     expect($upload->fresh()->issues[0]['severity'])->toBe('error');
-    $this->assertDatabaseHas('finance_figures', ['line_code' => 'sector.economic_services', 'value' => '99846291.10', 'status' => 'pending']);
+    $this->assertDatabaseHas('finance_figures', ['line_code' => 'performance.revenue', 'value' => '99846291.10', 'status' => 'pending']);
     Process::assertRan(fn ($process) => in_array('--events', $process->command, true));
 });
 

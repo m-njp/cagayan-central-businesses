@@ -1,5 +1,7 @@
 @AGENTS.md
 
+Testing: follow `docs/engineering/testing.md`, "Choose Checks From the Change". Select relevant tests while working, retain valid prior evidence and rerun affected cases after isolated fixes. Full CI belongs at integration/pre-push, not after every edit. This owner-approved policy applies alongside the framework guidance below.
+
 ===
 
 <laravel-boost-guidelines>

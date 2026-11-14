@@ -11,17 +11,23 @@ use App\Models\Municipality;
 use App\Queries\TownAtlasQuery;
 use App\Services\RefreshFinanceMetrics;
 use Database\Seeders\MunicipalitySeeder;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Testing\PendingCommand;
 
-const TEST_FINANCE_FOLDER = 'storage/framework/testing/finances';
+function financeTestFolder(): string
+{
+    return test()->financeFolder;
+}
 
 const SHA_2023 = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
 const SHA_2024 = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+
+const SHA_WORKBOOK_2024 = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc';
 
 /**
  * Two Abulug reports: the 2024 report restates 2023 revenue as 400.00, the 2023 report had 390.00.
@@ -30,8 +36,9 @@ const SHA_2024 = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
  */
 function writeFinanceFolder(array $override = []): void
 {
-    $folder = base_path(TEST_FINANCE_FOLDER);
-    File::deleteDirectory($folder);
+    test()->financeFolder = 'storage/framework/testing/finances-'.Str::uuid();
+    test()->financeFolders = [...test()->financeFolders, test()->financeFolder];
+    $folder = base_path(financeTestFolder());
     File::ensureDirectoryExists("{$folder}/extracted");
 
     $csv = fn (string $header, array $rows) => implode("\n", [$header, ...$rows])."\n";
@@ -57,7 +64,7 @@ function writeFinanceFolder(array $override = []): void
 
 function importFinances(): PendingCommand
 {
-    return test()->artisan('finances:import', ['--path' => TEST_FINANCE_FOLDER]);
+    return test()->artisan('finances:import', ['--path' => financeTestFolder()]);
 }
 
 function abulugRevenue(): ?TownFigure
@@ -65,9 +72,16 @@ function abulugRevenue(): ?TownFigure
     return collect(app(TownAtlasQuery::class)->get()->towns)->firstWhere('code', '0201501000')?->revenue;
 }
 
-beforeEach(fn () => Municipality::factory()->create(['psgc_code' => '0201501000', 'name' => 'Abulug']));
+beforeEach(function () {
+    $this->financeFolders = [];
+    Municipality::factory()->create(['psgc_code' => '0201501000', 'name' => 'Abulug']);
+});
 
-afterEach(fn () => File::deleteDirectory(base_path(TEST_FINANCE_FOLDER)));
+afterEach(function () {
+    foreach ($this->financeFolders as $folder) {
+        File::deleteDirectory(base_path($folder));
+    }
+});
 
 it('loads parsed figures as pending and publishes none of them', function () {
     writeFinanceFolder();
@@ -79,7 +93,7 @@ it('loads parsed figures as pending and publishes none of them', function () {
         ->and(abulugRevenue())->toBeNull();
 });
 
-it('stores every contributing cell of a summed workbook figure', function () {
+it('stores every contributing input of a figure', function () {
     $cells = 'Sheet!K61; Sheet!K62; Sheet!K63; Sheet!K64; Sheet!K65; Sheet!K66; Sheet!K67';
     $inputs = [['location' => 'Sheet!K61', 'value' => '300.00'], ['location' => 'Sheet!K62', 'value' => '200.00']];
     writeFinanceFolder(['extracted' => [
@@ -96,7 +110,7 @@ it('stores every contributing cell of a summed workbook figure', function () {
 it('rejects manual imports that bypass the finance entry limits', function (string $value, string $basis, string $source, bool $hasDocument = false) {
     writeFinanceFolder();
     $row = [(string) Str::uuid(), '0201501000', '2024', 'performance.revenue', $basis, $value, '', $hasDocument ? '2024' : '', $hasDocument ? 'executive_summary' : '', $source, '', 'Checked the report', 'pending', ''];
-    $handle = fopen(base_path(TEST_FINANCE_FOLDER.'/manual-figures.csv'), 'w');
+    $handle = fopen(base_path(financeTestFolder().'/manual-figures.csv'), 'w');
     fputcsv($handle, ImportFinancesCommand::MANUAL_COLUMNS, escape: '');
     fputcsv($handle, $row, escape: '');
     fclose($handle);
@@ -126,6 +140,34 @@ it('imports nothing when any row is wrong', function (string $row, string $probl
     'unpublished report' => ['0201501000,Abulug,2025,executive_summary,2025,performance.expenses,actual,1.00,,Expense,page 1,'.SHA_2024.',1', 'no available document for this town, report year, and kind'],
 ]);
 
+it('refuses workbook documents and figures because only the Executive Summary is read', function () {
+    writeFinanceFolder(['extracted' => [
+        '0201501000,Abulug,2024,executive_summary,2024,performance.revenue,actual,500.00,,Income,page 1,'.SHA_2024.',1',
+        '0201501000,Abulug,2024,fs_workbook,2024,performance.revenue,actual,100.00,,Label,Sheet!D9,'.SHA_WORKBOOK_2024.',1',
+    ]]);
+    File::append(base_path(financeTestFolder().'/documents.csv'), '0201501000,Abulug,2024,fs_workbook,available,c.xlsx,https://www.coa.gov.ph/2024.zip,'.SHA_WORKBOOK_2024.",2026-11-13\n");
+
+    importFinances()
+        ->expectsOutputToContain('documents.csv line 5: kind fs_workbook is not read')
+        ->expectsOutputToContain('extracted/2024.csv line 3: document_kind fs_workbook is not read')
+        ->assertFailed();
+
+    expect(FinanceFigure::query()->count())->toBe(0);
+});
+
+it('never reads the frozen workbook history', function () {
+    writeFinanceFolder();
+    $history = base_path(financeTestFolder().'/history/retirement');
+    File::ensureDirectoryExists($history);
+    File::put($history.'/figures.csv', implode(',', ImportFinancesCommand::EXTRACTED_COLUMNS)."\n"
+        .'0201501000,Abulug,2024,fs_workbook,2024,performance.revenue,actual,100.00,,Label,Sheet!D9,'.SHA_WORKBOOK_2024.",1\n");
+
+    importFinances()->assertSuccessful();
+
+    expect(FinanceFigure::query()->count())->toBe(4)
+        ->and(FinanceDocument::query()->where('kind', '!=', 'executive_summary')->exists())->toBeFalse();
+});
+
 it('publishes a signed-off figure with its report link', function () {
     writeFinanceFolder(['reviews' => ['0201501000,2024,executive_summary,performance.revenue,2024,actual,500.00,verified,2026-10-28,Checked']]);
 
@@ -146,7 +188,7 @@ it('retains the previous ledger and Analytics result if an import cannot publish
         'reviews' => ['0201501000,2024,executive_summary,performance.revenue,2024,actual,600.00,verified,2026-10-28,Checked'],
     ]);
 
-    expect(fn () => Artisan::call('finances:import', ['--path' => TEST_FINANCE_FOLDER]))->toThrow(PDOException::class);
+    expect(fn () => Artisan::call('finances:import', ['--path' => financeTestFolder()]))->toThrow(PDOException::class);
 
     expect(abulugRevenue()?->value)->toBe('500.00');
     $this->assertDatabaseHas('stats_finance_year', ['metric' => 'performance.revenue', 'fiscal_year' => 2024, 'value' => '500.00']);
@@ -212,9 +254,9 @@ it('refuses replacement of a reviewed document even when the amounts are unchang
     importFinances()->assertSuccessful();
     $document = FinanceDocument::query()->where('fiscal_year', 2024)->sole();
     $evidence = $document->only(['availability', 'file', 'sha256', 'source_url']);
-    $path = base_path(TEST_FINANCE_FOLDER.'/documents.csv');
+    $path = base_path(financeTestFolder().'/documents.csv');
     File::put($path, str_replace($before, $after, File::get($path)));
-    foreach (File::files(base_path(TEST_FINANCE_FOLDER.'/extracted')) as $file) {
+    foreach (File::files(base_path(financeTestFolder().'/extracted')) as $file) {
         File::put($file->getPathname(), str_replace($before, $after, File::get($file->getPathname())));
     }
 
@@ -269,7 +311,7 @@ it('rebuilds the same sign-offs from an export after the ledger is wiped', funct
     $manual = FinanceFigure::factory()->manual()->verified()->for(Municipality::query()->sole())->line('performance.expenses', 2023, '420.00')->create();
     $before = FinanceFigure::query()->orderBy('public_id')->get()->map(fn (FinanceFigure $f) => [$f->line_code, $f->fiscal_year, $f->value, $f->status->value]);
 
-    $this->artisan('finances:export', ['--path' => TEST_FINANCE_FOLDER])->assertSuccessful();
+    $this->artisan('finances:export', ['--path' => financeTestFolder()])->assertSuccessful();
     FinanceFigure::query()->delete();
     importFinances()->assertSuccessful();
 
@@ -278,7 +320,7 @@ it('rebuilds the same sign-offs from an export after the ledger is wiped', funct
         ->and(FinanceFigure::query()->where('public_id', $manual->public_id)->value('entry_method'))->toBe(FinanceEntryMethod::Manual);
 });
 
-it('imports the committed COA data with every reviewed figure signed off, with workbooks only for the configured towns', function () {
+it('imports the committed COA data with every reviewed figure signed off and no workbook records', function () {
     Municipality::query()->delete();
     $this->seed(MunicipalitySeeder::class);
 
@@ -286,18 +328,15 @@ it('imports the committed COA data with every reviewed figure signed off, with w
 
     $tuguegarao = collect(app(TownAtlasQuery::class)->get()->towns)->firstWhere('code', '0201529000');
     $gattaran = Municipality::query()->where('psgc_code', '0201513000')->sole();
-    // Twelve Tuguegarao City fs_workbook revenue lines (grants, other, total revenue) were extracted on 26-11-02 and still
-    // wait for a human sign-off (reviews.csv). Pending figures stay withheld, so the rule here is that nothing is half
-    // reviewed: every pending figure is a parsed one with no reviewer. Sign them off with finances:export, then restore
-    // the stricter check that no figure is pending.
+    // Nothing is half reviewed: every pending figure is a parsed one with no reviewer.
     expect(FinanceFigure::query()->where('status', FinanceFigureStatus::Pending)
         ->where(fn ($pending) => $pending->whereNotNull('reviewed_by')->orWhereNotNull('reviewed_on')->orWhere('entry_method', '!=', FinanceEntryMethod::Parsed))
         ->count())->toBe(0)
         ->and(FinanceFigure::query()->where('status', FinanceFigureStatus::Verified)->distinct()->count('municipality_id'))->toBe(29)
-        ->and(FinanceFigure::query()->whereHas('document', fn ($document) => $document->whereNot('kind', 'executive_summary'))
-            ->whereHas('municipality', fn ($town) => $town->whereNotIn('psgc_code', config('cagayan.finances.workbook_towns')))->exists())->toBeFalse()
-        ->and(FinanceFigure::query()->whereIn('line_code', config('cagayan.finances.summary_detail_lines'))
-            ->whereHas('municipality', fn ($town) => $town->whereNotIn('psgc_code', config('cagayan.finances.summary_detail_towns')))->exists())->toBeFalse()
+        ->and(FinanceDocument::query()->where('kind', '!=', 'executive_summary')->exists())->toBeFalse()
+        ->and(FinanceLine::query()->whereNotIn('source', ['executive_summary', 'derived'])->exists())->toBeFalse()
+        // Executive Summary lines beyond the totals load for every government (D47, 26-11-13).
+        ->and(FinanceFigure::query()->where('line_code', 'position.assets')->distinct()->count('municipality_id'))->toBe(29)
         // Assets as printed in the 2025 Executive Summary, page 1 (metrics.md M35).
         ->and(FinanceFigure::query()->whereHas('municipality', fn ($town) => $town->where('psgc_code', '0201529000'))
             ->where(['status' => FinanceFigureStatus::Verified, 'fiscal_year' => 2025, 'line_code' => 'position.assets'])->value('value'))->toBe('5157038108.96')
@@ -306,3 +345,77 @@ it('imports the committed COA data with every reviewed figure signed off, with w
         // The 2024 report heads its columns 2024 then 2023 but prints 2023 first; the parser reads printed order.
         ->and(FinanceFigure::query()->whereBelongsTo($gattaran)->where(['status' => FinanceFigureStatus::Verified, 'fiscal_year' => 2024, 'line_code' => 'performance.revenue'])->value('value'))->toBe('401727932.51');
 });
+
+it('loads review candidates without a separate unlocked read for each review', function () {
+    $capturing = false;
+    $reads = 0;
+    DB::listen(function (QueryExecuted $query) use (&$capturing, &$reads) {
+        if ($capturing && str_starts_with($query->sql, 'select')
+            && str_contains($query->sql, 'from "finance_figures"')
+            && ! str_contains($query->sql, 'for update')) {
+            $reads++;
+        }
+    });
+    $counts = [];
+    foreach ([2, 8] as $size) {
+        $years = range(2017, 2016 + $size);
+        writeFinanceFolder([
+            'extracted' => array_map(fn (int $year) => '0201501000,Abulug,2024,executive_summary,'.$year.',performance.revenue,actual,500.00,,Income,page 1,'.SHA_2024.',1', $years),
+            'reviews' => array_map(fn (int $year) => '0201501000,2024,executive_summary,performance.revenue,'.$year.',actual,500.00,verified,2026-10-28,Checked', $years),
+        ]);
+
+        $reads = 0;
+        $capturing = true;
+        importFinances()->assertSuccessful();
+        $capturing = false;
+        $counts[] = $reads;
+
+        expect(FinanceFigure::query()->where('status', FinanceFigureStatus::Verified)->count())->toBe($size);
+    }
+
+    expect($counts[1])->toBeLessThanOrEqual($counts[0] + 1);
+});
+
+it('keeps the last manual correction verified when an earlier replay supersedes it', function (bool $uppercaseIds) {
+    writeFinanceFolder();
+    $first = (string) Str::uuid();
+    $last = (string) Str::uuid();
+    if ($uppercaseIds) {
+        $first = strtoupper($first);
+        $last = strtoupper($last);
+    }
+    FinanceFigure::factory()->manual()->verified()->for(Municipality::query()->sole())
+        ->line('performance.revenue', 2024, '700.00')->create(['public_id' => $last]);
+    $handle = fopen(base_path(financeTestFolder().'/manual-figures.csv'), 'w');
+    fputcsv($handle, ImportFinancesCommand::MANUAL_COLUMNS, escape: '');
+    foreach ([[$first, '600.00', '2026-10-27'], [$last, '700.00', '2026-10-28']] as [$id, $value, $date]) {
+        fputcsv($handle, [$id, '0201501000', '2024', 'performance.revenue', 'actual', $value, '', '', '',
+            'https://www.coa.gov.ph/correction.pdf', '', 'Checked correction', 'verified', $date], escape: '');
+    }
+    fclose($handle);
+
+    importFinances()->assertSuccessful();
+
+    expect(FinanceFigure::query()->where('public_id', $first)->value('status'))->toBe(FinanceFigureStatus::Superseded)
+        ->and(FinanceFigure::query()->where('public_id', $last)->value('status'))->toBe(FinanceFigureStatus::Verified)
+        ->and(abulugRevenue()?->value)->toBe('700.00');
+})->with([false, true]);
+
+it('replays repeated reviews in order and retains missing and changed value warnings', function (string $year) {
+    writeFinanceFolder(['reviews' => [
+        '0201501000,2024,executive_summary,performance.revenue,'.$year.',actual,500.00,verified,2026-10-27,First',
+        '0201501000,2024,executive_summary,performance.revenue,'.$year.',actual,500.00,rejected,2026-10-28,Second',
+        '0201501000,2024,executive_summary,performance.revenue,'.$year.',actual,500.00,verified,2026-10-29,Final',
+        '0201501000,2024,executive_summary,performance.expenses,2022,actual,20.00,verified,2026-10-29,Missing',
+        '0201501000,2024,executive_summary,performance.revenue,2023,actual,401.00,verified,2026-10-29,Changed',
+    ]]);
+
+    importFinances()->expectsOutputToContain('reviews.csv line 5: the figure is missing or its value changed')
+        ->expectsOutputToContain('reviews.csv line 6: the figure is missing or its value changed')->assertSuccessful();
+
+    $figure = FinanceFigure::query()->where(['fiscal_year' => 2024, 'line_code' => 'performance.revenue'])->sole();
+    expect($figure->status)->toBe(FinanceFigureStatus::Verified)
+        ->and($figure->note)->toBe('Final')
+        ->and($figure->reviewed_on?->toDateString())->toBe('2026-10-29')
+        ->and(FinanceFigure::query()->where('status', FinanceFigureStatus::Verified)->count())->toBe(1);
+})->with(['2024', '02024']);

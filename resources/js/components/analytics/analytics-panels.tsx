@@ -1,11 +1,15 @@
 import { SimulatedLabel } from '@/components/privacy/simulated-label';
 import type { ReactNode } from 'react';
+import { FinanceGuideProvider } from '@/components/analytics/finance-guide';
 import { FinanceToolbar } from '@/components/analytics/finance-toolbar';
 import { ExecutiveSummary } from '@/components/charts/executive-summary';
 import FinancePanel, { Figure } from '@/components/charts/finance-panel';
 import { FinanceTrends } from '@/components/charts/finance-trends';
 import { RESULT_METRIC } from '@/components/charts/trend-mark';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Surface } from '@/components/ui/surface';
+import type { TownStatus } from '@/hooks/use-town-catalog';
 import {
     latestYear,
     selectedBusiness,
@@ -23,6 +27,17 @@ function Unavailable() {
         <p role="status" className="grid min-h-32 content-center type-heading">
             {NOT_AVAILABLE}
         </p>
+    );
+}
+
+/** The table's outline while a town's figures load for the first time. */
+function LoadingTown() {
+    return (
+        <div role="status" aria-label="Loading figures" className="grid gap-2">
+            {Array.from({ length: 8 }, (_, index) => (
+                <Skeleton key={index} className="h-row w-full" />
+            ))}
+        </div>
     );
 }
 
@@ -87,12 +102,16 @@ export function AnalyticsPanels({
     onChange,
     businessControls,
     figures = false,
+    status = 'ready',
+    onRetry,
 }: {
     catalog: AnalyticsCatalog;
     filters: AnalyticsFilters;
     onChange: (patch: Partial<AnalyticsFilters>) => void;
     businessControls?: ReactNode;
     figures?: boolean;
+    status?: TownStatus;
+    onRetry?: () => void;
 }) {
     const finance = selectedFinance(catalog, filters);
     const business = selectedBusiness(catalog, filters);
@@ -105,17 +124,16 @@ export function AnalyticsPanels({
     };
 
     return (
-        <>
+        <FinanceGuideProvider
+            guide={catalog.guide}
+            showBusiness={catalog.businesses !== null}
+        >
             <Surface padded aria-labelledby="finance-heading">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-baseline gap-3">
                         <h2 id="finance-heading" className="type-heading">
                             Government Finances
                         </h2>
-                        {filters.presentation !== 'statement' &&
-                            filters.measure === 'business_taxes' && (
-                                <span className="type-label">General Fund</span>
-                            )}
                     </div>
                     <FinanceToolbar
                         catalog={catalog}
@@ -123,10 +141,24 @@ export function AnalyticsPanels({
                         onChange={onChange}
                     />
                 </div>
-                {figures && (
+                {status === 'ready' && figures && (
                     <FigureStrip catalog={catalog} town={filters.town} />
                 )}
-                {filters.presentation === 'statement' ? (
+                {status === 'loading' ? (
+                    <LoadingTown />
+                ) : status === 'error' ? (
+                    <div
+                        role="alert"
+                        className="flex min-h-32 flex-col items-start justify-center gap-2"
+                    >
+                        <p className="type-body">
+                            The figures for this town could not be loaded.
+                        </p>
+                        <Button variant="outline" size="sm" onClick={onRetry}>
+                            Try Again
+                        </Button>
+                    </div>
+                ) : filters.presentation === 'statement' ? (
                     <ExecutiveSummary
                         catalog={catalog}
                         filters={filters}
@@ -163,6 +195,6 @@ export function AnalyticsPanels({
                     )}
                 </Surface>
             )}
-        </>
+        </FinanceGuideProvider>
     );
 }

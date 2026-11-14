@@ -103,7 +103,7 @@ Unique `(municipality_id, measure, year)`, which also serves the lookups. A new 
 
 ### Finance ledger
 
-Government finance figures from COA reports (D35, metrics.md M19 to M27). The tables are loaded by `php artisan finances:import` (`composer data:finances`) from `data/towns/finances/`, which the Python parser in `tools/coa/` writes (D34). `php artisan finances:export` saves sign-offs and manual figures back to those CSVs, so `composer db:reset` rebuilds the same verified ledger. The import never deletes manual figures. A parsed figure whose value changes goes back to pending. Workbook figures load only for the towns in `cagayan.finances.workbook_towns`; every Executive Summary loads. Public figures, so no visibility class applies, but only `verified` figures are published.
+Government finance figures from COA reports (D35, metrics.md M19 to M27). The tables are loaded by `php artisan finances:import` (`composer data:finances`) from `data/towns/finances/`, which the Python parser in `tools/coa/` writes (D34). `php artisan finances:export` saves sign-offs and manual figures back to those CSVs, so `composer db:reset` rebuilds the same verified ledger. The import never deletes manual figures. A parsed figure whose value changes goes back to pending. Only Executive Summary figures load (D49, "26-11-14"); frozen workbook history is never replayed. Public figures, so no visibility class applies, but only `verified` figures are published.
 
 #### finance_lines
 
@@ -118,7 +118,7 @@ The line catalog, one row per `data/towns/finances/lines.csv` row.
 | `group` | string(40) | Field Catalog section: `totals`, `budget`, `revenue_sources`, `business_taxes`, `development`, `checks` (read for arithmetic only, never stored), or a derived group: `budget_share`, `revenue_share`, `development_share`, `per_capita` |
 | `unit` | string(10) | `php` or `percent` |
 | `displayed` | boolean | False for lines kept only for the arithmetic checks |
-| `source` | string(40) | `executive_summary`, `fs_workbook`, `annex_c1`, `fs_scbaa`, or `derived` (computed in `stats_finance_year`, never entered or imported) |
+| `source` | string(40) | `executive_summary` or `derived` (computed in `stats_finance_year`, never entered or imported). Workbook sources were removed 26-11-14 (D49) |
 | `sort` | smallint | File order |
 
 #### finance_documents
@@ -130,7 +130,7 @@ A COA report for one town and fiscal year, or the record that COA had not publis
 | `id` | id | |
 | `municipality_id` | foreign key | restrict on delete |
 | `fiscal_year` | smallint | The report year |
-| `kind` | enum `executive_summary`, `fs_workbook`, `annex_workbook` | `App\Enums\FinanceDocumentKind` |
+| `kind` | enum `executive_summary`, `fs_workbook`, `annex_workbook` | `App\Enums\FinanceDocumentKind`. Only `executive_summary` rows exist since 26-11-14 (D49); the other values label workbook downloads |
 | `availability` | enum `available`, `not_published` | `App\Enums\FinanceAvailability`. Not published shows as Not available, never zero |
 | `file` | string(300), nullable | Path inside `data/towns/` |
 | `source_url` | string(500), nullable | The exact COA download |
@@ -169,7 +169,7 @@ A COA report uploaded on Capitol Finances (D42).
 | `public_id` | uuid | unique |
 | `municipality_id` | foreign key | restrict on delete |
 | `fiscal_year` | smallint | The report year |
-| `kind` | string(20) | A key of `cagayan.finances.uploads.kinds`: `executive_summary`, `fs_workbook`, `annex_workbook` or `archive` |
+| `kind` | string(20) | A key of `cagayan.finances.uploads.kinds`: `executive_summary` only since 26-11-14 (D49) |
 | `path` | string(255) | On the private `local` disk under `finance-uploads/` |
 | `original_name` | string(255) | As uploaded |
 | `sha256`, `size` | char(64), bigint | Checksum and bytes |

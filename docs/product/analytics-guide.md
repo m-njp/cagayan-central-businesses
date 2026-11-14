@@ -1,154 +1,107 @@
 # Understanding Analytics
 
-Reviewed 26-11-03. Per Resident, Locally Generated Share, Budget Utilization and Development Utilization were retired on 26-11-03 because their formulas could not be tied to an official definition. Shared explanations come from `resources/content/analytics-guide.json`; update that content and this guide together. Metric definitions remain authoritative in `docs/engineering/metrics.md`. The Help sheet on Economy and Analytics shows this content: Measures, then the notes below.
+Reviewed 26-11-14. Shared explanations come from `resources/content/analytics-guide.json`; update that content and this guide together. Metric definitions remain authoritative in `docs/engineering/metrics.md`. The Government Finances Guide on Economy and Analytics shows this content in the same order; every row label opens it at its definition, and every N/A cell opens Reading N/A.
 
-Figures come from COA Annual Audit Reports and appear only after sign-off.
+These figures come from the annual audit reports of the Commission on Audit (COA) for each city and municipal government in Cagayan. A figure appears only after it has been checked against its report.
+
+## How to Read the Table
+
+Each row is one line as COA prints it, and each column is a fiscal year, from oldest to newest. An arrow compares a figure with the year before: up for an increase, down for a decrease. It does not say whether the change is good or bad. A loss is shown in parentheses. Shortened amounts such as ₱1.2B show the exact amount when you hover over, focus on or tap them. Select a year to open its Yearly Summary.
+
+## Where the Figures Come From
+
+Totals come from the Executive Summary of each COA Annual Audit Report. A team member checks each figure against the report before it is shown, or it is shown when two COA reports print the same amount or amounts no more than ₱1.00 apart. The newest year is shown from its own report until the next year's report confirms or restates it. The COA Sources list under the table opens each report at the cited page.
+
+## Sum of Reporting Towns
+
+The total of the city and municipal governments that reported for a year. It is not the accounts of the Provincial Government. The coverage note says how many of the 29 governments reported, and the change compares only governments that reported in both years.
 
 ## Financial Condition
 
-What the government owned and owed on December 31. Loaded for Tuguegarao City only.
+What the government owned and owed on December 31.
 
 ### Assets
 
-Everything the government owns, such as cash, receivables, land, buildings and roads.
+Everything the government owns, such as cash, amounts owed to it, land, buildings and roads.
 
-Calculation: Reported amount.
+Why it matters: It shows the resources the government holds to deliver services and build infrastructure.
 
 ### Liabilities
 
-Everything the government owes, such as payables, loans and funds held for others.
+Everything the government owes, such as unpaid bills, loans and money it holds for others.
 
-Calculation: Reported amount.
+Why it matters: Compared with Assets, it shows how much of what the government holds is owed to others.
 
 ### Government Equity
 
-Assets minus Liabilities. It is not ownership; no one holds shares.
+Assets minus Liabilities. No one owns shares in a government; this is what remains after its debts.
 
-Calculation: Reported amount.
+Why it matters: A steady or rising amount shows a government that is not living on borrowed resources.
 
 ## Results of Operation
 
-Income the government earned and the costs it recognized in the year, including non-cash ones.
+The income the government earned in the year and the expenses it recorded, including costs that involve no cash, such as depreciation.
 
 ### Income
 
-Government income for the fiscal year, including its share of national taxes. Not business income.
+All income of the government for the year, including its share of national taxes. It is not the income of businesses.
 
-Calculation: Reported amount.
+Why it matters: It is the size of the resources the government had to work with.
 
 ### Expenses
 
-Government expenses, including depreciation and transfers. Not cash paid.
+The costs the government recorded for the year, including salaries, operations, depreciation and transfers. It is not the same as cash paid.
 
-Calculation: Reported amount.
+Why it matters: It shows the cost of running the government and its services.
 
 ### Net Income
 
-Income less Expenses. A loss is shown in parentheses.
+Income minus Expenses. A loss is shown in parentheses.
+
+Why it matters: A surplus means the year's income covered its expenses; a loss means it did not.
 
 Calculation: Income minus Expenses.
 
 ## Budget Execution
 
-Appropriations are the budget the council passed. Allotments release it to offices. Obligations are commitments made, not cash paid.
+How the approved budget moved from approval to commitment. See How a Budget Is Spent.
 
 ### Current Appropriations
 
-This year's budget, passed by ordinance.
+The most the government may spend this year, approved by the Sangguniang Bayan or Sangguniang Panlungsod in the annual appropriation ordinance.
 
-Calculation: Reported amount.
+Why it matters: It shows what the government planned to spend for the year.
 
 ### Current Allotments
 
-The part of this year's budget released to offices. Tuguegarao City only.
+The part of this year's appropriations released to offices for use.
 
-Calculation: Reported amount.
+Why it matters: It shows how much of the approved budget offices were allowed to commit.
 
 ### Continuing Allotments
 
-Unused budget from the year before that remains available. Tuguegarao City only.
+Budget approved in an earlier year that remains available, usually for projects not yet finished.
 
-Calculation: Reported amount.
+Why it matters: It shows past commitments still being carried out.
 
 ### Current Obligations
 
-Commitments such as contracts and payroll charged to this year's budget.
+Amounts the government legally committed to pay this year, through contracts, salaries and purchase orders.
 
-Calculation: Reported amount.
+Why it matters: Compared with appropriations, it shows how much of the approved budget was actually put to work.
 
 ### Continuing Obligations
 
-Commitments charged to continuing allotments. Tuguegarao City only.
+Commitments made this year against budget carried over from earlier years.
 
-Calculation: Reported amount.
+Why it matters: It shows progress on projects funded in earlier years.
 
-## Revenue Sources
+## How a Budget Is Spent
 
-Revenue by source as printed in the Statement of Financial Performance. National transfers can move revenue without a change in local business activity.
-
-### Tax Revenue
-
-Taxes collected by the local government, as reported.
-
-Calculation: Reported amount.
-
-### Share from National Collections
-
-The local government share of national tax collections, as reported.
-
-Calculation: Reported amount.
-
-### Other Shares from National Taxes
-
-Other shares from national taxes, such as national wealth, as reported.
-
-Calculation: Reported amount.
-
-### Service and Business Income
-
-Income from services, fees and government business. Not private-business sales.
-
-Calculation: Reported amount.
-
-### Shares, Grants and Donations
-
-Shares, grants and donations received, as reported.
-
-Calculation: Reported amount.
-
-### Other Income
-
-Gains and miscellaneous income, as reported.
-
-Calculation: Reported amount.
-
-## Business Taxes and Fees
-
-General Fund collections tied to business, permits, markets and property. Never added to the consolidated totals.
-
-### Business Tax
-
-The Business Tax line in the General Fund.
-
-Calculation: Reported amount.
-
-### Permit Fees
-
-Permit fee revenue in the General Fund.
-
-Calculation: Reported amount.
-
-### Market Operations
-
-Receipts from government market operations.
-
-Calculation: Reported amount.
-
-### Real Property Tax
-
-Basic real property tax, net of the reported discount.
-
-Calculation: Basic Real Property Tax minus its discount.
+1. **Appropriation.** The council approves how much may be spent and for what, in the annual appropriation ordinance. This is permission to spend, not spending.
+2. **Allotment.** Part of the approved amount is released to offices so they can start committing it.
+3. **Obligation.** An office commits the money through a contract, a salary or a purchase order. The government is now bound to pay.
+4. **Disbursement.** The government pays the cash. The Executive Summary does not print this step.
 
 ## Business Activity Over Time
 
@@ -158,11 +111,15 @@ Annual registered business activity for one industry or Business Category. Shown
 
 Businesses recorded as new or renewed for the year.
 
+Why it matters: It shows how many businesses were operating.
+
 Calculation: Count of new and renewed business-year records.
 
 ### New Registrations
 
 Businesses newly registered in the year.
+
+Why it matters: It shows how many businesses started.
 
 Calculation: Count of records marked new.
 
@@ -170,20 +127,19 @@ Calculation: Count of records marked new.
 
 Businesses formally closed in the year.
 
+Why it matters: It shows how many businesses stopped operating.
+
 Calculation: Count of records marked closed.
 
-## Reading the Table
+## Reading N/A
 
-The Executive Summary lists each line as COA prints it, one column per fiscal year; a year opens its Yearly Summary. The Yearly Summary shows that year, the year before and the change between them. A loss or a fall in pesos is shown in parentheses. The Source line opens the COA report at the cited page. Change compares consecutive comparable years and does not rate performance. A missing figure says why.
+N/A means the figure is not available. It is never zero. Hover over, focus on or tap N/A to see the reason, which is one of these:
 
-## Coverage
+- COA has not published the audit report for this government and year.
+- The report for this year does not print this line.
+- The report for this year has not been added to the system yet.
+- The figure has been read from the report and is waiting to be checked before it is shown.
 
-Fiscal years 2019 to 2025. Executive Summary totals cover all 29 towns for 2020 to 2024 and 13 towns for 2025. Financial Condition, Allotments, Continuing Obligations and breakdowns beyond totals are loaded for Tuguegarao City only. Full-year 2026 waits for a released report.
+## What These Figures Are Not
 
-## Sum of Reporting Towns
-
-The sum of the city and municipal governments that reported, not the provincial government. Coverage states how many of the 29 towns reported, and change uses only towns reporting both years.
-
-## What These Figures Are
-
-Government accounts. They are not private-business sales, GDP or a measure of economic growth. Sign-off checks the transcription, not the audit.
+These are the accounts of local governments. They are not the sales of private businesses, the size of the local economy or a rating of a government. Part of every town's income is its share of national taxes, which can rise or fall without any change in local business activity.

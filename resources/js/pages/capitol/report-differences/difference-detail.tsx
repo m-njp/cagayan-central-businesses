@@ -18,12 +18,24 @@ import type {
 } from '@/types/finance';
 import { FAMILY_LABELS, findingEntry, kindLabel } from './finding-guide';
 
+function ReportLink({ href, label }: { href: string; label: string }) {
+    return (
+        <a
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-4"
+        >
+            {label}
+        </a>
+    );
+}
+
 export function DifferenceDetail({
     open,
     selection,
     detail,
     failed,
-    family,
     onClose,
     onCloseAutoFocus,
     onExplain,
@@ -32,13 +44,11 @@ export function DifferenceDetail({
     selection: { town: string; year: number } | null;
     detail: ReportDifferenceDetail | null | undefined;
     failed: boolean;
-    family: ReportDifferenceFamily | null;
     onClose: () => void;
     onCloseAutoFocus: (event: Event) => void;
     onExplain: (kind: string) => void;
 }) {
     const families = (Object.keys(FAMILY_LABELS) as ReportDifferenceFamily[])
-        .filter((name) => !family || name === family)
         .map((name) => ({
             name,
             items: detail?.items.filter((item) => item.family === name) ?? [],
@@ -103,16 +113,25 @@ export function DifferenceDetail({
                                             {formatCount(detail.pending)}
                                         </TableCell>
                                         <TableCell>
-                                            {detail.sourceUrl ? (
-                                                <a
-                                                    href={detail.sourceUrl}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="underline underline-offset-4"
-                                                >
-                                                    Executive Summary{' '}
-                                                    {detail.year}
-                                                </a>
+                                            {detail.sources.length > 0 ? (
+                                                <ul className="grid gap-0.5">
+                                                    {detail.sources.map(
+                                                        (source) => (
+                                                            <li
+                                                                key={
+                                                                    source.label
+                                                                }
+                                                            >
+                                                                <ReportLink
+                                                                    href={
+                                                                        source.url
+                                                                    }
+                                                                    label={`${source.label} ${detail.year}`}
+                                                                />
+                                                            </li>
+                                                        ),
+                                                    )}
+                                                </ul>
                                             ) : (
                                                 <span className="text-muted-foreground">
                                                     Not available
@@ -191,9 +210,14 @@ export function DifferenceDetail({
                                                                 {item.line ?? (
                                                                     <span className="text-muted-foreground">
                                                                         Whole
-                                                                        report
+                                                                        document
                                                                     </span>
                                                                 )}
+                                                                <span className="block type-data text-muted-foreground">
+                                                                    {
+                                                                        item.document
+                                                                    }
+                                                                </span>
                                                             </TableCell>
                                                             <TableCell className="text-right font-mono tabular-nums">
                                                                 {item.fiscalYear ??

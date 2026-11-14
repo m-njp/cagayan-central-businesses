@@ -1,7 +1,7 @@
 ---
 title: "Live Finance Parsing"
 created: "26-11-08"
-updated: "26-11-08"
+updated: "26-11-14"
 status: in-progress
 branch: feat/finance-report-redesign
 base: staging
@@ -9,6 +9,8 @@ predecessor: ../archive/26-10-29-coa-parser-hardening.md
 ---
 
 # Live Finance Parsing
+
+Scope correction "26-11-14": [D49](../../engineering/decisions.md#d49-executive-summary-only-and-parallel-tests) retired all workbook reading/upload. Earlier workbook references and completed acceptance items below describe historical implementation, not current intake authority. The live workflow now accepts Executive Summary PDFs only. The owner reaffirmed the existing blur overlay, scanning/checking/saving phase events and 0.5-second pacing; the CSV importer optimization did not change them. Use one selected municipality/year PDF during development, with targeted checks. See the [current handoff](../../engineering/executive-summary-handoff.md) and [measured verification](../../engineering/executive-summary-verification.md#import-lookup-optimization). Browser checks were excluded from that continuation; this note does not claim the original broad verification checkbox is complete.
 
 Completed follow-up, "26-11-12": [COA Confidence Eligibility Fix](../archive/26-11-12-coa-confidence-eligibility-fix.md) removed a false 0% in the existing workbook task by aligning the omission guard with line eligibility. The parsing overlay was not redesigned.
 
@@ -40,6 +42,7 @@ Use Laravel process callbacks, Python unbuffered output, openpyxl read-only work
 | Date | Change | Reason |
 | :- | :- | :- |
 | "26-11-08" | Approved plan recorded | Owner requested implementation |
+| "26-11-14" | Workbook intake retired under D49; PDF blur phases and pacing reaffirmed | Owner requested Executive Summary-only ingestion and preservation of the live single-report experience; see the current handoff |
 | "26-11-09" | Info notes no longer shown as warnings, stored file names stripped from messages, bottom strip of Figures and Elapsed (no years), overlay moved onto the reusable `FocusDialog` with fade in and out | Owner liked the output; four red triangles were info notes drawn as warnings; asked for a status strip and a reusable blur |
 | "26-11-08" | Replaced the centered table dialog with a full-page Gaussian blur overlay: bare centered Geist Mono content, one status line, a thin scan bar, and a fixed seven-line log (time, source location, line, exact amount, animated check) with no scrollbar; results table, badge, counts and Full Activity removed. Trimmed unneeded backend: deleted `coa/benchmark.py` and its Composer script, folded the pacing budget into `PACE_BUDGET_SECONDS`, dropped server-side "Found X" rewriting plus `activeLine` and `lastFigureKey` | Owner rejected the dialog as all caps, hint heavy, space hungry, literal, unscrolled-to-fit and static; asked for fewer lines of code |
 | "26-11-08" | Replaced the rejected fixed four-step strip with actual numbered events, an active scanner, rolling activity, animated row insertion and exact amounts; added owner-requested half-second interactive pacing with a 20-second budget and Parse Again | Owner said the first result looked hardcoded and too fast to follow. Unpaced parsing and benchmarks remain fast. |

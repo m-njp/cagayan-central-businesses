@@ -40,12 +40,14 @@ FAMILIES = {
         "no_text_layer", "page_without_text", "parser_failed", "province_unconfirmed", "read_with_fallback_engine",
         "sheet_not_found", "spending_outside_catalog", "unreadable_label", "unsupported_fund_scope", "unsupported_units",
         "year_columns_ambiguous", "year_columns_missing",
+        "formula_cache_missing", "workbook_cell_error", "workbook_amount_unreadable", "revenue_components_unresolved", "unmapped_revenue_component",
+        "duplicate_values_unresolved", "duplicate_across_governments", "implausible_change", "file_type_mismatch", "revenue_not_reconciled",
     ),
     "report": (
         "balance_mismatch", "change_mismatch", "change_sign_reversed", "column_order_changed", "conflicting_values",
         "document_year_mismatch", "header_year_context_changed", "header_year_mismatch", "header_years_repeated", "header_years_stale",
         "identity_text_conflict", "malformed_amount", "municipality_mismatch", "net_income_mismatch", "province_mismatch",
-        "revenue_sources_mismatch", "sheet_year_mismatch", "unreadable_change", "value_not_reported",
+        "minor_difference", "revenue_sources_mismatch", "sheet_other_government", "sheet_year_mismatch", "unreadable_change", "value_not_reported",
     ),
     "between_reports": ("differs_from_summary", "header_years_swapped", "repeats_previous_year", "restated"),
 }
@@ -89,6 +91,10 @@ def readLines(path: Path, engine: str = "pdfplumber") -> list[tuple[int, str]]:
 
 
 def readPages(path: Path, engine: str, progress: Progress = None) -> list[tuple[int, str]]:
+    from .files import fileType
+    if (found := fileType(path)) != "pdf":
+        # A workbook or archive is never handed to a PDF engine, whatever its name says.
+        raise ValueError(f"{path.name} is {found or 'not a recognized document'}, not a PDF")
     pages = []
     if engine == "pdfplumber":
         with pdfplumber.open(path) as pdf:

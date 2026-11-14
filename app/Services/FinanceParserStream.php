@@ -57,7 +57,7 @@ final class FinanceParserStream
         if ($event['type'] === 'result') {
             $result = $event['result'] ?? null;
             if (! is_array($result) || ! is_string($result['parser_version'] ?? null)
-                || ! is_array($result['figures'] ?? null) || ! is_array($result['issues'] ?? null) || ! is_array($result['children'] ?? null)) {
+                || ! is_array($result['figures'] ?? null) || ! is_array($result['issues'] ?? null)) {
                 throw new \RuntimeException('Invalid parser result.');
             }
             Validator::make($result, [
@@ -68,19 +68,15 @@ final class FinanceParserStream
                 'figures.*.fiscal_year' => ['required', 'integer'],
                 'figures.*.basis' => ['required', 'in:actual,budget_final'],
                 'figures.*.value' => ['required', 'string', 'regex:/^-?\d+\.\d{2}$/D'],
-                'figures.*.document_kind' => ['required', 'in:executive_summary,fs_workbook,annex_workbook'],
+                'figures.*.document_kind' => ['required', 'in:executive_summary'],
                 'figures.*.location' => ['required', 'string', 'max:'.config('cagayan.finances.location_max')],
                 'issues' => ['array', 'list'], 'issues.*' => ['array'],
                 'issues.*.severity' => ['required', 'in:info,warning,error'],
                 'issues.*.kind' => ['required', 'string'],
                 'issues.*.code' => ['sometimes', 'string'],
                 'issues.*.message' => ['required', 'string'],
-                'issues.*.document_kind' => ['sometimes', 'in:executive_summary,fs_workbook,annex_workbook'],
+                'issues.*.document_kind' => ['sometimes', 'in:executive_summary'],
                 'issues.*.document_sha256' => ['sometimes', 'string', 'regex:/^[a-f0-9]{64}$/D'],
-                'children' => ['array', 'list'], 'children.*' => ['array'],
-                'children.*.kind' => ['required', 'in:fs_workbook,annex_workbook'],
-                'children.*.name' => ['required', 'in:fs_workbook.xlsx,annex_workbook.xlsx'],
-                'children.*.sha256' => ['required', 'string', 'regex:/^[a-f0-9]{64}$/D'],
             ])->validate();
             $this->validateContext($result);
             $this->result = $result;
@@ -98,19 +94,6 @@ final class FinanceParserStream
         if (isset($result['source_sha256']) && $this->sourceHash !== null && ! hash_equals($this->sourceHash, (string) $result['source_sha256'])) {
             throw new \RuntimeException('Parser result does not match the stored source checksum.');
         }
-        /** @var list<array{kind: string, name: string, sha256: string}> $children */
-        $children = $result['children'];
-        $childHashes = [];
-        foreach ($children as $child) {
-            if (isset($childHashes[$child['kind']]) || $child['name'] !== $child['kind'].'.xlsx') {
-                throw new \RuntimeException('Parser returned duplicate or mismatched archive children.');
-            }
-            $childHashes[$child['kind']] = $child['sha256'];
-        }
-        if ($this->documentKind !== null && $this->documentKind !== 'archive' && $children !== []) {
-            throw new \RuntimeException('Parser returned archive children for a direct report.');
-        }
-
         /** @var list<array{document_kind: string, line_code: string, fiscal_year: mixed, basis: string, location: string}> $figures */
         $figures = $result['figures'];
         $seen = [];
@@ -120,8 +103,7 @@ final class FinanceParserStream
                 throw new \RuntimeException('Parser returned a fiscal year outside the report context.');
             }
             $kind = $figure['document_kind'];
-            if (($this->documentKind === 'archive' && ! isset($childHashes[$kind]))
-                || ($this->documentKind !== null && $this->documentKind !== 'archive' && $kind !== $this->documentKind)) {
+            if ($this->documentKind !== null && $kind !== $this->documentKind) {
                 throw new \RuntimeException('Parser returned a figure for another document kind.');
             }
             if ($kind === 'executive_summary' && ! preg_match('/^page [1-9][0-9]*$/D', $figure['location'])) {
@@ -145,12 +127,10 @@ final class FinanceParserStream
                 continue;
             }
             $kind = $issue['document_kind'];
-            if (($this->documentKind === 'archive' && ! isset($childHashes[$kind]))
-                || ($this->documentKind !== null && $this->documentKind !== 'archive' && $kind !== $this->documentKind)) {
+            if ($this->documentKind !== null && $kind !== $this->documentKind) {
                 throw new \RuntimeException('Parser returned an issue for another document kind.');
             }
-            $expectedHash = $this->documentKind === 'archive' ? $childHashes[$kind] : $this->sourceHash;
-            if (isset($issue['document_sha256']) && $expectedHash !== null && ! hash_equals($expectedHash, $issue['document_sha256'])) {
+            if (isset($issue['document_sha256']) && $this->sourceHash !== null && ! hash_equals($this->sourceHash, $issue['document_sha256'])) {
                 throw new \RuntimeException('Parser issue does not match the stored source checksum.');
             }
         }

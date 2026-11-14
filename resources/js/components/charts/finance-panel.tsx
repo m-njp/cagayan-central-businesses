@@ -1,5 +1,10 @@
 import { lazy } from 'react';
 import type { ReactNode } from 'react';
+import {
+    GuideTerm,
+    MISSING_ENTRY,
+    useFinanceGuide,
+} from '@/components/analytics/finance-guide';
 import { SourceLine } from '@/components/analytics/source-line';
 import { ExactAmount } from '@/components/charts/exact-amount';
 import PerformanceVisual from '@/components/charts/performance-visual';
@@ -19,6 +24,7 @@ import {
     observationLabel,
     observationNote,
     percentChangeLabel,
+    reasonLabel,
 } from '@/lib/performance-format';
 import { trendOf } from '@/lib/trend';
 import type {
@@ -37,6 +43,24 @@ const numberCell = 'px-1.5 text-right font-mono tabular-nums sm:px-2';
 const phone = 'type-data sm:type-body';
 
 /**
+ * A missing figure reads N/A, never zero. Its reason shows on hover, focus or tap, and selecting it opens the guide's
+ * Reading N/A entry where a guide is provided.
+ */
+function MissingFigure({ point }: { point?: EconomicObservation }) {
+    const openGuide = useFinanceGuide();
+    const reason = reasonLabel(point);
+    return (
+        <ExactAmount
+            exact="Not available"
+            detail={reason}
+            onSelect={openGuide ? () => openGuide(MISSING_ENTRY) : undefined}
+        >
+            <span className="text-muted-foreground">N/A</span>
+        </ExactAmount>
+    );
+}
+
+/**
  * The exact figure from tablet width up and the short form on a phone, which shows the exact figure on hover, focus or
  * tap. Trends always uses the short form so several years fit. A negative amount reads in parentheses.
  */
@@ -51,6 +75,8 @@ export function Figure({
     alwaysShort?: boolean;
     withChange?: boolean;
 }) {
+    if ((!point || point.state === 'unavailable') && !point?.band)
+        return <MissingFigure point={point} />;
     const exact = observationLabel(point, metric.unit);
     const short = observationLabel(point, metric.unit, true);
     // One tooltip for the amount and its change; Net Income carries no arrow.
@@ -172,7 +198,10 @@ export default function FinancePanel({
                                     scope="row"
                                     className="h-auto py-1.5 font-normal whitespace-normal"
                                 >
-                                    {metric.label}
+                                    <GuideTerm
+                                        entry={metric.id}
+                                        label={metric.label}
+                                    />
                                 </TableHead>
                                 {history.rows.map((row) => (
                                     <TableCell
@@ -239,7 +268,10 @@ export default function FinancePanel({
                                     scope="row"
                                     className="h-auto py-1.5 font-normal whitespace-normal"
                                 >
-                                    {metric.label}
+                                    <GuideTerm
+                                        entry={metric.id}
+                                        label={metric.label}
+                                    />
                                     {notes[index] &&
                                         notes[index] !== sharedNote && (
                                             <span className="block type-data text-muted-foreground">

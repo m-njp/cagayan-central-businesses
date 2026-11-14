@@ -241,7 +241,7 @@ def testRealUploadReceivesTheSameArithmeticFindingsAsBatch(town, tmp_path):
     parsed = parseSummary(source, 2025, LINES, ALIASES)
     expected = {(issue.kind, issue.code, issue.message) for issue in documentChecks(parsed.figures, parsed.changes, 2025)}
 
-    uploaded = scan(source, "executive_summary", 2025, tmp_path, 40, 104857600)
+    uploaded = scan(source, 2025)
     actual = {(issue["kind"], issue["code"], issue["message"]) for issue in uploaded["issues"]}
 
     assert expected <= actual

@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Executive Summary findings by municipality and report year, from data/towns/finances/issues. Errors and warnings
- * count; of the informational notes only "between reports" ones do, such as a later report restating a year.
+ * Findings by municipality and report year from the Executive Summary (data/towns/finances/issues, D49). Errors and
+ * warnings count; of the informational notes only "between reports" ones do, such as a later report restating a year.
  */
 final class ReportDifferencesQuery
 {
@@ -67,13 +67,21 @@ final class ReportDifferencesQuery
 
     public function detail(Municipality $town, int $year): ?ReportDifferenceDetail
     {
-        $document = $this->documents()->where('municipality_id', $town->id)->where('fiscal_year', $year)->first();
-        if ($document === null) {
+        $documents = $this->documents()->where('municipality_id', $town->id)->where('fiscal_year', $year)->get();
+        if ($documents->isEmpty()) {
             return null;
         }
-        $file = $this->summaries->files()[hash('sha256', $document->file ?? '')] ?? null;
-        $sourceUrl = $file !== null && $file['sha256'] === $document->sha256
-            ? route('public.source-reports.show', hash('sha256', (string) $document->file), absolute: false) : null;
+        $sources = [];
+        foreach ($documents->sortBy(fn (FinanceDocument $document) => array_search($document->kind, FinanceDocumentKind::cases(), true)) as $document) {
+            $key = hash('sha256', (string) $document->file);
+            $url = match ($document->kind) {
+                FinanceDocumentKind::ExecutiveSummary => ($this->summaries->files()[$key]['sha256'] ?? null) === $document->sha256
+                    ? route('public.source-reports.show', $key, absolute: false) : null,
+                default => null,
+            };
+            $sources[$document->kind->value] = ['label' => $document->kind->label(), 'url' => $url];
+        }
+        $sourceUrl = $sources[FinanceDocumentKind::ExecutiveSummary->value]['url'] ?? null;
         $labels = FinanceLine::query()->pluck('label', 'code')->all();
         $status = $this->statusCounts($town->id, $year)[$town->id.'|'.$year] ?? [];
 
@@ -83,14 +91,17 @@ final class ReportDifferencesQuery
                 continue;
             }
             $page = preg_match('/^page ([1-9][0-9]*)$/', $row['location'], $match) ? $match[1] : null;
+            $kind = ($row['document_kind'] ?? '') !== '' ? $row['document_kind'] : FinanceDocumentKind::ExecutiveSummary->value;
+            $url = $sources[$kind]['url'] ?? null;
             $items[] = new ReportDifferenceItem(
+                document: $sources[$kind]['label'] ?? FinanceDocumentKind::tryFrom($kind)?->label() ?? 'Report',
                 family: $this->family($row),
                 severity: $row['severity'],
                 kind: $row['kind'],
                 line: $labels[$row['line_code']] ?? null,
                 fiscalYear: ($row['fiscal_year'] ?? '') !== '' ? (int) $row['fiscal_year'] : null,
                 message: $row['message'],
-                sourceUrl: $sourceUrl !== null && $page !== null ? $sourceUrl.'#page='.$page : $sourceUrl,
+                sourceUrl: $url !== null && $page !== null && $kind === FinanceDocumentKind::ExecutiveSummary->value ? $url.'#page='.$page : $url,
             );
         }
         usort($items, fn (ReportDifferenceItem $a, ReportDifferenceItem $b) => [array_search($a->family, self::FAMILIES, true), $a->severity === 'error' ? 0 : 1]
@@ -101,6 +112,7 @@ final class ReportDifferencesQuery
             town: $town->name,
             year: $year,
             sourceUrl: $sourceUrl,
+            sources: array_values(array_filter($sources, fn (array $source) => $source['url'] !== null)),
             pending: $status[FinanceFigureStatus::Pending->value] ?? 0,
             verified: ($status[FinanceFigureStatus::Verified->value] ?? 0) + ($status[FinanceFigureStatus::Superseded->value] ?? 0),
             corroborated: $status['corroborated'] ?? 0,
@@ -111,13 +123,13 @@ final class ReportDifferencesQuery
     /** @return Builder<FinanceDocument> */
     private function documents()
     {
-        return FinanceDocument::query()->where('kind', FinanceDocumentKind::ExecutiveSummary)->where('availability', FinanceAvailability::Available);
+        return FinanceDocument::query()->where('availability', FinanceAvailability::Available);
     }
 
     /** @return list<array<string, string>> */
     private function findings(int $year): array
     {
-        return array_values(array_filter($this->issues->yearRows($year), fn (array $row): bool => in_array($row['document_kind'] ?? '', ['', 'executive_summary'], true)
+        return array_values(array_filter($this->issues->yearRows($year), fn (array $row): bool => in_array($row['document_kind'] ?? '', ['', FinanceDocumentKind::ExecutiveSummary->value], true)
             && ($row['severity'] !== 'info' || $this->family($row) === 'between_reports')));
     }
 
@@ -132,10 +144,9 @@ final class ReportDifferencesQuery
     {
         $rows = DB::table('finance_figures as f')
             ->join('finance_documents as d', 'd.id', '=', 'f.finance_document_id')
-            ->where('d.kind', FinanceDocumentKind::ExecutiveSummary->value)
             ->when($townId !== null, fn ($query) => $query->where('f.municipality_id', $townId)->where('d.fiscal_year', $year))
             ->groupBy('f.municipality_id', 'd.fiscal_year', 'f.status')
-            ->selectRaw("f.municipality_id, d.fiscal_year, f.status, count(*) as total, count(*) filter (where f.note like 'Corroborated:%') as corroborated")
+            ->selectRaw("f.municipality_id, d.fiscal_year, f.status, count(*) as total, count(*) filter (where f.note like 'Corroborated%') as corroborated")
             ->get();
         $counts = [];
         foreach ($rows as $row) {

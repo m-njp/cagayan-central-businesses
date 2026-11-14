@@ -28,7 +28,8 @@ use Illuminate\Validation\Rule;
 /**
  * Loads data/towns/finances into the ledger (D35). Parsed figures arrive pending; reviews.csv and
  * manual-figures.csv replay sign-offs exported by finances:export. Manual rows already in the database
- * are never deleted, and a parsed figure whose value changed goes back to pending.
+ * are never deleted, and a parsed figure whose value changed goes back to pending. Only Executive Summary
+ * documents and figures load (D49); data/towns/finances/history is a frozen record that is never read.
  * Nothing is written when a file is invalid or would remove or replace reviewed source evidence.
  */
 #[Signature('finances:import {--path=data/towns/finances : Folder, relative to the project root}')]
@@ -63,16 +64,6 @@ final class ImportFinancesCommand extends Command
         foreach (glob("{$folder}/extracted/*.csv") ?: [] as $file) {
             $extracted = [...$extracted, ...$this->read($file, self::EXTRACTED_COLUMNS)];
         }
-        // Available workbooks load only for the configured towns; a not-published record still says why a year is missing.
-        $workbookTowns = (array) config('cagayan.finances.workbook_towns');
-        $loads = fn (string $town, string $kind, string $availability = 'available') => $kind === FinanceDocumentKind::ExecutiveSummary->value
-            || $availability !== 'available' || in_array($town, $workbookTowns, true);
-        $documents = array_values(array_filter($documents, fn (array $item) => $loads($item['row']['psgc_code'], $item['row']['kind'], $item['row']['availability'])));
-        // Executive Summary lines beyond the totals load only for the configured towns (metrics.md M35).
-        $detailTowns = (array) config('cagayan.finances.summary_detail_towns');
-        $detailLines = (array) config('cagayan.finances.summary_detail_lines');
-        $extracted = array_values(array_filter($extracted, fn (array $item) => $loads($item['row']['psgc_code'], $item['row']['document_kind'])
-            && (! in_array($item['row']['line_code'], $detailLines, true) || in_array($item['row']['psgc_code'], $detailTowns, true))));
         $reviews = $this->read("{$folder}/reviews.csv", self::REVIEW_COLUMNS, required: false);
         $manual = $this->read("{$folder}/manual-figures.csv", self::MANUAL_COLUMNS, required: false);
 
@@ -202,21 +193,32 @@ final class ImportFinancesCommand extends Command
             ]);
         }
 
+        $reviewFigures = $reviews === [] ? [] : $this->reviewFigures($documentIds);
         usort($reviews, fn (array $a, array $b) => $a['row']['reported_in_year'] <=> $b['row']['reported_in_year']);
         foreach ($reviews as $item) {
-            $this->applyReview($signOff, $item, $towns, $documentIds);
+            $this->applyReview($signOff, $item, $documentIds, $reviewFigures);
         }
 
         // Replayed after parsed reviews so manual corrections keep the last word (D35).
         usort($manual, fn (array $a, array $b) => [$a['row']['reviewed_on'], $a['row']['status'] !== 'superseded'] <=> [$b['row']['reviewed_on'], $b['row']['status'] !== 'superseded']);
+        $manualFigures = $manual === [] ? [] : FinanceFigure::query()
+            ->whereIn('public_id', array_column(array_column($manual, 'row'), 'public_id'))->get()->keyBy('public_id')->all();
+        $replayedManualGroups = [];
         foreach ($manual as $item) {
             $row = $item['row'];
-            $figure = FinanceFigure::query()->where('public_id', $row['public_id'])->firstOrFail();
+            // PostgreSQL normalizes UUIDs, but valid CSV identifiers can use either case.
+            $figure = $manualFigures[strtolower($row['public_id'])];
+            $key = "{$figure->municipality_id} {$figure->fiscal_year} {$figure->line_code} {$figure->basis->value}";
+            // An earlier correction can supersede another preloaded model in the same group.
+            if (isset($replayedManualGroups[$key])) {
+                $figure->refresh();
+            }
             match ($row['status']) {
                 'verified', 'superseded' => $signOff->verify($figure, null, $row['reviewed_on'], $row['note'] ?: null),
                 'rejected' => $signOff->reject($figure, null, $row['reviewed_on'], $row['note'] ?: null),
                 default => null,
             };
+            $replayedManualGroups[$key] = true;
         }
 
         return $counts;
@@ -287,19 +289,15 @@ final class ImportFinancesCommand extends Command
 
     /**
      * @param  array{file: string, line: int, row: array<string, string>}  $item
-     * @param  array<string, int>  $towns
      * @param  array<string, int>  $documentIds
+     * @param  array<string, FinanceFigure>  $figures
      */
-    private function applyReview(FinanceSignOff $signOff, array $item, array $towns, array $documentIds): void
+    private function applyReview(FinanceSignOff $signOff, array $item, array $documentIds, array $figures): void
     {
         $row = $item['row'];
-        $figure = FinanceFigure::query()
-            ->where('entry_method', FinanceEntryMethod::Parsed)
-            ->where('finance_document_id', $documentIds["{$row['psgc_code']} {$row['reported_in_year']} {$row['document_kind']}"] ?? 0)
-            ->where('line_code', $row['line_code'])
-            ->where('fiscal_year', (int) $row['fiscal_year'])
-            ->where('basis', $row['basis'])
-            ->first();
+        $documentId = $documentIds["{$row['psgc_code']} {$row['reported_in_year']} {$row['document_kind']}"] ?? 0;
+        $year = (int) $row['fiscal_year'];
+        $figure = $figures["{$documentId} {$row['line_code']} {$year} {$row['basis']}"] ?? null;
 
         if ($figure === null || ! $this->sameAmount($figure->value, $row['value'])) {
             $this->warnings[] = "reviews.csv line {$item['line']}: the figure is missing or its value changed, so it stays pending. Review it again.";
@@ -310,6 +308,24 @@ final class ImportFinancesCommand extends Command
         $row['decision'] === 'verified'
             ? $signOff->verify($figure, null, $row['reviewed_on'], $row['note'] ?: null)
             : $signOff->reject($figure, null, $row['reviewed_on'], $row['note'] ?: null);
+    }
+
+    /**
+     * @param  array<string, int>  $documentIds
+     * @return array<string, FinanceFigure>
+     */
+    private function reviewFigures(array $documentIds): array
+    {
+        $figures = [];
+        foreach (FinanceFigure::query()->where('entry_method', FinanceEntryMethod::Parsed)
+            ->whereIn('finance_document_id', array_values($documentIds))
+            ->get(['id', 'municipality_id', 'finance_document_id', 'line_code', 'fiscal_year', 'basis', 'value',
+                'entry_method', 'status', 'entered_by', 'reviewed_by', 'reviewed_on', 'note']) as $figure) {
+            $key = "{$figure->finance_document_id} {$figure->line_code} {$figure->fiscal_year} {$figure->basis->value}";
+            $figures[$key] = $figure;
+        }
+
+        return $figures;
     }
 
     /**
@@ -353,7 +369,7 @@ final class ImportFinancesCommand extends Command
             $this->problem('documents.csv', $line, match (true) {
                 ! isset($towns[$row['psgc_code']]) => "unknown town code {$row['psgc_code']}",
                 ! ctype_digit($row['fiscal_year']) => "fiscal_year {$row['fiscal_year']} is not a year",
-                FinanceDocumentKind::tryFrom($row['kind']) === null => "unknown kind {$row['kind']}",
+                $row['kind'] !== FinanceDocumentKind::ExecutiveSummary->value => "kind {$row['kind']} is not read; the Executive Summary is the only source of figures (D49)",
                 FinanceAvailability::tryFrom($row['availability']) === null => "unknown availability {$row['availability']}",
                 $available && Validator::make(['source_url' => $row['source_url']], ['source_url' => ['required', 'url:https', 'max:'.config('cagayan.finances.source_url_max'), new OfficialCoaUrl]])->fails() => 'source_url must be an official HTTPS COA link',
                 $available && ! preg_match('/^[0-9a-f]{64}$/', $row['sha256']) => 'sha256 must be 64 lower-case hex characters',
@@ -381,7 +397,7 @@ final class ImportFinancesCommand extends Command
             $key = "{$row['psgc_code']} {$row['reported_in_year']} {$row['document_kind']} {$row['line_code']} {$row['fiscal_year']} {$row['basis']}";
             $this->problem($file, $line, match (true) {
                 ! isset($towns[$row['psgc_code']]) => "unknown town code {$row['psgc_code']}",
-                FinanceDocumentKind::tryFrom($row['document_kind']) === null => "unknown document_kind {$row['document_kind']}",
+                $row['document_kind'] !== FinanceDocumentKind::ExecutiveSummary->value => "document_kind {$row['document_kind']} is not read; the Executive Summary is the only source of figures (D49)",
                 $document === null || ! $document['available'] => 'no available document for this town, report year, and kind in documents.csv',
                 $document['sha256'] !== $row['document_sha256'] => 'document_sha256 does not match documents.csv',
                 ! isset($codes[$row['line_code']]) => "unknown line_code {$row['line_code']}",

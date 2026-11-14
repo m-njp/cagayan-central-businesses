@@ -1,5 +1,5 @@
 import { ChartColumn, Table2 } from 'lucide-react';
-import { AnalyticsHelp } from '@/components/analytics/analytics-help';
+import { FinanceGuideButton } from '@/components/analytics/finance-guide';
 import { PeriodToggle } from '@/components/charts/finance-trends';
 import {
     Select,
@@ -127,10 +127,7 @@ export function FinanceToolbar({
                     <ChartColumn aria-hidden="true" />
                 </ToggleGroupItem>
             </ToggleGroup>
-            <AnalyticsHelp
-                guide={catalog.guide}
-                showBusiness={catalog.businesses !== null}
-            />
+            <FinanceGuideButton />
         </div>
     );
 }

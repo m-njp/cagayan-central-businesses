@@ -20,7 +20,6 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -74,10 +73,12 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
         $progress = new FinanceParsingProgress($upload->id, $this->attemptId, $upload->progress ?? []);
         $stream = new FinanceParserStream(fn (array $event) => $progress->accept($event), $upload->fiscal_year, $upload->kind, $upload->sha256);
         $disk = Storage::disk('local');
-        $temporary = $disk->path(FinanceUpload::FOLDER.'/tmp/'.Str::uuid());
         $limits = config('cagayan.finances.uploads');
 
         try {
+            if (! array_key_exists($upload->kind, config('cagayan.finances.uploads.kinds'))) {
+                throw new \RuntimeException('This report kind is retired from extraction. Its original source is retained.');
+            }
             $townName = Municipality::query()->whereKey($upload->municipality_id)->value('name');
             if (! is_string($townName) || $townName === '') {
                 throw new \RuntimeException('The report municipality could not be resolved.');
@@ -85,9 +86,7 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
             $sourcePath = $disk->path($upload->path);
             $this->assertSourceHash($sourcePath, $upload->sha256);
             Process::path(base_path('tools/coa'))->env(['PYTHONIOENCODING' => 'utf-8'])->timeout((int) $limits['timeout_seconds'])->start([
-                (string) $limits['python'], '-u', '-m', 'coa.intake', $sourcePath, $upload->kind,
-                (string) $upload->fiscal_year, $temporary,
-                '--members', (string) $limits['archive_members_max'], '--bytes', (string) $limits['archive_bytes_max'], '--events',
+                (string) $limits['python'], '-u', '-m', 'coa.intake', $sourcePath, (string) $upload->fiscal_year, '--events',
                 '--pace', (string) $limits['pace_seconds'],
                 '--town', $townName,
                 '--province', (string) config('cagayan.finances.source_province'),
@@ -98,31 +97,17 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
             })->wait()->throw();
             $this->assertSourceHash($sourcePath, $upload->sha256);
             $stream->finish();
-            /** @var array{parser_version: string, figures: list<array<string, mixed>>, issues: list<array<string, mixed>>, children: list<array{kind: string, name: string, member: string, sha256: string}>, confidence?: int} $parsed */
+            /** @var array{parser_version: string, figures: list<array<string, mixed>>, issues: list<array<string, mixed>>, confidence?: int} $parsed */
             $parsed = $stream->result;
-            foreach (['executive_summary', 'fs_workbook', 'annex_workbook'] as $kind) {
-                $progress->accept(['type' => 'replace', 'document_kind' => $kind,
-                    'figures' => array_values(array_filter($parsed['figures'], fn (array $row) => $row['document_kind'] === $kind))]);
-            }
+            $progress->accept(['type' => 'replace', 'document_kind' => $upload->kind, 'figures' => $parsed['figures']]);
             $progress->accept(['type' => 'stage', 'stage' => 'saving', 'message' => 'Saving eligible figures for independent review.']);
 
-            DB::transaction(function () use ($upload, $parsed, $temporary, $disk, $record, $progress): void {
+            DB::transaction(function () use ($upload, $parsed, $record, $progress): void {
                 $current = FinanceUpload::query()->lockForUpdate()->findOrFail($upload->id);
                 if ($current->status !== FinanceUploadStatus::Running || ($current->progress['attempt'] ?? null) !== $this->attemptId) {
                     throw new \RuntimeException('Parser attempt is no longer current.');
                 }
-                // Each document kind the file carries: the report itself, or the workbooks inside an archive.
-                $sources = $upload->kind === 'archive'
-                    ? collect($parsed['children'])->mapWithKeys(function (array $child) use ($upload, $temporary, $disk): array {
-                        $stored = FinanceUpload::FOLDER."/{$upload->public_id}-{$child['kind']}.xlsx";
-                        $contents = File::get($temporary.'/'.basename($child['name']));
-                        if (! hash_equals($child['sha256'], hash('sha256', $contents)) || ! $disk->put($stored, $contents)) {
-                            throw new \RuntimeException('An archive workbook could not be stored.');
-                        }
-
-                        return [$child['kind'] => ['file' => $stored, 'sha256' => $child['sha256']]];
-                    })->all()
-                    : [$upload->kind => ['file' => $upload->path, 'sha256' => $upload->sha256]];
+                $sources = [$upload->kind => ['file' => $upload->path, 'sha256' => $upload->sha256]];
 
                 // A PDF reader failure carries raw library text, which can name server paths; show a fixed sentence.
                 $issues = array_map(FinanceParsingProgress::issue(...), $parsed['issues']);
@@ -186,8 +171,6 @@ final class ExtractFinanceUpload implements ShouldBeUnique, ShouldQueue
             report($exception);
             $this->failed($exception);
             throw $exception;
-        } finally {
-            File::deleteDirectory($temporary);
         }
     }
 

@@ -158,10 +158,13 @@ export type ReportDifferenceDetail = {
     town: string;
     year: number;
     sourceUrl: string | null;
+    /** Every document of the report that can be opened (PDF) or downloaded (workbook). */
+    sources: { label: string; url: string }[];
     pending: number;
     verified: number;
     corroborated: number;
     items: {
+        document: string;
         family: ReportDifferenceFamily;
         severity: 'error' | 'warning' | 'info';
         kind: string;

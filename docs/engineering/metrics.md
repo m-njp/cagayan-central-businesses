@@ -253,8 +253,8 @@ Approved 26-10-29 by the user for the Executive Summary view. Each is the amount
 | Continuing Allotments | `budget.allotments_continuing` | Budget Execution | "Allotments – Continuing" |
 | Continuing Obligations | `budget.obligations_continuing` | Budget Execution | "Obligations – Continuing" |
 
-- **Coverage:** loaded for the towns in `cagayan.finances.summary_detail_towns`, Tuguegarao City since 26-10-29. Other towns read Not available, "Loaded for Tuguegarao City only" (reason `not_loaded`); their parsed rows stay in `data/towns/finances/extracted/`.
-- **Checks:** Assets equals Liabilities plus Government Equity within ₱1.00, checked by the parser for every report.
+- **Coverage:** every government since 26-11-13 (D47; Tuguegarao City only from 26-10-29). Budget Execution availability is checked per source, including the documented 2025 Santo Niño and Enrile exceptions (D48). A line absent from its source reads N/A with the reason `not_reported`.
+- **Checks:** Assets equals Liabilities plus Government Equity to the centavo (any difference is a finding since 26-11-14), checked by the parser for every report.
 - **Not stored:** Continuing Appropriations. Tuguegarao prints only dashes (2020) or omits the line.
 - **Meaning:** Appropriations are the budget passed by ordinance; Allotments release it to offices; Obligations are commitments charged against allotments, not cash paid. Current lines belong to the year's budget; Continuing lines to unused earlier budget that remains available.
 
@@ -262,7 +262,11 @@ Approved 26-10-29 by the user for the Executive Summary view. Each is the amount
 
 Retired 26-11-03 by the owner. It divided Current Obligations by Current Appropriations, while the obligation rate in the [DBM guide](https://www.dbm.gov.ph/images/pdffiles/2016-BUDGET-NG-BAYANTagalog.pdf) divides obligations by allotments. The figures themselves stay in Budget Execution; no rate is computed or shown.
 
-### M21. Revenue Sources
+### M21. Revenue Sources (Retired)
+
+Retired "26-11-14" by the owner with all workbook reading (D49). No extraction, intake, entry or display. The definitions below are history; the retired figures are frozen in `data/towns/finances/history/`.
+
+Revised "26-11-14" by the owner: display and ingest only Tax Revenue, Share from National Collections and Service and Business Income. Grants and Other Income remain internal reconciliation components, not new ledger series. These selected lines do not necessarily sum to Executive Summary Income. Enrile's unresolved national-share scope requires human review; Cash Flows cannot fill a performance-statement gap.
 
 Revised 26-11-03 by the owner. Every line is a reported amount from the FS Statement of Financial Performance, labeled with the statement's own words:
 
@@ -270,16 +274,16 @@ Revised 26-11-03 by the owner. Every line is a reported amount from the FS State
 | :- | :- |
 | Tax Revenue | `revenue.tax` |
 | Share from National Collections | `revenue.national_share` |
-| Other Shares from National Taxes | `revenue.other_national_share` |
 | Service and Business Income | `revenue.service_business` |
-| Shares, Grants and Donations | `revenue.grants` |
-| Other Income | `revenue.other` |
 
-- The statement's Total Revenue is stored as `fs.total_revenue` (a check line, not displayed). The parser checks that the lines add up to it within ₱1.00. For Tuguegarao City 2025 they sum to ₱1,679,019,473.60, equal to Income.
+- **Share from National Collections includes Other Share from National Taxes (revised 26-11-14 by the owner).** Some statements print one combined line (Tuguegarao City); others print "Share from Internal Revenue Collections" and "Other Share from National Taxes" separately. Both rows are added, with both cells cited, so the field means the same for every government. Of 102 workbooks that print the separate line, 62 carry a non-zero amount (Tuao 2025: ₱70,602,398.00). `revenue.other_national_share` is no longer displayed. A component cell left blank (or a dash) for a year counts as nothing only when that year's printed Total Revenue proves it (Abulug 2016 prints an empty Other Share row); otherwise the year is withheld. An unreadable or formula cell is never treated as blank.
+- The statement's Total Revenue is stored as `fs.total_revenue` (a check line, not displayed). The parser checks that the lines add up to it to the centavo; when they do not, or no total is printed, every revenue line for that year carries `revenue_not_reconciled` and is held for a reviewer. Executive Summary Income can count revenue differently (54 workbooks differ by round amounts such as transfers), so it is not the completeness test. For Tuguegarao City 2025 they sum to ₱1,679,019,473.60, equal to Income.
 - Each figure cites the worksheet cell for its year (prior-year values sit in a different column from current-year values).
 - **Retired 26-11-03:** the calculated Other Revenue remainder (Income minus three sources) is replaced by the reported lines. Locally Generated Share was retired because consolidated income does not establish BLGF's Total Regular Income denominator ([BLGF definitions](https://blgf.gov.ph/wp-content/uploads/2020/01/MC-004-2019-DO-No-075-2018-Establishing-the-LGU-Fiscal-Sustainability-Scorecard-FSS-in-the-BLGF.pdf)).
 
-### M22. Business Taxes and Fees
+### M22. Business Taxes and Fees (Retired)
+
+Retired "26-11-14" by the owner because Annex coverage is uneven and the detail expands the product beyond the three selected workbook fields. No new extraction, intake, entry or display. Historical meanings, observations, review decisions and originals remain preserved; all registered sources remain downloadable. The table below records historical definitions.
 
 From the Part 4 Annex detailed statement, General Fund only:
 

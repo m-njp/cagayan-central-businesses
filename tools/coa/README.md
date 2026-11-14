@@ -1,21 +1,27 @@
 # Finance Parser
 
+Workbook reading is retired, "26-11-14" (D49): the Executive Summary is the only source of figures. The parser reads Executive Summary PDFs only (version 1.7.1). Original workbooks stay downloadable; the retired reader is described in the [handoff](../../docs/engineering/coa-workbook-handoff.md).
+
 For browser download checkpoints, validation batches of 12, retries and resume commands, see [COA PDF Collection](COLLECTION.md).
 
+Annual Audit Report ZIPs have a separate [Workbook Collection](COLLECTION.md#workbook-collection) command: batches of 15, all available XLSX files retained, and successful ZIPs deleted after durable checkpoints. Financial parsing remains a separate step.
+
 Python reads official COA files; Laravel decides what may be stored. Parsing never verifies or publishes a figure.
+
+
+`composer data:finances:test` uses a short ignored temporary fixture directory and removes it after success or failure. Pass pytest `--basetemp` explicitly only when retaining synthetic fixtures for debugging. Tests run on every core through pytest-xdist; add `-- -n 0` to run them in one process.
 
 ## Follow One Upload
 
 1. `UploadFinanceReport` stores the file privately and queues `ExtractFinanceUpload`.
 2. The job calls `python -u -m coa.intake`. `-u` sends output immediately instead of waiting for a buffer to fill.
-3. `intake.py` checks the file, selects the reader, and turns its figures into one consistent output format.
+3. `intake.py` confirms the file is a PDF by its content and turns the figures into one consistent output format.
 4. `summary.py` reads PDF financial highlights. It uses pdfplumber first, PDFium for missing lines and independent digit checks. Text is cached only for this invocation.
-5. `workbook.py` scores XLSX sheets by their contents, reads each sheet once, and closes the workbook after selecting the sheets.
-6. `progress.py` sends optional events through a callback: a function the reader calls when it has something to report. The same readers work without one.
-7. Laravel's `FinanceParserStream` rebuilds complete JSON lines from process output chunks. `FinanceParsingProgress` stores a bounded snapshot that the dialog requests while open.
-8. Only a validated final result reaches `RecordParsedFigures`. Eligible figures wait for a different person's verification.
+5. `progress.py` sends optional events through a callback: a function the reader calls when it has something to report. The same readers work without one.
+6. Laravel's `FinanceParserStream` rebuilds complete JSON lines from process output chunks. `FinanceParsingProgress` stores a bounded snapshot that the dialog requests while open.
+7. Only a validated final result reaches `RecordParsedFigures`. Eligible figures wait for a different person's verification.
 
-Amounts use `Decimal`. Citations identify the PDF page or contributing workbook cells. The line catalog remains `data/towns/finances/lines.csv`.
+Amounts use `Decimal`. Citations identify the PDF page. The line catalog remains `data/towns/finances/lines.csv`.
 
 ## Automated Confidence
 
@@ -29,7 +35,7 @@ The existing libraries remain sufficient for this slice: [pdfplumber](https://gi
 
 Version 1.4.0, "26-11-12" ([plan](../../docs/plan/archive/26-11-12-coa-accuracy-and-differences.md)):
 
-- **One source of truth.** `composer data:finances:extract` always writes the committed CSVs, then prints what it added, removed and changed against the files it replaced (also in `logs/extract.log`). Read that diff before `composer data:finances`. Findings stay in `issues/` and nothing is published until signed off. `composer data:finances:audit` remains for a staged, read-only comparison.
+- **One source of truth.** `composer data:finances:extract` always writes the committed CSVs, then prints what it added, removed and changed against the files it replaced (also in `logs/extract.log`). Read that diff before `composer data:finances`. Findings stay in `issues/` and nothing is published until signed off. `composer data:finances:audit` remains for a staged, read-only comparison. For workbook figures use `composer data:finances:workbooks`, which stages and diffs by default and promotes only with `--promote` ([XLSX.md](XLSX.md)).
 - **Finding families.** Each issue row has a `family`: `report` (the document disagrees with itself as printed), `between_reports` (two reports differ) or `reading` (the parser's limit). `FAMILIES` in `coa/summary.py` is the one list. A row withheld because its cells wrap or split is `incomplete_row` (reading); only a line with a provably misprinted amount, such as `48,014,545,75`, is `malformed_amount` (report).
 - **Reader choice.** A printing error in the report no longer switches readers. The fallback reading wins only with fewer missing core lines or more figures.
 - **Confirmation.** The second reader must agree on line, year, sign, definition and page. When it cannot rebuild the row at all, the row's amounts must still be printed together on one line of that page whose label names the same line (pdfium splits Gattaran 2020's table).
@@ -43,12 +49,11 @@ Run in PowerShell from the repository root. Composer uses the pinned environment
 
 ```powershell
 composer data:finances:test
-$parserSource = Join-Path (Get-Location) 'data/towns/financial-statements/2025/Tuguegarao-City/Tuguegarao-City-FS-2025.xlsx'
-$parserOutput = Join-Path (Get-Location) 'storage/app/private/parser-preview'
-composer data:finances:parse -- "$parserSource" fs_workbook 2025 "$parserOutput" --members 40 --bytes 104857600 --events --pace 0.5
+$parserSource = Join-Path (Get-Location) 'data/towns/executive-summaries/2025/Tuguegarao-City/Tuguegarao-City-Executive-Summary-2025.pdf'
+composer data:finances:parse -- "$parserSource" 2025 --events --pace 0.5
 ```
 
-Kinds: `executive_summary` for PDF, `fs_workbook` or `annex_workbook` for XLSX, and `archive` for recognized workbooks inside ZIPs. Archive members use fixed output filenames. Without `--events`, intake prints one JSON result for compatibility.
+Only an Executive Summary PDF is read; a workbook or archive is refused by its content. Without `--events`, intake prints one JSON result for compatibility.
 
 With events, each line is one JSON object. `stage` and `scan` describe actual work; `figure` is provisional; `replace` replaces that document's provisional figures after checks; `issue` reports a source check; `result` carries the final result exactly once. A fatal file error emits `failure` and exits nonzero. Library diagnostics go to stderr, outside the progress feed.
 

@@ -23,7 +23,7 @@ function contractFigure(array $patch = []): array
 function contractResult(array $patch = []): array
 {
     return array_replace(['parser_version' => '1.3.0', 'source_sha256' => hash('sha256', 'report'), 'confidence' => 95,
-        'figures' => [contractFigure()], 'issues' => [], 'children' => []], $patch);
+        'figures' => [contractFigure()], 'issues' => []], $patch);
 }
 
 function contractOutput(array $result): string
@@ -63,7 +63,7 @@ it('rejects malformed or out-of-context final results before accepting observati
     'future year' => [['figures' => [contractFigure(['fiscal_year' => 2026])]], RuntimeException::class],
     'unrelated prior year' => [['figures' => [contractFigure(['fiscal_year' => 2023])]], RuntimeException::class],
     'year string' => [['figures' => [contractFigure(['fiscal_year' => '2025'])]], RuntimeException::class],
-    'different document kind' => [['figures' => [contractFigure(['document_kind' => 'fs_workbook'])]], RuntimeException::class],
+    'workbook figure' => [['figures' => [contractFigure(['document_kind' => 'fs_workbook'])]], ValidationException::class],
     'zero PDF page' => [['figures' => [contractFigure(['location' => 'page 0'])]], RuntimeException::class],
     'absent PDF citation' => [['figures' => [contractFigure(['location' => ''])]], ValidationException::class],
     'source hash mismatch' => [['source_sha256' => str_repeat('a', 64)], RuntimeException::class],
@@ -73,21 +73,9 @@ it('rejects malformed or out-of-context final results before accepting observati
     'fractional confidence' => [['confidence' => 9.5], ValidationException::class],
     'confidence string' => [['confidence' => '95'], RuntimeException::class],
     'untyped issue' => [['issues' => [['message' => 'Missing structured issue fields.']]], ValidationException::class],
-    'issue for different source kind' => [['issues' => [['severity' => 'error', 'kind' => 'engine_disagreement', 'message' => 'Different source.', 'document_kind' => 'fs_workbook']]], RuntimeException::class],
+    'issue for different source kind' => [['issues' => [['severity' => 'error', 'kind' => 'engine_disagreement', 'message' => 'Different source.', 'document_kind' => 'fs_workbook']]], ValidationException::class],
     'issue for different source hash' => [['issues' => [['severity' => 'error', 'kind' => 'engine_disagreement', 'message' => 'Different source.', 'document_kind' => 'executive_summary', 'document_sha256' => str_repeat('a', 64)]]], RuntimeException::class],
     'issue checksum without document' => [['issues' => [['severity' => 'error', 'kind' => 'engine_disagreement', 'message' => 'Unbound source.', 'document_sha256' => str_repeat('a', 64)]]], RuntimeException::class],
-    'children for direct report' => [['children' => [['kind' => 'fs_workbook', 'name' => 'fs_workbook.xlsx', 'sha256' => str_repeat('b', 64)]]], RuntimeException::class],
-]);
-
-it('rejects duplicate and mismatched archive documents', function (array $children, array $figures) {
-    $stream = new FinanceParserStream(fn () => null, 2025, 'archive', hash('sha256', 'report'));
-
-    expect(fn () => $stream->push(contractOutput(contractResult(['children' => $children, 'figures' => $figures]))))->toThrow(RuntimeException::class);
-    expect($stream->result)->toBeNull();
-})->with([
-    'duplicate child kinds' => [[['kind' => 'fs_workbook', 'name' => 'fs_workbook.xlsx', 'sha256' => str_repeat('a', 64)], ['kind' => 'fs_workbook', 'name' => 'fs_workbook.xlsx', 'sha256' => str_repeat('b', 64)]], []],
-    'filename does not match child kind' => [[['kind' => 'fs_workbook', 'name' => 'annex_workbook.xlsx', 'sha256' => str_repeat('a', 64)]], []],
-    'figure has no extracted child' => [[], [contractFigure(['document_kind' => 'fs_workbook', 'location' => 'Sheet!A1'])]],
 ]);
 
 it('refuses changed source bytes before invoking the parser', function () {

@@ -215,6 +215,31 @@ def testComposerRunnerDispatchesAuditToItsReadOnlyModule(tmp_path, monkeypatch):
     assert calls[0][0] == [python, "-u", "-m", "coa.audit", "--output", "storage/audit"]
 
 
+@pytest.mark.parametrize("exitCode", [0, 1])
+def testComposerTestsRemoveTheirTemporaryFixturesAfterSuccessOrFailure(tmp_path, monkeypatch, exitCode):
+    path = Path(__file__).resolve().parents[1] / "run.py"
+    spec = importlib.util.spec_from_file_location("coaRunnerCleanupTest", path)
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+    python = tmp_path / "python.exe"
+    python.write_text("test executable", encoding="utf-8")
+    monkeypatch.setattr(runner, "PYTHON", python)
+    monkeypatch.setattr(runner, "HERE", tmp_path / "tools/coa")
+    monkeypatch.setattr(runner.sys, "argv", ["run.py", "test", "-q"])
+    folders = []
+
+    def run(args, **kwargs):
+        folder = Path(args[args.index("--basetemp") + 1])
+        assert folder.is_relative_to(tmp_path / "storage/app/source-review/coa")
+        (folder / "synthetic.json").write_text("{}", encoding="utf-8")
+        folders.append(folder)
+        return SimpleNamespace(returncode=exitCode)
+
+    monkeypatch.setattr(runner.subprocess, "run", run)
+    assert runner.main() == exitCode
+    assert folders and not folders[0].exists()
+
+
 def testCliReportsAuditCompletionSeparatelyFromFinancialApproval(auditFixture, monkeypatch, capsys):
     state, _, _ = auditFixture
     state["issues"] = [sourceIssue("net_income_mismatch", line="performance.net_income")]

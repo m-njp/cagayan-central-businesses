@@ -8,12 +8,12 @@ import zipfile
 from pathlib import Path
 
 MEMBERS = {
-    "fs_workbook": (re.compile(r"(?:^|/)07-[^/]*FS\.xlsx$", re.I), "FS"),
-    "annex_workbook": (re.compile(r"(?:^|/)11-[^/]*Annexes\.xlsx$", re.I), "Annexes"),
+    "fs_workbook": (re.compile(r"(?:^|[/\\])07[-_][^/\\]*(?:FS|Financial[_ -]Statements)[ _-]*(?:NEW|\d+)?\.xlsx$", re.I), "FS"),
+    "annex_workbook": (re.compile(r"(?:^|[/\\])11[-_][^/\\]*(?:Annexes|Appendices)[ _-]*(?:NEW|\d+)?\.xlsx$", re.I), "Annexes"),
 }
-SOURCE_COLUMNS = [
-    "year", "psgc_code", "town", "kind", "file", "bytes", "sha256",
-    "archive_member", "archive_sha256", "source_url", "retrieved_on",
+INDEX_COLUMNS = [
+    "report_year", "municipality", "kind", "file", "sha256", "source_url",
+    "original_archive_members", "original_collection_files",
 ]
 
 
@@ -24,18 +24,19 @@ def key(name: str) -> str:
 
 
 def addWorkbooks(listing: Path, summaries: Path, target: Path) -> list[str]:
-    """Each listing row names a downloaded ZIP, its exact COA URL and the download date."""
+    """Each listing row names a downloaded ZIP and its exact COA URL; the workbooks are registered in index.csv."""
     towns = {}
     with (summaries / "sources.csv").open(encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
             folder = Path(row["file"]).parts[1]
             towns[key(folder)] = (row["psgc_code"], row["town"], folder)
 
-    sourcesPath = target / "sources.csv"
+    # The single workbook register (index.csv), written back with its byte-order mark and CRLF line endings.
+    indexPath = target / "index.csv"
     existing = {}
-    if sourcesPath.exists():
-        with sourcesPath.open(encoding="utf-8", newline="") as handle:
-            existing = {(r["year"], r["psgc_code"], r["kind"]): r for r in csv.DictReader(handle)}
+    if indexPath.exists():
+        with indexPath.open(encoding="utf-8-sig", newline="") as handle:
+            existing = {(r["report_year"], r["municipality"], r["kind"]): r for r in csv.DictReader(handle)}
 
     messages = []
     with listing.open(encoding="utf-8", newline="") as handle:
@@ -45,8 +46,7 @@ def addWorkbooks(listing: Path, summaries: Path, target: Path) -> list[str]:
             if not found or key(found.group(1)) not in towns:
                 raise ValueError(f"{archive.name}: cannot tell the town and year from the file name")
             year = found.group(2)
-            psgc, town, folder = towns[key(found.group(1))]
-            archiveSha = hashlib.sha256(archive.read_bytes()).hexdigest()
+            _, town, folder = towns[key(found.group(1))]
             with zipfile.ZipFile(archive) as bundle:
                 for kind, (pattern, suffix) in MEMBERS.items():
                     members = [name for name in bundle.namelist() if pattern.search(name)]
@@ -57,16 +57,16 @@ def addWorkbooks(listing: Path, summaries: Path, target: Path) -> list[str]:
                     relative = Path(year) / folder / f"{folder}-{suffix}-{year}.xlsx"
                     (target / relative).parent.mkdir(parents=True, exist_ok=True)
                     (target / relative).write_bytes(data)
-                    existing[(year, psgc, kind)] = {
-                        "year": year, "psgc_code": psgc, "town": town, "kind": kind,
-                        "file": relative.as_posix(), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
-                        "archive_member": members[0], "archive_sha256": archiveSha,
-                        "source_url": item["source_url"], "retrieved_on": item["retrieved_on"],
+                    existing[(year, town, kind)] = {
+                        "report_year": year, "municipality": town, "kind": kind,
+                        "file": f"financial-statements/{relative.as_posix()}", "sha256": hashlib.sha256(data).hexdigest(),
+                        "source_url": item["source_url"], "original_archive_members": members[0],
+                        "original_collection_files": "",
                     }
                     messages.append(f"{year} {town} {suffix}: {relative.as_posix()}")
 
-    with sourcesPath.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=SOURCE_COLUMNS, lineterminator="\n")
+    with indexPath.open("w", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=INDEX_COLUMNS, lineterminator="\r\n")
         writer.writeheader()
-        writer.writerows(sorted(existing.values(), key=lambda r: (r["year"], r["town"], r["kind"])))
+        writer.writerows(sorted(existing.values(), key=lambda r: (r["report_year"], r["municipality"], r["kind"])))
     return messages

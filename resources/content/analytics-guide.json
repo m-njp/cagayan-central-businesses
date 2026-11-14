@@ -1,29 +1,94 @@
 {
-    "introduction": "Figures come from COA Annual Audit Reports and appear only after sign-off.",
+    "introduction": "These figures come from the annual audit reports of the Commission on Audit (COA) for each city and municipal government in Cagayan. A figure appears only after it has been checked against its report.",
+    "notes": [
+        {
+            "id": "reading",
+            "title": "How to Read the Table",
+            "text": "Each row is one line as COA prints it, and each column is a fiscal year, from oldest to newest. An arrow compares a figure with the year before: up for an increase, down for a decrease. It does not say whether the change is good or bad. A loss is shown in parentheses. Shortened amounts such as ₱1.2B show the exact amount when you hover over, focus on or tap them. Select a year to open its Yearly Summary."
+        },
+        {
+            "id": "sources",
+            "title": "Where the Figures Come From",
+            "text": "Totals come from the Executive Summary of each COA Annual Audit Report. A team member checks each figure against the report before it is shown, or it is shown when two COA reports print the same amount or amounts no more than ₱1.00 apart. The newest year is shown from its own report until the next year's report confirms or restates it. The COA Sources list under the table opens each report at the cited page."
+        },
+        {
+            "id": "sum",
+            "title": "Sum of Reporting Towns",
+            "text": "The total of the city and municipal governments that reported for a year. It is not the accounts of the Provincial Government. The coverage note says how many of the 29 governments reported, and the change compares only governments that reported in both years."
+        },
+        {
+            "id": "limits",
+            "title": "What These Figures Are Not",
+            "text": "These are the accounts of local governments. They are not the sales of private businesses, the size of the local economy or a rating of a government. Part of every town's income is its share of national taxes, which can rise or fall without any change in local business activity."
+        }
+    ],
+    "budgetSteps": [
+        {
+            "id": "appropriation",
+            "term": "Appropriation",
+            "text": "The council approves how much may be spent and for what, in the annual appropriation ordinance. This is permission to spend, not spending."
+        },
+        {
+            "id": "allotment",
+            "term": "Allotment",
+            "text": "Part of the approved amount is released to offices so they can start committing it."
+        },
+        {
+            "id": "obligation",
+            "term": "Obligation",
+            "text": "An office commits the money through a contract, a salary or a purchase order. The government is now bound to pay."
+        },
+        {
+            "id": "disbursement",
+            "term": "Disbursement",
+            "text": "The government pays the cash. The Executive Summary does not print this step."
+        }
+    ],
+    "reasons": [
+        {
+            "id": "not_published",
+            "text": "COA has not published the audit report for this government and year."
+        },
+        {
+            "id": "not_reported",
+            "text": "The report for this year does not print this line."
+        },
+        {
+            "id": "not_collected",
+            "text": "The report for this year has not been added to the system yet."
+        },
+        {
+            "id": "pending_review",
+            "text": "The figure has been read from the report and is waiting to be checked before it is shown."
+        }
+    ],
     "topics": [
         {
             "id": "position",
             "title": "Financial Condition",
-            "summary": "What the government owned and owed on December 31. Loaded for Tuguegarao City only.",
+            "summary": "What the government owned and owed on December 31.",
             "metrics": [
                 {
                     "id": "position.assets",
                     "label": "Assets",
-                    "meaning": "Everything the government owns, such as cash, receivables, land, buildings and roads.",
+                    "meaning": "Everything the government owns, such as cash, amounts owed to it, land, buildings and roads.",
+                    "why": "It shows the resources the government holds to deliver services and build infrastructure.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "position.liabilities",
                     "label": "Liabilities",
-                    "meaning": "Everything the government owes, such as payables, loans and funds held for others.",
+                    "meaning": "Everything the government owes, such as unpaid bills, loans and money it holds for others.",
+                    "why": "Compared with Assets, it shows how much of what the government holds is owed to others.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "position.equity",
                     "label": "Government Equity",
-                    "meaning": "Assets minus Liabilities. It is not ownership; no one holds shares.",
+                    "meaning": "Assets minus Liabilities. No one owns shares in a government; this is what remains after its debts.",
+                    "why": "A steady or rising amount shows a government that is not living on borrowed resources.",
                     "formula": "Reported amount.",
                     "inputs": []
                 }
@@ -32,26 +97,29 @@
         {
             "id": "totals",
             "title": "Results of Operation",
-            "summary": "Income the government earned and the costs it recognized in the year, including non-cash ones.",
+            "summary": "The income the government earned in the year and the expenses it recorded, including costs that involve no cash, such as depreciation.",
             "metrics": [
                 {
                     "id": "performance.revenue",
                     "label": "Income",
-                    "meaning": "Government income for the fiscal year, including its share of national taxes. Not business income.",
+                    "meaning": "All income of the government for the year, including its share of national taxes. It is not the income of businesses.",
+                    "why": "It is the size of the resources the government had to work with.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "performance.expenses",
                     "label": "Expenses",
-                    "meaning": "Government expenses, including depreciation and transfers. Not cash paid.",
+                    "meaning": "The costs the government recorded for the year, including salaries, operations, depreciation and transfers. It is not the same as cash paid.",
+                    "why": "It shows the cost of running the government and its services.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "performance.surplus",
                     "label": "Net Income",
-                    "meaning": "Income less Expenses. A loss is shown in parentheses.",
+                    "meaning": "Income minus Expenses. A loss is shown in parentheses.",
+                    "why": "A surplus means the year's income covered its expenses; a loss means it did not.",
                     "formula": "Income minus Expenses.",
                     "inputs": ["performance.revenue", "performance.expenses"]
                 }
@@ -60,125 +128,46 @@
         {
             "id": "budget",
             "title": "Budget Execution",
-            "summary": "Appropriations are the budget the council passed. Allotments release it to offices. Obligations are commitments made, not cash paid.",
+            "summary": "How the approved budget moved from approval to commitment. See How a Budget Is Spent.",
             "metrics": [
                 {
                     "id": "budget.appropriations_current",
                     "label": "Current Appropriations",
-                    "meaning": "This year's budget, passed by ordinance.",
+                    "meaning": "The most the government may spend this year, approved by the Sangguniang Bayan or Sangguniang Panlungsod in the annual appropriation ordinance.",
+                    "why": "It shows what the government planned to spend for the year.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "budget.allotments_current",
                     "label": "Current Allotments",
-                    "meaning": "The part of this year's budget released to offices. Tuguegarao City only.",
+                    "meaning": "The part of this year's appropriations released to offices for use.",
+                    "why": "It shows how much of the approved budget offices were allowed to commit.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "budget.allotments_continuing",
                     "label": "Continuing Allotments",
-                    "meaning": "Unused budget from the year before that remains available. Tuguegarao City only.",
+                    "meaning": "Budget approved in an earlier year that remains available, usually for projects not yet finished.",
+                    "why": "It shows past commitments still being carried out.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "budget.obligations_current",
                     "label": "Current Obligations",
-                    "meaning": "Commitments such as contracts and payroll charged to this year's budget.",
+                    "meaning": "Amounts the government legally committed to pay this year, through contracts, salaries and purchase orders.",
+                    "why": "Compared with appropriations, it shows how much of the approved budget was actually put to work.",
                     "formula": "Reported amount.",
                     "inputs": []
                 },
                 {
                     "id": "budget.obligations_continuing",
                     "label": "Continuing Obligations",
-                    "meaning": "Commitments charged to continuing allotments. Tuguegarao City only.",
+                    "meaning": "Commitments made this year against budget carried over from earlier years.",
+                    "why": "It shows progress on projects funded in earlier years.",
                     "formula": "Reported amount.",
-                    "inputs": []
-                }
-            ]
-        },
-        {
-            "id": "revenue_sources",
-            "title": "Revenue Sources",
-            "summary": "Revenue by source as printed in the Statement of Financial Performance. National transfers can move revenue without a change in local business activity.",
-            "metrics": [
-                {
-                    "id": "revenue.tax",
-                    "label": "Tax Revenue",
-                    "meaning": "Taxes collected by the local government, as reported.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                },
-                {
-                    "id": "revenue.national_share",
-                    "label": "Share from National Collections",
-                    "meaning": "The local government share of national tax collections, as reported.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                },
-                {
-                    "id": "revenue.other_national_share",
-                    "label": "Other Shares from National Taxes",
-                    "meaning": "Other shares from national taxes, such as national wealth, as reported.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                },
-                {
-                    "id": "revenue.service_business",
-                    "label": "Service and Business Income",
-                    "meaning": "Income from services, fees and government business. Not private-business sales.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                },
-                {
-                    "id": "revenue.grants",
-                    "label": "Shares, Grants and Donations",
-                    "meaning": "Shares, grants and donations received, as reported.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                },
-                {
-                    "id": "revenue.other",
-                    "label": "Other Income",
-                    "meaning": "Gains and miscellaneous income, as reported.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                }
-            ]
-        },
-        {
-            "id": "business_taxes",
-            "title": "Business Taxes and Fees",
-            "summary": "General Fund collections tied to business, permits, markets and property. Never added to the consolidated totals.",
-            "metrics": [
-                {
-                    "id": "local.business_tax",
-                    "label": "Business Tax",
-                    "meaning": "The Business Tax line in the General Fund.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                },
-                {
-                    "id": "local.permit_fees",
-                    "label": "Permit Fees",
-                    "meaning": "Permit fee revenue in the General Fund.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                },
-                {
-                    "id": "local.market_operations",
-                    "label": "Market Operations",
-                    "meaning": "Receipts from government market operations.",
-                    "formula": "Reported amount.",
-                    "inputs": []
-                },
-                {
-                    "id": "local.real_property_tax",
-                    "label": "Real Property Tax",
-                    "meaning": "Basic real property tax, net of the reported discount.",
-                    "formula": "Basic Real Property Tax minus its discount.",
                     "inputs": []
                 }
             ]
@@ -192,6 +181,7 @@
                     "id": "active",
                     "label": "Active Businesses",
                     "meaning": "Businesses recorded as new or renewed for the year.",
+                    "why": "It shows how many businesses were operating.",
                     "formula": "Count of new and renewed business-year records.",
                     "inputs": []
                 },
@@ -199,6 +189,7 @@
                     "id": "new",
                     "label": "New Registrations",
                     "meaning": "Businesses newly registered in the year.",
+                    "why": "It shows how many businesses started.",
                     "formula": "Count of records marked new.",
                     "inputs": []
                 },
@@ -206,32 +197,11 @@
                     "id": "closed",
                     "label": "Closed Businesses",
                     "meaning": "Businesses formally closed in the year.",
+                    "why": "It shows how many businesses stopped operating.",
                     "formula": "Count of records marked closed.",
                     "inputs": []
                 }
             ]
-        }
-    ],
-    "notes": [
-        {
-            "id": "reading",
-            "title": "Reading the Table",
-            "text": "The Executive Summary lists each line as COA prints it, one column per fiscal year; a year opens its Yearly Summary. The Yearly Summary shows that year, the year before and the change between them. A loss or a fall in pesos is shown in parentheses. The Source line opens the COA report at the cited page. Change compares consecutive comparable years and does not rate performance. A missing figure says why."
-        },
-        {
-            "id": "coverage",
-            "title": "Coverage",
-            "text": "Fiscal years 2019 to 2025. Executive Summary totals cover all 29 towns for 2020 to 2024 and 13 towns for 2025. Financial Condition, Allotments, Continuing Obligations and breakdowns beyond totals are loaded for Tuguegarao City only. Full-year 2026 waits for a released report."
-        },
-        {
-            "id": "sum",
-            "title": "Sum of Reporting Towns",
-            "text": "The sum of the city and municipal governments that reported, not the provincial government. Coverage states how many of the 29 towns reported, and change uses only towns reporting both years."
-        },
-        {
-            "id": "limits",
-            "title": "What These Figures Are",
-            "text": "Government accounts. They are not private-business sales, GDP or a measure of economic growth. Sign-off checks the transcription, not the audit."
         }
     ]
 }

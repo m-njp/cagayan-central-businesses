@@ -159,6 +159,33 @@ export const FINDINGS: FindingEntry[] = [
         effect: 'The figures are kept under the municipality named in the title and introduction. Sign-off is not affected.',
     },
     {
+        kind: 'minor_difference',
+        family: 'report',
+        title: 'Difference of One Peso or Less',
+        checks: 'Every total, balance and change column is compared to the centavo.',
+        example:
+            'A report whose Total Assets are ₱0.32 more than Total Liabilities plus Government Equity.',
+        effect: 'Listed so reviewers know. A difference of ₱1.00 or less does not hold sign-off; a larger one does.',
+    },
+    {
+        kind: 'duplicate_across_governments',
+        family: 'reading',
+        title: 'Same Amount Under Two Governments',
+        checks: 'No amount may be recorded for the same line and year under two different governments.',
+        example:
+            'Income of ₱2,540,951.56 recorded for both Enrile and Solana for 2018.',
+        effect: 'Both figures wait for a reviewer; neither side is presumed right.',
+    },
+    {
+        kind: 'implausible_change',
+        family: 'reading',
+        title: 'Change of More Than Three Times',
+        checks: 'A figure of ₱1,000,000 or more is compared with the year before.',
+        example:
+            'Continuing Obligations of ₱31,396,189.10 for 2016 against ₱2,267,803.37 for 2015.',
+        effect: 'The figure waits for a reviewer to confirm it against the source. A real change can be this large.',
+    },
+    {
         kind: 'municipality_mismatch',
         family: 'report',
         title: 'Different Local Government',
@@ -174,7 +201,7 @@ export const FINDINGS: FindingEntry[] = [
         checks: "Each report's prior-year column is compared with the amount the previous report showed for its own year.",
         example:
             'Sanchez Mira Expenses for 2015: the 2015 report shows ₱65,588,576.68, while the 2016 report shows ₱65,372,576.88 for 2015.',
-        effect: 'The later report prevails, and the earlier amount is kept as history. Because the reports disagree, the figure is not signed off automatically.',
+        effect: 'The later report prevails, and the earlier amount is kept as history. A difference of ₱1.00 or less is signed off automatically with the later amount and stays listed here; a larger one waits for a reviewer.',
     },
     {
         kind: 'repeats_previous_year',
@@ -193,15 +220,6 @@ export const FINDINGS: FindingEntry[] = [
         example:
             'Gattaran 2024 heads its columns 2024 and 2023 but prints the 2023 amounts first, which both the 2023 report and the change column confirm.',
         effect: 'The amounts are assigned to the years those reports confirm.',
-    },
-    {
-        kind: 'differs_from_summary',
-        family: 'between_reports',
-        title: 'Workbook Differs From Summary',
-        checks: "The financial statement workbook's lines are added and compared with the Executive Summary.",
-        example:
-            'Workbook revenue lines that include transfers the Executive Summary excludes.',
-        effect: 'Shown for review only. The two documents may define the total differently.',
     },
     {
         kind: 'engine_disagreement',

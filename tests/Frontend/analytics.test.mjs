@@ -13,6 +13,48 @@ import {
     executiveSummary,
 } from '../../resources/js/lib/analytics.ts';
 
+await test('source-only AAPSI and Appendices reports remain workbook downloads', async (t) => {
+    const { registerHooks } = await import('node:module');
+    const hooks = registerHooks({
+        resolve(specifier, context, nextResolve) {
+            if (specifier === '@/lib/format')
+                return nextResolve(
+                    new URL('../../resources/js/lib/format.ts', import.meta.url)
+                        .href,
+                    context,
+                );
+            return nextResolve(specifier, context);
+        },
+    });
+    t.after(() => hooks.deregister());
+    const { groupCitationReports } =
+        await import('../../resources/js/lib/performance-format.ts');
+    const kinds = ['aapsi_workbook', 'appendices_workbook'];
+    const reports = groupCitationReports(
+        kinds.map((kind) => ({
+            documentKey: kind,
+            kind,
+            label: kind === 'aapsi_workbook' ? 'AAPSI' : 'Appendices',
+            town: 'Alcala',
+            fiscalYear: 2023,
+            reportYear: 2023,
+            page: null,
+            location: null,
+            url: `/source-workbooks/${kind}`,
+        })),
+    );
+    assert.deepEqual(
+        reports[0].reports.map((report) => report.links),
+        kinds.map((kind) => [
+            {
+                href: `/source-workbooks/${kind}`,
+                text: 'Download Workbook',
+                page: null,
+            },
+        ]),
+    );
+});
+
 const point = (value = '10', overrides = {}) => ({
     state: 'shown',
     value,
@@ -193,6 +235,7 @@ await test('formatting retains notes and groups deduplicated citations by report
         changeLabel,
         observationLabel,
         observationNote,
+        reasonLabel,
         citationReports,
         percentChangeLabel,
     } = await import('../../resources/js/lib/performance-format.ts');
@@ -238,11 +281,18 @@ await test('formatting retains notes and groups deduplicated citations by report
         }),
         '13 of 29 towns. Change over 12 reporting both years. Restated in the 2025 report',
     );
+    // The reason belongs to the N/A cell's tooltip, not the row note.
     assert.equal(
         observationNote(
             point(null, { state: 'unavailable', reason: 'not_collected' }),
         ),
-        'The COA workbook for this year has not been added yet',
+        null,
+    );
+    assert.equal(
+        reasonLabel(
+            point(null, { state: 'unavailable', reason: 'not_collected' }),
+        ),
+        'The COA report for this year has not been added yet',
     );
     const source = (overrides) => ({
         kind: 'executive_summary',
@@ -476,15 +526,25 @@ await test('finance metric and range selections use local history and skip repea
     };
     const url = (query) => '?' + new URLSearchParams(query);
     const props = (existing, next) => ({ ...existing, filters: next });
-    pushFilters(current, { metric: 'revenue.tax', period: '5y' }, url, props);
+    pushFilters(
+        current,
+        { metric: 'performance.expenses', period: '5y' },
+        url,
+        props,
+    );
     const next = calls[0].props({}).filters;
-    assert.equal(next.metric, 'revenue.tax');
+    assert.equal(next.metric, 'performance.expenses');
     assert.equal(next.period, '5y');
     assert.equal(
         new URLSearchParams(calls[0].url).get('metric'),
-        'revenue.tax',
+        'performance.expenses',
     );
-    pushFilters(next, { metric: 'revenue.tax', period: '5y' }, url, props);
+    pushFilters(
+        next,
+        { metric: 'performance.expenses', period: '5y' },
+        url,
+        props,
+    );
     assert.equal(calls.length, 1);
     pushFilters(next, { measure: 'budget' }, url, props);
     assert.equal(calls[1].props({}).filters.metric, null);

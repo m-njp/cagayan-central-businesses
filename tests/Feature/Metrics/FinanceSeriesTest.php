@@ -90,9 +90,6 @@ it('derives only Net Income; the retired shares, rates and per resident figures 
     TownFact::factory()->verified()->for($this->town)->measure(TownMeasure::Population, 2024, 2000)->create();
     signed($this->town, 'performance.revenue', 2024, '1000.00');
     signed($this->town, 'performance.expenses', 2024, '800.00');
-    signed($this->town, 'revenue.tax', 2024, '150.00');
-    signed($this->town, 'revenue.service_business', 2024, '50.00');
-    signed($this->town, 'revenue.national_share', 2024, '700.00');
 
     $this->artisan('metrics:refresh')->assertSuccessful();
 

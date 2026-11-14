@@ -9,46 +9,25 @@ from pathlib import Path
 from coa.intake import EventOutput, scan
 from coa.confidence import confidenceScore
 from coa.lines import load
-from coa import summary, workbook
+from coa import summary
 
 ROOT = Path(__file__).resolve().parents[3]
-FS = ROOT / "data/towns/financial-statements/2025/Tuguegarao-City/Tuguegarao-City-FS-2025.xlsx"
 PDF = ROOT / "data/towns/executive-summaries/2025/Tuguegarao-City/Tuguegarao-City-Executive-Summary-2025.pdf"
 LINES, ALIASES = load(ROOT / "data/towns/finances/lines.csv")
 
 
-def testProgressAndDefaultIntakeHaveIdenticalFinancialOutput(tmp_path):
+def testProgressAndDefaultIntakeHaveIdenticalFinancialOutput():
     events = []
 
-    streamed = scan(FS, "fs_workbook", 2025, tmp_path, 40, 104857600, events.append)
-    plain = scan(FS, "fs_workbook", 2025, tmp_path, 40, 104857600)
+    streamed = scan(PDF, 2025, events.append)
+    plain = scan(PDF, 2025)
 
     assert streamed == plain
     assert streamed['confidence'] == confidenceScore(streamed['figures'], streamed['issues'])
-    assert events[0]["stage"] == "inspecting"
-    assert any(event["type"] == "scan" and event["location"] == "8 - Financial Performance 2025" for event in events)
-    assert any(event["type"] == "figure" and event["figure"]["value"] == "430895820.24" for event in events)
+    assert events[0]["stage"] == "scanning"
+    assert any(event["type"] == "figure" and event["figure"]["value"] == "1679019473.60" for event in events)
     assert events[-1]["type"] == "replace"
     assert events[-1]["figures"] == streamed["figures"]
-
-
-def testEachWorkbookSheetIsReadOnceAndFileCanBeRemoved(tmp_path, monkeypatch):
-    source = tmp_path / "source.xlsx"
-    source.write_bytes(FS.read_bytes())
-    original = workbook.grid
-    scanned = []
-
-    def counted(sheet):
-        scanned.append(sheet.title)
-        return original(sheet)
-
-    monkeypatch.setattr(workbook, "grid", counted)
-    result = workbook.readFs(source, 2025, LINES, ALIASES)
-    source.unlink()
-
-    assert result.figures
-    assert len(scanned) == len(set(scanned))
-    assert not source.exists()
 
 
 def testFallbackDoesNotReadAnEngineTwice(monkeypatch):
@@ -69,7 +48,7 @@ def testFallbackDoesNotReadAnEngineTwice(monkeypatch):
 
 
 def testCommandFlushesEventsBeforeExitAndKeepsPlainJsonCompatible(tmp_path):
-    command = [sys.executable, "-u", "-m", "coa.intake", str(PDF), "executive_summary", "2025", str(tmp_path), "--members", "40", "--bytes", "104857600"]
+    command = [sys.executable, "-u", "-m", "coa.intake", str(PDF), "2025"]
     # communicate() must not bypass bytes read ahead by a buffered text readline().
     process = subprocess.Popen(command + ["--events"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
     try:
@@ -81,7 +60,7 @@ def testCommandFlushesEventsBeforeExitAndKeepsPlainJsonCompatible(tmp_path):
             process.kill()
             process.communicate()
 
-    assert first["stage"] == "inspecting"
+    assert first["stage"] == "scanning"
     assert stillRunning
     assert process.returncode == 0, error
     events = [json.loads(line) for line in remaining.splitlines()]
@@ -96,7 +75,7 @@ def testCommandFlushesEventsBeforeExitAndKeepsPlainJsonCompatible(tmp_path):
 def testUnreadableFileEmitsSafeFailureWithoutResult(tmp_path):
     source = tmp_path / "broken.pdf"
     source.write_text("not a PDF", encoding="utf-8")
-    process = subprocess.run([sys.executable, "-m", "coa.intake", str(source), "executive_summary", "2025", str(tmp_path), "--members", "40", "--bytes", "104857600", "--events"], capture_output=True, text=True, encoding="utf-8")
+    process = subprocess.run([sys.executable, "-m", "coa.intake", str(source), "2025", "--events"], capture_output=True, text=True, encoding="utf-8")
 
     events = [json.loads(line) for line in process.stdout.splitlines()]
     assert process.returncode != 0
@@ -106,7 +85,7 @@ def testUnreadableFileEmitsSafeFailureWithoutResult(tmp_path):
 
 
 def testWindowsPipeEncodingPreservesUnicodeSourceLabels(tmp_path):
-    process = subprocess.run([sys.executable, "-m", "coa.intake", str(PDF), "executive_summary", "2025", str(tmp_path), "--members", "40", "--bytes", "104857600", "--events"],
+    process = subprocess.run([sys.executable, "-m", "coa.intake", str(PDF), "2025", "--events"],
         env={**os.environ, "PYTHONIOENCODING": "cp1252"}, capture_output=True, check=True)
 
     events = [json.loads(line) for line in process.stdout.decode("utf-8").splitlines()]

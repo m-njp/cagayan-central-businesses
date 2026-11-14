@@ -6,6 +6,7 @@ namespace App\Data;
 final readonly class ReportDifferenceItem
 {
     public function __construct(
+        public string $document,
         public string $family,
         public string $severity,
         public string $kind,

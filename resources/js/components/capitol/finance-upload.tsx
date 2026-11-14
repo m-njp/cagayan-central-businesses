@@ -4,26 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Disclosure } from '@/components/ui/disclosure';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { formatDate } from '@/lib/format';
 import { store } from '@/routes/capitol/finances/uploads';
 import type { FinanceReport } from '@/types/finance';
 
-const ACCEPT: Record<string, string> = {
-    executive_summary: '.pdf',
-    fs_workbook: '.xlsx',
-    annex_workbook: '.xlsx',
-    archive: '.zip',
-};
-
-/** Choose the report and its file; the parser reads it on the queue and the figures arrive as pending. */
+/** Choose the Executive Summary PDF; the parser reads it on the queue and the figures arrive as pending. */
 export function FinanceUploadForm({
     report,
     onSaved,
@@ -47,38 +33,19 @@ export function FinanceUploadForm({
     };
     return (
         <form onSubmit={submit} className="flex flex-col gap-4">
-            <Field className="gap-1">
-                <FieldLabel htmlFor="upload-kind">Report</FieldLabel>
-                <Select
-                    value={form.data.kind}
-                    onValueChange={(kind) => form.setData('kind', kind)}
-                >
-                    <SelectTrigger id="upload-kind" className="w-full">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {report.uploadKinds.map((kind) => (
-                            <SelectItem key={kind.value} value={kind.value}>
-                                {kind.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                {form.errors.kind && (
-                    <FieldError>{form.errors.kind}</FieldError>
-                )}
-            </Field>
             {form.progress && (
                 <div role="status" className="font-mono type-meta tabular-nums">
                     Uploading {form.progress.percentage}%
                 </div>
             )}
             <Field className="gap-1">
-                <FieldLabel htmlFor="upload-file">File</FieldLabel>
+                <FieldLabel htmlFor="upload-file">
+                    Executive Summary PDF
+                </FieldLabel>
                 <Input
                     id="upload-file"
                     type="file"
-                    accept={ACCEPT[form.data.kind]}
+                    accept=".pdf"
                     onChange={(event) =>
                         form.setData('file', event.target.files?.[0] ?? null)
                     }

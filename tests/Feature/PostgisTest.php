@@ -7,7 +7,8 @@ uses(RefreshDatabase::class);
 
 test('tests run against the PostGIS test database', function () {
     expect(DB::connection()->getDriverName())->toBe('pgsql')
-        ->and(DB::connection()->getDatabaseName())->toBe('cagayan_business_test');
+        // Parallel runs add a worker suffix to the database name.
+        ->and(DB::connection()->getDatabaseName())->toStartWith('cagayan_business_test');
 
     $version = DB::scalar('SELECT PostGIS_Version()');
 

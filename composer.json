@@ -77,6 +77,10 @@
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py extract"
         ],
+        "data:finances:sample": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py sample"
+        ],
         "data:finances:audit": [
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py audit"
@@ -93,6 +97,10 @@
         "data:finances:collect": [
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py collect"
+        ],
+        "data:finances:collect-workbooks": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py collect-workbooks"
         ],
         "doctor": [
             "@php artisan app:doctor"
@@ -115,15 +123,7 @@
             "@test:frontend",
             "@test"
         ],
-        "test:frontend": [
-            "@test:sources",
-            "@test:analytics",
-            "@test:maps",
-            "@test:categories",
-            "@test:trend",
-            "@test:geo",
-            "@test:businesses"
-        ],
+        "test:frontend": "node --experimental-strip-types --test \"tests/Frontend/*.test.mjs\"",
         "test:maps": "node --experimental-strip-types --test tests/Frontend/finance-map.test.mjs",
         "test:sources": "node --experimental-strip-types --test tests/Frontend/source-library.test.mjs",
         "test:trend": "node --experimental-strip-types --test tests/Frontend/trend.test.mjs",
@@ -138,7 +138,12 @@
             "@php artisan config:clear --ansi",
             "@lint:check",
             "@types:check",
-            "@php artisan test"
+            "@php artisan test --parallel"
+        ],
+        "test:fast": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan config:clear --ansi",
+            "@php artisan test --parallel"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

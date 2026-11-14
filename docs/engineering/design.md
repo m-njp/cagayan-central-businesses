@@ -69,6 +69,12 @@ Owner corrections, "26-11-08", after two rejected versions of the finance upload
 - Prefer deleting code to adding it. Server events carry facts; the browser formats them.
 - Owner addition, "26-11-12": completed parsing shows one compact Automated Confidence percentage and a cross-check sentence below 100. At 100, state that source verification is still required. Use the Python check score, never task completion as confidence; older unscored uploads omit it. No extra panel or approval note.
 
+### Guides
+
+Every guide uses `components/guide-dialog.tsx` (owner, 26-11-14): `GuideDialog` draws the blur overlay, the tabs at the left (a scrolling row on phones), arrow-key movement and the quiet scrollbar; `GuideSection` is one titled part. Pass `anchor` to bring an entry inside the current tab into view, and give that entry the `GUIDE_TARGET` class so a reader who followed a link sees which entry it was. The Government Finances Guide and the Report Differences Guide both use it. Never build a guide as one long scrolling page or copy the tab markup.
+
+In the Report Differences Guide the three categories are tabs, each with its meaning and its findings. A finding's name in the findings view opens the guide on that category, scrolled to the finding and marked.
+
 ### Focus Overlay
 
 Use `components/ui/focus-dialog.tsx` for parsing progress, the report ZIP, the Home map and the Data Entry guide. Parsing and ZIP preparation also share `TaskProgress`.
@@ -229,7 +235,7 @@ Page titles: pass only the page name to `<Head title="Home" />`. The app adds it
 | Shape | Let `rounded-*` resolve to 2px. Hairlines between rows | `rounded-[12px]`, pill buttons, heavy shadows |
 | Layout | Build on the existing layout. Lead with the answer and let the next section peek in | Redesigning a page that only needed tweaks, empty hero padding, a sticky header, a top nav bar on public pages |
 | Map | Same-size dots shaded by value, a select that does the same job, details beside the map | Unrequested legends, dots that shrink until they vanish, a source line under every figure, a map as the only way to pick a place |
-| Copy | Title Case headings and buttons, sentences for text, one year and source per group | Repeated helper paragraphs, dangling statistics, sentence case buttons, separators in titles, "N/A", "0" for missing |
+| Copy | Title Case headings and buttons, sentences for text, one year and source per group | Repeated helper paragraphs, dangling statistics, sentence case buttons, separators in titles, "0" for missing (finance table cells read N/A, 26-11-13) |
 | Motion | Short fades and lifts behind `motion-safe:` | Bounce, parallax, motion that blocks reading |
 | States | Loading skeleton, empty message, "Not available", "Hidden to protect individual businesses", error | A blank area, a spinner forever, `0` |
 | Access | Keyboard for every control, visible focus ring, `aria-label` on icon buttons and map places | Hover-only information, tiny targets under 40px |
@@ -263,7 +269,7 @@ Page titles: pass only the page name to `<Head title="Home" />`. The app adds it
 - Use the same reading and keyboard order at every width. Below 1280 px, stack the map, selected area, finance history, ranking and authorized review queue in that order. Keep these tiles in source order and verify the layout at 375, 1280 and 1440 px. [W3C Grid guidance on reading order](https://www.w3.org/TR/css-grid/#order-accessibility)
 - Put Municipality and Year on one row when the panel is at least 25 rem wide. Stack them when the controls need more room. Keep the same order when the user drills down to barangays.
 - Show the smaller movement arrow and place count beside the semibold rank number. Put the comparison detail in a tooltip on hover and keyboard focus.
-- Use native scrollbars with shared theme colors, including inside tables. Use the thin variant for fine pointers and keep the system defaults in forced colors. [MDN scrollbar styling](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scrollbars_styling)
+- Use native scrollbars with shared theme colors, including inside tables. Use the thin variant for fine pointers and keep the system defaults in forced colors. A scroll area inside an overlay uses the `scrollbar-quiet` utility (owner, 26-11-14): no track, a faint thumb that darkens on hover or focus, and a stable gutter so content does not shift. [MDN scrollbar styling](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scrollbars_styling)
 
 ### Home
 
@@ -350,7 +356,7 @@ Used by the business map (P1) and listing (P2), and by the Capitol directory (C1
 | `map/business-map.tsx`, `map/lazy-business-map.tsx` | The one business map: barangay outlines, storefront dots, a business pin, and with `onPick` the form's pin picker |
 | `analytics/analytics-panels.tsx`, `charts/finance-panel.tsx` | The Government Finances card and its ledger table, shared by Economy and Capitol Analytics |
 | `analytics/source-line.tsx` | Collapsed COA Sources, grouped by year and report, with direct PDF page or workbook links |
-| `analytics/analytics-help.tsx` | The Help sheet in the Government Finances header |
+| `analytics/finance-guide.tsx` | The Government Finances Guide, its Guide button and the row labels that open it |
 | `app-bottom-bar.tsx`, `appearance-toggle.tsx` | The shell |
 
 - **One primary button per screen or area.** Everything else is outline or ghost.
@@ -533,9 +539,9 @@ Executive Summary 2025 p. 2
 
 **Sources, once.** The only source on the card is the collapsed COA Sources disclosure under a Yearly Summary, grouped by report year (26-11-11; it replaced the flat Source line): one underlined link per distinct report page, such as "Executive Summary 2025 p. 2", opening our stored copy of the COA PDF at that page (`public.finance-sources.show` plus `#page=N`). A workbook figure links once per report ("Financial Statements 2025") and downloads. A Sum of Reporting Towns shows the plain line "COA Annual Audit Reports" with no links. Calculated rows reuse their inputs' citations. Never print a run of identical citations, and never put a source, fiscal-year phrase or sign-off text in a tooltip, a row, a chart or a footer. There is no Source Details drawer and no Year Details control. All evidence lives in one catalog entry per figure (`catalog.sources`); observations only point to it.
 
-**Help.** A Help sheet opens from the card header, never beside the page title. It is short: one sentence of introduction, then native disclosure groups (Reading the Table, Coverage, Sum of Reporting Towns, What These Figures Are, Measures), the first open. Measures lists each measure as its label, one line of meaning and, where it is calculated, its formula. Longer definitions stay in `docs/engineering/metrics.md` and `docs/product/analytics-guide.md`. Show keeps its contextual FieldHelp. No topic select, no marketing copy.
+**Government Finances Guide (26-11-13, replaces the Help sheet).** The owner asked for help that is easier to use than a sheet at the right. The full guide opens in the shared blur overlay (`components/ui/focus-dialog.tsx`), like the Report Differences Guide, from the icon Guide button in the card header. Since "26-11-14" its sections are tabs listed at the left (a scrolling row above the content on phones), one shown at a time, so the guide is no longer one long scroll: How to Read the Table, Where the Figures Come From, Sum of Reporting Towns, each section with its lines, Reading N/A and What These Figures Are Not. How a Budget Is Spent (four numbered steps) sits inside Budget Execution. Arrow keys move between tabs. The content area uses `scrollbar-quiet`. Each line reads its meaning, then one sentence on why it matters for governance or business, then its formula only when calculated. Every row label in the tables is a quiet button that opens the guide on that line's tab, scrolled to the line; an N/A cell shows its reason on hover, focus or a first tap, and a further select opens Reading N/A. Wording is formal and plain for any citizen or business owner. Content lives in `resources/content/analytics-guide.json` and `docs/product/analytics-guide.md`, kept together by a test. Show keeps its contextual FieldHelp. No topic select or marketing copy.
 
-**Tuguegarao City.** Executive Summary totals cover every town, but breakdowns beyond totals are loaded for Tuguegarao City only. A measure another town lacks stays in the Show list, disabled, with the hint "Tuguegarao City Only" (or "Not Loaded for This Town" when several towns have it), so no one lands on an empty panel. Home's About the Data says the same in one sentence. Barangay population is Tuguegarao City only.
+**Coverage.** Every Executive Summary line loads for all 29 governments (D47, 26-11-13). A measure a town lacks stays in the Show list, disabled, with the hint "{Town} Only" or "Not Loaded for This Municipality", so no one lands on an empty panel. Barangay population is Tuguegarao City only, and Home's About the Data says so.
 
 **Simulated data.** Off by default (`CAGAYAN_SIMULATED`, D37). While off there are no business records, no Business Activity Over Time section, no Simulated data tag. While on, the tag appears in the layout and Business Activity Over Time returns, built from the same table. The Community Wishes on Economy are sample wishes for Tuguegarao City and carry a `type-label` "Sample Data" beside the heading; they have no source footer or source tooltip.
 
@@ -611,7 +617,7 @@ User-approved simplification for public Economy and Capitol Analytics. It supers
 - **Net Income.** Income minus Expenses (M19). A loss reads in accounting parentheses, (₱6.54M), with no triangle and no green or red, everywhere: the table, Yearly Summary, Trends, chart tooltips and both economic map panels. Arrows remain only beside year cells, as direction, never a rating.
 - **Words.** Income, Expenses and Net Income under the Government Finances heading; "Government Income" on map legends, which have no such heading. The Show group formerly called Government Totals is Results of Operation.
 - **Charts.** Below the table, side by side from `lg`: Results of Operation (Income and Expenses lines) and Financial Condition (Liabilities and Government Equity stacked, so each bar is Assets), with `--chart-*` tokens, lazy loaded, the table as their alternative.
-- **Missing.** A row a town lacks reads Not available in every cell with the reason once under its label, such as "Loaded for Tuguegarao City only" (M35). Never `0`.
+- **Missing.** A missing figure reads N/A in muted text, never `0` or blank (owner, 26-11-13). Its accessible name is "Not available"; the reason, such as "Not in the COA report for this year", shows in its tooltip and the guide explains every reason. Row notes keep only coverage and restatement.
 - **Sources.** One COA Sources disclosure grouped by report year, one link per distinct report page, sorted by page.
 
 ## Finance Report Polish "26-11-03"
@@ -620,13 +626,13 @@ Owner-approved polish of the Executive Summary View after the rejected rebuild w
 
 **The question.** How did this town's government do year after year, in COA's own words?
 
-- **Header.** One row beside Government Finances: Show (only in Charts or one year), 3Y 5Y All chips, a Year select that opens the Yearly Summary, an icon Table or Charts toggle (Charts is the former Trends) and an icon Help button. No year-range caption; years appear only in column headings and axes. Every control is local history.
+- **Header.** One row beside Government Finances: Show (only in Charts or one year), 3Y 5Y All chips, a Year select that opens the Yearly Summary, an icon Table or Charts toggle (Charts is the former Trends) and an icon Guide button (Government Finances Guide). No year-range caption; years appear only in column headings and axes. Every control is local history.
 - **Table.** Visible column lines, alternating solid row shades (`bg-card`, `bg-muted`), Title Case section rows in `type-item`, and an arrow in each year cell comparing it with the year before. Net Income has no arrow.
 - **Change marks.** Green up arrow ↑ and red down arrow ↓ from `lib/trend.ts`, direction only, never a rating.
 - **Charts.** Results of Operation shows Income and Expenses as paired bars with Net Income as a line over the zero line; Financial Condition keeps its stacked bars. Both share one compact tooltip card (year, then swatch, label and exact amount per series) and hover the same year together.
 - **Source.** One wrapping line of links, never a vertical stack.
 - **Capitol only.** A compact figure strip above the table: Income, Expenses, Net Income and Assets for the newest reported year, short amounts through `ExactAmount`, with the change. Public Economy has no strip; it leads with the yearly history.
-- **Words.** Revenue lines use the Statement of Financial Performance's own labels; the SCBAA group is Budget and Actual Amounts (metrics.md M21, M23).
+- **Words.** Lines use the Executive Summary's own labels. Revenue Sources and Budget and Actual Amounts are retired with workbook reading (D49).
 
 ## Dense Data Rule "26-11-03"
 
@@ -647,11 +653,9 @@ Supersedes the chart lines in "Finance Report Polish". One chart per measure, ch
 | :- | :- | :- |
 | Results of Operation | Income and Expenses as overlapping areas, Net Income as a line over a zero line | One chart instead of separate Income, Expenses and Net Income charts; the gap between the areas is the result. Not stacked: Income plus Expenses means nothing |
 | Financial Condition | Liabilities and Government Equity as stacked areas | Their sum is Assets, so the top edge reads as Assets; the tooltip lists all three |
-| Revenue Sources | Stacked areas | The reported sources add up to Income |
 
 Stacked parts use one hue, the `--map-*` ramp, darkest at the base, with light fills (30%) and solid edges, so they read as layers of one total. Unrelated `--chart-*` colors are only for series compared side by side (owner, 26-11-03).
 | Budget Execution | Grouped bars per year | Appropriations, allotments and obligations are compared side by side, not added |
-| Business Taxes and Fees | Lines | Separate General Fund collections with no reported total |
 
 No synchronized tooltips across charts. Missing years stay gaps. The Charts view is that one chart above the same dense table; it has no figure tiles and no separate Net Income chart. Budget and Actual Amounts is withdrawn from display (metrics.md M23).
 
@@ -682,7 +686,8 @@ Owner correction: tables, tabs and titles sat straight on the page background, s
 
 Owner corrections on the Capitol Report Differences page ([plan](../plan/archive/26-11-12-coa-accuracy-and-differences.md), D45).
 
-- **Guide in the focus overlay.** The page's help is the full Report Differences Guide in `components/ui/focus-dialog.tsx`, opened from the Guide button in the page header, never a side sheet. Each finding name in a report's findings opens the guide at its entry; the findings view steps aside while the guide is open and returns when it closes.
+- **One year at a time (owner, 26-11-14).** The page is one table for the chosen report year: a row per municipality with Within the Report, Between Reports, Extraction Limits, Total and Review. Review reads Verified or Pending in words through `FigureStatus`. Report Year is a select in the right-hand `WorkspaceFilters` panel, newest first, with no counts beside the years. A row opens that report's findings through `RowLink`. Never restore the municipality by year grid, coloured dots without words, blank cells, category tabs or a key line under the filters.
+- **Guide in the focus overlay.** The page's help is the full Report Differences Guide through `components/guide-dialog.tsx`, opened from the Guide button in the page header, never a side sheet. Each finding name in a report's findings opens the guide at its entry; the findings view steps aside while the guide is open and returns when it closes.
 - **One source for findings.** Category names, finding names and each finding's check, example and effect live in `pages/capitol/report-differences/finding-guide.ts`. The table, the findings view and the guide read it; the parser's messages describe the specific case.
 - **Categories:** Within the Report, Between Reports and Extraction Limits. Anything that may be the parser's own limit is an Extraction Limit, never attributed to the Commission on Audit or the municipality.
 - **Formal, neutral wording.** Each finding names the line, the years, the report and the amounts in pesos, in the terms of the Annual Audit Report (Increase (Decrease) column, Statement of Financial Position, prior-year column). Where a report contradicts itself, say so and state that it cannot be determined which side is wrong; never assert that a heading or an amount is the error without evidence from another report. Findings are not audit findings and say nothing about the use of funds.

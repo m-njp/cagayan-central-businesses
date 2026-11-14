@@ -6,7 +6,6 @@ use App\Enums\FinanceUploadStatus;
 use App\Models\FinanceDocument;
 use App\Models\FinanceLine;
 use App\Models\FinanceUpload;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /** @phpstan-type SourceIssue array{severity: string, kind: string, line: string, message: string, location: ?string, fiscal_year?: int} */
@@ -31,15 +30,9 @@ final class FinanceReportIssues
         }
         $hashes = $documents->pluck('sha256')->filter()->all();
         $knownLines = FinanceLine::query()->pluck('code')->flip()->all();
-        $archives = [];
-        foreach ($documents as $document) {
-            if (preg_match('~^'.FinanceUpload::FOLDER.'/([a-f0-9-]{36})-(?:fs_workbook|annex_workbook)\.xlsx$~', $document->file ?? '', $match)) {
-                $archives[] = $match[1];
-            }
-        }
         $uploads = FinanceUpload::query()->where('municipality_id', $documents->first()->municipality_id)
             ->where('fiscal_year', $year)
-            ->where(fn (Builder $query) => $query->whereIn('sha256', $hashes)->orWhereIn('public_id', $archives))
+            ->whereIn('sha256', $hashes)
             ->orderByDesc('updated_at')->orderByDesc('id')->get();
 
         foreach ($documents as $document) {
@@ -61,9 +54,7 @@ final class FinanceReportIssues
                 }
                 $kind = is_string($row['document_kind'] ?? null) ? $row['document_kind'] : null;
                 if ($kind !== null && $kind !== $document->kind->value) {
-                    if ($upload->kind !== 'archive') {
-                        $issues[$document->id][] = $this->mismatchedEvidence();
-                    }
+                    $issues[$document->id][] = $this->mismatchedEvidence();
 
                     continue;
                 }
@@ -108,7 +99,6 @@ final class FinanceReportIssues
             'checksum_mismatch', 'unsupported_units', 'unsupported_fund_scope', 'municipality_mismatch', 'municipality_unconfirmed',
             'document_year_mismatch', 'header_year_mismatch', 'header_year_context_changed', 'header_years_missing', 'header_years_repeated',
             'no_text_layer', 'parser_failed', 'issue_source_mismatch', 'digits_unconfirmed', 'engine_failed', 'no_financial_rows',
-            'ambiguous_sheets', 'year_columns_ambiguous',
         ], true);
         if (! $documentWide) {
             if ($issue['line'] !== '' && $issue['line'] !== $line) {
@@ -118,7 +108,7 @@ final class FinanceReportIssues
                 return false;
             }
         }
-        if (in_array($issue['kind'], ['balance_mismatch', 'net_income_mismatch', 'revenue_sources_mismatch', 'change_mismatch'], true)) {
+        if (in_array($issue['kind'], ['balance_mismatch', 'net_income_mismatch', 'change_mismatch'], true)) {
             return false;
         }
 
@@ -129,8 +119,7 @@ final class FinanceReportIssues
 
     private function matches(FinanceUpload $upload, FinanceDocument $document): bool
     {
-        return ($upload->kind === $document->kind->value && $upload->sha256 === $document->sha256)
-            || ($upload->kind === 'archive' && $document->file === FinanceUpload::FOLDER."/{$upload->public_id}-{$document->kind->value}.xlsx");
+        return $upload->kind === $document->kind->value && $upload->sha256 === $document->sha256;
     }
 
     /**
@@ -182,7 +171,7 @@ final class FinanceReportIssues
                 continue;
             }
             foreach ($matched as $document) {
-                if (! $this->belongsToDocument($row, $document, $lineSources)) {
+                if (($row['document_kind'] ?? '') !== '' && $row['document_kind'] !== $document->kind->value) {
                     continue;
                 }
                 if (($row['document_sha256'] ?? '') !== '' && $row['document_sha256'] !== $document->sha256) {
@@ -203,37 +192,6 @@ final class FinanceReportIssues
         }
 
         return $issues;
-    }
-
-    /** @param array<string, string> $row
-     * @param  array<string, string>  $lineSources
-     */
-    private function belongsToDocument(array $row, FinanceDocument $document, array $lineSources): bool
-    {
-        if (($row['document_kind'] ?? '') !== '') {
-            return $row['document_kind'] === $document->kind->value;
-        }
-        $source = $lineSources[$row['line_code'] ?? ''] ?? '';
-        $kind = match ($source) {
-            'executive_summary' => 'executive_summary',
-            'fs_workbook', 'fs_totals', 'fs_scbaa' => 'fs_workbook',
-            'annex_workbook' => 'annex_workbook',
-            default => null,
-        };
-        if ($kind !== null) {
-            return $kind === $document->kind->value;
-        }
-        $issueKind = $row['kind'] ?? '';
-        if (preg_match('/^(?:header_|engine_|digits_|no_highlights|found_after_section)/', $issueKind)) {
-            return $document->kind->value === 'executive_summary';
-        }
-        if (str_contains($row['message'] ?? '', '.xlsx') || preg_match('/^(?:sheet_|year_columns_|national_share_|revenue_sources_)/', $issueKind)) {
-            return $document->kind->value !== 'executive_summary'
-                && (str_contains($row['message'] ?? '', basename($document->file ?? '')) || ! str_contains($row['message'] ?? '', '.xlsx'));
-        }
-
-        // Legacy issue rows without a kind or line cannot safely be narrowed further.
-        return true;
     }
 
     /** @return SourceIssue */

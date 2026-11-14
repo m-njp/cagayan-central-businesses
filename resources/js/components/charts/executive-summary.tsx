@@ -1,3 +1,4 @@
+import { GuideTerm } from '@/components/analytics/finance-guide';
 import { lazy } from 'react';
 import { SourceLine } from '@/components/analytics/source-line';
 import { Figure } from '@/components/charts/finance-panel';
@@ -29,7 +30,7 @@ const numberCell =
     'px-1.5 text-right font-mono whitespace-nowrap tabular-nums sm:px-2';
 const labelCell = 'h-auto py-1.5 font-normal whitespace-normal';
 
-/** The note every cell of a row shares, such as a line loaded for one town only; none when the cells differ. */
+/** The note every cell of a row shares, such as the towns behind a Sum of Reporting Towns; none when the cells differ. */
 function rowNote(history: FinancialHistory, metricId: string): string | null {
     const notes = history.rows.map((row) =>
         observationNote(row.observations[metricId]),
@@ -144,7 +145,10 @@ export function ExecutiveSummary({
                                         scope="row"
                                         className={labelCell}
                                     >
-                                        {metric.label}
+                                        <GuideTerm
+                                            entry={metric.id}
+                                            label={metric.label}
+                                        />
                                         {note && (
                                             <span className="block type-data text-muted-foreground">
                                                 {note}
