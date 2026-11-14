@@ -5,14 +5,16 @@ namespace App\Queries;
 use App\Data\PublicFinanceCitation;
 use App\Enums\FinanceFigureStatus;
 use App\Models\FinanceFigure;
+use App\Models\FinanceLine;
 use App\Services\PublicExecutiveSummaries;
+use App\Services\PublicWorkbooks;
 use Illuminate\Support\Collection;
 use stdClass;
 
 /** Public source metadata only. No reviewer identity, internal notes, or pending values leave the ledger. */
 final class FinanceEvidenceQuery
 {
-    public function __construct(private PublicExecutiveSummaries $summaries) {}
+    public function __construct(private PublicExecutiveSummaries $summaries, private PublicWorkbooks $workbooks) {}
 
     /**
      * @param  Collection<int, stdClass>  $stats
@@ -24,6 +26,7 @@ final class FinanceEvidenceQuery
         $sources = [];
         $inputs = [];
         $figures = FinanceFigure::query()->where('status', FinanceFigureStatus::Verified)
+            ->whereIn('line_code', FinanceLine::query()->where('displayed', true)->select('code'))
             ->with(['document', 'municipality'])->get();
         $files = $this->publicFiles($figures);
         foreach ($figures as $figure) {
@@ -81,6 +84,21 @@ final class FinanceEvidenceQuery
                 page: null,
                 location: null,
                 url: route('public.source-reports.show', $key, absolute: false),
+            );
+        }
+        // Every registered workbook, not only those with a signed-off figure, so each one can be downloaded.
+        foreach ($this->workbooks->files() as $key => $workbook) {
+            $originals[$key] = $workbook;
+            $citations[$key] = new PublicFinanceCitation(
+                documentKey: $key,
+                kind: $workbook['kind'],
+                label: $workbook['label'],
+                town: $workbook['town'],
+                fiscalYear: $workbook['year'],
+                reportYear: $workbook['year'],
+                page: null,
+                location: null,
+                url: route('public.source-workbooks.show', $key, absolute: false),
             );
         }
         foreach ($figures as $figure) {

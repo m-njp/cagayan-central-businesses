@@ -104,13 +104,13 @@ export function entryWorkflows({
                 {
                     id: 'enter',
                     label: 'Enter Figures Manually',
-                    detail: 'Select Enter Report to open the Executive Summary grid. Choose the report or workbook source, enter the figures, and select Save for Review.',
+                    detail: 'Select Enter Report to open the Executive Summary grid. Choose the report source, enter the figures, and select Save for Review.',
                     row: 1,
                 },
                 {
                     id: 'upload',
                     label: 'Upload and Read a Report',
-                    detail: 'Select Upload Report and choose the audit report or workbook. Follow the parsing status, then select View Figures. If parsing fails, use Retry Parsing.',
+                    detail: 'Select Upload Report and choose the Executive Summary PDF. Follow the parsing status, then select View Figures. If parsing fails, use Retry Parsing.',
                     row: 1,
                     column: 1,
                 },

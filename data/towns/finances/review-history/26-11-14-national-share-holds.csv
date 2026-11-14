@@ -1,0 +1,8 @@
+psgc_code,reported_in_year,document_kind,line_code,fiscal_year,basis,value,decision,reviewed_on,note
+0201512000,2022,fs_workbook,revenue.tax,2022,actual,205305984.65,verified,2026-11-14,Corroborated: the 2022 and 2023 COA reports print the same amount
+0201512000,2023,fs_workbook,revenue.tax,2022,actual,205305984.65,verified,2026-11-14,Corroborated: the 2022 and 2023 COA reports print the same amount
+0201512000,2023,fs_workbook,revenue.tax,2023,actual,176516793.26,verified,2026-11-14,Corroborated: the 2023 and 2024 COA reports print the same amount
+0201512000,2024,fs_workbook,revenue.tax,2023,actual,176516793.26,verified,2026-11-14,Corroborated: the 2023 and 2024 COA reports print the same amount
+0201512000,2024,fs_workbook,revenue.tax,2024,actual,187806430.54,verified,2026-11-14,Corroborated: the 2024 and 2025 COA reports print the same amount
+0201512000,2025,fs_workbook,revenue.tax,2024,actual,187806430.54,verified,2026-11-14,Corroborated: the 2024 and 2025 COA reports print the same amount
+0201512000,2025,fs_workbook,revenue.tax,2025,actual,221114045.61,verified,2026-11-14,Newest year: only the 2025 COA report prints this figure so far; the 2026 report will confirm or restate it

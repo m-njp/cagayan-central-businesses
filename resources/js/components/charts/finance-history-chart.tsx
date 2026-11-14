@@ -22,16 +22,10 @@ import type {
  * How a series reads (design.md, "Finance Charts"):
  * - lines: separate amounts, such as business taxes; definition changes break the line.
  * - outcome: Income and Expenses as overlapping areas with Net Income as a line over zero (Results of Operation).
- * - stacked: parts that add up to a reported total, such as revenue sources.
  * - bars: amounts compared side by side each year, such as appropriations, allotments and obligations.
  * - result: Net Income alone as bars.
  */
-export type FinanceChartVariant =
-    | 'lines'
-    | 'outcome'
-    | 'stacked'
-    | 'bars'
-    | 'result';
+export type FinanceChartVariant = 'lines' | 'outcome' | 'bars' | 'result';
 
 function amount(point?: EconomicObservation): number | null {
     return point?.state === 'shown' && point.value !== null
@@ -40,8 +34,6 @@ function amount(point?: EconomicObservation): number | null {
 }
 
 const contrast = (index: number) => `var(--chart-${(index % 5) + 1})`;
-// Parts of one total read as layers of one hue, darkest at the base, never as unrelated colors (26-11-03).
-const layer = (index: number) => `var(--map-${5 - (index % 5)})`;
 const RESULT_COLOR = 'var(--foreground)';
 
 /** Annual finance series; a missing year stays a gap, never a zero. */
@@ -61,7 +53,7 @@ export default function FinanceHistoryChart({
             ? []
             : history.metrics.filter((metric) => metric.id !== RESULT_METRIC);
     const unit = (metrics[0] ?? history.metrics[0])?.unit ?? 'php';
-    const color = variant === 'stacked' ? layer : contrast;
+    const color = contrast;
     const segments =
         variant === 'lines' ? financeChartSeries({ ...history, metrics }) : [];
     const series = [
@@ -185,20 +177,17 @@ export default function FinanceHistoryChart({
                                 isAnimationActive={false}
                             />
                         ))}
-                    {(variant === 'outcome' || variant === 'stacked') &&
+                    {variant === 'outcome' &&
                         metrics.map((metric, index) => (
                             <Area
                                 key={metric.id}
                                 dataKey={`value${index}`}
                                 name={metric.label}
                                 type="linear"
-                                stackId={
-                                    variant === 'stacked' ? 'parts' : undefined
-                                }
                                 stroke={color(index)}
-                                strokeWidth={variant === 'stacked' ? 1.5 : 2}
+                                strokeWidth={2}
                                 fill={color(index)}
-                                fillOpacity={variant === 'stacked' ? 0.3 : 0.12}
+                                fillOpacity={0.12}
                                 dot={false}
                                 activeDot={{ r: 4 }}
                                 connectNulls={false}

@@ -132,12 +132,12 @@ it('leaves source arithmetic findings visible and permits the existing no-note h
 
     expect($this->figure->fresh()->status)->toBe(FinanceFigureStatus::Verified);
     expect($this->figure->fresh()->note)->toBeNull();
-})->with(['balance_mismatch', 'net_income_mismatch', 'revenue_sources_mismatch', 'change_mismatch']);
+})->with(['balance_mismatch', 'net_income_mismatch', 'change_mismatch']);
 
 it('does not hide older PDF findings behind newer unrelated clean uploads', function () {
     sourceEvidenceUpload($this->document, [sourceEvidenceIssue('engine_disagreement', 'performance.revenue')], 5);
     FinanceUpload::factory()->for($this->town)->count(6)->create([
-        'fiscal_year' => 2025, 'kind' => 'fs_workbook', 'status' => FinanceUploadStatus::Done, 'issues' => [],
+        'fiscal_year' => 2025, 'status' => FinanceUploadStatus::Done, 'issues' => [],
     ]);
 
     $this->actingAs($this->admin)->get(route('capitol.finances.show', ['town' => $this->town->psgc_code, 'year' => 2025]))
@@ -189,7 +189,8 @@ it('fails closed when registered source diagnostics are missing or malformed', f
     $contents = File::get($path);
     $header = substr($contents, 0, strpos($contents, "\n") + 1);
     if ($problem === 'not a file') {
-        File::delete($path);
+        // Windows can keep a deleted file pending while another process holds it open.
+        File::move($path, $this->evidenceRoot.'/previous-issues.csv');
         File::ensureDirectoryExists($path);
     } else {
         match ($problem) {
@@ -259,23 +260,4 @@ it('preserves document-bound issue evidence through upload normalization and blo
     $this->actingAs($this->admin)->post($this->reviewUrl, ['decision' => 'verified', 'figures' => [$this->figure->public_id]])
         ->assertSessionHasErrors('figures');
     expect($this->figure->fresh()->status)->toBe(FinanceFigureStatus::Pending);
-});
-
-it('keeps a child workbook issue bound to its archive source kind and checksum', function () {
-    $upload = FinanceUpload::factory()->for($this->town)->create([
-        'kind' => 'archive', 'fiscal_year' => 2025, 'status' => FinanceUploadStatus::Done,
-        'issues' => [sourceEvidenceIssue('unknown_workbook_integrity') + ['document_kind' => 'fs_workbook', 'document_sha256' => str_repeat('c', 64)]],
-    ]);
-    $fs = FinanceDocument::factory()->for($this->town)->create([
-        'fiscal_year' => 2025, 'kind' => 'fs_workbook', 'sha256' => str_repeat('c', 64),
-        'file' => FinanceUpload::FOLDER."/{$upload->public_id}-fs_workbook.xlsx",
-    ]);
-    $annex = FinanceDocument::factory()->for($this->town)->create([
-        'fiscal_year' => 2025, 'kind' => 'annex_workbook', 'sha256' => str_repeat('d', 64),
-        'file' => FinanceUpload::FOLDER."/{$upload->public_id}-annex_workbook.xlsx",
-    ]);
-    $issues = app(FinanceReportIssues::class)->get(collect([$fs, $annex]), $this->town->psgc_code, 2025);
-
-    expect($issues[$fs->id][0]['kind'])->toBe('unknown_workbook_integrity');
-    expect($issues[$annex->id])->toBe([]);
 });

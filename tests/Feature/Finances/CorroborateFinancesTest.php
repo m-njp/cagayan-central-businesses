@@ -5,6 +5,7 @@ use App\Models\FinanceDocument;
 use App\Models\FinanceFigure;
 use App\Models\FinanceLine;
 use App\Models\Municipality;
+use App\Models\User;
 use App\Services\FinanceReportIssues;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -86,7 +87,8 @@ it('keeps figures Pending when the reports differ, are not both available or nam
         ->and($repeated?->fresh()->status ?? FinanceFigureStatus::Pending)->toBe(FinanceFigureStatus::Pending);
     $this->assertDatabaseCount('stats_finance_year', 0);
 })->with([
-    'one centavo apart' => ['61234567.90', null, true],
+    // More than ₱1.00 apart waits for a person (owner, 26-11-14).
+    'one peso and one centavo apart' => ['61234568.90', null, true],
     'restated in the later report' => ['70000000.00', null, true],
     'another definition' => ['61234567.89', 'includes_subsidy_from_other_funds', true],
     'only one report' => ['', null, false],
@@ -137,10 +139,80 @@ it('only counts the figures on a dry run', function () {
     corroborationFigure($this->report2016, 2015, '61234567.89');
 
     $this->artisan('finances:corroborate', ['--dry-run' => true])
-        ->expectsOutputToContain('2 Pending figures are corroborated. Nothing was signed off.')
+        ->expectsOutputToContain('2 Pending figures are corroborated and 0 are newest-year figures. Nothing was signed off.')
         ->assertSuccessful();
 
     expect($own->fresh()->status)->toBe(FinanceFigureStatus::Pending);
     expect(DB::table('activity_logs')->count())->toBe(0);
     $this->assertDatabaseCount('stats_finance_year', 0);
+});
+
+it('shows a newest-year figure no later report can confirm yet, with a note saying so, unless a finding covers it', function (array $issues, FinanceFigureStatus $expected) {
+    corroborationIssues($issues);
+    $newest = corroborationFigure($this->report2016, 2016, '500.00');
+    // 2015 has a later report (2016), so its own column is not a newest-year figure.
+    $older = corroborationFigure($this->report2015, 2015, '400.00');
+
+    $this->artisan('finances:corroborate')->assertSuccessful();
+
+    expect($newest->fresh()->status)->toBe($expected)
+        ->and($older->fresh()->status)->toBe(FinanceFigureStatus::Pending);
+    if ($expected === FinanceFigureStatus::Verified) {
+        expect($newest->fresh()->note)->toBe('Newest year: only the 2016 COA report prints this figure so far; the 2017 report will confirm or restate it')
+            ->and($newest->fresh()->reviewed_by)->toBeNull();
+        $this->assertDatabaseHas('stats_finance_year', ['municipality_id' => $this->town->id, 'fiscal_year' => 2016, 'metric' => 'performance.revenue', 'value' => '500.00']);
+    }
+})->with([
+    'no finding' => [[], FinanceFigureStatus::Verified],
+    'an error on that line' => [[['year' => 2016, 'severity' => 'error', 'kind' => 'balance_mismatch', 'line' => 'performance.revenue']], FinanceFigureStatus::Pending],
+]);
+
+it('holds uncertain figures even when two reports repeat their amount', function (string $kind) {
+    corroborationIssues([['year' => 2016, 'severity' => 'warning', 'kind' => $kind, 'line' => 'performance.revenue']]);
+    $own = corroborationFigure($this->report2015, 2015, '2540951.56');
+    $repeated = corroborationFigure($this->report2016, 2015, '2540951.56');
+
+    $this->artisan('finances:corroborate')->assertSuccessful();
+
+    expect($own->fresh()->status)->toBe(FinanceFigureStatus::Pending)
+        ->and($repeated->fresh()->status)->toBe(FinanceFigureStatus::Pending);
+})->with(['implausible_change', 'duplicate_across_governments']);
+
+it('signs off two reports at most one peso apart, keeps the later amount and records the difference', function (string $later, string $note) {
+    corroborationIssues([]);
+    $own = corroborationFigure($this->report2015, 2015, '61234567.89');
+    $repeated = corroborationFigure($this->report2016, 2015, $later);
+
+    $this->artisan('finances:corroborate')->assertSuccessful();
+
+    expect($repeated->fresh()->status)->toBe(FinanceFigureStatus::Verified)
+        ->and($own->fresh()->status)->toBe(FinanceFigureStatus::Superseded)
+        ->and($repeated->fresh()->note)->toBe($note);
+    $this->assertDatabaseHas('stats_finance_year', ['municipality_id' => $this->town->id, 'fiscal_year' => 2015, 'metric' => 'performance.revenue', 'value' => $later]);
+})->with([
+    'thirty-two centavos' => ['61234568.21', 'Corroborated within ₱1.00: the 2015 report prints ₱61,234,567.89 and the 2016 report ₱61,234,568.21, a difference of ₱0.32; the 2016 report prevails'],
+    'exactly one peso lower' => ['61234566.89', 'Corroborated within ₱1.00: the 2015 report prints ₱61,234,567.89 and the 2016 report ₱61,234,566.89, a difference of ₱1.00; the 2016 report prevails'],
+]);
+
+it('returns an automatic sign-off that a finding now holds to Pending but never a person\'s sign-off', function () {
+    corroborationIssues([
+        ['year' => 2016, 'severity' => 'warning', 'kind' => 'implausible_change', 'line' => 'performance.revenue'],
+        ['year' => 2016, 'severity' => 'warning', 'kind' => 'implausible_change', 'line' => 'performance.expenses'],
+    ]);
+    $note = 'Corroborated: the 2015 and 2016 COA reports print the same amount';
+    $own = corroborationFigure($this->report2015, 2015, '500.00');
+    $own->update(['status' => FinanceFigureStatus::Superseded, 'reviewed_on' => '2026-11-13', 'note' => $note]);
+    $automatic = corroborationFigure($this->report2016, 2015, '500.00');
+    $automatic->update(['status' => FinanceFigureStatus::Verified, 'reviewed_on' => '2026-11-13', 'note' => $note]);
+    $person = FinanceFigure::factory()->verified()->for($this->town)->line('performance.expenses', 2015, '80.00')
+        ->create(['finance_document_id' => $this->report2016->id, 'reviewed_by' => User::factory()->create()->id]);
+    $pending = corroborationFigure($this->report2016, 2016, '1200.00');
+
+    $this->artisan('finances:corroborate', ['--reopen-only' => true])->expectsOutputToContain('Returned 1 automatic sign-offs that a finding now holds to Pending.')->assertSuccessful();
+
+    expect($automatic->fresh()->status)->toBe(FinanceFigureStatus::Pending)
+        ->and($automatic->fresh()->note)->toBeNull()
+        ->and($own->fresh()->status)->toBe(FinanceFigureStatus::Pending)
+        ->and($person->fresh()->status)->toBe(FinanceFigureStatus::Verified)
+        ->and($pending->fresh()->status)->toBe(FinanceFigureStatus::Pending);
 });

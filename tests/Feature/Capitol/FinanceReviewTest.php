@@ -5,7 +5,6 @@ use App\Enums\UserRole;
 use App\Models\ActivityLog;
 use App\Models\FinanceDocument;
 use App\Models\FinanceFigure;
-use App\Models\FinanceLine;
 use App\Models\Municipality;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -232,14 +231,12 @@ it('accepts exact cents up to the cap and publishes the manual source to reviewe
                 && collect($rows)->firstWhere('id', $entry->public_id)['groupLabel'] === 'Results of Operation'));
 });
 
-it('allows final budget only for the development spending lines', function () {
-    FinanceLine::factory()->create(['code' => 'sector.economic_services', 'group' => 'development']);
-
+it('refuses a final budget amount because every remaining line is an actual amount', function () {
     $this->actingAs(User::factory()->create())->post(route('capitol.finances.figures.store', ['town' => '0201501000', 'year' => 2024]), manualEntry([
-        'line_code' => 'sector.economic_services', 'basis' => 'budget_final',
-    ]))->assertSessionHasNoErrors()->assertRedirect();
+        'basis' => 'budget_final',
+    ]))->assertSessionHasErrors();
 
-    $this->assertDatabaseHas('finance_figures', ['line_code' => 'sector.economic_services', 'basis' => 'budget_final', 'entry_method' => 'manual']);
+    $this->assertDatabaseMissing('finance_figures', ['basis' => 'budget_final']);
 });
 
 it('returns reusable pagination metadata with filtered page links', function () {

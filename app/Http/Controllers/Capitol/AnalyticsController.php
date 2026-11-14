@@ -12,9 +12,11 @@ final class AnalyticsController extends Controller
 {
     public function __invoke(AnalyticsRequest $request, AnalyticsCatalogQuery $query): Response
     {
+        $filters = $request->analyticsFilters();
+
         return Inertia::render('capitol/analytics/index', [
-            'catalog' => $query->get(),
-            'filters' => $request->analyticsFilters(),
+            'catalog' => $query->get($filters['town']),
+            'filters' => $filters,
         ]);
     }
 }

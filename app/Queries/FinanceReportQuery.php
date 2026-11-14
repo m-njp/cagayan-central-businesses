@@ -31,8 +31,6 @@ final class FinanceReportQuery
 {
     public const array KINDS = [
         'executive_summary' => 'Executive Summary',
-        'fs_workbook' => 'Financial Statements',
-        'annex_workbook' => 'Annexes',
     ];
 
     public function __construct(
@@ -78,7 +76,7 @@ final class FinanceReportQuery
             issues: array_values($issues),
             documents: array_values($documents
                 ->map(fn (FinanceDocument $document) => new FinanceDocumentLink(
-                    $document->kind->value, self::KINDS[$document->kind->value],
+                    $document->kind->value, $document->kind->label(),
                     $document->availability === FinanceAvailability::Available, $this->documentUrl($document, $sourceUrls),
                 ))->all()),
             lines: array_values(FinanceLine::query()->enterable()->orderBy('sort')->get(['code', 'label', 'group'])
@@ -117,7 +115,7 @@ final class FinanceReportQuery
             fiscalYear: $figure->fiscal_year,
             basis: $figure->basis->value,
             value: $figure->value,
-            source: $manual ? 'Entered by Hand' : self::KINDS[($kind ?? FinanceDocumentKind::ExecutiveSummary)->value],
+            source: $manual ? 'Entered by Hand' : ($kind ?? FinanceDocumentKind::ExecutiveSummary)->label(),
             location: $figure->location,
             status: $figure->status->value,
             enteredByYou: $figure->entered_by === $user->id,

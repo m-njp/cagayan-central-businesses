@@ -32,7 +32,7 @@ beforeEach(function () {
         ['info', 'restated', 'between_reports', 'performance.revenue', '2016 was 112531606.86 in the 2016 report', 'page 1', '2016'],
         ['error', 'engine_disagreement', 'reading', 'performance.revenue', '2017: not confirmed by pdfium', 'page 1', '2017'],
         ['info', 'value_not_reported', 'report', 'performance.revenue', 'Printed dash', 'page 1', '2017'],
-        ['error', 'malformed_amount', 'report', '', 'A workbook finding', 'Sheet!A1', ''],
+        ['error', 'malformed_amount', 'report', '', 'A retired workbook finding', 'Sheet!A1', ''],
     ] as [$severity, $kind, $family, $line, $message, $location, $fiscalYear]) {
         fputcsv($handle, [$this->town->psgc_code, 2017, $severity, $kind, $family, $line, $message, $location,
             $location === 'Sheet!A1' ? 'fs_workbook' : 'executive_summary', '', $fiscalYear], escape: '');
@@ -56,7 +56,7 @@ it('counts Executive Summary findings by family and leaves uncollected reports u
             ->where('differences.years', [2017])
             ->where('differences.rows.0.town', 'Abulug')
             ->where('differences.rows.0.cells.2017', null)
-            // Errors and warnings count; an informational note counts only when it is between reports. Workbook rows stay out.
+            // Errors and warnings count; an informational note counts only when it is between reports. Retired workbook rows stay out (D49).
             ->where('differences.rows.1.cells.2017', ['report' => 1, 'between' => 1, 'reading' => 1, 'pending' => 1, 'verified' => 0]));
 });
 

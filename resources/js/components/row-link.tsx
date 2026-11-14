@@ -9,14 +9,18 @@ import type { ReactNode } from 'react';
  */
 export function RowLink({
     href,
+    onClick,
     children,
 }: {
     href: InertiaLinkProps['href'];
+    /** For a row that opens in place: prevent the visit and handle it locally. */
+    onClick?: InertiaLinkProps['onClick'];
     children: ReactNode;
 }) {
     return (
         <Link
             href={href}
+            onClick={onClick}
             data-row-link
             className="outline-none after:absolute after:inset-0 after:content-['']"
         >

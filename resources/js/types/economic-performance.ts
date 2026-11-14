@@ -24,7 +24,6 @@ export type EconomicObservation = {
         | 'not_published'
         | 'not_reported'
         | 'not_collected'
-        | 'not_loaded'
         | 'pending_review'
         | 'small_group'
         | 'dominance'
@@ -75,11 +74,19 @@ export type AnalyticsCatalog = {
     measures: AnalyticsMeasure[];
     periods: { all: number; recent: number };
     lastYear: number;
+    /** Towns with signed-off figures; one absent from finances loads on first selection. */
+    financeTowns: string[];
     finances: Record<string, Record<string, FinancialHistory>>;
     businesses: BusinessTrends | null;
     guide: AnalyticsGuide;
     sources: Record<string, FinanceSource>;
 };
+
+/** One town's finances, fetched the first time it is selected. */
+export type AnalyticsTownFinances = Pick<
+    AnalyticsCatalog,
+    'finances' | 'sources'
+>;
 
 export type EconomicPerformance = {
     catalog: AnalyticsCatalog;
@@ -94,6 +101,7 @@ export type MeasureDefinition = {
     id: string;
     label: string;
     meaning: string;
+    why: string;
     formula: string;
     inputs: string[];
 };
@@ -107,12 +115,20 @@ export type AnalyticsGuide = {
         metrics: MeasureDefinition[];
     }[];
     notes: { id: string; title: string; text: string }[];
+    budgetSteps: { id: string; term: string; text: string }[];
+    reasons: { id: string; text: string }[];
 };
 
 /** The one evidence entry behind a published figure; observations point to it by key. */
 export type FinanceCitation = {
     documentKey?: string | null;
-    kind: 'executive_summary' | 'fs_workbook' | 'annex_workbook' | null;
+    kind:
+        | 'executive_summary'
+        | 'fs_workbook'
+        | 'annex_workbook'
+        | 'aapsi_workbook'
+        | 'appendices_workbook'
+        | null;
     label: string;
     town: string;
     fiscalYear: number;

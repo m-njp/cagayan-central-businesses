@@ -4,6 +4,7 @@ namespace App\Queries;
 
 use App\Data\AnalyticsCatalog;
 use App\Data\AnalyticsMeasure;
+use App\Data\AnalyticsTownFinances;
 use App\Data\EconomicMetric;
 use App\Data\EconomicObservation;
 use App\Data\FinancialHistory;
@@ -15,6 +16,7 @@ use App\Models\FinanceFigure;
 use App\Models\FinanceLine;
 use App\Models\Municipality;
 use App\Services\FinanceYears;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -23,45 +25,109 @@ use stdClass;
 /**
  * Signed-off finance series (stats_finance_year, M19 to M27) and business trends for the analytics pages.
  * Only towns with at least one signed-off figure appear; every other town is not available.
+ *
+ * @phpstan-type CatalogContext array{years: non-empty-list<int>, groups: array<array-key, mixed>, lines: Collection<array-key, EloquentCollection<int, FinanceLine>>, towns: EloquentCollection<int, Municipality>, stats: Collection<array-key, Collection<int, stdClass>>, guide: array<string, mixed>}
  */
 final class AnalyticsCatalogQuery
 {
     /** The Sum of Reporting Towns uses the province code, but it is never the provincial government's accounts (M27). */
     public const string ALL_TOWNS = '0201500000';
 
-    /** Which COA document a missing line would have come from, to say why it is missing. */
-    private const array SOURCE_KINDS = [
-        'executive_summary' => 'executive_summary',
-        'fs_workbook' => 'fs_workbook',
-        'fs_scbaa' => 'fs_workbook',
-        'annex_c1' => 'annex_workbook',
-    ];
-
     public function __construct(private BusinessTrendsQuery $businesses, private FinanceEvidenceQuery $evidence) {}
 
-    public function get(): AnalyticsCatalog
+    /**
+     * The catalog with the Sum of Reporting Towns and the selected town's finances. Other towns load once on demand
+     * through town(), so the first page stays small (frontend.md, "Local Selection Contract", 26-11-14).
+     */
+    public function get(string $town): AnalyticsCatalog
+    {
+        $context = $this->context();
+        [$finances, $sources] = $this->finances($context, [self::ALL_TOWNS, $town]);
+
+        return new AnalyticsCatalog(
+            towns: [new SelectOption(self::ALL_TOWNS, 'Sum of Reporting Towns'),
+                ...$context['towns']->map(fn (Municipality $item) => new SelectOption($item->psgc_code, $item->name))->all()],
+            measures: array_map(fn (string $key) => new AnalyticsMeasure($key, $context['groups'][$key]['label'], $this->coverage($context, $key)), array_keys($context['lines']->all())),
+            periods: ['all' => $context['years'][0], 'recent' => (int) config('cagayan.performance.recent_first_year')],
+            lastYear: end($context['years']),
+            financeTowns: array_values(array_filter($this->codes($context), fn (string $code, int $id) => $context['stats']->has($id), ARRAY_FILTER_USE_BOTH)),
+            finances: $finances,
+            businesses: $this->businesses->get(),
+            guide: $context['guide'],
+            sources: $sources,
+        );
+    }
+
+    /** One town's finances and their citations, fetched the first time a viewer selects the town. */
+    public function town(string $town): AnalyticsTownFinances
+    {
+        [$finances, $sources] = $this->finances($this->context(), [$town]);
+
+        return new AnalyticsTownFinances(finances: $finances, sources: $sources);
+    }
+
+    /**
+     * @return CatalogContext
+     */
+    private function context(): array
     {
         $financeYears = app(FinanceYears::class);
         $years = range($financeYears->publishedFirstYear(), $financeYears->publishedLastYear());
         $groups = config('cagayan.finances.groups');
-        $lines = FinanceLine::query()->where('displayed', true)->whereIn('group', array_keys($groups))
-            ->orderBy('sort')->get(['code', 'label', 'group', 'unit', 'source'])->groupBy('group');
-        $towns = Municipality::query()->orderBy('name')->get(['id', 'psgc_code', 'name']);
-        $stats = DB::table('stats_finance_year')->whereBetween('fiscal_year', [$years[0], end($years)])->get()
-            ->groupBy(fn (stdClass $row): int => (int) ($row->municipality_id ?? 0));
         /** @var array<string, mixed> $guide */
         $guide = json_decode(File::get(resource_path('content/analytics-guide.json')), true, flags: JSON_THROW_ON_ERROR);
+
+        return [
+            'years' => $years,
+            'groups' => $groups,
+            'lines' => FinanceLine::query()->where('displayed', true)->whereIn('group', array_keys($groups))
+                ->orderBy('sort')->get(['code', 'label', 'group', 'unit', 'source'])->groupBy('group')->toBase(),
+            'towns' => Municipality::query()->orderBy('name')->get(['id', 'psgc_code', 'name']),
+            'stats' => DB::table('stats_finance_year')->whereBetween('fiscal_year', [$years[0], end($years)])->get()
+                ->groupBy(fn (stdClass $row): int => (int) ($row->municipality_id ?? 0)),
+            'guide' => $guide,
+        ];
+    }
+
+    /**
+     * Town codes keyed by municipality id, the Sum of Reporting Towns first as id 0. A union, not a spread: spreading
+     * would renumber the municipality ids that key the stats.
+     *
+     * @param  CatalogContext  $context
+     * @return array<int, string>
+     */
+    private function codes(array $context): array
+    {
+        return [0 => self::ALL_TOWNS] + $context['towns']->pluck('psgc_code', 'id')->all();
+    }
+
+    /**
+     * The histories of the requested towns that have signed-off figures, and the citations their own figures use. The
+     * Sum of Reporting Towns cites "COA Annual Audit Reports" as a whole, so it carries no per-figure references.
+     *
+     * @param  CatalogContext  $context
+     * @param  list<string>  $codes
+     * @return array{0: array<string, array<string, FinancialHistory>>, 1: array<string, array<string, mixed>>}
+     */
+    private function finances(array $context, array $codes): array
+    {
+        $ids = array_filter($this->codes($context), fn (string $code, int $id) => in_array($code, $codes, true) && $context['stats']->has($id), ARRAY_FILTER_USE_BOTH);
+        if ($ids === []) {
+            return [[], []];
+        }
         $dependencies = [];
-        foreach ($guide['topics'] as $topic) {
+        foreach ($context['guide']['topics'] as $topic) {
             foreach ($topic['metrics'] as $metric) {
                 if ($metric['inputs'] !== []) {
                     $dependencies[$metric['id']] = $metric['inputs'];
                 }
             }
         }
-        $evidence = $this->evidence->get($stats->flatten(1), $dependencies);
+        $townIds = array_keys(array_diff_key($ids, [0 => true]));
+        $evidence = $this->evidence->get($context['stats']->only($townIds)->flatten(1), $dependencies);
         // Withheld until signed off (D35); only the fact that a figure awaits review is shown, never its value.
-        $pending = FinanceFigure::query()->where('status', FinanceFigureStatus::Pending)->get(['municipality_id', 'fiscal_year', 'line_code'])
+        $pending = FinanceFigure::query()->where('status', FinanceFigureStatus::Pending)->whereIn('municipality_id', $townIds)
+            ->get(['municipality_id', 'fiscal_year', 'line_code'])
             ->mapWithKeys(fn (FinanceFigure $figure) => ["{$figure->municipality_id} {$figure->fiscal_year} {$figure->line_code}" => true])->all();
         // Keyed "town year kind"; town 0 records that at least one town has the document (Sum of Reporting Towns).
         $documents = [];
@@ -73,47 +139,35 @@ final class AnalyticsCatalogQuery
         }
 
         $finances = [];
-        $detailTowns = (array) config('cagayan.finances.summary_detail_towns');
-        // Union, not spread: spreading would renumber the municipality ids that key the stats.
-        foreach ([0 => self::ALL_TOWNS] + $towns->pluck('psgc_code', 'id')->all() as $id => $code) {
-            if ($stats->has($id)) {
-                $detailLoaded = $id === 0 || in_array($code, $detailTowns, true);
-                $finances[$code] = $lines->map(fn (Collection $group) => $this->history($group, $stats[$id], $years, $id, $documents, $pending, $evidence['references'], $detailLoaded))->all();
-            }
+        foreach ($ids as $id => $code) {
+            $finances[$code] = $context['lines']->map(fn (Collection $group) => $this->history($group, $context['stats'][$id], $context['years'], $id, $documents, $pending, $evidence['references']))->all();
         }
 
-        return new AnalyticsCatalog(
-            towns: [new SelectOption(self::ALL_TOWNS, 'Sum of Reporting Towns'),
-                ...$towns->map(fn (Municipality $town) => new SelectOption($town->psgc_code, $town->name))->all()],
-            measures: array_map(fn (string $key) => new AnalyticsMeasure($key, $groups[$key]['label'], $this->coverage($finances, $key)), array_keys($lines->all())),
-            periods: ['all' => $years[0], 'recent' => (int) config('cagayan.performance.recent_first_year')],
-            lastYear: end($years),
-            finances: $finances,
-            businesses: $this->businesses->get(),
-            guide: $guide,
-            sources: $evidence['sources'],
-        );
+        return [$finances, $evidence['sources']];
     }
 
     /**
      * The towns that have at least one signed-off figure for a measure, so a picker can say where it applies (null: every town).
      *
-     * @param  array<string, array<string, FinancialHistory>>  $finances
+     * @param  CatalogContext  $context
      * @return list<string>|null
      */
-    private function coverage(array $finances, string $measure): ?array
+    private function coverage(array $context, string $measure): ?array
     {
+        $metrics = $context['lines'][$measure]->pluck('code')->all();
+        $withFigures = 0;
         $towns = [];
-        foreach ($finances as $code => $histories) {
-            foreach ($histories[$measure]->rows ?? [] as $row) {
-                if (collect($row['observations'])->contains(fn (EconomicObservation $point) => $point->state === 'shown')) {
-                    $towns[] = $code;
-                    break;
-                }
+        foreach ($this->codes($context) as $id => $code) {
+            if (! $context['stats']->has($id)) {
+                continue;
+            }
+            $withFigures++;
+            if ($context['stats'][$id]->whereIn('metric', $metrics)->isNotEmpty()) {
+                $towns[] = $code;
             }
         }
 
-        return count($towns) === count($finances) ? null : $towns;
+        return count($towns) === $withFigures ? null : $towns;
     }
 
     /**
@@ -124,15 +178,13 @@ final class AnalyticsCatalogQuery
      * @param  array<string, true>  $pending
      * @param  array<string, list<string>>  $references
      */
-    private function history(Collection $lines, Collection $stats, array $years, int $townId, array $documents, array $pending, array $references, bool $detailLoaded): FinancialHistory
+    private function history(Collection $lines, Collection $stats, array $years, int $townId, array $documents, array $pending, array $references): FinancialHistory
     {
-        $detailLines = (array) config('cagayan.finances.summary_detail_lines');
         $byKey = $stats->keyBy(fn (stdClass $row) => "{$row->metric} {$row->fiscal_year}");
-        $rows = array_map(fn (int $year) => ['year' => $year, 'observations' => $lines->mapWithKeys(function (FinanceLine $line) use ($byKey, $year, $townId, $documents, $pending, $references, $detailLoaded, $detailLines) {
+        $rows = array_map(fn (int $year) => ['year' => $year, 'observations' => $lines->mapWithKeys(function (FinanceLine $line) use ($byKey, $year, $townId, $documents, $pending, $references) {
             $row = $byKey->get("{$line->code} {$year}");
             if ($row === null) {
-                $kind = self::SOURCE_KINDS[$line->source] ?? 'executive_summary';
-                $reason = ! $detailLoaded && in_array($line->code, $detailLines, true) ? 'not_loaded' : match ($documents["{$townId} {$year} {$kind}"] ?? null) {
+                $reason = match ($documents["{$townId} {$year} executive_summary"] ?? null) {
                     FinanceAvailability::Available => isset($pending["{$townId} {$year} {$line->code}"]) ? 'pending_review' : 'not_reported',
                     FinanceAvailability::NotPublished => 'not_published',
                     null => 'not_collected',

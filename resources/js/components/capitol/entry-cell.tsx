@@ -39,6 +39,9 @@ export function EntryCell({
             aria-invalid={error ? true : undefined}
             title={error}
             inputMode={inputMode}
+            placeholder={
+                inputMode === 'decimal' ? 'Enter amount' : 'Enter count'
+            }
             className={`h-7 min-w-32 text-right font-mono text-sm tabular-nums ${changed ? 'border-primary bg-accent' : ''}`}
             value={value}
             onChange={(event) => onChange(event.target.value)}

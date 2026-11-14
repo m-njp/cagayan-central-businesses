@@ -314,20 +314,14 @@ return [
         'entry_changes_max' => 60,
         'writes_per_minute' => 20,
         'note_max' => 500,
-        // Workbook citations list every contributing cell, such as 'G61:G64 and K61:K64' (26-11-03).
         'location_max' => 255,
         // Reports uploaded on Capitol Finances (26-11-03). One file is read at a time by tools/coa (coa.intake) on the
-        // queue, never the repository-wide extraction. The extension decides which reports a file can be.
+        // queue, never the repository-wide extraction. Only an Executive Summary PDF is read (D49).
         'uploads' => [
             'file_max_kb' => 30720,
             'kinds' => [
                 'executive_summary' => ['label' => 'Executive Summary', 'extensions' => ['pdf']],
-                'fs_workbook' => ['label' => 'Financial Statements', 'extensions' => ['xlsx']],
-                'annex_workbook' => ['label' => 'General Fund Annex', 'extensions' => ['xlsx']],
-                'archive' => ['label' => 'Audit Report Workbooks (ZIP)', 'extensions' => ['zip']],
             ],
-            'archive_members_max' => 40,
-            'archive_bytes_max' => 104857600,
             'timeout_seconds' => 150,
             'tries' => 1,
             'progress_events_max' => 60,
@@ -343,24 +337,12 @@ return [
         'per_page' => 20,
         'source_requests_per_minute' => 60,
         'source_archive_requests_per_minute' => 3,
-        'source_archive_max_bytes' => 134217728,
-        // Towns whose workbook breakdowns finances:import loads (26-10-28: Tuguegarao first). Other towns'
-        // parsed workbooks stay in data/towns/finances/extracted; every Executive Summary always loads.
-        'workbook_towns' => ['0201529000'],
-        // Executive Summary lines beyond the totals (26-10-29: Tuguegarao first, metrics.md M35). Other towns
-        // keep them in data/towns/finances/extracted until they are added here.
-        'summary_detail_towns' => ['0201529000'],
-        'summary_detail_lines' => [
-            'position.assets', 'position.liabilities', 'position.equity',
-            'budget.allotments_current', 'budget.allotments_continuing', 'budget.obligations_continuing',
-        ],
+        // Every Executive Summary PDF and every registered workbook, about 184 MB in November 2026.
+        'source_archive_max_bytes' => 268435456,
         'groups' => [
             'position' => ['label' => 'Financial Condition', 'bases' => ['actual']],
             'totals' => ['label' => 'Results of Operation', 'bases' => ['actual']],
             'budget' => ['label' => 'Budget Execution', 'bases' => ['actual']],
-            'revenue_sources' => ['label' => 'Revenue Sources', 'bases' => ['actual']],
-            'business_taxes' => ['label' => 'Business Taxes and Fees', 'bases' => ['actual']],
-            'development' => ['label' => 'Budget and Actual Amounts', 'bases' => ['actual', 'budget_final']],
         ],
     ],
 

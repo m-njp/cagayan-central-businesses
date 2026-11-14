@@ -388,6 +388,21 @@
     }
 }
 
+/* A scroll area inside an overlay: no track, a faint thumb that darkens while the area is in use. */
+@utility scrollbar-quiet {
+    scrollbar-gutter: stable;
+
+    @media (forced-colors: none) {
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+
+        &:hover,
+        &:focus-within {
+            scrollbar-color: var(--muted-foreground) transparent;
+        }
+    }
+}
+
 @utility type-data {
     font-size: 0.75rem;
     line-height: 1.5;

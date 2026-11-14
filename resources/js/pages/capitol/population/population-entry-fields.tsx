@@ -34,6 +34,7 @@ export function PopulationEntryFields({
                     <Input
                         id="population-source"
                         type="url"
+                        placeholder="https://psa.gov.ph/"
                         aria-invalid={errors.source_url ? true : undefined}
                         maxLength={limits.sourceUrlMax}
                         value={data.source_url}
@@ -49,6 +50,7 @@ export function PopulationEntryFields({
                         </FieldLabel>
                         <Input
                             id="population-reason"
+                            placeholder="What was wrong and where the correct count is published"
                             maxLength={limits.noteMax}
                             value={data.reason}
                             onChange={(event) =>

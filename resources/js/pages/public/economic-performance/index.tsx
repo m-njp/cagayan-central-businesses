@@ -1,3 +1,4 @@
+import { useTownCatalog } from '@/hooks/use-town-catalog';
 import { Head, Link } from '@inertiajs/react';
 import { MessageSquarePlus } from 'lucide-react';
 import { AnalyticsPanels } from '@/components/analytics/analytics-panels';
@@ -26,7 +27,11 @@ export default function EconomicPerformancePage({
 }: {
     performance: EconomicPerformance;
 }) {
-    const { catalog, filters } = performance;
+    const { filters } = performance;
+    const { catalog, status, retry } = useTownCatalog(
+        performance.catalog,
+        filters.town,
+    );
     const wishes = performance.wishes[filters.town];
     const change = (patch: Partial<PerformanceFilters>) => {
         if (patch.town && !catalog.towns.some((t) => t.value === patch.town))
@@ -52,6 +57,8 @@ export default function EconomicPerformancePage({
                         catalog={catalog}
                         filters={filters}
                         onChange={change}
+                        status={status}
+                        onRetry={retry}
                         businessControls={
                             <div className="w-full sm:max-w-sm">
                                 <AnalyticsPickers

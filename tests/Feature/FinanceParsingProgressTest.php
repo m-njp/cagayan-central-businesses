@@ -99,25 +99,24 @@ it('replaces provisional figures and keeps bounded activity and safe PDF warning
     expect($stored['issues'][0]['message'])->not->toContain('private');
 });
 
-it('keeps info notes out of the live feed and hides the stored file name in warnings', function () {
+it('keeps info notes out of the live feed', function () {
     $upload = FinanceUpload::factory()->create(['status' => FinanceUploadStatus::Running]);
     $progress = new FinanceParsingProgress($upload->id, $upload->progress['attempt'], $upload->progress);
-    $name = 'c1f3d0aa-0000-4000-8000-000000000001.xlsx';
-    $progress->accept(['type' => 'issue', 'issue' => ['kind' => 'heading_not_in_catalog', 'severity' => 'info', 'message' => "{$name}!8 - Transfers row 12: 'Other'"]]);
-    $progress->accept(['type' => 'issue', 'issue' => ['kind' => 'sheet_year_mismatch', 'severity' => 'warning', 'message' => "{$name}!8 - Transfers: title says 2024"]]);
+    $progress->accept(['type' => 'issue', 'issue' => ['kind' => 'province_unconfirmed', 'severity' => 'info', 'message' => 'The opening pages do not name the province.']]);
+    $progress->accept(['type' => 'issue', 'issue' => ['kind' => 'restated', 'severity' => 'warning', 'message' => 'The 2025 report restates Income for 2024.']]);
 
     $stored = $upload->fresh()->progress;
     expect($stored['issues'])->toHaveCount(2);
     expect($stored['activity'])->toHaveCount(1);
-    expect($stored['activity'][0]['message'])->toBe('8 - Transfers: title says 2024');
+    expect($stored['activity'][0]['message'])->toBe('The 2025 report restates Income for 2024.');
 });
 
 it('rolls back figures when parsing fails and exposes only a safe failure message', function () {
     Storage::fake('local');
     Process::fake(['*' => Process::result(output: "{\"type\":\"stage\",\"stage\":\"scanning\"}\n", errorOutput: 'C:\private\parser.py crashed', exitCode: 1)]);
     $upload = FinanceUpload::factory()->create();
-    Storage::disk('local')->put($upload->path, 'workbook');
-    $upload->update(['sha256' => hash('sha256', 'workbook')]);
+    Storage::disk('local')->put($upload->path, 'report');
+    $upload->update(['sha256' => hash('sha256', 'report')]);
 
     expect(fn () => (new ExtractFinanceUpload($upload->id))->handle(app(RecordParsedFigures::class)))->toThrow(ProcessFailedException::class);
 
@@ -127,13 +126,13 @@ it('rolls back figures when parsing fails and exposes only a safe failure messag
     Process::assertRan(fn ($process) => in_array('--events', $process->command, true));
 });
 
-it('executes a real workbook through the queue and saves only pending finance figures', function () {
+it('executes a real Executive Summary through the queue and saves only pending finance figures', function () {
     Storage::fake('local');
     config(['queue.default' => 'database', 'cagayan.finances.uploads.pace_seconds' => 0]);
     $town = Municipality::factory()->create(['psgc_code' => '0201529000', 'name' => 'Tuguegarao City']);
-    FinanceLine::factory()->create(['code' => 'revenue.tax', 'source' => 'fs_workbook', 'group' => 'revenue_sources']);
+    FinanceLine::factory()->create(['code' => 'performance.revenue', 'source' => 'executive_summary', 'group' => 'totals']);
     $upload = FinanceUpload::factory()->for($town)->create();
-    $source = base_path('data/towns/financial-statements/2025/Tuguegarao-City/Tuguegarao-City-FS-2025.xlsx');
+    $source = base_path('data/towns/executive-summaries/2025/Tuguegarao-City/Tuguegarao-City-Executive-Summary-2025.pdf');
     Storage::disk('local')->put($upload->path, file_get_contents($source));
     $upload->update(['sha256' => hash_file('sha256', $source)]);
     ExtractFinanceUpload::dispatch($upload->id, $upload->progress['attempt']);
@@ -141,8 +140,8 @@ it('executes a real workbook through the queue and saves only pending finance fi
     $this->artisan('queue:work', ['--once' => true, '--stop-when-empty' => true])->assertSuccessful();
 
     expect($upload->fresh()->status)->toBe(FinanceUploadStatus::Done);
-    expect($upload->fresh()->progress['found'])->toBe(10);
+    expect($upload->fresh()->progress['found'])->toBe(20);
     expect($upload->fresh()->progress['activity'])->not->toBeEmpty();
-    $this->assertDatabaseHas('finance_figures', ['line_code' => 'revenue.tax', 'fiscal_year' => 2025, 'value' => '430895820.24', 'status' => 'pending']);
+    $this->assertDatabaseHas('finance_figures', ['line_code' => 'performance.revenue', 'fiscal_year' => 2025, 'value' => '1679019473.60', 'status' => 'pending']);
     expect(FinanceFigure::query()->where('status', 'verified')->exists())->toBeFalse();
 });

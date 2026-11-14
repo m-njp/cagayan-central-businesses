@@ -6,6 +6,7 @@ import {
     WorkspaceFilterLayout,
     WorkspaceFilters,
 } from '@/components/capitol/workspace-filters';
+import { useTownCatalog } from '@/hooks/use-town-catalog';
 import { pushFilters, withCoveredMeasure } from '@/lib/analytics';
 import { analytics } from '@/routes/capitol';
 import type {
@@ -14,12 +15,16 @@ import type {
 } from '@/types/economic-performance';
 
 export default function Analytics({
-    catalog,
+    catalog: pageCatalog,
     filters,
 }: {
     catalog: AnalyticsCatalog;
     filters: AnalyticsFilters;
 }) {
+    const { catalog, status, retry } = useTownCatalog(
+        pageCatalog,
+        filters.town,
+    );
     const change = (patch: Partial<AnalyticsFilters>) =>
         pushFilters(
             filters,
@@ -38,6 +43,8 @@ export default function Analytics({
                         catalog={catalog}
                         filters={filters}
                         onChange={change}
+                        status={status}
+                        onRetry={retry}
                         figures
                     />
                 }

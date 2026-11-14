@@ -10,7 +10,7 @@ use ZipArchive;
 
 final class PublicFinanceArchive
 {
-    public function __construct(private FinanceEvidenceQuery $evidence, private PublicExecutiveSummaries $summaries) {}
+    public function __construct(private FinanceEvidenceQuery $evidence, private PublicExecutiveSummaries $summaries, private PublicWorkbooks $workbooks) {}
 
     /** Build and verify the exact archive the public download route will send. */
     public function build(): string
@@ -43,6 +43,11 @@ final class PublicFinanceArchive
         $files = [];
         $bytes = 0;
         foreach ($this->summaries->files() as $file) {
+            $files[$file['archiveName']] = ['path' => $file['path'], 'sha256' => $file['sha256']];
+            $bytes += (int) filesize($file['path']);
+        }
+        // Every registered workbook (26-11-14), so the download matches the report library.
+        foreach ($this->workbooks->files() as $file) {
             $files[$file['archiveName']] = ['path' => $file['path'], 'sha256' => $file['sha256']];
             $bytes += (int) filesize($file['path']);
         }

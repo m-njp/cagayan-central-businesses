@@ -340,7 +340,7 @@ Approved 26-10-29. Contact numbers are stored as typed: a mobile number `09XXXXX
 
 ## D42. Report Uploads Read on the Queue
 
-Approved 26-11-03 by the owner ([finance report redesign plan](../plan/active/26-11-03-finance-report-redesign.md)). Staff upload a COA report on Capitol Finances instead of asking the data member to run `composer data:finances:extract`.
+Approved 26-11-03 by the owner ([finance report redesign plan](../plan/archive/26-11-03-finance-report-redesign.md)). Staff upload a COA report on Capitol Finances instead of asking the data member to run `composer data:finances:extract`.
 
 - **One file at a time:** the queue job `ExtractFinanceUpload` runs `python -m coa.intake` from `tools/coa/` on that one file, never the repository-wide extraction. A PDF is an Executive Summary, an XLSX a Financial Statements or General Fund Annex workbook, a ZIP the audit report's workbooks. Size, archive and runtime limits are in `cagayan.finances.uploads`.
 - **Same ledger, same sign-off:** figures arrive as pending, credited to the uploader, so someone else signs them off (D35). A different report already on record is never overwritten.
@@ -363,6 +363,8 @@ Approved 26-11-11 in the [Capitol Entry Redesign](../plan/active/26-11-09-capito
 
 ## D45. Corroborated Sign-Off and Reporting Differences
 
+"26-11-12" follow-up: the owner explicitly requested checking the remaining 32 pending 2025 Income and Expenses figures against the COA PDFs and finishing verification. This specific batch permits agent inspection of the rendered source pages followed by sign-off through the existing reviewed CSV import, with no reviewer account impersonation. Notes identify it as an owner-directed agent PDF review, not two-report corroboration or independent human review. The [2025 verification record](../plan/archive/26-11-12-coa-2025-verification.md) preserves the amounts, cited pages, source hashes and retained reporting discrepancies. This exception does not authorize other pending years or finance lines.
+
 Approved 26-11-12 by the project owner in [COA Accuracy and Reporting Differences](../plan/archive/26-11-12-coa-accuracy-and-differences.md). An owner-directed exception to D35's person-to-person sign-off, like the 26-10-29 Tuguegarao batch.
 
 - **Corroborated figures sign themselves off:** `php artisan finances:corroborate` verifies a Pending Executive Summary figure only when a year's own report and the next report's prior-year column print the same amount to the cent, for the same line, basis and definition, and neither report has a blocking or error finding on that line or across the document. The note reads "Corroborated: the Y and Y+1 COA reports print the same amount"; the reviewer is empty. `finances:export` saves them to `reviews.csv`. Restated, single-report and flagged figures stay Pending for a person.
@@ -371,3 +373,62 @@ Approved 26-11-12 by the project owner in [COA Accuracy and Reporting Difference
 - **One source of truth:** `composer data:finances:extract` always writes the committed CSVs and prints the added, removed and changed values; findings stay in `issues/` and nothing is published until signed off.
 
 **Why:** the 2014 to 2019 reports could not reach the maps without hundreds of manual sign-offs, while two separately published COA reports agreeing to the cent is stronger evidence than one transcription checked once. The owner asked that flags about a government's reporting be certain before they are shown.
+
+
+## D46. Workbook Intake for All Cagayan Governments
+
+Approved "26-11-13" by the owner, explicitly selecting **2014–2025 workbooks for all 29 governments** after being asked about the previous Tuguegarao-only restriction. `cagayan.finances.workbook_towns` now contains all 29 canonical PSGC identities.
+
+- Eligible M21 consolidated revenue and M22 General Fund details enter the existing ledger as Pending. No automatic sign-off or public publication is authorized. M23 remains withdrawn from display; newly parsed check-only evidence stays staged.
+- Preserve existing observations, sign-offs and reviewed source evidence. Original collection files are never edited; registered copies retain matching hashes and source provenance. Ambiguous/unsupported layouts stay withheld.
+- Executive Summary parser behavior, existing totals, detail-town restrictions, metric definitions and publication gates remain unchanged.
+- The [ingestion plan](../plan/archive/26-11-13-workbook-ingestion-all-governments.md) records exact promotion/import counts, duplicate-source choices, immutable-source checks and review access. The [four expense reconciliations](../plan/archive/26-11-13-historical-expense-differences.md) are explanatory evidence, not automatic numeric corrections.
+
+
+D46 clarification, "26-11-13": the owner subsequently required only Tuguegarao's nine extracted fields, not all catalog fields. The 208 newly imported, still-Pending Other Shares from National Taxes observations were removed; final new Pending intake is 2,177 observations. Existing figures, sign-offs and published statistics remain unchanged. Budget and Actual Amounts stays withdrawn, while a Pending/gray status alone does not exclude a supported field. [Current scope, UI evidence and integration limits](coa-workbook-handoff.md).
+
+
+## D47. Executive Summary Lines for All Governments, N/A and the Finances Guide
+
+Approved "26-11-13" by the owner with the plan [Workbook Data Trim, All-Town Executive Summary and Parser Upkeep](../plan/archive/26-11-13-workbook-trim-all-town-summary.md).
+
+- **All 29 governments.** Assets, Liabilities, Government Equity, Current and Continuing Allotments and Continuing Obligations load for every government, not Tuguegarao City alone. `summary_detail_towns`, `summary_detail_lines` and the reason `not_loaded` are removed. New figures enter Pending and follow D35 and D45 like every other Executive Summary figure.
+- **The 2023 Executive Summary change.** From 2023, COA's Executive Summaries print only Financial Position and Financial Performance (for example Aparri 2022 against Aparri 2024). Missing Budget Execution years read N/A with the reason `not_reported`; the parser is not at fault.
+- **N/A.** A missing finance figure reads N/A in muted text, never `0` or blank. Its accessible name stays "Not available" and its reason moves from the row note to the cell tooltip. This supersedes the earlier design rule that avoided "N/A".
+- **Government Finances Guide.** The right-hand Help sheet is replaced by a full guide in the blur overlay, opened from the header, a row label or an N/A cell, with a plain why-it-matters line for every measure and the four budget steps. Definitions in `metrics.md` stay authoritative.
+- **Newest year (26-11-14).** A figure from a government's latest available report of its kind has no later report to confirm it. When it passes the verification rule below, `finances:corroborate` signs it off with no reviewer and the note "Newest year: only the Y COA report prints this figure so far; the Y+1 report will confirm or restate it". There is no on-screen marker (owner, 26-11-14); the note shows in the Capitol review and `reviews.csv`. The next report's prior-year column later confirms it or restates it.
+- **Verification before automatic sign-off (26-11-14).** After the Enrile/Solana misattribution the owner asked that no figure be shown on trust. `finances:corroborate` signs off a figure only when two reports of the same kind (workbooks included) print the same amount, or, for the newest year, an Executive Summary figure with no holding finding or a workbook revenue figure whose sources add up to the workbook's own printed Total Revenue to the centavo. Every check is exact: a difference of even one centavo is a finding (owner, 26-11-14). A difference of ₱1.00 or less is a `minor_difference` that stays listed for reviewers but does not hold sign-off, and two reports at most ₱1.00 apart are signed off with the later report's amount and a note giving both amounts and the difference. Anything larger waits for a person. Each `finances:corroborate` run also returns to Pending any automatic sign-off (no reviewer) that a current finding now holds, with the copy it superseded; a person's sign-off is never reopened. On 26-11-14 this reopened nine 2024 workbook revenue figures for Gonzaga and Santa Ana. General Fund detail has no total to reconcile and waits for the next report or a person. Cross-government duplicates, changes of more than three times and another government's sheet hold sign-off. Extractor 1.7.0 checks file content before reading. Accuracy is measured with `composer data:finances:sample`.
+- **Workbook sheets of another government (26-11-14).** COA files can keep another town's template sheet (Enrile 2019 Annexes carried Solana's statement; Lasam 2014 Annexes carry only Allacapan's). Extractor 1.6.1 never reads a sheet headed for another Cagayan government; when no sheet for the expected government remains, the workbook is a blocking `municipality_mismatch`.
+- **National share (26-11-14).** Share from National Collections adds Other Share from National Taxes where a statement prints it separately (M21), so the field means the same for every government; 62 of 102 such workbooks carry a non-zero amount. Revenue completeness is proven against the workbook's own printed Total Revenue, not Executive Summary Income.
+- **Workbook scope.** The nine approved workbook fields stay (D46). Expense types, Statement of Financial Position, Cash Flows, Changes in Net Assets, SCBAA sector rows and Annex schedules are excluded from display. The national-share scope and the SCBAA totals and Capital Outlay investigation wait for the owner's decision.
+
+**Why:** the owner judged the gray "Loaded for Tuguegarao City only" and "Not available" cells to crowd the screen, and asked for help that explains each figure's role for good governance and for business proponents, in plain wording.
+
+## D48. Three Workbook Fields and Retirement of Annex Extraction
+
+Approved "26-11-14". Executive Summary parsing and fields remain the foundation and are unchanged. Across all 29 governments and collected years, active workbook intake/display is Tax Revenue, Share from National Collections and Service and Business Income. This supersedes D46/D47's nine-field scope.
+
+Delete Annex financial parsing, SCBAA sector/budget summation, workbook expense-component extraction, retired upload/UI branches and obsolete tests. Grants and Other Income remain internal source components needed to reconcile the workbook's printed Total Revenue, not new ledger series. Show the selected series as separate lines, not a complete stacked total.
+
+Preserve originals, source registrations and individual/ZIP downloads regardless of extracted/verified coverage. Freeze retired observations and original workbook diagnostics with checksums; replay history, including Pending records, without reactivating intake or automatic publication. Existing human decisions stay intact.
+
+Uncertainty belongs in Report Differences for human correction and independent review. Enrile's tax/national split is unresolved; its warning holds automatic sign-off, and Cash Flows cannot substitute for performance revenue. Accuracy takes priority over filling 29 cells. No new packages or schema changes.
+
+Correction to D47's generalization: 2025 Santo Niño and Enrile Executive Summaries do print Budget Execution. Absence must be established per source; the workbook reduction does not alter the PDF parser or replace Executive Summary budget amounts with SCBAA.
+
+## D49. Executive Summary Only and Parallel Tests
+
+Approved "26-11-14" by the owner. Workbook (XLSX) reading is retired entirely. The Executive Summary is the only source of government finance figures: Financial Condition, Results of Operation, and Appropriations, Allotments and Obligations. This supersedes D46 and D48 and the Revenue Sources part of D36/M21.
+
+Why: the workbooks vary too much between governments and years to parse reliably. The last staged run left 242 workbook findings in the Extraction Limits family (438 with the Executive Summary's), and some governments, such as Santo Niño, were flagged on almost every line. The Executive Summary states the same audited totals in one consistent layout.
+
+What changes:
+
+- The Python workbook reader, its audit and promotion commands and their tests are deleted. `coa.intake` reads only a PDF and refuses a workbook or archive by its content.
+- `finances:import` loads only Executive Summary documents and figures. The `intake` column and workbook lines leave `lines.csv`; a migration removes workbook figures, documents, uploads and lines from existing databases.
+- Capitol upload accepts only the Executive Summary PDF. Revenue Sources leaves Economy, Analytics, the guide, Data Entry and Report Differences.
+- The removed rows are frozen with checksums in `data/towns/finances/history/26-11-14-workbook-reading-retirement/` (1,217 figures, 423 findings, 1,381 sign-offs, 516 document records). History is never read by the importer.
+
+What stays: every original workbook, `financial-statements/index.csv`, the workbook collector and the public individual and ZIP downloads on About the Data. The Executive Summary parser modules and version 1.7.1 are unchanged.
+
+New package: `pytest-xdist` 3.8.0 (with `execnet` 2.1.2), a development dependency of `tools/coa`, so parser tests run on every core. Pest runs in parallel with the `brianium/paratest` package Pest already installs. Measured on the owner's laptop: parser tests 115 seconds to 28 seconds.

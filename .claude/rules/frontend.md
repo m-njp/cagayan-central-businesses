@@ -71,3 +71,10 @@ Public Economy and Capitol Analytics finance open on design.md, "Executive Summa
 Apply the later workspace-controls correction in design.md: actions must look actionable (Review/Cancel use outlines), Enter Report (the report grid, 26-11-03) belongs in the right panel, source selection is called Source Report, and entry has no Note; a Reason for Correction appears only when a verified amount changes. Use contextual FieldHelp instead of permanent explanations. Do not restore shared greeting/clock rows or duplicate Profile in the primary nav. Preserve session renewal/expiry behavior, profile limits, permission-based destinations and independent review restrictions when simplifying presentation.
 
 Sidebar account controls use a single-row Account trigger with Profile and Sign Out in its dropdown. Never show the account name or role in the sidebar; keep the appearance toggle aligned beside the trigger.
+
+## Corrections From "26-11-14"
+
+- Guides use `components/guide-dialog.tsx`: tabs at the left, one section at a time, an outlined entry when a link opened it. Never one long scrolling page.
+- Report Differences is one table per report year with a worded Review column and the year in `WorkspaceFilters`. The owner rejected the municipality by year grid, coloured dots without words, blank cells, counts beside filter options and a key line under the filters.
+- Entry placeholders say what to enter and never look like a stored value.
+- After a rewrite, confirm Vite serves the new file before telling the owner to look (`/ui-builder`, "Verify").

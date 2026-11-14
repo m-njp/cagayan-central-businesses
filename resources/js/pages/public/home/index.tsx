@@ -155,7 +155,7 @@ export default function Home({ overview }: Props) {
                         {
                             term: 'Area',
                             description:
-                                'Cagayan’s 28 municipalities and Tuguegarao City. Barangay population and finance breakdowns beyond totals are loaded for Tuguegarao City only.',
+                                'Cagayan’s 28 municipalities and Tuguegarao City. Barangay population is loaded for Tuguegarao City only.',
                         },
                         {
                             term: 'Period',

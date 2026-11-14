@@ -1,10 +1,7 @@
 import { router, usePage } from '@inertiajs/react';
-import { FileSpreadsheet, FileText } from 'lucide-react';
+import { FileSpreadsheet, FileText, Folder, FolderOpen } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { SearchField } from '@/components/search-field';
-import { SourceLink } from '@/components/source-link';
-import { Button } from '@/components/ui/button';
-import { Field, FieldLabel } from '@/components/ui/field';
 import {
     Select,
     SelectContent,
@@ -13,14 +10,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Surface } from '@/components/ui/surface';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import { pageSearchParams } from '@/lib/navigation';
 import { municipalityCitationReports } from '@/lib/performance-format';
 import { parseSourceSelection, sourceQuery } from '@/lib/source-library';
@@ -30,28 +19,31 @@ import { sources } from '@/routes/public';
 import type { FinanceCitation } from '@/types/economic-performance';
 import { SourceArchiveDownload } from './source-archive-download';
 
+/**
+ * One branch of the file tree: a continuous guide line down the left, an elbow into each item, and the line stopping
+ * at the last item, the way `tree` draws it.
+ */
+const BRANCH =
+    'relative pl-5 before:absolute before:top-0 before:left-0 before:h-full before:border-l before:border-border last:before:h-3.5 after:absolute after:top-3.5 after:left-0 after:w-3.5 after:border-t after:border-border';
+
+/**
+ * The COA report library as a file tree: a compact municipality list on the left; on the right the selected
+ * municipality, every report year and its documents. A PDF opens in a new tab; a workbook downloads.
+ */
 export function ReportLibrary({ citations }: { citations: FinanceCitation[] }) {
     const { url } = usePage();
     const municipalities = municipalityCitationReports(citations);
-    const years = [
-        ...new Set(
-            citations.map(
-                (citation) => citation.reportYear ?? citation.fiscalYear,
-            ),
-        ),
-    ].sort((first, second) => second - first);
     const view = parseSourceSelection(
         pageSearchParams(url),
         municipalities.map(({ town }) => town),
-        years,
     );
     const selected = municipalities.find(({ town }) => town === view.town);
     const filtered = municipalities.filter(({ town }) =>
         town.toLocaleLowerCase().includes(view.q.trim().toLocaleLowerCase()),
     );
-    const shownYears = [...(selected?.years ?? [])]
-        .filter(({ year }) => view.year === null || year === view.year)
-        .sort((first, second) => second.year - first.year);
+    const townYears = [...(selected?.years ?? [])].sort(
+        (first, second) => second.year - first.year,
+    );
     const navigation = useRef<HTMLElement>(null);
     const currentTown = useRef<HTMLButtonElement>(null);
 
@@ -91,45 +83,47 @@ export function ReportLibrary({ citations }: { citations: FinanceCitation[] }) {
                     Reports are not available.
                 </p>
             ) : (
-                <div className="grid min-h-0 md:h-[min(32rem,65dvh)] md:min-h-64 md:grid-cols-[15rem_minmax(0,1fr)]">
+                <div className="grid min-h-0 md:h-[min(32rem,65dvh)] md:min-h-64 md:grid-cols-[12rem_minmax(0,1fr)]">
                     <div className="hidden min-h-0 flex-col border-r md:flex">
-                        <div className="flex min-h-touch items-center justify-between gap-2 border-b px-panel py-1.5">
+                        <div className="flex items-center justify-between gap-2 border-b px-2 py-1">
                             <span className="type-meta">Municipalities</span>
                             <SearchField
                                 value={view.q}
                                 onChange={(q) => go({ q }, true)}
                                 label="Search Municipalities"
                                 compact
-                                expandedClassName="w-28"
+                                expandedClassName="w-24"
                             />
                         </div>
                         <nav
                             ref={navigation}
                             aria-label="Report Municipalities"
-                            className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain p-1"
+                            className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain py-1"
                         >
-                            {filtered.map(({ town }) => (
-                                <Button
-                                    key={town}
-                                    ref={
-                                        town === view.town
-                                            ? currentTown
-                                            : undefined
-                                    }
-                                    variant="ghost"
-                                    aria-current={
-                                        town === view.town ? 'true' : undefined
-                                    }
-                                    onClick={() => go({ town, q: '' })}
-                                    className={cn(
-                                        'min-h-touch w-full justify-start text-left whitespace-normal md:min-h-row',
-                                        town === view.town &&
-                                            'bg-accent text-accent-foreground',
-                                    )}
-                                >
-                                    {town}
-                                </Button>
-                            ))}
+                            {filtered.map(({ town }) => {
+                                const open = town === view.town;
+                                const Icon = open ? FolderOpen : Folder;
+                                return (
+                                    <button
+                                        key={town}
+                                        type="button"
+                                        ref={open ? currentTown : undefined}
+                                        aria-current={open ? 'true' : undefined}
+                                        onClick={() => go({ town, q: '' })}
+                                        className={cn(
+                                            'flex h-7 w-full items-center gap-2 px-2 text-left type-body hover:bg-accent/60',
+                                            open &&
+                                                'bg-accent font-medium text-accent-foreground',
+                                        )}
+                                    >
+                                        <Icon
+                                            className="size-3.5 shrink-0 text-muted-foreground"
+                                            aria-hidden="true"
+                                        />
+                                        <span className="truncate">{town}</span>
+                                    </button>
+                                );
+                            })}
                             {filtered.length === 0 && (
                                 <p
                                     role="status"
@@ -141,156 +135,130 @@ export function ReportLibrary({ citations }: { citations: FinanceCitation[] }) {
                         </nav>
                     </div>
                     <div className="flex min-h-0 min-w-0 flex-col">
-                        <div className="flex min-h-touch flex-wrap items-center justify-between gap-2 border-b px-panel py-1.5">
-                            <h3 className="hidden type-item md:block">
-                                {view.town}
-                            </h3>
-                            <div className="min-w-0 flex-1 md:hidden">
-                                <Select
-                                    value={view.town}
-                                    onValueChange={(town) =>
-                                        go({ town, q: '' })
-                                    }
-                                >
-                                    <SelectTrigger
-                                        aria-label="Municipality"
-                                        variant="quiet"
-                                        className="max-w-full"
-                                    >
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {municipalities.map(({ town }) => (
-                                            <SelectItem key={town} value={town}>
-                                                {town}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <Field
-                                orientation="horizontal"
-                                className="w-auto gap-1"
+                        <div className="border-b px-panel py-1 md:hidden">
+                            <Select
+                                value={view.town}
+                                onValueChange={(town) => go({ town, q: '' })}
                             >
-                                <FieldLabel htmlFor="source-year">
-                                    Year
-                                </FieldLabel>
-                                <Select
-                                    value={view.year?.toString() ?? 'all'}
-                                    onValueChange={(year) =>
-                                        go({
-                                            year:
-                                                year === 'all'
-                                                    ? null
-                                                    : Number(year),
-                                        })
-                                    }
+                                <SelectTrigger
+                                    aria-label="Municipality"
+                                    variant="quiet"
+                                    className="max-w-full"
                                 >
-                                    <SelectTrigger
-                                        id="source-year"
-                                        variant="quiet"
-                                        className="font-mono tabular-nums"
-                                    >
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">
-                                            All Years
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {municipalities.map(({ town }) => (
+                                        <SelectItem key={town} value={town}>
+                                            {town}
                                         </SelectItem>
-                                        {years.map((year) => (
-                                            <SelectItem
-                                                key={year}
-                                                value={year.toString()}
-                                                className="font-mono tabular-nums"
-                                            >
-                                                {year}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </Field>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div
                             role="region"
                             aria-label={`${view.town} COA Reports`}
                             tabIndex={0}
-                            className="max-h-[min(32rem,65dvh)] min-h-0 flex-1 overflow-auto overscroll-contain outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset md:max-h-none [&_[data-slot=table-container]]:overflow-visible"
+                            className="max-h-[min(32rem,65dvh)] min-h-0 flex-1 overflow-auto overscroll-contain px-panel py-2 type-body outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset md:max-h-none"
                         >
-                            <Table data-striped>
-                                <TableHeader className="sticky top-0 z-10 bg-card">
-                                    <TableRow>
-                                        <TableHead>Year</TableHead>
-                                        <TableHead>Reports</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {shownYears.map(({ year, reports }) => (
-                                        <TableRow key={year}>
-                                            <TableCell className="w-20 align-top font-mono tabular-nums">
-                                                {year}
-                                            </TableCell>
-                                            <TableCell className="whitespace-normal">
-                                                <ul className="grid gap-2">
-                                                    {reports.map((report) => {
-                                                        const workbook =
-                                                            report.links.some(
-                                                                (link) =>
-                                                                    link.text ===
-                                                                    'Download Workbook',
+                            <div className="flex h-7 items-center gap-2 font-medium">
+                                <FolderOpen
+                                    className="size-4 shrink-0 text-muted-foreground"
+                                    aria-hidden="true"
+                                />
+                                {view.town}
+                            </div>
+                            {townYears.length === 0 ? (
+                                <p
+                                    role="status"
+                                    className="pl-6 text-muted-foreground"
+                                >
+                                    Reports are not available.
+                                </p>
+                            ) : (
+                                <ul
+                                    aria-label={`${view.town} Report Years`}
+                                    className="ml-2"
+                                >
+                                    {townYears.map(({ year, reports }) => {
+                                        const files = reports.flatMap(
+                                            (report) =>
+                                                report.links.map((link) => ({
+                                                    report,
+                                                    link,
+                                                })),
+                                        );
+                                        return (
+                                            <li key={year} className={BRANCH}>
+                                                <div className="flex h-7 items-center gap-2">
+                                                    <Folder
+                                                        className="size-4 shrink-0 text-muted-foreground"
+                                                        aria-hidden="true"
+                                                    />
+                                                    <span className="font-mono font-medium tabular-nums">
+                                                        {year}
+                                                    </span>
+                                                </div>
+                                                <ul className="ml-2">
+                                                    {files.map(
+                                                        ({ report, link }) => {
+                                                            const workbook =
+                                                                link.text ===
+                                                                'Download Workbook';
+                                                            const Icon =
+                                                                workbook
+                                                                    ? FileSpreadsheet
+                                                                    : FileText;
+                                                            const name = `${report.label}${report.links.length > 1 && !workbook ? ` ${link.text}` : ''}`;
+                                                            return (
+                                                                <li
+                                                                    key={`${report.key}${link.href}`}
+                                                                    className={
+                                                                        BRANCH
+                                                                    }
+                                                                >
+                                                                    <div className="flex min-h-7 items-center gap-2">
+                                                                        <Icon
+                                                                            className="size-4 shrink-0 text-muted-foreground"
+                                                                            aria-hidden="true"
+                                                                        />
+                                                                        <a
+                                                                            href={
+                                                                                link.href
+                                                                            }
+                                                                            {...(workbook
+                                                                                ? {
+                                                                                      download:
+                                                                                          '',
+                                                                                  }
+                                                                                : {
+                                                                                      target: '_blank',
+                                                                                      rel: 'noreferrer',
+                                                                                  })}
+                                                                            aria-label={`${view.town} ${name} ${year} (${workbook ? 'downloads an Excel workbook' : 'opens in a new tab'})`}
+                                                                            className="truncate underline underline-offset-2"
+                                                                        >
+                                                                            {
+                                                                                name
+                                                                            }
+                                                                        </a>
+                                                                        <span className="shrink-0 font-mono type-data text-muted-foreground">
+                                                                            {workbook
+                                                                                ? 'XLSX'
+                                                                                : 'PDF'}
+                                                                        </span>
+                                                                    </div>
+                                                                </li>
                                                             );
-                                                        const Icon = workbook
-                                                            ? FileSpreadsheet
-                                                            : FileText;
-                                                        return (
-                                                            <li
-                                                                key={report.key}
-                                                                className="flex items-start gap-2"
-                                                            >
-                                                                <Icon
-                                                                    className="mt-0.5 size-4 shrink-0"
-                                                                    aria-hidden="true"
-                                                                />
-                                                                <div className="flex flex-wrap gap-x-3 gap-y-1 type-body">
-                                                                    {report.links.map(
-                                                                        (
-                                                                            link,
-                                                                        ) => (
-                                                                            <SourceLink
-                                                                                key={
-                                                                                    link.text
-                                                                                }
-                                                                                href={
-                                                                                    link.href
-                                                                                }
-                                                                                label={`${view.town} ${report.label} ${year} ${link.text}`}
-                                                                            >
-                                                                                {`${report.label}${report.links.length > 1 ? ` ${link.text}` : ''}`}
-                                                                            </SourceLink>
-                                                                        ),
-                                                                    )}
-                                                                </div>
-                                                            </li>
-                                                        );
-                                                    })}
+                                                        },
+                                                    )}
                                                 </ul>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                    {shownYears.length === 0 && (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={2}
-                                                className="whitespace-normal text-muted-foreground"
-                                            >
-                                                <p role="status">
-                                                    Reports are not available
-                                                    for this year.
-                                                </p>
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            )}
                         </div>
                     </div>
                 </div>

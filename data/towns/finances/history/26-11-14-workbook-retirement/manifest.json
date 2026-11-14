@@ -1,0 +1,10 @@
+{
+  "retiredOn": "2026-11-14",
+  "reason": "Three displayed workbook fields; Annex and SCBAA extraction retired by owner",
+  "figures": 1062,
+  "issues": 3577,
+  "files": {
+    "figures.csv": "df4a1be611b31247c6fe6bb49db4a1639d92bdbc0b29f354b474c6696e7e5c56",
+    "issues.csv": "244bb1f3a30ee3579a9d6232270d7ee5dd625fa6c0efe5e5501461a599bdc7e7"
+  }
+}

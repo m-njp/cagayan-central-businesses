@@ -126,6 +126,9 @@ def validatePdf(entry):
 
 
 class Collection:
+    batchSize = BATCH_SIZE
+    extension = ".pdf"
+
     def __init__(self, inventoryPath, statePath, workers=WORKERS, manifestRoot=None):
         self.statePath = Path(statePath)
         self.workers = workers
@@ -178,8 +181,8 @@ class Collection:
         path = Path(path).resolve()
         old = self.entries.get(fileId, {})
         try:
-            if path.suffix.lower() != ".pdf":
-                raise ValueError("Downloaded file must have a .pdf extension")
+            if path.suffix.lower() != self.extension:
+                raise ValueError(f"Downloaded file must have a {self.extension} extension")
             signature = fingerprint(path)
         except (OSError, ValueError) as error:
             self.failed(fileId, str(error), path)
@@ -189,7 +192,7 @@ class Collection:
         if unchanged and not recheck and (old["status"] != "failed" or not retryFailed):
             return
         self.save(fileId, "pending", item=item, downloadPath=str(path), fingerprint=signature)
-        if len(self.pending()) >= BATCH_SIZE:
+        if len(self.pending()) >= self.batchSize:
             self.check()
 
     def failed(self, fileId, error, path=None):
@@ -203,10 +206,10 @@ class Collection:
 
     def check(self):
         pending = self.pending()
-        for offset in range(0, len(pending), BATCH_SIZE):
-            batch = pending[offset:offset + BATCH_SIZE]
+        for offset in range(0, len(pending), self.batchSize):
+            batch = pending[offset:offset + self.batchSize]
             with ThreadPoolExecutor(max_workers=self.workers) as pool:
-                futures = [(entry, pool.submit(validatePdf, entry)) for entry in batch]
+                futures = [(entry, pool.submit(self.validate, entry)) for entry in batch]
                 for entry, future in futures:
                     fields = {key: entry[key] for key in ("item", "downloadPath", "fingerprint")}
                     try:
@@ -218,10 +221,20 @@ class Collection:
                         self.save(entry["id"], "verified", **fields, **metadata)
         self.export()
 
+    def validate(self, entry):
+        return validatePdf(entry)
+
+    def downloadReady(self, path):
+        return True
+
+    def manifestEntry(self, entry, year):
+        return {**entry["item"], "downloadPath": entry["downloadPath"], "fiscalYear": year,
+                **{key: entry[key] for key in ("bytes", "sha256", "pages", "pdfVerified")}}
+
     def export(self):
         entries = [entry for fileId, entry in self.entries.items()
                    if entry.get("item") == self.items.get(fileId)]
-        report = {"batchSize": BATCH_SIZE, "inventoryCount": len(self.items),
+        report = {"batchSize": self.batchSize, "inventoryCount": len(self.items),
                   "verified": [entry for entry in entries if entry["status"] == "verified"],
                   "failures": [entry for entry in entries if entry["status"] == "failed"],
                   "pending": [entry["id"] for entry in entries if entry["status"] == "pending"],
@@ -240,17 +253,18 @@ class Collection:
             for entry in report["verified"]:
                 if entry["id"] not in fileIds:
                     continue
-                manifest.append({**entry["item"], "downloadPath": entry["downloadPath"],
-                                 "fiscalYear": year, **{key: entry[key] for key in ("bytes", "sha256", "pages", "pdfVerified")}})
+                manifest.append(self.manifestEntry(entry, year))
             writeJson(folder / "manifest.json", manifest)
         return report
 
 
 def observeDownloads(collection, downloads, observed, final=False):
-    """Recognize renamed, stable PDFs while ignoring browser partial files."""
+    """Recognize renamed, stable downloads while ignoring browser partial files."""
     changed = False
     names = {}
-    for candidate in downloads.glob("*.pdf"):
+    for candidate in downloads.iterdir():
+        if candidate.suffix.lower() != collection.extension:
+            continue
         normalized = browserName(candidate.name)
         names.setdefault(normalized, []).append(candidate)
     for fileId, item in collection.items.items():
@@ -277,6 +291,8 @@ def observeDownloads(collection, downloads, observed, final=False):
             observed[fileId] = signature
             changed = True
             continue
+        if not final and not collection.downloadReady(path):
+            continue
         old = collection.entries.get(fileId)
         collection.completed(fileId, path)
         changed = changed or collection.entries.get(fileId) is not old
@@ -290,7 +306,7 @@ def watchDownloads(collection, downloads, finishFile=None, idleSeconds=120, poll
         raise ValueError("Use a fresh finish marker for this browser run")
     observed = {}
     lastActivity = time.monotonic()
-    print(json.dumps({"watching": str(downloads), "batchSize": BATCH_SIZE}), flush=True)
+    print(json.dumps({"watching": str(downloads), "batchSize": collection.batchSize}), flush=True)
     try:
         while True:
             if observeDownloads(collection, downloads, observed):
@@ -300,7 +316,7 @@ def watchDownloads(collection, downloads, finishFile=None, idleSeconds=120, poll
                 observeDownloads(collection, downloads, observed, final=True)
                 for fileId, item in collection.items.items():
                     if collection.entries.get(fileId, {}).get("item") != item:
-                        collection.failed(fileId, "No completed PDF observed before browser collection ended")
+                        collection.failed(fileId, f"No completed {collection.extension[1:].upper()} observed before browser collection ended")
                 break
             time.sleep(pollSeconds)
     except KeyboardInterrupt:

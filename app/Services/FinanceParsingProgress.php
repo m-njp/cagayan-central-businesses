@@ -62,7 +62,7 @@ final class FinanceParsingProgress
         } elseif ($type === 'issue') {
             $issue = self::issue($event['issue'] ?? []);
             $this->snapshot['issues'][] = $issue;
-            // Info notes (such as workbook headings outside the catalog) stay in the report but out of the live feed.
+            // Info notes stay in the report but out of the live feed.
             if ($issue['severity'] !== 'info') {
                 $this->snapshot['message'] = $issue['message'];
                 $this->addActivity(['kind' => 'issue', 'message' => $issue['message'], 'location' => $issue['location']]);
@@ -88,7 +88,7 @@ final class FinanceParsingProgress
     {
         if (! is_string($row['line_code'] ?? null) || ! is_int($row['fiscal_year'] ?? null)
             || ! is_string($row['value'] ?? null) || ! preg_match('/^-?\d+\.\d{2}$/D', $row['value'])
-            || ! in_array($kind, ['executive_summary', 'fs_workbook', 'annex_workbook'], true)
+            || $kind !== 'executive_summary'
             || ! in_array($row['basis'] ?? null, ['actual', 'budget_final'], true)) {
             throw new \RuntimeException('Invalid provisional figure.');
         }
@@ -116,8 +116,7 @@ final class FinanceParsingProgress
         $message = match ($kind) {
             'engine_failed', 'digits_unconfirmed' => 'One PDF reader could not read or confirm this file.',
             'parser_failed', 'section_failed' => 'This section could not be read. Check its figures against the source.',
-            // Uploads are stored under a random file name that means nothing to the reader.
-            default => preg_replace('/^[\w.-]+\.xlsx[!:] ?/', '', self::text($issue['message'] ?? 'Check this figure against its source.')) ?? '',
+            default => self::text($issue['message'] ?? 'Check this figure against its source.'),
         };
 
         $normalized = ['severity' => in_array($issue['severity'] ?? null, ['info', 'warning', 'error'], true) ? $issue['severity'] : 'warning',
