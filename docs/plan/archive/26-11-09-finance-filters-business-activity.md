@@ -12,7 +12,7 @@ predecessor: 26-11-09-maintainability-refresh.md
 
 ## Objective
 
-Help readers choose a year or business group quickly, find the finance evidence on demand and distinguish uploaded report status from report filters. Continues the [Government Finances Report Redesign](../active/26-11-03-finance-report-redesign.md).
+Help readers choose a year or business group quickly, find the finance evidence on demand and distinguish uploaded report status from report filters. Continues the [Government Finances Report Redesign](../archive/26-11-03-finance-report-redesign.md).
 
 ## Scope and Acceptance
 

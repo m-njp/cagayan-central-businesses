@@ -1,14 +1,21 @@
 ---
 title: "Executive Summary View and Net Income"
 created: "26-10-29"
-updated: "26-10-29"
-status: in-progress
+updated: "26-11-14"
+status: superseded
+successor: 26-11-14-executive-summary-only.md
 branch: "feat/business-registry"
 base: staging
 predecessor: ../archive/26-10-29-finance-trends.md
 ---
 
 # Executive Summary View and Net Income
+
+## Closure "26-11-14"
+
+Superseded by [Executive Summary Only and Faster Tests](26-11-14-executive-summary-only.md), D47 and D49. The Executive Summary default, COA wording and Net Income behavior remain implemented; Financial Condition and Budget Execution are no longer restricted to Tuguegarao City. Current design rules replace the early table and source treatments below.
+
+The original unchecked browser and review items are preserved as history, not claimed as newly executed. The successor records current automated verification, static design/privacy review and the remaining visual-review limitations. Do not resume this obsolete scope or restore `summary_detail_towns`.
 
 ## Objective
 

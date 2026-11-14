@@ -2,13 +2,19 @@
 title: "Executive Summary Only and Faster Tests"
 created: "26-11-14"
 updated: "26-11-14"
-status: in-verification
+status: completed
 branch: "chore/maintainability-refresh"
 base: staging
 predecessor: "../archive/26-11-13-workbook-trim-all-town-summary.md"
 ---
 
 # Executive Summary Only and Faster Tests
+
+## Completion "26-11-14"
+
+Implementation and the integration gate are complete. Commit `0d573dd` passed the normal commit hooks and was pushed after the production build and full `composer ci:check` passed. Fresh standalone verification passed 497 PHP tests with 3,678 assertions and 694 Python tests. All 520 original workbook downloads and all six frozen-history files match their checksums, including the staged history blobs.
+
+At the owner's request, this plan is archived and the two obsolete finance-view plans are archived as superseded. The current scope excludes new browser verification, as previously instructed. A final light/dark comparison, screenshots and fresh interaction request-count measurements remain explicit PR-review limitations, not claimed passes. The separate Live Finance Parsing plan retains its outstanding broad verification item. No merge or deployment is included.
 
 ## Objective
 
@@ -39,7 +45,7 @@ Out of scope: changes to the Executive Summary parser. Its modules and version 1
 - [x] Revenue Sources removed from config, guide, charts, upload form and finding guide.
 - [x] Decisions, metrics M21, AGENTS, rules, READMEs, design, database and roadmap updated.
 - [x] Parser tests carried forward with unchanged module hashes; PHPStan, Pint, required frontend checks/build and all observed failing cases verified through the full run plus targeted follow-ups.
-- [ ] Fresh green aggregate CI at integration/pre-push. Deferred after isolated fixture fixes under the owner's targeted-testing correction; the last aggregate run was 491/492, not green.
+- [x] Fresh green aggregate CI at integration/pre-push: normal pre-push hook passed the production build and `composer ci:check` for `0d573dd` on "26-11-14". Earlier failed runs below remain historical evidence.
 - [x] Staged extraction proves the Executive Summary output is identical to the committed CSVs.
 - [x] Browser checks excluded by the owner's instruction for this pass; no browser verification is claimed.
 
@@ -47,6 +53,7 @@ Out of scope: changes to the Executive Summary parser. Its modules and version 1
 
 | Date | Change | Reason |
 | :- | :- | :- |
+| "26-11-14" | Integration gate passed and plan archived; older finance-view plans archived as superseded | Owner requested current plan statuses and archival of completed work; retain visual-review limitations without claiming browser checks |
 | "26-11-14" | Owner requested commit and PR and approved keeping the accumulated finance work in one PR; corrected M35's stale blanket Budget Execution coverage sentence | D48 records 2025 exceptions for Santo Niño and Enrile, so availability must be checked per source |
 | "26-11-14" | Plan created; workbook reading retired; parallel tests added | Owner decision after 438 Extraction Limits findings and three sessions of layout fixes |
 | "26-11-14" | Verification resumed one command at a time; four missing source identities added to downloads only | Owner approved all-original downloads after checksum audit found three AAPSI files and Peñablanca's 2019 Appendices absent from the register |
@@ -84,7 +91,7 @@ Owner request "26-11-14": validate the continuation handoff, give the public Gov
 - [x] Browser pass as the local demo Admin: guide on Capitol Analytics opens from a row label on the right tab, arrow and Home keys move between tabs; Enter Report (Abulug 2025) and Population (Tuguegarao City) show the placeholders. Nothing was saved. Zero-like placeholders were replaced with words after this pass.
 - [x] Shared `components/guide-dialog.tsx` extracted; the Government Finances Guide and the Report Differences Guide both use it. A finding name opens its category tab, scrolls to the finding and marks it. Lint, types, build and Node tests pass. Not checked in the browser, at the owner's instruction.
 - [x] Report Differences rebuilt as one table per report year with a worded Review column, the year in the right-hand filter panel and row links; the grid, dots, category tabs and key line are gone. The finding highlight is a ring on the entry. Lint, types, build, 34 Node tests and `ReportDifferencesTest` (5) pass. Browser-checked before the year moved into the panel; the final layout was not rechecked, at the owner's instruction.
-- [ ] `/design-check` and a light mode comparison.
+- [x] Static `/design-check` completed during commit review. A fresh light/dark comparison remains outside this browser-excluded pass and is recorded for PR review.
 
 ## Current Handoff
 
@@ -100,9 +107,9 @@ Static design review covered shared surfaces, tabbed guides, N/A reasons, report
 
 Fresh pre-commit verification: `composer test:fast` passed all 497 tests with 3,678 assertions (458.336 seconds reported by Pest); `composer data:finances:test` passed all 694 tests in 29.21 seconds. The first sandboxed PHP attempt could not connect to local PostgreSQL; the successful run used local database access. `git diff --check` passed. The normal commit and pre-push hooks still enforce frontend checks, PHP static checks, build and aggregate CI.
 
-The [consolidated Executive Summary Only handoff](../../engineering/executive-summary-handoff.md) is the entry point for the next developer. It records inherited D49 scope separately from this session's changes, known limits, targeted commands, local-only artifacts and the remaining integration gate. `composer dev` was started at about 15:05 PHT on "26-11-14"; HTTP 200 was rechecked at 19:58 PHT, with Vite on port 5173. Reuse existing services and recheck transient server state before starting another instance. This documentation refresh ran link and whitespace checks only; no application tests, build or import was needed.
+The [consolidated Executive Summary Only handoff](../../engineering/executive-summary-handoff.md) is the entry point for the next developer. It records inherited D49 scope separately from this session's changes, known limits, targeted commands, local-only artifacts and the completed integration gate. `composer dev` was started at about 15:05 PHT on "26-11-14"; HTTP 200 was rechecked at 19:58 PHT, with Vite on port 5173. Reuse existing services and recheck transient server state before starting another instance. This documentation refresh ran link and whitespace checks only; no application tests, build or import was needed.
 
-## Verification
+## Earlier Verification Before Final Integration
 
 See the [verification and timing report](../../engineering/executive-summary-verification.md). All 25 staged output files match canonical CSVs. Both history manifests pass, and all parser modules match the continuation's starting hashes; the handoff's 694-test parser result is retained. The retirement migration is applied; all 5,174 Executive Summary figure/review checksums match before and after migration, import and final verification. The import loaded 348 documents and 5,174 figures with no new, changed-to-Pending or removed figures (85.602 seconds).
 

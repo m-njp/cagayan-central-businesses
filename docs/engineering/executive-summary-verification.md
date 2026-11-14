@@ -1,6 +1,6 @@
 # Executive Summary Verification
 
-Recorded "26-11-14" on `chore/maintainability-refresh`, following [D49](decisions.md#d49-executive-summary-only-and-parallel-tests) and the [handoff](executive-summary-handoff.md). All observed failures are corrected and their targeted follow-ups pass. The last aggregate CI run was not green; its one remaining fixture error was subsequently verified by the affected 29-test group. Under the owner's later targeted-testing correction, another full aggregate run is reserved for integration/pre-push. Tests ran one command at a time; workers inside one parallel command remained enabled. No browser tests or agents were started in this continuation.
+Recorded "26-11-14" on `chore/maintainability-refresh`, following [D49](decisions.md#d49-executive-summary-only-and-parallel-tests) and the [handoff](executive-summary-handoff.md). The final integration checkpoint passed the production build and full `composer ci:check` through the normal pre-push hook for `0d573dd`. Fresh standalone runs passed 497 PHP tests / 3,678 assertions (458.336 seconds reported by Pest) and 694 parser tests (29.21 seconds). All 520 workbook originals and six frozen-history files match checksums. No fresh browser verification is claimed; screenshots and a final light/dark comparison remain PR-review limitations. Earlier failed runs and timings below are retained as historical evidence, not current gate status.
 
 ## Measured Pest Bottlenecks
 
@@ -51,7 +51,7 @@ There is no matching successful serial Pest baseline or agent-work timing log. A
 | :- | :- | -: |
 | Initial full Pest profile | 484/490 passed, two assertions failed, four fixture errors; subsequently corrected | 581.845s wall, 579.454s Pest |
 | First CI attempt | Frontend checks and 33 Node tests passed; stopped at import-test line endings, fixed with Pint | 61.564s wall |
-| Latest aggregate `composer ci:check` | Formatting, TypeScript, 33 Node tests, Pint and PHPStan passed; Pest 491/492 passed, one fixture error subsequently corrected | 486.608s wall (8m7s), 417.797s Pest (6m58s) |
+| Historical aggregate `composer ci:check` before final integration | Formatting, TypeScript, 33 Node tests, Pint and PHPStan passed; Pest 491/492 passed, one fixture error subsequently corrected | 486.608s wall (8m7s), 417.797s Pest (6m58s) |
 | Targeted import, Economy and source-download coverage | 76 passed, including the two added source kinds | 20.397s wall |
 | Targeted finance evidence-review coverage after final fixture fix | 29 passed | 22.818s wall |
 | Targeted analytics frontend coverage after final formatter/test setup fix | 13 passed | 2.464s wall |
@@ -90,7 +90,7 @@ Privacy review traced the D49 finance changes and the four added source download
 | P14 | Holds: public source responses contain registered report metadata and bytes; no protected values or server paths were added |
 | P15 | Holds: figure publication remains Verified-only; listing an original source publishes no Pending figure |
 
-No blocking finding remains in this scope. Full green aggregate CI remains an integration/pre-push gate, rather than a claimed result of this continuation.
+No blocking finding remained in that earlier continuation. The later integration/pre-push gate passed for `0d573dd`, as recorded at the top of this report.
 
 ## Import Lookup Optimization
 
@@ -153,4 +153,4 @@ All three before/after pairs have identical normalized hashes for **5,174 financ
 
 This optimization affects bulk CSV ledger loading. The single-report PDF upload uses the existing Python intake, streamed phase events and upload-recording path. Its blur overlay, scanning/checking/saving stages, completion behavior and **0.5-second configured pacing** are unchanged. Development iterations use small fixtures or the selected municipality/year PDF upload. Full-data loading is reserved for necessary seeding/integration or a justified benchmark; no new municipality/year bulk-import flags were added.
 
-The current optimization is complete. The pre-existing fresh aggregate CI gate remains for integration/pre-push; no clean whole-application CI run is claimed here.
+The optimization was complete at this point; aggregate CI was still pending then. The later integration/pre-push gate passed for `0d573dd`; its result does not change the matched benchmark timings above.

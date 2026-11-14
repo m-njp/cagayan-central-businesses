@@ -37,4 +37,4 @@ Read-only database query confirmed seven published Tuguegarao revenue/expense/su
 
 ## Superseded "26-10-29"
 
-Superseded by [Executive Summary View and Net Income](../active/26-10-29-executive-summary-view.md), which makes the Executive Summary the default view and renames Surplus or Deficit to Net Income. Trends remains a View option. The two open checks (automated checks and design review; phone, desktop, theme and keyboard checks) move to that plan.
+Superseded by [Executive Summary View and Net Income](../archive/26-10-29-executive-summary-view.md), which makes the Executive Summary the default view and renames Surplus or Deficit to Net Income. Trends remains a View option. The two open checks (automated checks and design review; phone, desktop, theme and keyboard checks) move to that plan.

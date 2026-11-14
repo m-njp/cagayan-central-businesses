@@ -6,14 +6,14 @@ status: superseded
 branch: "chore/maintainability-refresh"
 base: staging
 predecessor: "26-11-13-coa-workbook-cleanup-handoff.md"
-successor: "../active/26-11-14-executive-summary-only.md"
+successor: "../archive/26-11-14-executive-summary-only.md"
 ---
 
 # Workbook Data Trim, All-Town Executive Summary and Parser Upkeep
 
 ## Superseded "26-11-14"
 
-The owner retired all workbook reading later the same day (D49). The Executive Summary work in this plan stays. The three-field workbook reduction, its preservation path and its open verification items are closed without further work; see the [successor plan](../active/26-11-14-executive-summary-only.md).
+The owner retired all workbook reading later the same day (D49). The Executive Summary work in this plan stays. The three-field workbook reduction, its preservation path and its open verification items are closed without further work; see the [successor plan](../archive/26-11-14-executive-summary-only.md).
 
 ## Objective
 

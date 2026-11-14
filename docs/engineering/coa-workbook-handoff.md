@@ -1,6 +1,6 @@
 # COA Workbook Handoff
 
-**Retired "26-11-14" (D49).** Workbook reading is removed. The Executive Summary is the only source of figures, the workbook reader and its commands no longer exist, and the last active workbook rows are frozen in `data/towns/finances/history/26-11-14-workbook-reading-retirement/`. Original workbooks, their register and public downloads remain. Everything below is history, kept to explain why workbook parsing was dropped: layouts differ between governments and years, and the final staged run still left 242 workbook findings in Extraction Limits. See the [retirement plan](../plan/active/26-11-14-executive-summary-only.md).
+**Retired "26-11-14" (D49).** Workbook reading is removed. The Executive Summary is the only source of figures, the workbook reader and its commands no longer exist, and the last active workbook rows are frozen in `data/towns/finances/history/26-11-14-workbook-reading-retirement/`. Original workbooks, their register and public downloads remain. Everything below is history, kept to explain why workbook parsing was dropped: layouts differ between governments and years, and the final staged run still left 242 workbook findings in Extraction Limits. See the [retirement plan](../plan/archive/26-11-14-executive-summary-only.md).
 
 Updated "26-11-13". Start here before changing workbook extraction or ingestion. The owner requested fewer, explicit fields, readable municipality folders, a documented handoff and removal of generated clutter.
 

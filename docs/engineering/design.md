@@ -622,7 +622,7 @@ User-approved simplification for public Economy and Capitol Analytics. It supers
 
 ## Finance Report Polish "26-11-03"
 
-Owner-approved polish of the Executive Summary View after the rejected rebuild was reverted (plan `docs/plan/active/26-11-03-finance-report-redesign.md`). It supersedes, in "Executive Summary View", the View picker, the Period caption beside the year range, Max, the `type-label` section rows, and every triangle.
+Owner-approved polish of the Executive Summary View after the rejected rebuild was reverted (plan `docs/plan/archive/26-11-03-finance-report-redesign.md`). It supersedes, in "Executive Summary View", the View picker, the Period caption beside the year range, Max, the `type-label` section rows, and every triangle.
 
 **The question.** How did this town's government do year after year, in COA's own words?
 

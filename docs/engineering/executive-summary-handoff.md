@@ -2,16 +2,16 @@
 
 Updated "26-11-14" for the next developer or AI agent. This consolidates the original Executive Summary Only handoff with this session's verification, source-download additions, importer optimization and development-server startup.
 
-Read the [active plan](../plan/active/26-11-14-executive-summary-only.md), [D49](decisions.md#d49-executive-summary-only-and-parallel-tests), [verification and timing report](executive-summary-verification.md), and [targeted testing policy](testing.md#choose-checks-from-the-change).
+Read the [completed plan](../plan/archive/26-11-14-executive-summary-only.md), [D49](decisions.md#d49-executive-summary-only-and-parallel-tests), [verification and timing report](executive-summary-verification.md), and [targeted testing policy](testing.md#choose-checks-from-the-change).
 
 ## Current State
 
-- Branch: `chore/maintainability-refresh`. Work only in this checkout. The shared working tree includes uncommitted changes from several sessions; do not treat the entire diff as this session's work. Nothing was committed or pushed.
+- Branch: `chore/maintainability-refresh`. Work only in this checkout. The accumulated finance work is committed as `0d573dd` and pushed with all normal hooks passing. The owner requested a PR into `staging`; no merge or deployment is authorized.
 - Executive Summary PDFs are the sole source of finance figures. Workbook reading, workbook intake and Revenue Sources are retired.
 - The inherited retirement migration is applied. The development ledger contains 348 Executive Summary documents and 5,174 parsed figures; its PDF figures and sign-offs were preserved.
 - All 520 distinct workbook contents are downloadable, representing 521 preserved original collection copies with one byte-identical duplicate. The complete ZIP contains 868 reports: 348 PDFs and 520 workbooks.
 - The actual CSV importer is faster: the matched three-test benchmark improved from 7m37s to 6m19s (16.9%). All three full-data test bodies and their 28 assertions remain.
-- Targeted follow-ups pass. A fresh green aggregate CI run remains for integration/pre-push. The plan stays active for that gate.
+- Integration is complete: production build and full `composer ci:check` passed through the normal pre-push hook for `0d573dd`. Standalone runs passed 497 PHP tests with 3,678 assertions and 694 parser tests. The completed plan is archived; final light/dark comparison and screenshots remain PR-review limitations.
 - Parser version 1.7.1, its financial output, the blur overlay, Python phase events and 0.5-second upload pacing are unchanged.
 
 ## Owner Instructions That Carry Forward
@@ -113,11 +113,11 @@ One initial uninstrumented run took 438.861s because the profiling hook was file
 | Staged extraction | Earlier 348-PDF extraction: all 25 output files match canonical CSVs and saved checksums; carried forward with unchanged parser/source hashes |
 | Python parser suite | Earlier 694 passed; historical 28s parallel versus 115s serial. Carried forward, not rerun for the unrelated importer change |
 | Frontend verification | Earlier full 33 Node tests passed; later targeted 13 analytics cases passed after source-kind changes. Formatting, TypeScript and production build passed for those frontend edits |
-| Last aggregate CI | 486.608s wall; Pest 491/492 in 417.797s, with one fixture error subsequently corrected by 29 targeted evidence tests in 22.818s |
+| Historical aggregate CI before integration | 486.608s wall; Pest 491/492 in 417.797s, with one fixture error subsequently corrected by 29 targeted evidence tests in 22.818s |
 | Source ZIP and preservation | Actual archive/lookup check passed; final 1,482-file preservation passed |
 | Browser verification | Excluded by owner; none claimed |
 
-The 104-test run and later UUID pair are separate results, not a claimed fresh combined 105-test run. The full benchmark contains no manual figures, so the isolated UUID correction did not invalidate its exercised paths. A fresh green aggregate CI run remains for integration/pre-push; do not rerun it solely for this handoff or other documentation edits.
+The 104-test run and later UUID pair are separate results, not a claimed fresh combined 105-test run. The full benchmark contains no manual figures, so the isolated UUID correction did not invalidate its exercised paths. The later commit/PR integration gate passed for `0d573dd`; historical measurements above are unchanged. Do not rerun tests solely for documentation edits, while preserving mandatory Git hooks.
 
 ## Independent Validation and Interface Polish
 
@@ -151,7 +151,7 @@ Use [http://localhost:8000](http://localhost:8000) and reuse the running service
 
 ## Start Here Next
 
-1. Read this handoff, the active plan and targeted testing policy. Inspect the shared diff before editing or committing. Keep the existing checkout and branch rules.
+1. Read this handoff, the completed archived plan and targeted testing policy. Inspect current Git status before new work. Keep the existing checkout and branch rules.
 2. For development, upload one selected municipality/year Executive Summary or use small fixtures. The bulk CSV importer is not the blur-overlay pipeline; no `--town` or `--year` bulk selector was added.
 3. Run only coverage affected by new changes. A complete `FinanceImportTest` includes the expensive committed-data case. Example focused selections, run individually:
 
@@ -161,7 +161,7 @@ php artisan test --parallel --processes=2 --filter="^(?!.*imports.the.committed)
 php artisan test --compact tests/Feature/FinanceParsingProgressTest.php --filter="executes a real Executive Summary"
 ```
 
-4. At integration/pre-push, run the fresh aggregate gate through the normal workflow and hooks. Never bypass hooks or overlap separate test commands. Keep the plan active until that gate is actually green.
+4. The retirement integration gate passed and its plan is archived. New changes use targeted tests and normal commit/pre-push hooks; never bypass hooks or overlap separate test commands. Outstanding final visual checks belong to PR review, not an unfinished workbook-reading implementation.
 5. Further metric-rebuild optimization is a separate measured follow-up. Preserve metric definitions and full coverage. Do not invent a speedup or change machine settings to manufacture one.
 6. The owner's separate future direction is improving the Executive Summary parser and its displayed Financial Condition, Results of Operation and budget lines. That expansion was not implemented here and requires original-page verification for every changed figure.
 

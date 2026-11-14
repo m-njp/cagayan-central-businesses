@@ -1,14 +1,21 @@
 ---
 title: "Government Finances Report Redesign"
 created: "26-11-03"
-updated: "26-11-03"
-status: in-progress
+updated: "26-11-14"
+status: superseded
+successor: 26-11-14-executive-summary-only.md
 branch: feat/finance-report-redesign
 base: feat/data-ingestion-rebuild at 869cf87 (baseline 2b96ff4)
 predecessor: 26-10-29-executive-summary-view.md
 ---
 
 # Government Finances Report Redesign
+
+## Closure "26-11-14"
+
+Superseded by later owner corrections in `design.md`, D47 and D49 and [Executive Summary Only and Faster Tests](26-11-14-executive-summary-only.md). The current interface keeps the polished Executive Summary, header controls and Capitol figure strip. Later decisions replace the trailing Change column, synchronized bar charts and Help sheet with per-year arrows, area charts and the shared tabbed guide. Workbook upload, workbook breakdowns and the old 12-workbook-figure sign-off blocker are retired, not unfinished work to restore.
+
+Original acceptance items and failed-run evidence remain below as history. Current tests and review limits belong to the successor; no missing historical browser check is retroactively marked passed. Live upload work continues separately under [Live Finance Parsing](../active/26-11-08-live-finance-parsing.md).
 
 ## Objective
 

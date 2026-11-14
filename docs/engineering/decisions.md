@@ -340,7 +340,7 @@ Approved 26-10-29. Contact numbers are stored as typed: a mobile number `09XXXXX
 
 ## D42. Report Uploads Read on the Queue
 
-Approved 26-11-03 by the owner ([finance report redesign plan](../plan/active/26-11-03-finance-report-redesign.md)). Staff upload a COA report on Capitol Finances instead of asking the data member to run `composer data:finances:extract`.
+Approved 26-11-03 by the owner ([finance report redesign plan](../plan/archive/26-11-03-finance-report-redesign.md)). Staff upload a COA report on Capitol Finances instead of asking the data member to run `composer data:finances:extract`.
 
 - **One file at a time:** the queue job `ExtractFinanceUpload` runs `python -m coa.intake` from `tools/coa/` on that one file, never the repository-wide extraction. A PDF is an Executive Summary, an XLSX a Financial Statements or General Fund Annex workbook, a ZIP the audit report's workbooks. Size, archive and runtime limits are in `cagayan.finances.uploads`.
 - **Same ledger, same sign-off:** figures arrive as pending, credited to the uploader, so someone else signs them off (D35). A different report already on record is never overwritten.
