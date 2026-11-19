@@ -1,3 +1,4 @@
+import { GuideTerm } from '@/components/analytics/finance-guide';
 import { lazy } from 'react';
 import { SourceLine } from '@/components/analytics/source-line';
 import { Figure } from '@/components/charts/finance-panel';
@@ -11,7 +12,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { executiveSummary } from '@/lib/analytics';
-import { citationLinks, observationNote } from '@/lib/performance-format';
+import { citationReports, observationNote } from '@/lib/performance-format';
 import type {
     AnalyticsCatalog,
     AnalyticsFilters,
@@ -29,7 +30,7 @@ const numberCell =
     'px-1.5 text-right font-mono whitespace-nowrap tabular-nums sm:px-2';
 const labelCell = 'h-auto py-1.5 font-normal whitespace-normal';
 
-/** The note every cell of a row shares, such as a line loaded for one town only; none when the cells differ. */
+/** The note every cell of a row shares, such as the towns behind a Sum of Reporting Towns; none when the cells differ. */
 function rowNote(history: FinancialHistory, metricId: string): string | null {
     const notes = history.rows.map((row) =>
         observationNote(row.observations[metricId]),
@@ -78,7 +79,7 @@ export function ExecutiveSummary({
     const results = sections.find((section) => section.id === 'totals');
     const position = sections.find((section) => section.id === 'position');
     // Reports in year order, then page order, however the sections cite them.
-    const links = citationLinks(
+    const citations = citationReports(
         catalog.sources,
         sections.flatMap(({ history }) =>
             history.rows.flatMap((row) =>
@@ -87,8 +88,6 @@ export function ExecutiveSummary({
                 ),
             ),
         ),
-    ).sort((first, second) =>
-        first.text.localeCompare(second.text, undefined, { numeric: true }),
     );
 
     return (
@@ -146,7 +145,10 @@ export function ExecutiveSummary({
                                         scope="row"
                                         className={labelCell}
                                     >
-                                        {metric.label}
+                                        <GuideTerm
+                                            entry={metric.id}
+                                            label={metric.label}
+                                        />
                                         {note && (
                                             <span className="block type-data text-muted-foreground">
                                                 {note}
@@ -201,7 +203,7 @@ export function ExecutiveSummary({
                     </section>
                 )}
             </div>
-            <SourceLine links={links} town={filters.town} />
+            <SourceLine citations={citations} town={filters.town} />
         </div>
     );
 }

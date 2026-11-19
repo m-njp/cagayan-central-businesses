@@ -151,7 +151,7 @@ An urgent production bug follows the same path, only faster: a `bug/` branch ins
 | :- | :- | :- |
 | `git commit` | Blocks commits on `main` and `staging`, secrets, build output, and debugging leftovers. Then, for the file types you changed: PHP format (Pint), PHPStan, front end format and lint, TypeScript. Docs-only commits skip the checks. | About 5 to 25 seconds |
 | Commit message | Strips AI attribution, checks the Conventional Commit format | Instant |
-| `git push` | Blocks pushes to `main` and `staging`. Builds the front end and runs `composer ci:check`, the same checks as CI, including all tests. Needs the database running. | About 45 seconds today, growing with the tests |
+| `git push` | Blocks pushes to `main` and `staging`. Builds the front end and runs `composer ci:check`, the same checks as CI, including all tests. Needs the database running. | Several minutes with the current full-data coverage; see [measured timings](../engineering/executive-summary-verification.md) |
 | Pull request | GitHub runs CI on PostGIS, and checks the title format | A few minutes |
 
 If a hook fails, fix the cause: `composer lint` for PHP formatting, `npm run check:fix` for front end formatting and lint. Never skip a hook with `--no-verify`. AI agents are blocked from doing so.
@@ -171,7 +171,7 @@ If a hook fails, fix the cause: `composer lint` for PHP formatting, `npm run che
 
 1. It meets the acceptance checks in its issue.
 2. It has tests, including privacy cases if it touches business data.
-3. `composer ci:check` passes.
+3. Relevant tests and required static/build checks pass under `docs/engineering/testing.md`, "Choose Checks From the Change". Full `composer ci:check` passes at integration/pre-push; it is not rerun for every isolated edit. Report targeted follow-ups separately from the last aggregate result.
 4. It handles loading, empty, not available, hidden, and error states.
 5. It shows the "Simulated data" label where business records appear.
 6. Its wording follows `docs/engineering/design.md` and the phrases in `privacy-rules.md`.
@@ -184,7 +184,7 @@ If a hook fails, fix the cause: `composer lint` for PHP formatting, `npm run che
 - **One task per session.** Start a new session for a new task, so old context does not leak in.
 - **Start from a skill:** `/feature-builder C3`, `/metric-builder M10`, `/db-change add wishes table`. The skill reads the right docs first.
 - **Read the plan before approving it.** Changing a plan is cheap. Changing merged code is not.
-- **When Claude gets something wrong twice,** add the correction to `CLAUDE.md` or the matching file in `.claude/rules/`, in the same pull request.
+- **When an agent gets something wrong twice,** record the correction in the shared project instructions or the matching file in `.claude/rules/` in the same pull request. [Shared project instructions](../../AGENTS.md).
 - **Decisions go in `docs/engineering/decisions.md`,** not in chat.
 - **One folder per laptop (user rule, 26-10-28).** All work happens in the one clone, `cagayan-business-kickoff`, switching branches there. Never create a git worktree, a second clone, or a copy of the repository for a task: several folders split one database, `.env` and branch set, and made changes hard to find and combine. Claude Code must not use worktree isolation for this project.
 

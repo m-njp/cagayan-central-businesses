@@ -10,6 +10,5 @@ final readonly class BusinessCategoryRow
         public string $name,
         public int $color,
         public int $types,
-        public ?int $registered,
     ) {}
 }

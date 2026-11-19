@@ -5,19 +5,18 @@ import Map, {
     Source,
 } from 'react-map-gl/maplibre';
 import type { MapLayerMouseEvent, MapRef } from 'react-map-gl/maplibre';
-import * as maplibregl from 'maplibre-gl';
 import type { ExpressionSpecification, StyleSpecification } from 'maplibre-gl';
-import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import type { FeatureCollection, Point as GeoPoint } from 'geojson';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import 'maplibre-gl/dist/maplibre-gl.css';
 import { useAppearance } from '@/hooks/use-appearance';
+import { useTownShape } from '@/hooks/use-town-shape';
+import { containsPoint } from '@/lib/geo';
 import { categoryIcon, icons } from '@/lib/icons';
 import { mapColor } from '@/lib/map-color';
-import { collectionBounds, loadTownBoundaries } from '@/lib/map-data';
+import { collectionBounds } from '@/lib/map-data';
 import type { AreaCollection } from '@/lib/map-data';
 
-maplibregl.setWorkerUrl(workerUrl);
+import maplibregl from './maplibre';
 
 const BASEMAP = 'https://tiles.openfreemap.org/styles/positron';
 const PADDING = 32;
@@ -36,7 +35,7 @@ export type BusinessMapProps = {
     pin?: { point: Point | null; category?: string };
     onSelect?: (id: string) => void;
     // With it, a click or a drag moves the pin (the registry form).
-    onPick?: (point: Point) => void;
+    onPick?: (point: Point, barangay: string | null) => void;
 };
 
 // One map for the directory, both profiles and the form: dashed barangay outlines; the chosen barangay framed with a
@@ -52,8 +51,9 @@ export default function BusinessMap({
     onPick,
 }: BusinessMapProps) {
     const ref = useRef<MapRef>(null);
-    const [areas, setAreas] = useState<AreaCollection | null>(null);
+    const { shape: areas } = useTownShape(townCode || null);
     const { resolvedAppearance } = useAppearance();
+    const [ready, setReady] = useState(false);
     const [plain, setPlain] = useState(false);
     const [fatal, setFatal] = useState(false);
     const PinIcon = pin?.category ? categoryIcon(pin.category) : icons.location;
@@ -105,16 +105,6 @@ export default function BusinessMap({
         [businesses],
     );
 
-    useEffect(() => {
-        let current = true;
-        loadTownBoundaries(townCode)
-            .then((collection) => current && setAreas(collection))
-            .catch(() => current && setAreas(null));
-        return () => {
-            current = false;
-        };
-    }, [townCode]);
-
     const framed = useMemo<AreaCollection | null>(() => {
         if (!areas) return null;
         const features = barangay
@@ -124,12 +114,12 @@ export default function BusinessMap({
     }, [areas, barangay]);
 
     useEffect(() => {
-        if (framed)
+        if (ready && framed)
             ref.current?.fitBounds(collectionBounds(framed), {
                 padding: PADDING,
                 duration: 400,
             });
-    }, [framed]);
+    }, [framed, ready]);
 
     if (fatal)
         return (
@@ -141,10 +131,17 @@ export default function BusinessMap({
             </p>
         );
 
+    const pick = ({ lng, lat }: Point) => {
+        if (!onPick) return;
+        const area = areas?.features.find((feature) =>
+            containsPoint(feature.geometry, [lng, lat]),
+        );
+        onPick({ lng, lat }, area?.properties.psgc_code ?? null);
+    };
     const click = (event: MapLayerMouseEvent) => {
         const id = event.features?.[0]?.properties?.id;
         if (typeof id === 'string') onSelect?.(id);
-        else onPick?.({ lng: event.lngLat.lng, lat: event.lngLat.lat });
+        else pick(event.lngLat);
     };
     const chosen: ExpressionSpecification = [
         '==',
@@ -177,6 +174,7 @@ export default function BusinessMap({
                 }
                 mapStyle={plain ? fallback : BASEMAP}
                 interactiveLayerIds={onSelect ? ['business-dots'] : []}
+                onLoad={() => setReady(true)}
                 onClick={click}
                 onError={(event) => {
                     if (
@@ -260,12 +258,7 @@ export default function BusinessMap({
                         latitude={pin.point.lat}
                         anchor="bottom"
                         draggable={!!onPick}
-                        onDragEnd={(event) =>
-                            onPick?.({
-                                lng: event.lngLat.lng,
-                                lat: event.lngLat.lat,
-                            })
-                        }
+                        onDragEnd={(event) => pick(event.lngLat)}
                     >
                         {/* A bordered tag with a pointer, as design.md "Map panel" describes pins. */}
                         <span className="flex flex-col items-center">

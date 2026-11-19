@@ -77,6 +77,14 @@
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py extract"
         ],
+        "data:finances:sample": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py sample"
+        ],
+        "data:finances:audit": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py audit"
+        ],
         "data:finances:test": [
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py test"
@@ -84,6 +92,15 @@
         "data:finances:parse": [
             "Composer\\Config::disableProcessTimeout",
             "python tools/coa/run.py intake"
+        ],
+        "data:finances:check-archive": "python tools/coa/check_archive.py",
+        "data:finances:collect": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py collect"
+        ],
+        "data:finances:collect-workbooks": [
+            "Composer\\Config::disableProcessTimeout",
+            "python tools/coa/run.py collect-workbooks"
         ],
         "doctor": [
             "@php artisan app:doctor"
@@ -103,15 +120,12 @@
             "Composer\\Config::disableProcessTimeout",
             "npm run check",
             "npm run types:check",
-            "@test:analytics",
-            "@test:maps",
-            "@test:categories",
-            "@test:trend",
-            "@test:geo",
-            "@test:businesses",
+            "@test:frontend",
             "@test"
         ],
+        "test:frontend": "node --experimental-strip-types --test \"tests/Frontend/*.test.mjs\"",
         "test:maps": "node --experimental-strip-types --test tests/Frontend/finance-map.test.mjs",
+        "test:sources": "node --experimental-strip-types --test tests/Frontend/source-library.test.mjs",
         "test:trend": "node --experimental-strip-types --test tests/Frontend/trend.test.mjs",
         "test:geo": "node --experimental-strip-types --test tests/Frontend/geo.test.mjs",
         "test:businesses": "node --experimental-strip-types --test tests/Frontend/public-businesses.test.mjs",
@@ -124,7 +138,12 @@
             "@php artisan config:clear --ansi",
             "@lint:check",
             "@types:check",
-            "@php artisan test"
+            "@php artisan test --parallel"
+        ],
+        "test:fast": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan config:clear --ansi",
+            "@php artisan test --parallel"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -139,7 +158,6 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
         "pre-package-uninstall": [

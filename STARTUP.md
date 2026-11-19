@@ -110,11 +110,11 @@ Turn on "Format on save" only for languages the project formats: PHP with Pint (
 
 1. Open a terminal in the project folder and run `claude`.
 2. Approve the `laravel-boost` MCP server when asked. It gives Claude the exact docs for the installed Laravel versions.
-3. Claude reads `CLAUDE.md` on its own. Start each task from a skill, for example `/feature-builder C3`. The list is in `CLAUDE.md`, "Skills".
+3. Claude imports the shared project instructions through `CLAUDE.md`. Start from a skill such as `/feature-builder C3`. [Project skills](AGENTS.md#skills).
 
 ## 11. Your first task
 
-1. Read `CLAUDE.md`, then `docs/team/workflow.md`.
+1. Read [the shared project instructions](AGENTS.md), then the [team workflow](docs/team/workflow.md).
 2. Find your role in `docs/team/workflow.md`, "Roles" (frontend developer, backend developer, or data and content), and read the docs it lists.
 3. Pick your next item from `docs/team/roadmap.md`.
 4. Make a branch inside `staging` (`git switch staging`, `git pull --ff-only`, `git switch -c feat/short-description`), build, `/commit`, `/open-pr`. The pull request goes into `staging`.

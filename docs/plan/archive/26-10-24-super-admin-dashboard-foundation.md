@@ -34,7 +34,7 @@ Business entry/editing, business-year records/metrics, review/publication action
 - 26-10-24: The original foundation plan is narrowed by later user corrections: omit nonfunctional approval placeholders and redundant paragraphs, remove selected-sidebar accent bars and the role under the greeting, and keep geographic clicks client-side.
 - 26-10-24: Tuguegarao display aliases Carig Sur, Carig Norte, and Pengue-Ruyu preserve source PSGC codes and population joins. See [boundary provenance and recheck](../../../data/boundaries/README.md).
 - 26-10-24: Government revenue must be identified as government finances, not business sales/GDP. Source inspection has begun; only checked originals can replace the unverified imported fiscal data. Further bulk downloads remain deferred.
-- Canonical rules: [design](../../engineering/design.md), [privacy](../../engineering/privacy-rules.md), [security/schema](../../engineering/database.md), [workspace decisions](../../../CLAUDE.md#capitol-workspace-decisions).
+- Canonical rules: [design](../../engineering/design.md), [privacy](../../engineering/privacy-rules.md), [security/schema](../../engineering/database.md), [workspace decisions](../../../AGENTS.md#capitol-workspace-decisions).
 
 ## Change History
 

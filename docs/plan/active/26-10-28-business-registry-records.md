@@ -1,7 +1,7 @@
 ---
 title: "Business Registry Records"
 created: "26-10-28"
-updated: "26-10-29"
+updated: "26-11-10"
 status: in-progress
 branch: "feat/business-registry"
 base: staging
@@ -76,3 +76,9 @@ The user rejected the previous illustrated pack and requested the other research
 The latest user instruction rejects both external asset directions and asks to keep the original design with a small enhancement. Restored the original hexagonal SVG medals, tails, colors, labels and wrapping layout. The inner ring is continuous rather than dashed; the outer outline/ribbon opacity and number spacing are slightly quieter. Both downloaded asset sets and their bundled license files are removed from the project, and the empty achievement asset directory is removed. Earlier icon-panel and asset-pack proposals are superseded. The app's original brand logos remain untouched. No packages, eligibility, metrics, data or route changes. Final checks pending.
 
 Restoration verification "26-10-30": npm run check, npm run types:check and npm run build pass, with only the existing bundle-size advisory. Browser refreshed after build: original medals render on the public profile; zero external achievement images; 375px layout has no horizontal overflow. Design Check found no must-fix finding in the small refinements. git diff --check passed. No new behavior tests or repeated full CI run for this styling-only restoration; the earlier Python-cache permission blocker remains. Overall registry checks remain open.
+
+### Public Businesses Layout "26-11-10"
+
+Which businesses match my filters, and where are they? Keep the filters, list and map together in the first screenful. Use one divided filter card, reduce the gap above the results, and use a 56 px public navbar with no divider beside the appearance switch. Align the shared profile detail grid to the surface padding on both public and Capitol profiles.
+
+Verified in the local browser at 1440 px and 375 px. The directory uses the card surface in both themes, leaves 16 px above the results, and provides 44 px dropdown targets on phones. The public About and Contact grids meet the inside edge of their borders and align their labels to the headings. Town selection works from the keyboard. The Capitol profile uses the same grid primitive and was reviewed in source. The production build and `composer ci:check` passed on PostGIS with 378 PHP tests.

@@ -32,6 +32,8 @@ class FinanceDocument extends Model
     /** @use HasFactory<FinanceDocumentFactory> */
     use HasFactory;
 
+    private const string UPLOAD_PREFIX = FinanceUpload::FOLDER.'/';
+
     /**
      * Read from a Capitol upload rather than committed under data/towns; it stays out of the CSV import and export.
      *
@@ -40,7 +42,14 @@ class FinanceDocument extends Model
     #[Scope]
     protected function uploaded(Builder $query): void
     {
-        $query->where('file', 'like', FinanceUpload::FOLDER.'/%');
+        $query->where('file', 'like', self::UPLOAD_PREFIX.'%');
+    }
+
+    public function publicSourceFile(): ?string
+    {
+        $file = $this->file;
+
+        return $file !== null && ! str_starts_with($file, self::UPLOAD_PREFIX) ? $file : null;
     }
 
     /**

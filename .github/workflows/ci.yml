@@ -75,7 +75,7 @@ jobs:
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: '8.3'
-          extensions: pdo_pgsql, pgsql
+          extensions: pdo_pgsql, pgsql, zip
           tools: composer:v2
           coverage: none
 
@@ -115,7 +115,7 @@ jobs:
         run: npm run build
 
       - name: Prepare and test the COA parser
-        # The queued workbook integration test needs the pinned Python environment.
+        # The queued report integration test needs the pinned Python environment.
         run: composer data:finances:test
 
       - name: Run CI checks

@@ -14,7 +14,7 @@ final class EconomicPerformanceQuery
         $wishes = $this->wishes->get();
 
         return new EconomicPerformance(
-            catalog: $this->catalog->get(),
+            catalog: $this->catalog->get($filters['town']),
             filters: $filters,
             wishes: $wishes !== null ? [$wishes->townCode => $wishes] : [],
         );

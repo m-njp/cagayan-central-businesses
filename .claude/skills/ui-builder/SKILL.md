@@ -4,34 +4,48 @@ description: Use when building or restyling any screen, section, or component. W
 argument-hint: "<screen or component, e.g. barangay profile page>"
 ---
 
-# UI builder
+# UI Builder
 
-What to build: $ARGUMENTS
+Act as the product designer and frontend engineer for the requested screen. Own the hierarchy, density, responsive layout, and interaction details inside the approved scope.
 
-## Steps
+## 1. Decide Before Building
 
-1. **Read the system.** `docs/engineering/design.md` in full, then `docs/engineering/frontend.md` for structure and `privacy-rules.md`, "Words on screen", for fixed phrases. If the screen shows business data, read `privacy-rules.md` in full.
-2. **Say the screen's question** in one sentence, and what answers it in the first screenful. Write it in the plan.
-3. **Reuse before writing.** Look in `resources/js/components/ui` (shadcn), `resources/js/components`, `resources/js/lib` (`format.ts`, `halftone.ts`), and `resources/js/hooks`. Use `FigureRow`, `DefinitionList`, `TownAtlas`, `ProvinceMap` before making anything new. A missing shadcn piece: `npx shadcn@latest add <name>`.
-4. **Classify data access first.** For every sort, filter, view and map selection, record whether required data is already loaded. Loaded-data controls use local Inertia history, with zero application requests; request only missing authorized datasets and reuse cached results. Read frontend.md, "Local Selection Contract". Verify request counts during final verification after implementation and documentation.
+1. Write one sentence: what question does the visitor need answered on this screen, and what do they do next? If you cannot, ask.
+2. Read `docs/engineering/design.md` for the screen's own section and "Working on Existing Screens", the active plan, and the owner's latest correction. A later owner correction replaces an earlier rule; update `design.md` in the same change.
+3. Open the current screen and its consumers. Choose the smallest change that answers the question in step 1.
 
-5. **Start from what exists.** If the screen already has a layout, keep it and change only what was asked. Otherwise sketch the layout from the patterns in design.md, "Layout": what goes in the first screen, what peeks in below, what moves into a `Sheet` on phones.
-   - Read design.md, "Working on Existing Screens", before proposing additions. Check the session's explicit removals and avoid repeating headings, placeholders, or controls in helper paragraphs.
-6. **Build with tokens only.** Change marks come from `TrendMark` and `ObservationChange`, Net Income has no mark (a loss reads in parentheses), and abbreviated peso figures come from `ExactAmount` (design.md, "Executive Summary View"). Business Category colors are the `--category-N` palette through `CategoryChip`, nothing else (design.md, "Business Categories").
-   - Colors: token classes. Hue only for data, brass only for a choice.
-   - Type: `type-*` roles. Sans for words, `font-mono tabular-nums` for numbers, `type-label` for small labels.
-   - Space: `gap-section`, `px-gutter`, and the gaps in design.md, "Space".
-   - Shape: the `rounded-*` scale (2px). `rounded-full` only for dots and avatars.
-   - Motion: the motion tokens, behind `motion-safe:`.
-   - Data on a map: same-size halftone dots from `lib/halftone.ts`, shaded by value. Preserve Home's approved scope; do not add a legend or instructions there.
-7. **Remove dangling copy before adding words.** Do not append descriptions, metric/privacy disclaimers, automatic snapshot captions, chart-size explanations or fallback instructions merely to fill a card. The user explicitly removed these repeatedly. Preserve required definitions in docs; put secondary source/date metadata behind one accessible contextual tooltip when needed. Keep only requested copy, control labels, source attribution, genuine errors and actionable state messages. Never mention a removed view (for example "available in the table"). Review every new visible sentence against this rule, and do not restore removed Home placeholder/protection sections. Home action cards use compact 16px padding, 12px gaps, no icons, no shadow and no extra descriptions; retain the approved Explore Your Town's Economy heading. Explicit user corrections supersede older skill examples.
+## 2. Reuse Before Writing
 
-8. **Write the words.** Title Case for titles, headings, buttons, tabs, badges, legend titles. Sentence case for sentences. Proper nouns right. No em dashes, en dashes, middots, or separators in titles. The year and source once per group of figures.
-9. **Handle every state:** loading, empty, not available, hidden, error. Never `0` for missing.
-10. **Check it running.** `composer dev`, then every state of the view: aggregate or province, one item, empty, and drill-down, since the aggregate carries the most rows and repeats. Then the page at 375px and at desktop width, in light and dark mode. Tab through it with the keyboard. Turn on reduced motion.
-11. **Run `/design-check`** on the changed files and fix every must-fix finding.
-12. **Run the frontend checks before finishing:** run `npm run check:fix`, `npm run types:check`, and `npm run build`. Then run `npm run check` to confirm formatting and lint are clean. `npm run check` alone does not run TypeScript, so it cannot catch unresolved names or imports.
+Compose from these before writing markup. Extend one with a small prop when it nearly fits; never copy its markup.
 
-## Done when
+| Need | Use |
+| :- | :- |
+| Page title and header actions | `components/capitol/page-header.tsx` |
+| Any card, table frame, form frame | `components/ui/surface.tsx` |
+| Table | `components/ui/table.tsx`; rows that open something use `components/row-link.tsx` (`RowLink`, `RowChevron`; `onClick` for rows that open in place) |
+| Filters beside results | `components/capitol/workspace-filters.tsx` (`WorkspaceFilterLayout`, `WorkspaceFilters`) |
+| Tab row above content | `components/capitol/tab-row.tsx` |
+| Help or reference guide | `components/guide-dialog.tsx` (`GuideDialog`, `GuideSection`, `GUIDE_TARGET`) |
+| Full-page focus view | `components/ui/focus-dialog.tsx` |
+| Review status in words | `FigureStatus` in `components/registry-badges.tsx` |
+| Number entry cell | `components/capitol/entry-cell.tsx` |
+| Contextual help on a field | `components/capitol/field-help.tsx` |
+| Scroll area inside an overlay | `scrollbar-quiet` utility |
 
-The screen answers its question in the first screenful, `/design-check` reports nothing to fix, and it works on a phone and a laptop in both modes.
+## 3. Rules That Were Broken Before
+
+- One idea per view. A grid of many rows by many columns is overwhelming: show one slice (a year, a town) and put the other dimension in the filter panel.
+- Never leave a blank cell, and never show a zero-like placeholder. A real count of zero prints `0`; a missing figure prints N/A.
+- A status is words, not a colour alone. If a dot needs a key, use the worded badge instead.
+- Do not add helper lines, keys, legends or subtitles under controls. If the screen needs one to be understood, the layout is wrong.
+- Do not put counts beside filter options unless the owner asks.
+- Placeholders say what to enter ("Enter amount", "https://www.coa.gov.ph/"). They never look like a stored value.
+- Keep it short. Delete props, imports and branches the change makes unused, in the same change.
+
+## 4. Verify
+
+1. `npm run check:fix`, `npm run types:check`, `npm run build`.
+2. Confirm the dev server serves the change before saying the owner can see it: compare `http://localhost:5173/resources/js/<file>` with the file on disk. Vite on Windows can miss a change; save the file again if they differ.
+3. Unless the owner said not to, look at the screen in the browser: desktop and phone, the link or row that opens something, and the console.
+4. Re-read each changed file on disk at the end. Other agents share this checkout and can overwrite a file.
+5. Run `/design-check`, then record the result and what was not checked in the active plan.

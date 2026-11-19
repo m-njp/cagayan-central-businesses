@@ -48,7 +48,7 @@ it('does not issue a remember cookie even if it is requested', function () {
 
 it('renders safe themed errors without debug details', function (int $status) {
     $response = $status === 404 ? $this->get('/not-a-real-page') : $this->actingAs(User::factory()->create(['role' => UserRole::Staff]))->get(route('capitol.logs.index'));
-    $response->assertStatus($status)->assertInertia(fn (Assert $page) => $page->component('errors/status')->where('status', $status))
+    $response->assertStatus($status)->assertInertia(fn (Assert $page) => $page->component('errors/status/index')->where('status', $status))
         ->assertDontSee('Stack trace');
 })->with([403, 404]);
 

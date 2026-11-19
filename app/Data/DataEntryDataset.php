@@ -13,7 +13,6 @@ final readonly class DataEntryDataset
         public string $href,
         public ?int $pending,
         public ?string $lastChange,
-        public ?string $action,
-        public ?string $actionHref,
+        public ?string $actionHref = null,
     ) {}
 }

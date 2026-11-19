@@ -30,7 +30,7 @@ final class PopulationController extends Controller
 
     public function show(PopulationRequest $request, Municipality $town, PopulationQuery $query): Response
     {
-        return Inertia::render('capitol/population', ['population' => $query->get($request->user(), $town, $request->year())]);
+        return Inertia::render('capitol/population/index', ['population' => $query->get($request->user(), $town, $request->year())]);
     }
 
     public function store(SubmitPopulationRequest $request, Municipality $town, SubmitPopulation $submit): RedirectResponse

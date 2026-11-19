@@ -18,6 +18,13 @@ final class FinanceYears
         );
     }
 
+    public function publishedFirstYear(): int
+    {
+        $earliest = DB::table('stats_finance_year')->min('fiscal_year');
+
+        return min((int) config('cagayan.performance.first_year'), $earliest === null ? PHP_INT_MAX : (int) $earliest);
+    }
+
     public function publishedLastYear(): int
     {
         return max((int) config('cagayan.performance.last_year'), (int) DB::table('stats_finance_year')->max('fiscal_year'));

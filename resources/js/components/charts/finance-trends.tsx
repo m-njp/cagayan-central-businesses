@@ -17,7 +17,6 @@ const FinancialConditionChart = lazy(
 // One chart per measure, chosen for how its lines relate (design.md, "Finance Charts").
 const VARIANTS: Record<string, FinanceChartVariant> = {
     totals: 'outcome',
-    revenue_sources: 'stacked',
     budget: 'bars',
 };
 

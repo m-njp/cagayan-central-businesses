@@ -31,7 +31,7 @@ class AnalyticsFiltersRequest extends FormRequest
             ])],
             'period' => ['nullable', Rule::in(['all', 'recent', '2y', '3y', '5y'])],
             'presentation' => ['nullable', Rule::in(['statement', 'summary', 'trends'])],
-            'year' => ['nullable', 'integer', 'between:'.config('cagayan.performance.first_year').','.app(FinanceYears::class)->publishedLastYear()],
+            'year' => ['nullable', 'integer', 'between:'.app(FinanceYears::class)->publishedFirstYear().','.app(FinanceYears::class)->publishedLastYear()],
             'measure' => ['nullable', Rule::in(array_keys(config('cagayan.finances.groups')))],
             'metric' => ['nullable', 'string', 'max:90', 'regex:/^[a-z0-9._-]+$/i'],
             'dimension' => ['nullable', Rule::in(['industry', 'category'])],

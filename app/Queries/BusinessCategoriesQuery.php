@@ -25,9 +25,8 @@ final class BusinessCategoriesQuery
             ->orderBy('t.name')->get(['t.code', 't.name', 't.psic_section', 't.psic_section_name', 'c.code as category', 'a.active']);
         $categories = DB::table('business_categories as c')
             ->leftJoin('business_types as t', 't.business_category_id', '=', 'c.id')
-            ->leftJoinSub($active, 'a', 'a.business_type_id', '=', 't.id')
             ->groupBy('c.id', 'c.code', 'c.name', 'c.color', 'c.sort_order')->orderBy('c.sort_order')->orderBy('c.name')
-            ->selectRaw('c.code, c.name, c.color, count(t.id) as types, coalesce(sum(a.active), 0) as registered')->get();
+            ->selectRaw('c.code, c.name, c.color, count(t.id) as types')->get();
 
         return new BusinessCategories(
             types: array_values($types->map(fn (stdClass $type) => new BusinessTypeRow(
@@ -36,7 +35,6 @@ final class BusinessCategoriesQuery
             ))->all()),
             categories: array_values($categories->map(fn (stdClass $category) => new BusinessCategoryRow(
                 $category->code, $category->name, (int) $category->color, (int) $category->types,
-                $year === null ? null : (int) $category->registered,
             ))->all()),
             industries: array_values(BusinessType::query()->distinct()->orderBy('psic_section')->get(['psic_section', 'psic_section_name'])
                 ->map(fn (BusinessType $type) => new SelectOption($type->psic_section, $type->psic_section_name))->all()),

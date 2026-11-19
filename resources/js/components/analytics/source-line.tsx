@@ -1,37 +1,84 @@
+import { FileSpreadsheet, FileText } from 'lucide-react';
+import { SourceLink } from '@/components/source-link';
+import { Disclosure } from '@/components/ui/disclosure';
 import { ALL_TOWNS } from '@/lib/analytics';
+import type { citationReports } from '@/lib/performance-format';
 
-/**
- * The one Source line of a panel: one underlined link per distinct report page, opening the stored COA report
- * (design.md, "Government Finances Ledger Table"). A Sum of Reporting Towns has one report per town, so it gets plain text.
- */
 export function SourceLine({
-    links,
+    citations,
     town,
 }: {
-    links: { href: string; text: string }[];
+    citations: ReturnType<typeof citationReports>;
     town: string;
 }) {
-    const summed = town === ALL_TOWNS;
-    if (!summed && links.length === 0) return null;
+    if (town === ALL_TOWNS)
+        return (
+            <p className="flex flex-wrap gap-x-2 type-meta">
+                <span>Source</span>COA Annual Audit Reports
+            </p>
+        );
+    if (citations.length === 0) return null;
+
     return (
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 type-meta">
-            <span>Source</span>
-            {summed ? (
-                <span>COA Annual Audit Reports</span>
-            ) : (
-                links.map((link) => (
-                    <a
-                        key={link.href}
-                        href={link.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline underline-offset-2"
-                    >
-                        {link.text}
-                        <span className="sr-only"> (opens in a new tab)</span>
-                    </a>
-                ))
-            )}
-        </div>
+        <Disclosure title="COA Sources" className="border-t">
+            <FinanceReportList citations={citations} />
+        </Disclosure>
+    );
+}
+
+export function FinanceReportList({
+    citations,
+    showIcons = false,
+}: {
+    citations: ReturnType<typeof citationReports>;
+    showIcons?: boolean;
+}) {
+    return (
+        <ul className="grid gap-2 px-2 pt-1 pb-2 type-body">
+            {citations.map(({ year, reports }) => (
+                <li key={year} className="grid gap-x-3 sm:grid-cols-[auto_1fr]">
+                    <span className="font-mono type-meta tabular-nums">
+                        {year}
+                    </span>
+                    <ul className="grid gap-1">
+                        {reports.map((report) => (
+                            <li
+                                key={report.key}
+                                className="flex flex-wrap items-baseline gap-x-3 gap-y-1"
+                            >
+                                <span className="inline-flex items-center gap-2">
+                                    {showIcons &&
+                                        (report.links.some(
+                                            (link) =>
+                                                link.text ===
+                                                'Download Workbook',
+                                        ) ? (
+                                            <FileSpreadsheet
+                                                className="size-4 shrink-0"
+                                                aria-hidden="true"
+                                            />
+                                        ) : (
+                                            <FileText
+                                                className="size-4 shrink-0"
+                                                aria-hidden="true"
+                                            />
+                                        ))}
+                                    {report.label}
+                                </span>
+                                {report.links.map((link) => (
+                                    <SourceLink
+                                        key={link.text}
+                                        href={link.href}
+                                        label={`${report.label} ${year} ${link.text}`}
+                                    >
+                                        {link.text}
+                                    </SourceLink>
+                                ))}
+                            </li>
+                        ))}
+                    </ul>
+                </li>
+            ))}
+        </ul>
     );
 }

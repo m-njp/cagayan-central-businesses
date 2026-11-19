@@ -1,28 +1,15 @@
 import { router, useForm, usePoll } from '@inertiajs/react';
 import { useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Disclosure } from '@/components/ui/disclosure';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
+import { formatDate } from '@/lib/format';
 import { store } from '@/routes/capitol/finances/uploads';
 import type { FinanceReport } from '@/types/finance';
 
-const ACCEPT: Record<string, string> = {
-    executive_summary: '.pdf',
-    fs_workbook: '.xlsx',
-    annex_workbook: '.xlsx',
-    archive: '.zip',
-};
-
-/** Choose the report and its file; the parser reads it on the queue and the figures arrive as pending. */
+/** Choose the Executive Summary PDF; the parser reads it on the queue and the figures arrive as pending. */
 export function FinanceUploadForm({
     report,
     onSaved,
@@ -46,38 +33,19 @@ export function FinanceUploadForm({
     };
     return (
         <form onSubmit={submit} className="flex flex-col gap-4">
-            <Field className="gap-1">
-                <FieldLabel htmlFor="upload-kind">Report</FieldLabel>
-                <Select
-                    value={form.data.kind}
-                    onValueChange={(kind) => form.setData('kind', kind)}
-                >
-                    <SelectTrigger id="upload-kind" className="w-full">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {report.uploadKinds.map((kind) => (
-                            <SelectItem key={kind.value} value={kind.value}>
-                                {kind.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                {form.errors.kind && (
-                    <FieldError>{form.errors.kind}</FieldError>
-                )}
-            </Field>
             {form.progress && (
                 <div role="status" className="font-mono type-meta tabular-nums">
                     Uploading {form.progress.percentage}%
                 </div>
             )}
             <Field className="gap-1">
-                <FieldLabel htmlFor="upload-file">File</FieldLabel>
+                <FieldLabel htmlFor="upload-file">
+                    Executive Summary PDF
+                </FieldLabel>
                 <Input
                     id="upload-file"
                     type="file"
-                    accept={ACCEPT[form.data.kind]}
+                    accept=".pdf"
                     onChange={(event) =>
                         form.setData('file', event.target.files?.[0] ?? null)
                     }
@@ -142,42 +110,56 @@ export function FinanceUploads({
 
     if (report.uploads.length === 0) return null;
     return (
-        <ul aria-label="Uploaded Reports" className="flex flex-col gap-2">
-            {report.uploads.map((upload) => (
-                <li key={upload.id} className="flex flex-col gap-1 type-meta">
-                    <button
-                        type="button"
-                        onClick={() => onOpen(upload.id)}
-                        className="truncate text-left underline underline-offset-4"
-                        title={upload.name}
-                    >
-                        {upload.name}
-                    </button>
-                    <span className="flex flex-wrap items-center gap-2">
-                        <Badge
-                            variant={
-                                upload.status === 'failed'
-                                    ? 'destructive'
-                                    : 'outline'
-                            }
+        <Disclosure
+            className="border-t"
+            title={
+                <span className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-x-2">
+                    Recent Uploads
+                    {reading && <span className="type-meta">In Progress</span>}
+                </span>
+            }
+        >
+            <ul aria-label="Uploaded Reports" className="divide-y px-2">
+                {report.uploads.map((upload) => (
+                    <li key={upload.id}>
+                        <button
+                            type="button"
+                            onClick={() => onOpen(upload.id)}
+                            className="flex min-h-touch w-full flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5 rounded-sm py-2 text-left focus-visible:outline-2 focus-visible:outline-ring md:min-h-control-compact"
+                            title={upload.name}
                         >
-                            {upload.status === 'queued' ||
-                            upload.status === 'running' ? (
-                                <Spinner />
-                            ) : null}
-                            {upload.statusLabel}
-                        </Badge>
-                        {upload.status === 'done' && upload.figures > 0 && (
-                            <span>
-                                {upload.figures}{' '}
-                                {upload.figures === 1 ? 'figure' : 'figures'} to
-                                verify
+                            <span className="line-clamp-2 min-w-0 type-body wrap-anywhere underline underline-offset-2">
+                                {upload.name}
                             </span>
-                        )}
-                    </span>
-                    {upload.message && <span>{upload.message}</span>}
-                </li>
-            ))}
-        </ul>
+                            <span className="flex basis-full flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5 type-meta">
+                                <span
+                                    className={
+                                        upload.status === 'failed'
+                                            ? 'text-destructive'
+                                            : undefined
+                                    }
+                                >
+                                    {upload.status === 'done'
+                                        ? upload.figures > 0
+                                            ? `${upload.figures} to Verify`
+                                            : 'Processed'
+                                        : upload.statusLabel}
+                                </span>
+                                <time
+                                    dateTime={upload.uploadedAt.replace(
+                                        ' ',
+                                        'T',
+                                    )}
+                                    className="font-mono tabular-nums"
+                                >
+                                    {formatDate(upload.uploadedAt)}{' '}
+                                    {upload.uploadedAt.slice(11)}
+                                </time>
+                            </span>
+                        </button>
+                    </li>
+                ))}
+            </ul>
+        </Disclosure>
     );
 }

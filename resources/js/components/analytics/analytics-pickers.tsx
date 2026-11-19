@@ -3,7 +3,9 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
+    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
@@ -24,62 +26,102 @@ type Option = {
     disabled?: boolean;
     hint?: string;
 };
-type PickerField =
-    | 'town'
-    | 'measure'
-    | 'dimension'
-    | 'group'
-    | 'presentation'
-    | 'year';
+type PickerField = 'town' | 'measure' | 'business' | 'presentation' | 'year';
 
-const DIMENSIONS: Option[] = [
-    { value: 'industry', label: 'Industry' },
-    { value: 'category', label: 'Business Category' },
-];
+const BUSINESS_SECTIONS = [
+    { dimension: 'category', label: 'Business Categories' },
+    { dimension: 'industry', label: 'Official Industries' },
+] as const;
 
 function Picker({
     id,
     label,
     value,
     options,
+    sections,
     onChange,
     help,
+    compact = false,
+    hideLabel = false,
+    placeholder = 'Not available',
 }: {
     id: string;
     label: string;
     value: string;
-    options: Option[];
+    options?: Option[];
+    sections?: { label: string; options: Option[] }[];
     help?: string;
+    compact?: boolean;
+    hideLabel?: boolean;
+    placeholder?: string;
     onChange: (value: string) => void;
 }) {
+    const optionItem = (option: Option) => (
+        <SelectItem
+            key={option.value}
+            value={option.value}
+            textValue={option.label}
+            disabled={option.disabled}
+        >
+            {option.label}
+            {option.hint && (
+                <span className="block type-data text-muted-foreground">
+                    {option.hint}
+                </span>
+            )}
+        </SelectItem>
+    );
+
     return (
-        <Field className="min-w-0 gap-1">
-            <div className="flex min-h-8 items-center gap-1">
-                <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <Field
+            orientation={compact && !help ? 'horizontal' : 'vertical'}
+            className="min-w-0 gap-1"
+        >
+            <div
+                className={
+                    hideLabel
+                        ? 'sr-only'
+                        : `flex items-center gap-1 ${compact && !help ? 'mr-auto shrink-0' : 'min-h-8'}`
+                }
+            >
+                <FieldLabel
+                    htmlFor={id}
+                    className={compact ? 'text-xs' : undefined}
+                >
+                    {label}
+                </FieldLabel>
                 {help && <FieldHelp label={label}>{help}</FieldHelp>}
             </div>
             <Select
                 value={value}
                 onValueChange={onChange}
-                disabled={options.length === 0}
+                disabled={!options?.length && !sections?.length}
             >
-                <SelectTrigger id={id} className="min-h-10 w-full">
-                    <SelectValue placeholder="Not available" />
+                <SelectTrigger
+                    variant="quiet"
+                    size={compact ? 'sm' : 'default'}
+                    id={id}
+                    className={
+                        compact
+                            ? `md:text-xs ${hideLabel ? 'max-w-full' : 'max-w-[65%]'}`
+                            : 'w-full'
+                    }
+                    title={
+                        compact
+                            ? options?.find((option) => option.value === value)
+                                  ?.label
+                            : undefined
+                    }
+                >
+                    <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
-                <SelectContent>
-                    {options.map((option) => (
-                        <SelectItem
-                            key={option.value}
-                            value={option.value}
-                            disabled={option.disabled}
-                        >
-                            {option.label}
-                            {option.hint && (
-                                <span className="type-data text-muted-foreground">
-                                    {option.hint}
-                                </span>
-                            )}
-                        </SelectItem>
+                <SelectContent align={compact && !hideLabel ? 'end' : 'start'}>
+                    {options?.map(optionItem)}
+                    {sections?.map((section) => (
+                        <SelectGroup key={section.label}>
+                            <SelectLabel>{section.label}</SelectLabel>
+                            {section.options.map(optionItem)}
+                        </SelectGroup>
                     ))}
                 </SelectContent>
             </Select>
@@ -94,14 +136,15 @@ export function AnalyticsPickers({
     fields,
     onChange,
     idPrefix,
+    compact = false,
 }: {
     catalog: AnalyticsCatalog;
     filters: AnalyticsFilters;
     fields: PickerField[];
     onChange: (patch: Partial<AnalyticsFilters>) => void;
     idPrefix: string;
+    compact?: boolean;
 }) {
-    const business = selectedBusiness(catalog, filters);
     const finance = catalog.finances[filters.town]?.[filters.measure];
     const year = selectedYear(catalog, filters);
     const topic = catalog.guide.topics.find(
@@ -112,6 +155,8 @@ export function AnalyticsPickers({
             <Picker
                 id={`${idPrefix}-town`}
                 label="Municipality"
+                compact={compact}
+                hideLabel={compact}
                 value={filters.town}
                 options={catalog.towns}
                 onChange={(town) => onChange({ town })}
@@ -184,41 +229,75 @@ export function AnalyticsPickers({
                     onChange={(value) => onChange({ year: Number(value) })}
                 />
             ),
-        dimension: () =>
-            business && (
+        business: () => {
+            const business = catalog.businesses;
+            if (!business || business.townCode !== filters.town) return null;
+
+            const sections = BUSINESS_SECTIONS.map((section) => ({
+                ...section,
+                options: business.groups[section.dimension],
+            })).filter((section) => section.options.length > 0);
+            const selected = selectedBusiness(catalog, filters);
+
+            if (compact) {
+                return sections.map(({ dimension, options }) => (
+                    <Picker
+                        key={dimension}
+                        id={`${idPrefix}-${dimension}`}
+                        label={
+                            dimension === 'category'
+                                ? 'Business Category'
+                                : 'Industry'
+                        }
+                        compact
+                        placeholder="Choose"
+                        value={
+                            filters.dimension === dimension
+                                ? (selected?.key ?? '')
+                                : ''
+                        }
+                        options={options}
+                        onChange={(group) => onChange({ dimension, group })}
+                    />
+                ));
+            }
+
+            return (
                 <Picker
-                    id={`${idPrefix}-dimension`}
-                    label="Group By"
-                    value={filters.dimension}
-                    options={DIMENSIONS}
-                    onChange={(dimension) =>
-                        onChange({
-                            dimension:
-                                dimension as AnalyticsFilters['dimension'],
-                        })
-                    }
+                    id={`${idPrefix}-business`}
+                    label="Show Trends For"
+                    help="Kita manages business categories. Official industries use the Philippine Standard Industrial Classification."
+                    value={selected?.key ?? ''}
+                    sections={sections}
+                    onChange={(group) => {
+                        const section = sections.find((item) =>
+                            item.options.some(
+                                (option) => option.value === group,
+                            ),
+                        );
+                        if (section)
+                            onChange({ dimension: section.dimension, group });
+                    }}
                 />
-            ),
-        group: () =>
-            business && (
-                <Picker
-                    id={`${idPrefix}-group`}
-                    label={
-                        filters.dimension === 'category'
-                            ? 'Business Category'
-                            : 'Industry'
-                    }
-                    value={business.key}
-                    options={business.groups}
-                    onChange={(group) => onChange({ group })}
-                />
-            ),
+            );
+        },
     };
     return (
         <>
             {fields.map((field) => {
                 const picker = pickers[field]();
-                return picker ? <div key={field}>{picker}</div> : null;
+                return picker ? (
+                    <div
+                        key={field}
+                        className={
+                            compact
+                                ? 'border-b pb-1 last:border-b-0'
+                                : undefined
+                        }
+                    >
+                        {picker}
+                    </div>
+                ) : null;
             })}
         </>
     );

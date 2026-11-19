@@ -1,0 +1,16 @@
+{
+  "retiredOn": "2026-11-14",
+  "reason": "Workbook reading retired by the owner; the Executive Summary is the only source of figures",
+  "rows": {
+    "figures.csv": 1217,
+    "issues.csv": 423,
+    "reviews.csv": 1381,
+    "documents.csv": 516
+  },
+  "files": {
+    "documents.csv": "fb0ce313fc2d0d77520f64284ed6ba1af63bc865f3a3e0e8d874540214a2aefe",
+    "figures.csv": "5bcb9c4a5c9ef6139c56fb6b3952a059f75cf1d66c5a3c596554b86f2e13e1b9",
+    "issues.csv": "db7e4aed6a2a453b5ef91a06501eaae6412fb9fed5f5b9d7a208893a0f46a07f",
+    "reviews.csv": "97d30e711cd706bfd56f03f682ffbc91e19cecb5e3d905277e8176e10ee43c38"
+  }
+}

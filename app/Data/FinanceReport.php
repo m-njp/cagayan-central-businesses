@@ -14,7 +14,7 @@ final readonly class FinanceReport
      * @param  list<FinanceEntryCell>  $cells
      * @param  list<FinanceUploadRow>  $uploads
      * @param  list<SelectOption>  $uploadKinds
-     * @param  array{firstYear: int, lastYear: int, noteMax: int, valueMax: string, sourceUrlMax: int, reviewBatchMax: int, uploadMaxKb: int, changesMax: int}  $limits
+     * @param  array{lastYear: int, noteMax: int, reviewBatchMax: int, changesMax: int}  $limits
      */
     public function __construct(
         public SelectOption $town,

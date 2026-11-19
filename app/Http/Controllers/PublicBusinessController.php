@@ -23,6 +23,6 @@ final class PublicBusinessController extends Controller
 
     public function show(Business $business, PublicBusinessesQuery $query): Response
     {
-        return Inertia::render('public/businesses/show', ['business' => $query->profile($business)]);
+        return Inertia::render('public/businesses/show/index', ['business' => $query->profile($business)]);
     }
 }

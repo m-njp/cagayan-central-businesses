@@ -16,7 +16,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -39,7 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
             if (in_array($response->getStatusCode(), [403, 404, 419, 429, 500, 503], true)
                 && (! $request->expectsJson() || $request->header('X-Inertia'))) {
-                $error = Inertia::render('errors/status', ['status' => $response->getStatusCode()])
+                $error = Inertia::render('errors/status/index', ['status' => $response->getStatusCode()])
                     ->toResponse($request)->setStatusCode($response->getStatusCode());
                 $error->headers->add(['Cache-Control' => 'private, no-store', 'X-Frame-Options' => 'DENY',
                     'X-Content-Type-Options' => 'nosniff', 'Referrer-Policy' => 'no-referrer']);

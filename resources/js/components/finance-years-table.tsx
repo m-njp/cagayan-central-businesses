@@ -21,11 +21,13 @@ export function FinanceYearsTable({
     code,
     name,
     limit = YEARS_SHOWN,
+    plain = false,
 }: {
     finances: FinanceMap;
     code: string;
     name: string;
     limit?: number;
+    plain?: boolean;
 }) {
     const years = [...finances.years].sort((a, b) => a - b).slice(-limit);
     const reported = years.some((year) =>
@@ -45,12 +47,17 @@ export function FinanceYearsTable({
     }
 
     return (
-        <Table data-striped className="type-data sm:type-body">
+        <Table
+            data-striped={plain ? undefined : true}
+            className={`type-data sm:type-body ${plain ? '[&_.text-trend-down]:text-foreground [&_.text-trend-up]:text-foreground' : ''}`}
+        >
             <TableHeader>
-                <TableRow>
-                    <TableHead>{name}</TableHead>
+                <TableRow
+                    className={plain ? 'hover:bg-transparent' : undefined}
+                >
+                    <TableHead scope="col">{name}</TableHead>
                     {years.map((year) => (
-                        <TableHead key={year} className={number}>
+                        <TableHead key={year} scope="col" className={number}>
                             {year}
                         </TableHead>
                     ))}
@@ -58,7 +65,10 @@ export function FinanceYearsTable({
             </TableHeader>
             <TableBody>
                 {finances.metrics.map((metric) => (
-                    <TableRow key={metric.id}>
+                    <TableRow
+                        key={metric.id}
+                        className={plain ? 'hover:bg-transparent' : undefined}
+                    >
                         <TableHead
                             scope="row"
                             className="h-auto py-1.5 font-normal whitespace-normal"

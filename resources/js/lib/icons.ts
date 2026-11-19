@@ -44,6 +44,7 @@ import {
     TriangleAlert,
     Maximize2,
     ChevronLeft,
+    GitCompareArrows,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -62,6 +63,7 @@ export const icons = {
     reset: RotateCcw,
     work: ListChecks,
     finances: PhilippinePeso,
+    differences: GitCompareArrows,
     expand: ChevronDown,
     help: CircleHelp,
     categories: Tags,

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { FocusDialog } from '@/components/ui/focus-dialog';
 import { Spinner } from '@/components/ui/spinner';
+import { TaskProgress } from '@/components/ui/task-progress';
 import { useFinanceUploadTask } from '@/hooks/use-finance-upload-task';
 import { icons } from '@/lib/icons';
 import { formatCount } from '@/lib/format';
@@ -169,9 +170,8 @@ export function FinanceParsingTask({
                     </DialogDescription>
                 </div>
                 {running ? (
-                    <progress
+                    <TaskProgress
                         aria-label="Source Scan"
-                        className="h-1 w-full appearance-none [&::-moz-progress-bar]:bg-primary [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-primary"
                         value={scanning ? (progress?.current ?? 0) : undefined}
                         max={scanning ? (progress?.total ?? 1) : undefined}
                     />
@@ -215,6 +215,19 @@ export function FinanceParsingTask({
                     <p role="alert" className="type-meta text-destructive">
                         {error}
                     </p>
+                )}
+                {finished && progress?.confidence != null && (
+                    <div
+                        aria-live="polite"
+                        className="flex flex-col gap-1 type-meta"
+                    >
+                        <p>Automated Confidence {progress.confidence}%</p>
+                        <p className="text-muted-foreground">
+                            {progress.confidence === 100
+                                ? 'All automated checks passed. Source verification is still required.'
+                                : 'Kindly cross-check the flagged amounts and source pages.'}
+                        </p>
+                    </div>
                 )}
                 <div className="flex gap-2">
                     {error && (

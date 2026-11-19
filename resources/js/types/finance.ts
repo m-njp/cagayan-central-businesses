@@ -31,18 +31,14 @@ export type FinanceFigureStatus =
 
 export type FinanceFigureRow = {
     id: string;
-    line: string;
     label: string;
     fiscalYear: number;
     basis: 'actual' | 'budget_final';
     value: string;
-    variant: string | null;
     source: string;
     location: string | null;
     status: FinanceFigureStatus;
-    manual: boolean;
     enteredByYou: boolean;
-    reviewedOn: string | null;
     reviewedBy: string | null;
     note: string | null;
     group: string;
@@ -53,7 +49,6 @@ export type FinanceFigureRow = {
 export type FinanceIssue = {
     severity: 'error' | 'warning';
     kind: string;
-    line: string | null;
     message: string;
     location: string | null;
 };
@@ -68,11 +63,9 @@ export type FinanceDocumentLink = {
 export type FinanceUploadRow = {
     id: string;
     name: string;
-    kind: string;
     status: 'queued' | 'running' | 'done' | 'failed';
     statusLabel: string;
     figures: number;
-    message: string | null;
     uploadedAt: string;
 };
 
@@ -89,6 +82,7 @@ export type FinanceUploadTask = {
         current: number | null;
         total: number | null;
         found: number | null;
+        confidence?: number | null;
         startedAt: string | null;
         updatedAt: string;
         finishedAt: string | null;
@@ -133,13 +127,50 @@ export type FinanceReport = {
     uploads: FinanceUploadRow[];
     uploadKinds: SelectOption[];
     limits: {
-        firstYear: number;
         lastYear: number;
         noteMax: number;
-        valueMax: string;
-        sourceUrlMax: number;
         reviewBatchMax: number;
-        uploadMaxKb: number;
         changesMax: number;
     };
+};
+
+export type ReportDifferenceFamily = 'report' | 'between_reports' | 'reading';
+
+export type ReportDifferenceCell = {
+    report: number;
+    between: number;
+    reading: number;
+    pending: number;
+    verified: number;
+};
+
+export type ReportDifferences = {
+    years: number[];
+    rows: {
+        townCode: string;
+        town: string;
+        cells: Record<string, ReportDifferenceCell | null>;
+    }[];
+};
+
+export type ReportDifferenceDetail = {
+    townCode: string;
+    town: string;
+    year: number;
+    sourceUrl: string | null;
+    /** Every document of the report that can be opened (PDF) or downloaded (workbook). */
+    sources: { label: string; url: string }[];
+    pending: number;
+    verified: number;
+    corroborated: number;
+    items: {
+        document: string;
+        family: ReportDifferenceFamily;
+        severity: 'error' | 'warning' | 'info';
+        kind: string;
+        line: string | null;
+        fiscalYear: number | null;
+        message: string;
+        sourceUrl: string | null;
+    }[];
 };

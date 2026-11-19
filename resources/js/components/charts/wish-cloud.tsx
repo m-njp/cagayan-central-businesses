@@ -1,5 +1,6 @@
 import { useWordcloud } from '@visx/wordcloud';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import WishRankingChart from '@/components/charts/wish-ranking-chart';
 import { WishTooltip } from '@/components/charts/wish-tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCount } from '@/lib/format';
@@ -62,16 +63,22 @@ function Cloud({
         spiral: 'archimedean',
         random: fixedRandom,
     });
-    const complete = placed.length === words.length || shrink < 0.4;
+    const initialLayout = useRef(placed);
+    const complete = placed.length === words.length;
+    const cannotFit = shrink < 0.4;
     useEffect(() => {
-        if (placed.length > 0 && !complete) setShrink((value) => value * 0.85);
-    }, [placed, complete]);
+        if (placed !== initialLayout.current && !complete && !cannotFit)
+            setShrink((value) => value * 0.85);
+    }, [placed, complete, cannotFit]);
     const byId = useMemo(
         () => new Map(items.map((item) => [item.id, item])),
         [items],
     );
 
-    if (placed.length === 0 || !complete)
+    if (!complete && cannotFit)
+        return <WishRankingChart snapshot={{ items, townName }} />;
+
+    if (!complete)
         return (
             <Skeleton
                 className="motion-reduce:animate-none"
@@ -130,7 +137,7 @@ function Cloud({
 export default function WishCloud({
     snapshot,
 }: {
-    snapshot: CommunityWishSnapshot;
+    snapshot: Pick<CommunityWishSnapshot, 'items' | 'townName'>;
 }) {
     const container = useRef<HTMLDivElement>(null);
     const [width, setWidth] = useState(0);

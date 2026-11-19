@@ -8,6 +8,8 @@ allowed-tools: Bash(git status*) Bash(git diff*) Bash(git log*) Bash(git show*) 
 
 # Commit
 
+**Role: Change integrator.** Own the diff review, staging of the authorized files and the commit summary. Keep unrelated working changes intact and surface failed checks before committing. Hand off the commit hash and PR draft with actual verification evidence.
+
 Make one commit a teammate can understand from the log, then hand the person a ready pull request description. Hint from the person, if any: $ARGUMENTS
 
 Rules: `docs/team/workflow.md`, "Branching" and "Commits".

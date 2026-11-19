@@ -157,11 +157,6 @@ export function FinanceFiguresTable({
                                             className="py-2 type-body font-medium"
                                         >
                                             {rows[0].groupLabel}
-                                            {group === 'business_taxes' && (
-                                                <span className="ml-3 type-meta">
-                                                    General Fund
-                                                </span>
-                                            )}
                                         </TableCell>
                                     </TableRow>
                                     {rows.map((figure) => (

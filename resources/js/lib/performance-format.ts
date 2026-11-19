@@ -6,7 +6,7 @@ import {
 } from '@/lib/format';
 import type {
     EconomicObservation,
-    FinanceSource,
+    FinanceCitation,
     MetricUnit,
 } from '@/types/economic-performance';
 import type { FinanceMap } from '@/types/finance-map';
@@ -33,8 +33,7 @@ const signedNumber = new Intl.NumberFormat(LOCALE, {
 const REASONS: Record<string, string> = {
     not_published: 'COA has not published this report',
     not_reported: 'Not in the COA report for this year',
-    not_collected: 'The COA workbook for this year has not been added yet',
-    not_loaded: 'Loaded for Tuguegarao City only',
+    not_collected: 'The COA report for this year has not been added yet',
     pending_review: 'Awaiting sign-off',
     small_group: 'Too few businesses in this group',
     dominance: 'One business holds most of this total',
@@ -57,7 +56,7 @@ export function reasonLabel(point?: EconomicObservation): string | null {
     return point?.reason ? (REASONS[point.reason] ?? null) : null;
 }
 
-/** Coverage for a Sum of Reporting Towns (M27), the census behind a per-resident value (M25), a restated year (M26), or why a value is missing. */
+/** Coverage for a Sum of Reporting Towns (M27) or a restated year (M26). Why a value is missing shows on its N/A cell instead. */
 export function observationNote(point?: EconomicObservation): string | null {
     const notes: string[] = [];
     if (point?.coverage) {
@@ -68,8 +67,6 @@ export function observationNote(point?: EconomicObservation): string | null {
     }
     if (point?.restatedIn)
         notes.push(`Restated in the ${point.restatedIn} report`);
-    const reason = reasonLabel(point);
-    if (reason) notes.push(reason);
     return notes.length ? notes.join('. ') : null;
 }
 
@@ -106,51 +103,85 @@ export function sourceHref(url: string, location: string | null): string {
 }
 
 /** One link per distinct citation behind a set of figures: a report page, or a workbook once per report. */
-export function citationLinks(
-    sources: Record<string, FinanceSource>,
+export function citationReports(
+    sources: Record<string, FinanceCitation>,
     refs: string[],
 ) {
-    const links = new Map<string, { href: string; text: string }>();
-    for (const ref of refs) {
-        const source = sources[ref];
-        if (!source?.url) continue;
-        const name = `${source.label} ${source.reportYear ?? source.fiscalYear}`;
-        const text =
-            source.page === null
-                ? name
-                : formatFinanceSource(name, source.location);
-        // Figures of one report share a page but not a link address, so the text is the identity.
-        if (!links.has(text))
-            links.set(text, {
-                href: sourceHref(source.url, source.location),
-                text,
-            });
-    }
-    return [...links.values()];
+    return groupCitationReports(refs.map((ref) => sources[ref]));
 }
 
-/** One link per distinct report page behind the figures of an area and year. */
+export function groupCitationReports(citations: FinanceCitation[]) {
+    type Citation = { href: string; text: string; page: number | null };
+    type Report = { label: string; links: Map<number | string, Citation> };
+    const years = new Map<number, Map<string, Report>>();
+    for (const source of citations) {
+        if (!source?.url) continue;
+        const year = source.reportYear ?? source.fiscalYear;
+        const key =
+            source.documentKey ??
+            `${source.town}:${source.kind ?? source.label}`;
+        const reports = years.get(year) ?? new Map<string, Report>();
+        const report = reports.get(key) ?? {
+            label: source.label,
+            links: new Map<string, Citation>(),
+        };
+        const workbook = source.kind?.endsWith('_workbook') ?? false;
+        const text = workbook
+            ? 'Download Workbook'
+            : source.page === null
+              ? 'Full Report'
+              : formatFinanceSource('', source.location).trim();
+        // Different figure URLs can serve the same document page.
+        const linkKey = workbook ? text : (source.page ?? text);
+        if (!report.links.has(linkKey))
+            report.links.set(linkKey, {
+                href: sourceHref(source.url, source.location),
+                text,
+                page: source.page,
+            });
+        reports.set(key, report);
+        years.set(year, reports);
+    }
+    return [...years.entries()]
+        .sort(([first], [second]) => first - second)
+        .map(([year, reports]) => ({
+            year,
+            reports: [...reports.entries()].map(([key, { label, links }]) => ({
+                key,
+                label,
+                links: [...links.values()].sort(
+                    (first, second) => (first.page ?? 0) - (second.page ?? 0),
+                ),
+            })),
+        }));
+}
+
+export function municipalityCitationReports(citations: FinanceCitation[]) {
+    const towns = new Map<string, FinanceCitation[]>();
+    for (const citation of citations) {
+        if (!citation?.url) continue;
+        const reports = towns.get(citation.town) ?? [];
+        reports.push(citation);
+        towns.set(citation.town, reports);
+    }
+    return [...towns.entries()]
+        .sort(([first], [second]) => first.localeCompare(second, LOCALE))
+        .map(([town, reports]) => ({
+            town,
+            years: groupCitationReports(reports),
+        }));
+}
+
 export function financeMapSources(
     finances: FinanceMap,
     code: string,
     year: number | null,
 ) {
     if (year === null) return [];
-    const links = new Map<string, { href: string; text: string }>();
-    for (const point of Object.values(
+    const refs = Object.values(
         finances.observations[code]?.[year] ?? {},
-    ))
-        for (const ref of point.sourceRefs ?? []) {
-            const source = finances.sources[ref];
-            if (!source?.url) continue;
-            const href = sourceHref(source.url, source.location);
-            if (!links.has(href))
-                links.set(href, {
-                    href,
-                    text: formatFinanceSource('COA Report', source.location),
-                });
-        }
-    return [...links.values()];
+    ).flatMap((point) => point.sourceRefs ?? []);
+    return [...new Set(refs)].map((ref) => finances.sources[ref]);
 }
 
 export function formatPesoTick(value: number): string {

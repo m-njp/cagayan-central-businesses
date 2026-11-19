@@ -12,7 +12,7 @@ import { KitaLogo } from '@/components/kita-logo';
 import { isCurrentSection } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import { home } from '@/routes';
-import { economicPerformance } from '@/routes/public';
+import { economicPerformance, sources } from '@/routes/public';
 import { index as businesses } from '@/routes/public/businesses';
 import { index as suggestions } from '@/routes/public/wishes';
 import type { NavItem } from '@/types/ui';
@@ -29,25 +29,18 @@ const items: NavItem[] = [
     { title: 'Suggestions', href: suggestions(), icon: MessageSquarePlus },
 ];
 
-// Published sources behind the public figures and the map.
-const SOURCES = [
-    {
-        name: 'Philippine Statistics Authority',
-        href: 'https://psa.gov.ph/statistics/population-and-housing/node/1684077888',
-    },
-    { name: 'Commission on Audit', href: 'https://www.coa.gov.ph' },
-    { name: 'OpenStreetMap', href: 'https://www.openstreetmap.org/copyright' },
-];
-
 // A slim top line that scrolls away with the page: the Kita lockup, then text links from lg (design.md,
 // "App shell"). Phones keep the bottom bar. No public page links to the Capitol side, not even to its login (decisions.md, D20).
 export default function PublicLayout({ children }: { children: ReactNode }) {
     const { props, url } = usePage();
 
     return (
-        <div className="flex min-h-screen flex-col bg-background pb-14 lg:pb-0">
-            <header className="border-b bg-card">
-                <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center gap-6 px-gutter py-3 md:px-6">
+        <div
+            data-theme-surface
+            className="flex min-h-screen flex-col bg-background pb-14 lg:pb-0"
+        >
+            <header data-theme-surface className="border-b bg-card">
+                <div className="mx-auto flex min-h-14 w-full max-w-6xl items-center gap-3 px-gutter md:px-6">
                     <Link
                         href={home()}
                         className="shrink-0 rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
@@ -56,7 +49,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
                     </Link>
                     <nav
                         aria-label="Main"
-                        className="ml-auto hidden items-center gap-1 rounded-sm border bg-muted/40 p-1 lg:flex"
+                        className="ml-auto hidden items-center gap-1 lg:flex"
                     >
                         {items.map((item) => {
                             const current = isCurrentSection(url, item.href);
@@ -68,7 +61,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
                                     prefetch
                                     aria-current={current ? 'page' : undefined}
                                     className={cn(
-                                        'inline-flex min-h-10 items-center justify-center rounded-sm px-5 py-2 type-body font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-safe:transition-colors motion-safe:duration-(--duration-quick)',
+                                        'inline-flex h-control items-center justify-center rounded-sm px-3 type-control font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-safe:transition-colors motion-safe:duration-(--duration-quick)',
                                         current
                                             ? 'bg-primary text-primary-foreground'
                                             : 'text-muted-foreground hover:bg-accent hover:text-foreground',
@@ -79,7 +72,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
                             );
                         })}
                     </nav>
-                    <div className="ml-auto flex shrink-0 items-center gap-2 lg:ml-2 lg:border-l lg:pl-4">
+                    <div className="ml-auto flex shrink-0 lg:ml-0 max-lg:[&>button]:size-touch">
                         <AppearanceToggle />
                     </div>
                 </div>
@@ -123,24 +116,12 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
                         <h2 className="type-label text-brand-foreground/75">
                             Sources
                         </h2>
-                        <ul className="flex flex-col gap-2 type-body">
-                            {SOURCES.map((source) => (
-                                <li key={source.name}>
-                                    <a
-                                        href={source.href}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="underline-offset-4 hover:underline"
-                                    >
-                                        {source.name}
-                                        <span className="sr-only">
-                                            {' '}
-                                            (opens in a new tab)
-                                        </span>
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
+                        <Link
+                            href={sources()}
+                            className="type-body underline underline-offset-4"
+                        >
+                            About the Data
+                        </Link>
                     </div>
                     <div className="flex flex-col gap-3">
                         <h2 className="type-label text-brand-foreground/75">

@@ -8,7 +8,6 @@ final readonly class FinanceIssue
     public function __construct(
         public string $severity,
         public string $kind,
-        public ?string $line,
         public string $message,
         public ?string $location,
     ) {}

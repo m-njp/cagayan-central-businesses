@@ -22,28 +22,25 @@ final class DataEntryQuery
     public function get(User $user, int $page): DataEntry
     {
         [$finances, $businesses, $population] = $this->scoped($user);
+        $canAddBusiness = $user->can('add-business');
 
         $datasets = [
             new DataEntryDataset('finances', 'Government Finances', ['Economy', 'Analytics', 'Home Map'], route('capitol.finances.index', absolute: false),
-                (clone $finances)->where('f.status', 'pending')->count(), $this->date((clone $finances)->max('f.updated_at')),
-                'Enter Report', route('capitol.finances.index', absolute: false)),
+                (clone $finances)->where('f.status', 'pending')->count(), $this->date((clone $finances)->max('f.updated_at'))),
             new DataEntryDataset('businesses', 'Businesses', ['Business Directory', 'Dashboard Map'], route('capitol.businesses.index', absolute: false),
                 (clone $businesses)->where('b.record_status', 'submitted')->count(), $this->date((clone $businesses)->max('b.updated_at')),
-                $user->can('add-business') ? 'Add Business' : null,
-                $user->can('add-business') ? route('capitol.businesses.create', absolute: false) : null),
+                $canAddBusiness ? route('capitol.businesses.create', absolute: false) : null),
         ];
         $datasets[] = new DataEntryDataset('population', 'Population', ['Home Map', 'Dashboard Map', 'About the Data'],
             route('capitol.population.index', absolute: false),
-            (clone $population)->where('p.status', 'pending')->count(), $this->date((clone $population)->max('p.updated_at')),
-            'Enter Census', route('capitol.population.index', absolute: false));
+            (clone $population)->where('p.status', 'pending')->count(), $this->date((clone $population)->max('p.updated_at')));
         if ($user->can('manage-categories')) {
             // Category changes apply on save (D39), so there is nothing pending to count.
             $datasets[] = new DataEntryDataset('categories', 'Business Categories', ['Business Directory', 'Wish Form'], route('capitol.categories.index', absolute: false),
-                null, $this->date(DB::table('business_types')->max('updated_at')),
-                'Add Category', route('capitol.categories.index', absolute: false));
+                null, $this->date(DB::table('business_types')->max('updated_at')));
         }
 
-        $waiting = $this->waiting($user, $page);
+        $waiting = $this->waiting($user, $page, (int) config('cagayan.data_entry.review_per_page'));
 
         return new DataEntry($datasets, $waiting['rows'] ?? null, $waiting['pagination'] ?? null);
     }
@@ -53,7 +50,7 @@ final class DataEntryQuery
      *
      * @return array{rows: list<DataEntryReviewRow>, pagination: Pagination}|null
      */
-    public function waiting(User $user, int $page): ?array
+    public function waiting(User $user, int $page, ?int $perPage = null): ?array
     {
         if (! $user->can('finance-review')) {
             return null;
@@ -76,8 +73,8 @@ final class DataEntryQuery
             ->selectRaw("'population' as dataset, m.name as item, m.psgc_code as ref, p.year as year, count(*) as count, min(p.updated_at) as since")
             ->groupBy('m.name', 'm.psgc_code', 'p.year');
         $review = DB::query()->fromSub($financeRows->unionAll($businessRows)->unionAll($populationRows), 'r')
-            ->orderBy('since')->orderBy('item')
-            ->paginate((int) config('cagayan.finances.per_page'), ['*'], 'page', $page)->withQueryString();
+            ->orderBy('since')->orderBy('item')->orderBy('dataset')->orderBy('ref')->orderBy('year')
+            ->paginate($perPage ?? (int) config('cagayan.finances.per_page'), ['*'], 'page', $page)->withQueryString();
 
         return ['rows' => array_values(array_map(fn (stdClass $row) => new DataEntryReviewRow(
             match ($row->dataset) {

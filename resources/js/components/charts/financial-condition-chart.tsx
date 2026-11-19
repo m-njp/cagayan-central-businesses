@@ -17,12 +17,6 @@ export default function FinancialConditionChart({
     const stacked = history.metrics.filter((metric) =>
         STACKED.includes(metric.id),
     );
-    const config = Object.fromEntries(
-        stacked.map((metric, index) => [
-            metric.id.replace('.', '_'),
-            { label: metric.label, color: LAYERS[index] },
-        ]),
-    );
     const data = history.rows.map((row) => ({
         year: row.year,
         ...Object.fromEntries(
@@ -40,7 +34,6 @@ export default function FinancialConditionChart({
     return (
         <div className="flex min-w-0 flex-col gap-2">
             <ChartContainer
-                config={config}
                 className="aspect-auto h-48 w-full font-mono tabular-nums sm:h-56"
                 role="group"
                 aria-label={`${stacked.map((metric) => metric.label).join(' and ')} by year, adding up to Assets. Exact values are listed in the table.`}
@@ -94,16 +87,16 @@ export default function FinancialConditionChart({
                             ) : null
                         }
                     />
-                    {stacked.map((metric) => (
+                    {stacked.map((metric, index) => (
                         <Area
                             key={metric.id}
                             dataKey={metric.id.replace('.', '_')}
                             name={metric.label}
                             type="linear"
                             stackId="assets"
-                            stroke={`var(--color-${metric.id.replace('.', '_')})`}
+                            stroke={LAYERS[index]}
                             strokeWidth={1.5}
-                            fill={`var(--color-${metric.id.replace('.', '_')})`}
+                            fill={LAYERS[index]}
                             fillOpacity={0.3}
                             dot={false}
                             activeDot={{ r: 4 }}

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -23,14 +22,6 @@ class BusinessType extends Model
 {
     /** @use HasFactory<BusinessTypeFactory> */
     use HasFactory;
-
-    /**
-     * @return HasMany<Wish, $this>
-     */
-    public function wishes(): HasMany
-    {
-        return $this->hasMany(Wish::class);
-    }
 
     /**
      * @return BelongsTo<BusinessCategory, $this>

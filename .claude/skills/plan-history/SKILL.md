@@ -5,6 +5,8 @@ description: Record and maintain this repository's agreed implementation plans, 
 
 # Plan History
 
+**Role: Plan steward.** Own the smallest accurate record of authorized scope and verification. Update a matching plan and move it to the archive when its closure criteria hold. Keep unresolved decisions and unverified work explicit.
+
 Read `docs/plan/README.md` and the relevant existing plan before implementation. A plan records the user's authorized scope; it does not grant permission to implement deferred features, publish, merge, or contact people.
 
 ## Record or Resume
@@ -29,3 +31,11 @@ Read `docs/plan/README.md` and the relevant existing plan before implementation.
 - For an improvement to completed work, create a new active plan linking its predecessor. Do not reopen and overwrite the archived plan.
 
 Before handoff, check Markdown links, date/filename consistency, the index, and `git diff --check`. This skill adds documentation, not an extra approval step for work the user has already authorized.
+
+## Every Session, in Order
+
+1. Read `docs/plan/README.md`, then the active plan for the area.
+2. Add a dated Change History row when the owner changes scope, before coding.
+3. Tick a checkbox only after its check ran; write the result beside it (counts, seconds, what was excluded).
+4. Keep an unticked line for each check not run, with the reason.
+5. For a handoff to another agent, use `/handoff`.

@@ -14,14 +14,12 @@ final class UploadFinanceReportRequest extends FinanceReportRequest
         $kinds = (array) config('cagayan.finances.uploads.kinds');
         $kind = $this->input('kind');
         $extensions = is_string($kind) ? ($kinds[$kind]['extensions'] ?? []) : [];
-        // An .xlsx is a ZIP inside, so a workbook may be detected as either.
-        $mimes = in_array('xlsx', $extensions, true) ? ['xlsx', 'zip'] : $extensions;
 
         return [
             ...parent::rules(),
             'kind' => ['required', 'string', Rule::in(array_keys($kinds))],
             'file' => ['required', 'file', 'max:'.config('cagayan.finances.uploads.file_max_kb'),
-                'extensions:'.implode(',', $extensions ?: ['pdf']), 'mimes:'.implode(',', $mimes ?: ['pdf'])],
+                'extensions:'.implode(',', $extensions ?: ['pdf']), 'mimes:'.implode(',', $extensions ?: ['pdf'])],
         ];
     }
 
@@ -29,7 +27,7 @@ final class UploadFinanceReportRequest extends FinanceReportRequest
     public function messages(): array
     {
         return [
-            'file.extensions' => 'Choose a file of the kind selected: a PDF Executive Summary, an XLSX workbook, or a ZIP of workbooks.',
+            'file.extensions' => 'Choose a PDF Executive Summary.',
             'file.mimes' => 'That file does not look like the kind selected.',
         ];
     }

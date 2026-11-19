@@ -19,7 +19,7 @@ it('seeds demo accounts with UUIDs while model events are muted', function () {
 
     $this->seed(DatabaseSeeder::class);
 
-    expect(DB::connection()->getDatabaseName())->toBe('cagayan_business_test');
+    expect(DB::connection()->getDatabaseName())->toMatch('/^cagayan_business_test(?:_test_[1-9][0-9]*)?$/');
     // Simulated businesses are off by default (D37); they appear only when CAGAYAN_SIMULATED is true.
     expect(Business::query()->count())->toBe(0);
     expect(DB::scalar('SELECT PostGIS_Version()'))->toBeString()->toStartWith('3.');

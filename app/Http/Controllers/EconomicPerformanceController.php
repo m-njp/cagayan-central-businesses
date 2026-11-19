@@ -11,7 +11,7 @@ final class EconomicPerformanceController extends Controller
 {
     public function __invoke(AnalyticsFiltersRequest $request, EconomicPerformanceQuery $query): Response
     {
-        return Inertia::render('public/economic-performance', [
+        return Inertia::render('public/economic-performance/index', [
             'performance' => $query->get($request->analyticsFilters()),
         ]);
     }

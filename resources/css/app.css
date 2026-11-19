@@ -38,13 +38,18 @@
     /* Space. section: between page sections. gutter: page edge on phones. */
     --spacing-section: 2.5rem;
     --workspace-sidebar-width: 13rem;
-    --workspace-map-height: clamp(22rem, 57dvh, 38rem);
+    --workspace-map-height: clamp(22rem, 48dvh, 30rem);
+    --workspace-header-height: 3.5rem;
+    --workspace-panel-width: 16rem;
     --spacing-gutter: 1rem;
     /* Density (26-11-03): compact by default so screens show rows, not padding. */
     --spacing-panel: 0.5rem;
     --spacing-cell-x: 0.5rem;
     --spacing-cell-y: 0.25rem;
     --spacing-row: 2rem;
+    --spacing-control: 2.5rem;
+    --spacing-control-compact: 2rem;
+    --spacing-touch: 2.75rem;
 
     /* Motion. One easing for everything, three speeds. */
     --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -174,6 +179,7 @@
  * neutral scale for everything else (design.md, "Color").
  */
 :root {
+    color-scheme: light;
     /* A neutral stone, one step darker than the white cards, so every surface visibly lifts off the page. */
     --background: oklch(0.955 0.002 95);
     --foreground: oklch(0.23 0.02 250);
@@ -236,6 +242,7 @@
 }
 
 .dark {
+    color-scheme: dark;
     --background: oklch(0.23 0.022 245);
     --foreground: oklch(0.95 0.005 90);
     --card: oklch(0.3 0.024 245);
@@ -295,10 +302,6 @@
  * weight classes. Named type-* so tailwind-merge never mistakes them for text colors.
  * Sans for words people read. Mono for numbers, labels, and codes.
  */
-@utility type-display {
-    @apply text-4xl leading-[1.05] font-semibold tracking-tight text-balance md:text-5xl lg:text-6xl;
-}
-
 @utility type-title {
     @apply text-3xl leading-tight font-semibold tracking-tight text-balance lg:text-4xl;
 }
@@ -320,16 +323,28 @@
     @apply font-mono text-xs font-medium tracking-[0.08em] uppercase;
 }
 
-@utility type-lead {
-    @apply text-base text-pretty;
-}
-
 @utility type-item {
     @apply text-base font-medium;
 }
 
 @utility type-body {
     @apply text-sm text-pretty;
+}
+
+@utility type-control {
+    @apply text-base md:text-sm;
+}
+
+@utility field-surface {
+    @apply border-input bg-card text-card-foreground;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html[data-theme-ready] [data-theme-surface] {
+        transition-property: background-color, color, border-color;
+        transition-duration: var(--duration-quick);
+        transition-timing-function: var(--ease-out-soft);
+    }
 }
 
 @utility type-meta {
@@ -358,6 +373,33 @@
 
     body {
         @apply bg-background text-foreground antialiased;
+    }
+}
+
+@media (forced-colors: none) {
+    html {
+        scrollbar-color: var(--muted-foreground) var(--muted);
+    }
+}
+
+@media (pointer: fine) and (forced-colors: none) {
+    * {
+        scrollbar-width: thin;
+    }
+}
+
+/* A scroll area inside an overlay: no track, a faint thumb that darkens while the area is in use. */
+@utility scrollbar-quiet {
+    scrollbar-gutter: stable;
+
+    @media (forced-colors: none) {
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+
+        &:hover,
+        &:focus-within {
+            scrollbar-color: var(--muted-foreground) transparent;
+        }
     }
 }
 

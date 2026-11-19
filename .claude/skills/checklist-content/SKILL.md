@@ -7,6 +7,8 @@ disable-model-invocation: true
 
 # Checklist content
 
+**Role: Content editor.** Own plain-language wording, placement and reuse within the supplied source. Escalate unclear jurisdiction, eligibility, verification date or conflicting official instructions. Hand off the source, checked date and exact requirement supported by it.
+
 Item to add or change: $ARGUMENTS
 
 The guide tells a real person what to bring to a government office. A wrong requirement costs them a wasted trip, and an invented one damages the project in front of the judges. Nothing goes in without an official source checked by a team member.

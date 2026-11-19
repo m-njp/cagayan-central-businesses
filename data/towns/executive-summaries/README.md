@@ -2,26 +2,34 @@
 
 Executive Summary PDFs from the Commission on Audit (COA) annual audit reports for Cagayan's 28 municipalities and Tuguegarao City. The parser in `tools/coa/` reads them into [`../finances/`](../finances/README.md) (D34). Figures reach the screen only after review and sign-off (D35).
 
-Collected on October 27, 2026 from https://www.coa.gov.ph/reports/annual-audit-reports/aar-local-government-units/ (Region II, Cagayan, Cities and Municipalities folders).
+Collected on October 27, 2026 and November 11 to 12, 2026 from https://www.coa.gov.ph/reports/annual-audit-reports/aar-local-government-units/ (Region II, Cagayan, Cities and Municipalities folders). All 348 originals for 2014 through 2025 are registered here. The later collection and Downloads relocation were verified by SHA-256 before promotion.
 
 ## Layout
 
 ```
 executive-summaries/
   sources.csv
-  <year>/<Town>/<Town>-Executive-Summary-<year>.pdf
+  <year>/<Town>/<OriginalFilename>.pdf
 ```
 
 Town folder names are ASCII versions of the town names. Each town's PSGC code is in `sources.csv`.
 
 | Fiscal year | Towns | Notes |
 | :- | :- | :- |
+| 2014 | 29 | |
+| 2015 | 29 | |
+| 2016 | 29 | |
+| 2017 | 29 | |
+| 2018 | 29 | |
+| 2019 | 29 | |
 | 2020 | 29 | |
 | 2021 | 29 | |
 | 2022 | 29 | |
 | 2023 | 29 | |
 | 2024 | 29 | |
-| 2025 | 13 | Alcala, Amulung, Baggao, Enrile, Gattaran, Iguig, Penablanca, Piat, Rizal, Solana, Sto. Nino, Tuao, Tuguegarao City. The other 16 towns had no 2025 report on COA's site on October 27, 2026 |
+| 2025 | 29 | The remaining 16 were collected on November 12, 2026 |
+
+Two COA listing labels differ from the PDFs' contents: Sanchez Mira 2019 is labeled Annual Audit Report and Santa Ana 2018 is labeled Executive Report. Both begin EXECUTIVE SUMMARY on page 1 and identify the municipality and requested audit year. Their original filenames and source URLs are preserved.
 
 ## sources.csv
 
@@ -41,4 +49,6 @@ Every file was checked as a readable PDF with a valid page tree, and its checksu
 
 ## Adding a Year
 
-Download the new summaries one at a time from the COA page above, then use the helpers in `storage/app/source-review/coa/` (ignored by git): `build_download_manifests.py`, `organize_executive_summaries.py`, then `tidy_data_folders.py` to rebuild `sources.csv`. COA blocks plain HTTP clients, so downloads go through a browser.
+Use the browser and automatic checkpoint/batch workflow in [`tools/coa/COLLECTION.md`](../../../tools/coa/COLLECTION.md). Preserve observed source URLs, verify PDFs and hashes, then promote the source files and metadata into this register. Do not regenerate extracted figures or import the ledger merely to add documents to the Sources page.
+
+The public Sources library serves only registered PDFs inside this directory and verifies their checksums on download. Listing an original document does not publish or verify its extracted figures. Existing finance citations retain their separate sign-off requirement.

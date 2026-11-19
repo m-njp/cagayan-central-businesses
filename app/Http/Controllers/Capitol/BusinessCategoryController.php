@@ -21,7 +21,7 @@ final class BusinessCategoryController extends Controller
 {
     public function index(BusinessCategoriesQuery $query): Response
     {
-        return Inertia::render('capitol/business-categories', ['categories' => $query->get()]);
+        return Inertia::render('capitol/business-categories/index', ['categories' => $query->get()]);
     }
 
     public function storeCategory(StoreBusinessCategoryRequest $request, CreateBusinessCategory $create): RedirectResponse

@@ -42,7 +42,7 @@ function censusSave(string $place, string $value, ?string $base, array $shared =
 it('hides population from guests and from staff of other towns', function () {
     $this->get(route('capitol.population.show', ['town' => '0201529000']))->assertNotFound();
 
-    $outsider = staffIn(Municipality::factory()->create());
+    $outsider = staffIn(Municipality::factory()->create(['psgc_code' => '0201501000', 'name' => 'Abulug']));
     $this->actingAs($outsider)->get(route('capitol.population.show', ['town' => '0201529000', 'year' => 2024]))->assertForbidden();
     $this->actingAs($outsider)->post($this->route, censusSave('0201529001', '5100', '5000', ['reason' => 'Recount']))->assertForbidden();
 
@@ -51,7 +51,7 @@ it('hides population from guests and from staff of other towns', function () {
 
 it('prefills the town and its barangays with the published counts', function () {
     $this->actingAs(User::factory()->create())->get(route('capitol.population.show', ['town' => '0201529000', 'year' => 2024]))
-        ->assertInertia(fn (Assert $page) => $page->component('capitol/population')
+        ->assertInertia(fn (Assert $page) => $page->component('capitol/population/index')
             ->where('population.rows.0.place', 'town')
             ->where('population.rows.0.value', 167297)
             ->where('population.rows.0.status', 'verified')

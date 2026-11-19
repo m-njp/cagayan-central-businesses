@@ -68,7 +68,11 @@ const mediaQuery = (): MediaQueryList | null => {
     return window.matchMedia('(prefers-color-scheme: dark)');
 };
 
-const handleSystemThemeChange = (): void => applyTheme(currentAppearance);
+const handleSystemThemeChange = (): void => {
+    if (currentAppearance !== 'system') return;
+    applyTheme(currentAppearance);
+    notify();
+};
 
 export function initializeTheme(): void {
     if (typeof window === 'undefined') {
@@ -82,6 +86,9 @@ export function initializeTheme(): void {
 
     currentAppearance = getStoredAppearance();
     applyTheme(currentAppearance);
+    requestAnimationFrame(() => {
+        document.documentElement.dataset.themeReady = 'true';
+    });
 
     mediaQuery()?.addEventListener('change', handleSystemThemeChange);
 }
@@ -93,9 +100,11 @@ export function useAppearance(): UseAppearanceReturn {
         () => 'system',
     );
 
-    const resolvedAppearance: ResolvedAppearance = isDarkMode(appearance)
-        ? 'dark'
-        : 'light';
+    const resolvedAppearance = useSyncExternalStore<ResolvedAppearance>(
+        subscribe,
+        () => (isDarkMode(currentAppearance) ? 'dark' : 'light'),
+        () => 'light',
+    );
 
     const updateAppearance = (mode: Appearance): void => {
         currentAppearance = mode;

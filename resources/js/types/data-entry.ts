@@ -8,7 +8,6 @@ export type DataEntryDataset = {
     href: string;
     pending: number | null;
     lastChange: string | null;
-    action: string | null;
     actionHref: string | null;
 };
 

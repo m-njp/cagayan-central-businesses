@@ -170,6 +170,8 @@ export function FinanceReportGrid({
                     <Input
                         id="entry-page"
                         inputMode="numeric"
+                        placeholder="e.g. 1"
+                        aria-invalid={form.errors.page ? true : undefined}
                         className="font-mono tabular-nums"
                         value={form.data.page}
                         onChange={(event) =>
@@ -192,6 +194,8 @@ export function FinanceReportGrid({
                     <Input
                         id="entry-link"
                         type="url"
+                        placeholder="https://www.coa.gov.ph/"
+                        aria-invalid={form.errors.source_url ? true : undefined}
                         value={form.data.source_url}
                         onChange={(event) =>
                             form.setData('source_url', event.target.value)
@@ -316,6 +320,7 @@ export function FinanceReportGrid({
                     <Textarea
                         id="entry-reason"
                         rows={2}
+                        placeholder="What was wrong and where the correct amount is printed"
                         maxLength={report.limits.noteMax}
                         value={form.data.reason}
                         onChange={(event) =>

@@ -6,12 +6,16 @@ import type { Pagination as PaginationData } from '@/types/workspace';
 export function Pagination({
     data,
     onPage,
+    label = 'Pagination',
+    showSinglePage = false,
 }: {
     data: Pick<PaginationData, 'page' | 'lastPage'> &
         Partial<Pick<PaginationData, 'previous' | 'next'>>;
     onPage?: (page: number) => void;
+    label?: string;
+    showSinglePage?: boolean;
 }) {
-    if (data.lastPage <= 1) return null;
+    if (data.lastPage <= 1 && !showSinglePage) return null;
     const step = (label: string, target: number, href?: string | null) => {
         if (onPage)
             return (
@@ -38,10 +42,7 @@ export function Pagination({
     };
 
     return (
-        <nav
-            aria-label="Pagination"
-            className="flex items-center justify-end gap-2"
-        >
+        <nav aria-label={label} className="flex items-center justify-end gap-2">
             {step('Previous', data.page - 1, data.previous)}
             <span className="type-meta">
                 Page <span className="font-mono tabular-nums">{data.page}</span>{' '}

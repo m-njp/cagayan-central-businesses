@@ -17,7 +17,7 @@ test('the home page shows the towns, types, and years behind the data', function
     $this->get(route('home'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('public/home')
+            ->component('public/home/index')
             ->where('overview.townCount', 4)
             ->where('overview.connectedTownCount', 1)
             ->where('overview.connectedTownCodes', [$connected->psgc_code])

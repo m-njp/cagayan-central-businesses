@@ -13,7 +13,7 @@ New to the project? Follow [STARTUP.md](STARTUP.md) from the top. It covers ever
 Already set up:
 
 ```
-composer setup
+composer db:up
 composer dev
 ```
 
@@ -29,7 +29,7 @@ composer db:up
 composer dev
 ```
 
-`main` is production and `staging` is development. Every task is a branch inside `staging` (`feat/...`, `bug/...`) that merges back into `staging`. Commit with `/commit` and open the pull request with `/open-pr` in Claude Code. The Git hooks check every commit and push. Full rules: [docs/team/workflow.md](docs/team/workflow.md).
+`main` is production and `staging` is development. Every task is a branch inside `staging` (`feat/...`, `bug/...`) that merges back into `staging`. The project skills cover commits and pull requests, and Git hooks check every commit and push. [Team workflow](docs/team/workflow.md).
 
 ## Commands
 
@@ -79,7 +79,7 @@ Use DBeaver or pgAdmin for tables, and QGIS (PostgreSQL connection, then drag th
 
 ## Documents
 
-Start here: [STARTUP.md](STARTUP.md), [CLAUDE.md](CLAUDE.md), [Team workflow](docs/team/workflow.md).
+Start here with [setup](STARTUP.md), [shared project instructions](AGENTS.md), and the [team workflow](docs/team/workflow.md).
 
 Product:
 

@@ -43,7 +43,7 @@ it('lists registered names under their type and category with public fields only
 
     $response = $this->actingAs(User::factory()->create())->get(route('capitol.businesses.index'));
 
-    $response->assertInertia(fn (Assert $page) => $page->component('capitol/businesses')
+    $response->assertInertia(fn (Assert $page) => $page->component('capitol/businesses/index')
         ->where('directory.rows.0.name', 'Alpha Boarding')
         ->where('directory.rows.0.type', 'Boarding House')
         ->where('directory.rows.0.category', 'lodging')

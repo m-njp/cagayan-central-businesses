@@ -9,17 +9,20 @@ import {
 
 /**
  * A short or rounded figure that shows the exact amount on hover, focus or tap, with an optional second line such as
- * its change, so a figure and its arrow share one tooltip. The text is also the accessible name.
+ * its change, so a figure and its arrow share one tooltip. The text is also the accessible name. With onSelect, a
+ * click while the tooltip shows (after hover, focus or a first tap) runs it, such as opening the guide.
  */
 export function ExactAmount({
     exact,
     detail,
     label,
+    onSelect,
     children,
 }: {
     exact: string;
     detail?: string | null;
     label?: string;
+    onSelect?: () => void;
     children: ReactNode;
 }) {
     const [open, setOpen] = useState(false);
@@ -35,6 +38,11 @@ export function ExactAmount({
                         className="min-h-6 cursor-help rounded-sm underline decoration-dotted underline-offset-4"
                         onClick={(event) => {
                             event.preventDefault();
+                            if (onSelect && open) {
+                                setOpen(false);
+                                onSelect();
+                                return;
+                            }
                             setOpen((current) => !current);
                         }}
                     >

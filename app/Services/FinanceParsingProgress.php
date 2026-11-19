@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\FinanceUploadStatus;
 use App\Models\FinanceUpload;
-use Illuminate\Support\Carbon;
 
 final class FinanceParsingProgress
 {
@@ -25,21 +24,8 @@ final class FinanceParsingProgress
         return ['attempt' => $attempt, 'stage' => 'queued', 'message' => 'Waiting for the parser.',
             'location' => null, 'current' => null, 'total' => null, 'engine' => null,
             'startedAt' => null, 'updatedAt' => now()->toIso8601String(), 'finishedAt' => null,
-            'found' => 0, 'rows' => [], 'issues' => [], 'activity' => [], 'errorCode' => null,
+            'found' => 0, 'confidence' => null, 'rows' => [], 'issues' => [], 'activity' => [], 'errorCode' => null,
             'sequence' => 0];
-    }
-
-    public static function isStale(FinanceUpload $upload): bool
-    {
-        if ($upload->status === FinanceUploadStatus::Queued) {
-            return $upload->updated_at->lt(now()->subSeconds((int) config('cagayan.finances.uploads.queued_stale_seconds')));
-        }
-        if ($upload->status !== FinanceUploadStatus::Running) {
-            return false;
-        }
-        $started = $upload->progress['startedAt'] ?? $upload->updated_at->toIso8601String();
-
-        return Carbon::parse($started)->lt(now()->subSeconds((int) config('cagayan.finances.uploads.timeout_seconds') + 30));
     }
 
     /** @param array<string, mixed> $event */
@@ -76,7 +62,7 @@ final class FinanceParsingProgress
         } elseif ($type === 'issue') {
             $issue = self::issue($event['issue'] ?? []);
             $this->snapshot['issues'][] = $issue;
-            // Info notes (such as workbook headings outside the catalog) stay in the report but out of the live feed.
+            // Info notes stay in the report but out of the live feed.
             if ($issue['severity'] !== 'info') {
                 $this->snapshot['message'] = $issue['message'];
                 $this->addActivity(['kind' => 'issue', 'message' => $issue['message'], 'location' => $issue['location']]);
@@ -102,7 +88,7 @@ final class FinanceParsingProgress
     {
         if (! is_string($row['line_code'] ?? null) || ! is_int($row['fiscal_year'] ?? null)
             || ! is_string($row['value'] ?? null) || ! preg_match('/^-?\d+\.\d{2}$/D', $row['value'])
-            || ! in_array($kind, ['executive_summary', 'fs_workbook', 'annex_workbook'], true)
+            || $kind !== 'executive_summary'
             || ! in_array($row['basis'] ?? null, ['actual', 'budget_final'], true)) {
             throw new \RuntimeException('Invalid provisional figure.');
         }
@@ -122,7 +108,7 @@ final class FinanceParsingProgress
     }
 
     /** @param array<string, mixed> $issue
-     * @return array{severity: string, code: string, line: string, message: string, location: ?string}
+     * @return array{severity: string, code: string, line: string, message: string, location: ?string, document_kind?: string, document_sha256?: string, fiscal_year?: int}
      */
     public static function issue(array $issue): array
     {
@@ -130,13 +116,24 @@ final class FinanceParsingProgress
         $message = match ($kind) {
             'engine_failed', 'digits_unconfirmed' => 'One PDF reader could not read or confirm this file.',
             'parser_failed', 'section_failed' => 'This section could not be read. Check its figures against the source.',
-            // Uploads are stored under a random file name that means nothing to the reader.
-            default => preg_replace('/^[\w.-]+\.xlsx[!:] ?/', '', self::text($issue['message'] ?? 'Check this figure against its source.')) ?? '',
+            default => self::text($issue['message'] ?? 'Check this figure against its source.'),
         };
 
-        return ['severity' => in_array($issue['severity'] ?? null, ['info', 'warning', 'error'], true) ? $issue['severity'] : 'warning',
+        $normalized = ['severity' => in_array($issue['severity'] ?? null, ['info', 'warning', 'error'], true) ? $issue['severity'] : 'warning',
             'code' => $kind, 'line' => self::text($issue['code'] ?? ''), 'message' => $message,
             'location' => isset($issue['page']) ? 'page '.(int) $issue['page'] : (isset($issue['location']) ? self::text($issue['location']) : null)];
+        if (is_string($issue['document_kind'] ?? null)) {
+            $normalized['document_kind'] = self::text($issue['document_kind']);
+        }
+        if (is_string($issue['document_sha256'] ?? null)) {
+            $normalized['document_sha256'] = self::text($issue['document_sha256']);
+        }
+        $fiscalYear = $issue['fiscalYear'] ?? $issue['fiscal_year'] ?? null;
+        if (is_int($fiscalYear) && $fiscalYear > 0) {
+            $normalized['fiscal_year'] = $fiscalYear;
+        }
+
+        return $normalized;
     }
 
     public function flush(bool $force = false): void

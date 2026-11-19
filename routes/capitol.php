@@ -15,6 +15,7 @@ use App\Http\Controllers\Capitol\FinanceReviewController;
 use App\Http\Controllers\Capitol\FinanceUploadController;
 use App\Http\Controllers\Capitol\PopulationController;
 use App\Http\Controllers\Capitol\ProfileController;
+use App\Http\Controllers\Capitol\ReportDifferenceController;
 use App\Http\Controllers\Capitol\SessionActivityController;
 use App\Http\Middleware\PreventIndexing;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,7 @@ Route::middleware([PreventIndexing::class, 'auth', 'can:capitol'])
             ->scopeBindings()->middleware('throttle:registry-documents')->name('businesses.documents.show');
         Route::get('analytics', AnalyticsController::class)->name('analytics');
         Route::get('finances', [FinanceReviewController::class, 'index'])->name('finances.index');
+        Route::get('report-differences', ReportDifferenceController::class)->name('report-differences.index');
         Route::get('finances/{town:psgc_code}/{year}', [FinanceReviewController::class, 'show'])->whereNumber('year')->name('finances.show');
         Route::post('finances/{town:psgc_code}/{year}/figures', [FinanceFigureController::class, 'store'])->whereNumber('year')->middleware('throttle:finance-writes')->name('finances.figures.store');
         Route::post('finances/{town:psgc_code}/{year}/uploads', [FinanceUploadController::class, 'store'])->whereNumber('year')->middleware('throttle:finance-writes')->name('finances.uploads.store');
